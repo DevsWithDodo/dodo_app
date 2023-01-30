@@ -8,6 +8,8 @@
 	<array>
 		<string>applinks:lenderapp.net/join</string>
 		<string>applinks:www.lenderapp.net/join</string>
+		<string>applinks:dodoapp.net/join</string>
+		<string>applinks:www.dodoapp.net/join</string>
 	</array>
 	<key>com.apple.developer.associated-domains.mdm-managed</key>
 	<true/>
