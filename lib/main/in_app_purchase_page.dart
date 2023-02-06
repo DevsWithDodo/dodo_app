@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
@@ -14,14 +15,14 @@ class _InAppPurchasePageState extends State<InAppPurchasePage> {
   Set<String> _ids = {
     'gradients',
     'remove_ads',
-    'ad_gradient_bundle',
+    Platform.isAndroid ? 'ad_gradient_bundle' : 'ad_gradient_bundle_2',
     'group_boost',
     'big_lender_bundle'
   };
   Map<String, int> sortBasic = {
     'remove_ads': 1,
     'gradients': 2,
-    'ad_gradient_bundle': 3,
+    Platform.isAndroid ? 'ad_gradient_bundle' : 'ad_gradient_bundle_2': 3,
     'group_boost': 4,
     'big_lender_bundle': 5
   };

@@ -118,7 +118,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   if (!kIsWeb) {
-    isIAPPlatformEnabled = Platform.isAndroid;
+    isIAPPlatformEnabled = Platform.isAndroid || Platform.isIOS;
     isAdPlatformEnabled = Platform.isAndroid || Platform.isIOS;
     isFirebasePlatformEnabled = Platform.isAndroid || Platform.isIOS;
     if (isAdPlatformEnabled) {
