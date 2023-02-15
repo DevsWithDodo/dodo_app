@@ -102,6 +102,11 @@ class LoginMethods {
         showAds = decoded['data']['ad_free'] == 0;
         useGradients = decoded['data']['gradients_enabled'] == 1;
         trialVersion = decoded['data']['trial'] == 1;
+        print(decoded['data']);
+        if (decoded['data']['trial'] == null) {
+          //Means that the trial just ended
+          trialJustEnded = true;
+        }
         saveUsername(decoded['data']['username']);
         saveUserId(decoded['data']['id']);
         saveUserCurrency(decoded['data']['default_currency']);

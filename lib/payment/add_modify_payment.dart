@@ -104,7 +104,7 @@ class AddModifyPayment {
   TextFormField amountTextField(BuildContext context) => TextFormField(
         validator: (value) => validateTextField({
           isEmpty: [value.trim()],
-          notValidNumber: [value.trim()],
+          notValidNumber: [value.trim().replaceAll(',', '.')],
         }),
         controller: amountController,
         decoration: InputDecoration(
@@ -136,8 +136,8 @@ class AddModifyPayment {
                 builder: (context) {
                   return SingleChildScrollView(
                     child: Calculator(
-                      initial: amountController.text,
-                      callback: (String fromCalc) {
+                      initialNumber: amountController.text,
+                      onCalculationReady: (String fromCalc) {
                         _setState(() {
                           amountController.text = fromCalc;
                         });
@@ -150,7 +150,7 @@ class AddModifyPayment {
           ),
         ),
         keyboardType: TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9\\.]'))],
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))],
         onFieldSubmitted: (value) => _buttonPush(context),
       );
 

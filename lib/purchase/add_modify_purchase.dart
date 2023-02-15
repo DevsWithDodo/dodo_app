@@ -161,7 +161,7 @@ class AddModifyPurchase {
         validator: (value) => validateTextField({
           isEmpty: [value],
           notValidNumber: [
-            value,
+            value.replaceAll(',', '.'),
           ]
         }),
         focusNode: focusNode,
@@ -190,8 +190,8 @@ class AddModifyPurchase {
                 builder: (context) {
                   return SingleChildScrollView(
                     child: Calculator(
-                      initial: amountController.text,
-                      callback: (String fromCalc) {
+                      initialNumber: amountController.text,
+                      onCalculationReady: (String fromCalc) {
                         _setState(() {
                           amountController.text =
                               (double.tryParse(fromCalc) ?? 0.0).toMoneyString(selectedCurrency);
@@ -210,7 +210,7 @@ class AddModifyPurchase {
         ),
         controller: amountController,
         keyboardType: TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9\\.]'))],
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))],
         onFieldSubmitted: (value) => buttonPush(context),
       );
 

@@ -359,16 +359,10 @@ class _JoinGroupState extends State<JoinGroup> {
                                                         mainAxisAlignment: MainAxisAlignment.center,
                                                         children: [
                                                           GradientButton(
-                                                            child: Row(
-                                                              children: [
-                                                                Text(
-                                                                  'okay'.tr(),
-                                                                  style: Theme.of(context)
-                                                                      .textTheme
-                                                                      .button,
-                                                                ),
-                                                              ],
-                                                            ),
+                                                            child: Icon(Icons.check,
+                                                                color: Theme.of(context)
+                                                                    .colorScheme
+                                                                    .onPrimary),
                                                             onPressed: () {
                                                               Navigator.pop(context);
                                                             },

@@ -351,7 +351,7 @@
 
     "in_app_purchase_description": "Ads and color themes",
     "iapp_not_supported": "The store is not enabled on your platform",
-    "iapp_not_supported_explanation": "In app items (ex. no ads, color themes) can as of right now only be purchased in the Android app.\nIf you don't own an Android device but still want to buy something please write an email to developer@dodoapp.net.",
+    "iapp_not_supported_explanation": "In app items (ex. no ads, color themes) can as of right now only be purchased in the Android or the iOS app.\nIf you don't own an Android device but still want to buy something please write an email to developer@dodoapp.net.",
     "no_camera_access": "The app has no prmission to access the camera.",
 
     "custom_amount_hint": "Hint: Long press on a member below to customize the amount they paid.",

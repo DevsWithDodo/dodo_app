@@ -141,30 +141,35 @@ class _InvitationState extends State<Invitation> {
                                   color: Theme.of(context).colorScheme.onPrimary,
                                 ),
                               ),
-                              SizedBox(height: 10),
-                              Center(
-                                child: Text(
-                                  'add_guests_offline'.tr(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
-                                      .copyWith(color: Theme.of(context).colorScheme.onSurface),
-                                  textAlign: TextAlign.center,
+                              Visibility(
+                                visible: widget.isAdmin,
+                                child: Column(
+                                  children: [
+                                    SizedBox(height: 10),
+                                    Center(
+                                      child: Text(
+                                        'add_guests_offline'.tr(),
+                                        style: Theme.of(context).textTheme.titleSmall.copyWith(
+                                            color: Theme.of(context).colorScheme.onSurface),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    GradientButton(
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AddGuestDialog(),
+                                        );
+                                      },
+                                      child: Icon(
+                                        Icons.person_add,
+                                        color: Theme.of(context).colorScheme.onPrimary,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              SizedBox(height: 10),
-                              GradientButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AddGuestDialog(),
-                                  );
-                                },
-                                child: Icon(
-                                  Icons.person_add,
-                                  color: Theme.of(context).colorScheme.onPrimary,
-                                ),
-                              )
                             ],
                           ),
                         ),
@@ -388,7 +393,7 @@ class _InvitationState extends State<Invitation> {
                               )),
                               Flexible(
                                   child: Text(
-                                member.nickname,
+                                member.nickname ?? member.username,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall
@@ -468,7 +473,7 @@ class _ApproveMemberState extends State<ApproveMember> {
               Text(' - '),
               Flexible(
                   child: Text(
-                widget.member.nickname,
+                widget.member.username,
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge

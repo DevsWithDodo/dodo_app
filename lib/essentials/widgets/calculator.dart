@@ -5,11 +5,12 @@ import 'package:csocsort_szamla/essentials/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:csocsort_szamla/essentials/stack.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:csocsort_szamla/essentials/currencies.dart';
 
 class Calculator extends StatefulWidget {
-  final Function callback;
-  final String initial;
-  Calculator({this.callback, this.initial});
+  final Function onCalculationReady;
+  final String initialNumber;
+  Calculator({this.onCalculationReady, this.initialNumber});
   @override
   _CalculatorState createState() => _CalculatorState();
 }
@@ -24,10 +25,10 @@ class _CalculatorState extends State<Calculator> {
   @override
   void initState() {
     super.initState();
-    if (widget.initial != null) {
+    if (widget.initialNumber != null) {
       _isStillNum = true;
-      _numToWrite = widget.initial;
-      _storeNum = widget.initial;
+      _numToWrite = widget.initialNumber;
+      _storeNum = widget.initialNumber;
     }
   }
 
@@ -125,10 +126,10 @@ class _CalculatorState extends State<Calculator> {
           case '-':
             c = (-double.parse(a) + double.parse(b)).toString();
             break;
-          case '*':
+          case '×':
             c = (double.parse(a) * double.parse(b)).toString();
             break;
-          case '/':
+          case '÷':
             c = (double.parse(b) / double.parse(a)).toString();
             break;
         }
@@ -248,13 +249,10 @@ class _CalculatorState extends State<Calculator> {
               onTap: _operators.length != 0 && _isStillNum
                   ? null
                   : () {
-                      if (_operators.length != 0 && _isStillNum) {
-                        equals();
-                      } else {
-                        Navigator.pop(context);
-                        if (double.tryParse(_numToWrite) != null) {
-                          widget.callback(_numToWrite);
-                        }
+                      Navigator.pop(context);
+                      if (double.tryParse(_numToWrite) != null) {
+                        widget.onCalculationReady(
+                            double.parse(_numToWrite).toMoneyString(currentGroupCurrency));
                       }
                     },
               child: Icon(

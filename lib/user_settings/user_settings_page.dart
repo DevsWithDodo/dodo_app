@@ -64,7 +64,7 @@ class _SettingsState extends State<Settings> {
                             aspectRatio: width / 2 / height,
                             child: ListView(
                               controller: ScrollController(),
-                              children: _settings().reversed.take(5).toList(),
+                              children: _settings().reversed.take(6).toList().reversed.toList(),
                             ),
                           )
                         ])
@@ -84,11 +84,11 @@ class _SettingsState extends State<Settings> {
       LanguagePicker(),
       ChangePassword(),
       ChangeUsername(),
+      ChangeUserCurrency(),
       ResetTutorial(),
       Visibility(visible: showAds, child: PersonalisedAds()),
       AboutUs(),
       DeleteAllData(),
-      ChangeUserCurrency(),
     ];
   }
 }

@@ -244,7 +244,7 @@ class _AddPurchaseRouteState extends State<AddPurchaseRoute> with AddModifyPurch
             gravity: ToastGravity.BOTTOM);
         return;
       }
-      double amount = double.parse(amountController.text);
+      double amount = double.parse(amountController.text.replaceAll(',', '.'));
       String name = noteController.text;
       List<Member> members = [];
       membersMap.forEach((Member key, bool value) {

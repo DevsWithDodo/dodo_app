@@ -352,7 +352,7 @@
 
     "in_app_purchase_description": "Anzeigen und Themen",
     "iapp_not_supported": "Der Laden ist auf dieser Platform nicht unterstützt.",
-    "iapp_not_supported_explanation": "Du kannst die Gegendstände (z.B. keine Anzeigen, Farbthemen) zur Zeit nur über der Android App kaufen.\nFalls dies für dich nicht Lösbar ist, schreib eine E-Mail an developer@dodoapp.net.",
+    "iapp_not_supported_explanation": "Du kannst die Gegendstände (z.B. keine Anzeigen, Farbthemen) zur Zeit nur über der Android oder iOS App kaufen.\nFalls dies für dich nicht Lösbar ist, schreib eine E-Mail an developer@dodoapp.net.",
     "no_camera_access": "Die App hat keine Berechtigung zur Kamera.",
 
     "custom_amount_hint": "Hinweis: Wenn du auf ein Mitglied lange drückst kannst du auswählen wie viel er/sie gezahlt hat.",

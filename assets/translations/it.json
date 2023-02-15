@@ -348,7 +348,7 @@
 
     "in_app_purchase_description": "Annunci e temi colore",
     "iapp_not_supported": "Il negozio non è abilitato sulla vostra piattaforma",
-    "iapp_not_supported_explanation": "Gli articoli in app (es. no ads, temi a colori) al momento possono essere acquistati solo nell'app Android.Se non possiedi un dispositivo Android ma vuoi comunque acquistare qualcosa scrivi un'email a developer@dodoapp.net.",
+    "iapp_not_supported_explanation": "Gli articoli in app (es. no ads, temi a colori) al momento possono essere acquistati solo nell'app Android o iOS. Se non possiedi un dispositivo Android ma vuoi comunque acquistare qualcosa scrivi un'email a developer@dodoapp.net.",
     "no_camera_access": "L'app non ha il permesso di accedere alla fotocamera",
 
     "suggerimento_personalizzato": "Suggerimento: premere a lungo su un membro in basso per personalizzare l'importo pagato",

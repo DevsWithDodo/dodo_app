@@ -135,7 +135,7 @@ class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment
             gravity: ToastGravity.BOTTOM);
         return;
       }
-      double amount = double.parse(amountController.text);
+      double amount = double.parse(amountController.text.replaceAll(',', '.'));
       String note = noteController.text;
       showDialog(
           builder: (context) => FutureSuccessDialog(

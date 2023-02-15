@@ -348,7 +348,7 @@
 
     "in_app_purchase_description": "Reklámok és témák",
     "iapp_not_supported": "A bolt ezen a platformon nem támogatott",
-    "iapp_not_supported_explanation": "Az alkalmazáson belüli termékeket (pl. reklámmentesség, színtémák) jelenleg csak az Androidos appban tudod megvenni.\nHogyha ez nem megoldható számodra, írj egy e-mailt a developer@dodoapp.net címre.",
+    "iapp_not_supported_explanation": "Az alkalmazáson belüli termékeket (pl. reklámmentesség, színtémák) jelenleg csak az Android és az iOS appban tudod megvenni.\nHogyha ez nem megoldható számodra, írj egy e-mailt a developer@dodoapp.net címre.",
     "no_camera_access": "Az alkalmazásnak nincs joga hozzáférni a kamerához.",
 
     "custom_amount_hint": "Tipp: nyomj hosszan egy névre, hogy megadd, hogy mennyit fizetett.",

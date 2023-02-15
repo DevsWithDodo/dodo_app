@@ -151,7 +151,7 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog> with AddMod
                                 gravity: ToastGravity.BOTTOM);
                             return;
                           }
-                          double amount = double.parse(amountController.text);
+                          double amount = double.parse(amountController.text.replaceAll(',', '.'));
                           String name = noteController.text;
                           List<Member> members = <Member>[];
                           membersMap.forEach((Member key, bool value) {
