@@ -62,10 +62,10 @@ class _AddGuestDialogState extends State<AddGuestDialog> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                 child: TextFormField(
-                  validator: (value) => validateTextField({
-                    isEmpty: [value.trim()],
-                    minimalLength: [value.trim(), 1],
-                  }),
+                  validator: (value) => validateTextField([
+                    isEmpty(value),
+                    minimalLength(value, 1),
+                  ]),
                   controller: _nicknameController,
                   decoration: InputDecoration(
                     hintText: 'nickname'.tr(),

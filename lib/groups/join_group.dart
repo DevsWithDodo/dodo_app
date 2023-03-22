@@ -284,9 +284,9 @@ class _JoinGroupState extends State<JoinGroup> {
                                 ),
                               ),
                               TextFormField(
-                                validator: (value) => validateTextField({
-                                  isEmpty: [value.trim()],
-                                }),
+                                validator: (value) => validateTextField([
+                                  isEmpty(value),
+                                ]),
                                 decoration: InputDecoration(
                                   hintText: 'invitation'.tr(),
                                   prefixIcon: Icon(
@@ -299,10 +299,10 @@ class _JoinGroupState extends State<JoinGroup> {
                                 height: 20,
                               ),
                               TextFormField(
-                                validator: (value) => validateTextField({
-                                  isEmpty: [value.trim()],
-                                  minimalLength: [value.trim(), 1],
-                                }),
+                                validator: (value) => validateTextField([
+                                  isEmpty(value),
+                                  minimalLength(value, 1),
+                                ]),
                                 decoration: InputDecoration(
                                   labelText: 'nickname_in_group'.tr(),
                                   hintText: 'nickname_in_group'.tr(),

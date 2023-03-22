@@ -16,7 +16,9 @@ import 'history_filter.dart';
 class AllHistoryRoute extends StatefulWidget {
   ///Defines whether to show purchases (0) or payments (1)
   final int startingIndex;
+
   AllHistoryRoute({@required this.startingIndex});
+
   @override
   _AllHistoryRouteState createState() => _AllHistoryRouteState();
 }
@@ -24,6 +26,7 @@ class AllHistoryRoute extends StatefulWidget {
 class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderStateMixin {
   DateTime _startDate;
   DateTime _endDate;
+  Category _category;
   Future<List<Purchase>> _purchases;
   Future<List<Payment>> _payments;
 
@@ -39,9 +42,10 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
       http.Response response;
       response = await httpGet(
         uri: generateUri(GetUriKeys.purchases, queryParams: {
-          'start_date': _startDate == null ? null : DateFormat('yyyy-MM-dd').format(_startDate),
-          'end_date': _endDate == null ? null : DateFormat('yyyy-MM-dd').format(_endDate),
+          'from_date': _startDate == null ? null : DateFormat('yyyy-MM-dd').format(_startDate),
+          'until_date': _endDate == null ? null : DateFormat('yyyy-MM-dd').format(_endDate),
           'user_id': _selectedMemberId.toString(),
+          ...(_category == null ? {} : {'category': _category.text})
         }),
         context: context,
         overwriteCache: overwriteCache,
@@ -62,9 +66,10 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
       http.Response response;
       response = await httpGet(
         uri: generateUri(GetUriKeys.payments, queryParams: {
-          'start_date': _startDate == null ? null : DateFormat('yyyy-MM-dd').format(_startDate),
-          'end_date': _endDate == null ? null : DateFormat('yyyy-MM-dd').format(_endDate),
+          'from_date': _startDate == null ? null : DateFormat('yyyy-MM-dd').format(_startDate),
+          'until_date': _endDate == null ? null : DateFormat('yyyy-MM-dd').format(_endDate),
           'user_id': _selectedMemberId.toString(),
+          ...(_category == null ? {} : {'category': _category.text})
         }),
         context: context,
         overwriteCache: overwriteCache,
@@ -180,17 +185,24 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
             secondChild: Visibility(
                 visible: _showFilter,
                 child: HistoryFilter(
-                  onValuesChanged: (Member newMemberChosen) {
+                  selectedCategory: _category,
+                  endDate: _endDate,
+                  startDate: _startDate,
+                  selectedMember: _selectedMemberId,
+                  onValuesChanged: (Member newMemberChosen, DateTime newStartDate,
+                      DateTime newEndDate, Category newCategory) {
                     setState(() {
                       _selectedMemberId = newMemberChosen.memberId;
+                      _startDate = newStartDate;
+                      _endDate = newEndDate;
+                      _category = newCategory;
                       _showFilter = false;
                     });
                     _purchases = null;
-                    _purchases = _getPurchases();
+                    _purchases = _getPurchases(overwriteCache: true);
                     _payments = null;
-                    _payments = _getPayments();
+                    _payments = _getPayments(overwriteCache: true);
                   },
-                  selectedMember: _selectedMemberId,
                 )),
           ),
           width < tabletViewWidth

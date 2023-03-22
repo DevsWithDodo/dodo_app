@@ -48,9 +48,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   void initTextFields() {
     textFields = [
       TextFormField(
-        validator: (value) => validateTextField({
-          isEmpty: [value]
-        }),
+        validator: (value) => validateTextField([isEmpty(value)]),
         decoration: InputDecoration(
           hintText: (usesPassword ? 'old_password' : 'old_pin').tr(),
           prefixIcon: Icon(
@@ -66,10 +64,10 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         obscureText: true,
       ),
       TextFormField(
-        validator: (value) => validateTextField({
-          isEmpty: [value],
-          minimalLength: [value, 4],
-        }),
+        validator: (value) => validateTextField([
+          isEmpty(value),
+          minimalLength(value, 4),
+        ]),
         decoration: InputDecoration(
           hintText: (usesPassword ? 'new_password' : 'new_pin').tr(),
           prefixIcon: Icon(
@@ -85,11 +83,11 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         obscureText: true,
       ),
       TextFormField(
-        validator: (value) => validateTextField({
-          matchString: [value, _newPasswordController.text],
-          isEmpty: [value],
-          minimalLength: [value, 4],
-        }),
+        validator: (value) => validateTextField([
+          matchString(value, _newPasswordController.text),
+          isEmpty(value),
+          minimalLength(value, 4),
+        ]),
         decoration: InputDecoration(
           hintText: (usesPassword ? 'new_password_confirm' : 'new_pin_confirm').tr(),
           prefixIcon: Icon(
@@ -104,10 +102,10 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
         obscureText: true,
       ),
       TextFormField(
-        validator: (value) => validateTextField({
-          isEmpty: [value],
-          minimalLength: [value, 3],
-        }),
+        validator: (value) => validateTextField([
+          isEmpty(value),
+          minimalLength(value, 3),
+        ]),
         controller: _passwordReminderController,
         decoration: InputDecoration(
           hintText: 'password_reminder'.tr(),

@@ -10,7 +10,6 @@ import 'change_password.dart';
 import 'change_username.dart';
 import 'color_picker.dart';
 import 'personalised_ads.dart';
-import 'reset_tutorial.dart';
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
 import 'package:csocsort_szamla/user_settings/delete_all_data.dart';
@@ -85,7 +84,6 @@ class _SettingsState extends State<Settings> {
       ChangePassword(),
       ChangeUsername(),
       ChangeUserCurrency(),
-      ResetTutorial(),
       Visibility(visible: showAds, child: PersonalisedAds()),
       AboutUs(),
       DeleteAllData(),

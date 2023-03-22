@@ -205,7 +205,7 @@ class _ShoppingListState extends State<ShoppingList> {
               Column(
                 children: [
                   SizedBox(
-                    height: 200,
+                    height: 160,
                   ),
                   Expanded(
                     child: FutureBuilder(
@@ -260,7 +260,7 @@ class _ShoppingListState extends State<ShoppingList> {
                 ],
               ),
               Container(
-                height: 220,
+                height: 180,
                 color: Colors.transparent,
                 child: Card(
                   child: Padding(
@@ -280,10 +280,10 @@ class _ShoppingListState extends State<ShoppingList> {
                           height: 20,
                         ),
                         TextFormField(
-                          validator: (value) => validateTextField({
-                            isEmpty: [value.trim()],
-                            minimalLength: [value.trim(), 2],
-                          }),
+                          validator: (value) => validateTextField([
+                            isEmpty(value),
+                            minimalLength(value, 2),
+                          ]),
                           decoration: InputDecoration(
                             hintText: 'wish'.tr(),
                             prefixIcon: Icon(
@@ -300,24 +300,6 @@ class _ShoppingListState extends State<ShoppingList> {
                           inputFormatters: [LengthLimitingTextInputFormatter(255)],
                           onFieldSubmitted: (value) => _buttonPush(),
                         ),
-                        Flexible(
-                          child: SizedBox(
-                            height: 20,
-                          ),
-                        ),
-                        OutlinedButton(
-                          onPressed: () {
-                            showDialog(
-                              builder: (context) => ImShoppingDialog(),
-                              context: context,
-                            );
-                          },
-                          child: Text('i_m_shopping'.tr(),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge
-                                  .copyWith(color: Theme.of(context).colorScheme.primary)),
-                        ),
                         SizedBox(
                           height: 10,
                         ),
@@ -326,6 +308,17 @@ class _ShoppingListState extends State<ShoppingList> {
                   ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(right: 30, top: 25),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                      icon: Icon(Icons.notifications_active),
+                      onPressed: () {
+                        showDialog(context: context, builder: (context) => ImShoppingDialog());
+                      }),
+                ),
+              )
             ],
           ),
         ),
@@ -334,12 +327,12 @@ class _ShoppingListState extends State<ShoppingList> {
   }
 
   List<Widget> _generateShoppingList(List<ShoppingRequestData> data) {
-    data.sort((e1, e2) {
-      int e2Length = e2.reactions.where((reaction) => reaction.reaction == '❗').length;
-      int e1Length = e1.reactions.where((reaction) => reaction.reaction == '❗').length;
+    data.sort((requestData1, requestData2) {
+      int e2Length = requestData2.reactions.where((reaction) => reaction.reaction == '❗').length;
+      int e1Length = requestData1.reactions.where((reaction) => reaction.reaction == '❗').length;
       if (e2Length > e1Length) return 1;
       if (e2Length < e1Length) return -1;
-      if (e1.updatedAt.isAfter(e2.updatedAt)) return -1;
+      if (requestData1.updatedAt.isAfter(requestData2.updatedAt)) return -1;
       return 1;
     });
     return data.map((element) {

@@ -127,10 +127,10 @@ class AddModifyPurchase {
   }
 
   TextFormField noteTextField(BuildContext context) => TextFormField(
-        validator: (value) => validateTextField({
-          isEmpty: [value],
-          minimalLength: [value, 3],
-        }),
+        validator: (value) => validateTextField([
+          isEmpty(value),
+          minimalLength(value, 3),
+        ]),
         decoration: InputDecoration(
           hintText: 'note'.tr(),
           prefixIcon: Icon(
@@ -158,12 +158,10 @@ class AddModifyPurchase {
         onFieldSubmitted: (value) => buttonPush(context),
       );
   TextFormField amountTextField(BuildContext context) => TextFormField(
-        validator: (value) => validateTextField({
-          isEmpty: [value],
-          notValidNumber: [
-            value.replaceAll(',', '.'),
-          ]
-        }),
+        validator: (value) => validateTextField([
+          isEmpty(value),
+          notValidNumber(value.replaceAll(',', '.')),
+        ]),
         focusNode: focusNode,
         decoration: InputDecoration(
           hintText: 'full_amount'.tr(),

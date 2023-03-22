@@ -13,7 +13,6 @@ import 'package:csocsort_szamla/groups/join_group.dart';
 import 'package:csocsort_szamla/main/in_app_purchase_page.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:feature_discovery/feature_discovery.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -447,30 +446,28 @@ class _LenderAppState extends State<LenderApp> {
             appState.updateThemeNoNotify(widget.themeName);
             _first = false;
           }
-          return FeatureDiscovery(
-            child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'Dodo',
-              theme: appState.theme,
-              localizationsDelegates: context.localizationDelegates,
-              supportedLocales: context.supportedLocales,
-              locale: context.locale,
-              navigatorKey: getIt.get<NavigationService>().navigatorKey,
-              home: currentUserId == null
-                  ? LoginOrRegisterPage(
-                      inviteURL: _link,
-                    )
-                  : (_link != null)
-                      ? JoinGroup(
-                          inviteURL: _link,
-                          fromAuth: (currentGroupId == null) ? true : false,
-                        )
-                      : (currentGroupId == null)
-                          ? JoinGroup(
-                              fromAuth: true,
-                            )
-                          : MainPage(),
-            ),
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Dodo',
+            theme: appState.theme,
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+            navigatorKey: getIt.get<NavigationService>().navigatorKey,
+            home: currentUserId == null
+                ? LoginOrRegisterPage(
+                    inviteURL: _link,
+                  )
+                : (_link != null)
+                    ? JoinGroup(
+                        inviteURL: _link,
+                        fromAuth: (currentGroupId == null) ? true : false,
+                      )
+                    : (currentGroupId == null)
+                        ? JoinGroup(
+                            fromAuth: true,
+                          )
+                        : MainPage(),
           );
         });
       },

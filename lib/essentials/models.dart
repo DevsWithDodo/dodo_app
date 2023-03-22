@@ -193,6 +193,10 @@ class Category {
     return null;
   }
 
+  factory Category.fromType(CategoryType type) {
+    return Category.categories.firstWhere((category) => category.type == type, orElse: () => null);
+  }
+
   static List<Category> categories = [
     Category(type: CategoryType.food, icon: Icons.fastfood, text: 'food'),
     Category(type: CategoryType.groceries, icon: Icons.shopping_basket, text: 'groceries'),

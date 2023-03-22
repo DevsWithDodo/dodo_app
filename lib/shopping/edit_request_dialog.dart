@@ -67,10 +67,10 @@ class _EditRequestDialogState extends State<EditRequestDialog> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8.0),
                 child: TextFormField(
-                  validator: (value) => validateTextField({
-                    isEmpty: [value.trim()],
-                    minimalLength: [value.trim(), 2],
-                  }),
+                  validator: (value) => validateTextField([
+                    isEmpty(value),
+                    minimalLength(value, 2),
+                  ]),
                   controller: _requestController,
                   decoration: InputDecoration(
                     hintText: 'edited_request'.tr(),

@@ -72,10 +72,10 @@ class _ImShoppingDialogState extends State<ImShoppingDialog> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: TextFormField(
-                  validator: (value) => validateTextField({
-                    isEmpty: [value.trim()],
-                    minimalLength: [value.trim(), 1],
-                  }),
+                  validator: (value) => validateTextField([
+                    isEmpty(value),
+                    minimalLength(value, 1),
+                  ]),
                   decoration: InputDecoration(
                     hintText: 'store'.tr(),
                     prefixIcon: Icon(

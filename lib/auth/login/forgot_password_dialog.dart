@@ -1,31 +1,34 @@
+import 'package:csocsort_szamla/config.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../essentials/validation_rules.dart';
-import '../essentials/widgets/gradient_button.dart';
-import 'forgot_password_page.dart';
+import '../../essentials/validation_rules.dart';
+import '../../essentials/widgets/gradient_button.dart';
+import './forgot_password_page.dart';
 
 class ForgotPasswordDialog extends StatelessWidget {
   ForgotPasswordDialog();
 
   final GlobalKey<FormState> formState = GlobalKey<FormState>();
-  final TextEditingController controller = TextEditingController();
+  final TextEditingController controller = TextEditingController(text: currentUsername ?? '');
   @override
   Widget build(BuildContext context) {
     return Form(
       key: formState,
       child: AlertDialog(
-        title: Text(
-          'forgot_password'.tr(),
-          style: Theme.of(context).textTheme.headline6,
+        title: Center(
+          child: Text(
+            'forgot_password'.tr(),
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
         ),
         content: TextFormField(
           controller: controller,
-          validator: (value) => validateTextField({
-            isEmpty: [value],
-            minimalLength: [value, 3],
-          }),
+          validator: (value) => validateTextField([
+            isEmpty(value),
+            minimalLength(value, 3),
+          ]),
           decoration: InputDecoration(
             hintText: 'username'.tr(),
             filled: true,

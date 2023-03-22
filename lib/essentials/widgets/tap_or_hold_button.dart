@@ -48,8 +48,8 @@ class _TapOrHoldButtonState extends State<TapOrHoldButton> {
             color: Theme.of(context).colorScheme.secondaryContainer,
             borderRadius: BorderRadius.circular(12),
           ),
-          width: 50,
-          height: 40,
+          width: 40,
+          height: 30,
           child: Icon(
             widget.icon,
             color: Theme.of(context).colorScheme.onSecondaryContainer,

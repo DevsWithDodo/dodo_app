@@ -1,3 +1,4 @@
+import 'package:csocsort_szamla/auth/login/forgot_password_dialog.dart';
 import 'package:csocsort_szamla/auth/login/login_pin_page.dart';
 import 'package:csocsort_szamla/auth/registration/register_pin_page.dart';
 import 'package:csocsort_szamla/config.dart';
@@ -63,19 +64,12 @@ class _NamePageState extends State<NamePage> {
                         shrinkWrap: true,
                         children: <Widget>[
                           TextFormField(
-                            validator: (value) => validateTextField(
-                              {
-                                isEmpty: [value],
-                                minimalLength: [value, 3],
-                                allowedRegEx: [value, RegExp(r'[^a-z0-9.]+')],
-                              }..addAll(
-                                  _usernameTaken
-                                      ? {
-                                          throwError: ['username_taken'.tr()]
-                                        }
-                                      : {},
-                                ),
-                            ),
+                            validator: (value) => validateTextField([
+                              isEmpty(value),
+                              minimalLength(value, 3),
+                              allowedRegEx(value, RegExp(r'[^a-z0-9.]+')),
+                              ...(_usernameTaken ? [throwError('username_taken'.tr())] : []),
+                            ]),
                             onChanged: (value) => setState(() {}),
                             onFieldSubmitted: (value) => _buttonPush(),
                             controller: _usernameController,
@@ -105,6 +99,32 @@ class _NamePageState extends State<NamePage> {
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(15),
                             ],
+                          ),
+                          Visibility(
+                            visible: widget.isLogin,
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 20),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) => ForgotPasswordDialog());
+                                    },
+                                    child: Text(
+                                      'forgot_password'.tr(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelLarge
+                                          .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                           Visibility(
                             visible: !widget.isLogin,

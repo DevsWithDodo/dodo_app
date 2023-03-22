@@ -69,10 +69,10 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
               Padding(
                 padding: const EdgeInsets.only(left: 8, right: 8),
                 child: TextFormField(
-                  validator: (value) => validateTextField({
-                    isEmpty: [value.trim()],
-                    minimalLength: [value.trim(), 1],
-                  }),
+                  validator: (value) => validateTextField([
+                    isEmpty(value),
+                    minimalLength(value, 1),
+                  ]),
                   controller: _groupNameController,
                   decoration: InputDecoration(
                     hintText: 'new_name'.tr(),

@@ -366,7 +366,7 @@
     "custom_amount": "Custom amount",
     "custom_amount_explanation": "Set how much the chosen member should pay.",
     "reset": "Reset",
-    "chosen_amount": "Chosen amount: ",
+    "chosen_amount": "Chosen amount",
 
     "from_who": "Who:",
     "to_who": {

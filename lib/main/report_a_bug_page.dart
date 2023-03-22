@@ -64,9 +64,9 @@ class _ReportABugPageState extends State<ReportABugPage> {
                             ),
                             widget.error == null
                                 ? TextFormField(
-                                    validator: (value) => validateTextField({
-                                      isEmpty: [value],
-                                    }),
+                                    validator: (value) => validateTextField([
+                                      isEmpty(value),
+                                    ]),
                                     keyboardType: TextInputType.multiline,
                                     minLines: 1,
                                     maxLines: 10,
@@ -88,9 +88,9 @@ class _ReportABugPageState extends State<ReportABugPage> {
                             ),
                             widget.location == null
                                 ? TextFormField(
-                                    validator: (value) => validateTextField({
-                                      isEmpty: [value],
-                                    }),
+                                    validator: (value) => validateTextField([
+                                      isEmpty(value),
+                                    ]),
                                     keyboardType: TextInputType.multiline,
                                     minLines: 1,
                                     maxLines: 10,
@@ -111,7 +111,7 @@ class _ReportABugPageState extends State<ReportABugPage> {
                               height: 15,
                             ),
                             TextFormField(
-                              validator: (value) => validateTextField({}),
+                              validator: (value) => validateTextField([]),
                               keyboardType: TextInputType.multiline,
                               minLines: 1,
                               maxLines: 10,

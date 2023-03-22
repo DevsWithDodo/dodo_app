@@ -102,10 +102,10 @@ class AddModifyPayment {
       );
 
   TextFormField amountTextField(BuildContext context) => TextFormField(
-        validator: (value) => validateTextField({
-          isEmpty: [value.trim()],
-          notValidNumber: [value.trim().replaceAll(',', '.')],
-        }),
+        validator: (value) => validateTextField([
+          isEmpty(value.trim()),
+          notValidNumber(value.replaceAll(',', '.')),
+        ]),
         controller: amountController,
         decoration: InputDecoration(
           hintText: 'amount'.tr(),

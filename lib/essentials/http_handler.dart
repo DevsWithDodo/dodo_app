@@ -48,9 +48,9 @@ Map<GetUriKeys, String> getUris = {
   GetUriKeys.groupExportPdf: '/groups/{}/export/get_link_pdf',
   GetUriKeys.purchases: '/purchases?group={}',
   GetUriKeys.payments: '/payments?group={}',
-  GetUriKeys.statisticsPayments: '/groups/{}/statistics/payments?from_date={}&until_date={}',
-  GetUriKeys.statisticsPurchases: '/groups/{}/statistics/purchases?from_date={}&until_date={}',
-  GetUriKeys.statisticsAll: '/groups/{}/statistics/all?from_date={}&until_date={}',
+  GetUriKeys.statisticsPayments: '/groups/{}/statistics/payments',
+  GetUriKeys.statisticsPurchases: '/groups/{}/statistics/purchases',
+  GetUriKeys.statisticsAll: '/groups/{}/statistics/all',
   GetUriKeys.requests: '/requests?group={}',
 }; //TODO: same for other types
 

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:csocsort_szamla/config.dart';
+import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/widgets/category_picker_icon_button.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +27,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   DateTime _startDate = DateTime.now().subtract(Duration(days: 30));
   DateTime _endDate = DateTime.now();
+  Category _category = Category.fromType(null);
 
   @override
   void initState() {
@@ -41,12 +44,17 @@ class _StatisticsPageState extends State<StatisticsPage> {
     try {
       String startDate = DateFormat('yyyy-MM-dd').format(_startDate);
       String endDate = DateFormat('yyyy-MM-dd').format(_endDate);
-      print(startDate);
       http.Response response = await httpGet(
           useCache: false,
+          overwriteCache: true,
           context: context,
           uri: generateUri(GetUriKeys.statisticsPayments,
-              args: [currentGroupId.toString(), startDate, endDate]));
+            queryParams: {
+              'from_date': startDate,
+              'until_date': endDate,
+              ...(_category != null ? {'category': _category?.text} : {}),
+            },
+          ));
       Map<String, dynamic> decoded = jsonDecode(response.body);
 
       Map<DateTime, double> payed = (decoded['data']['payed'] as Map<String, dynamic>)
@@ -68,12 +76,26 @@ class _StatisticsPageState extends State<StatisticsPage> {
     try {
       String startDate = DateFormat('yyyy-MM-dd').format(_startDate);
       String endDate = DateFormat('yyyy-MM-dd').format(_endDate);
+      print(generateUri(GetUriKeys.statisticsPayments,
+        queryParams: {
+          'from_date': startDate,
+          'until_date': endDate,
+          ...(_category != null ? {'category': _category?.text} : {}),
+        },
+      ));
       http.Response response = await httpGet(
           useCache: false,
+          overwriteCache: true,
           context: context,
           uri: generateUri(GetUriKeys.statisticsPurchases,
-              args: [currentGroupId.toString(), startDate, endDate]));
+            queryParams: {
+              'from_date': startDate,
+              'until_date': endDate,
+              ...(_category != null ? {'category': _category?.text} : {}),
+            },
+          ));
       Map<String, dynamic> decoded = jsonDecode(response.body);
+      print(response.headers);
 
       Map<DateTime, double> bought = (decoded['data']['bought'] as Map<String, dynamic>)
           .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
@@ -96,9 +118,15 @@ class _StatisticsPageState extends State<StatisticsPage> {
       String endDate = DateFormat('yyyy-MM-dd').format(_endDate);
       http.Response response = await httpGet(
           useCache: false,
+          overwriteCache: true,
           context: context,
           uri: generateUri(GetUriKeys.statisticsAll,
-              args: [currentGroupId.toString(), startDate, endDate]));
+            queryParams: {
+              'from_date': startDate,
+              'until_date': endDate,
+              ...(_category != null ? {'category': _category?.text} : {}),
+            },
+          ));
       Map<String, dynamic> decoded = jsonDecode(response.body);
 
       Map<DateTime, double> purchases = (decoded['data']['purchases'] as Map<String, dynamic>)
@@ -300,7 +328,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
       ),
       gridData: FlGridData(
         show: true,
-        // drawVerticalLine: false,
         getDrawingHorizontalLine: (value) {
           return FlLine(
             color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -372,10 +399,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // flexibleSpace: Container(
-        //   decoration: BoxDecoration(
-        //       gradient: AppTheme.gradientFromTheme(Theme.of(context))),
-        // ),
         title: Text(
           'statistics'.tr(),
         ),
@@ -388,7 +411,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               child: Column(
                 children: [
                   Text(
-                    'select_date'.tr(),
+                    'filter'.tr(),
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge
@@ -399,7 +422,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     height: 10,
                   ),
                   Text(
-                    'select_date_explanation'.tr(),
+                    'filter_explanation'.tr(),
                     style: Theme.of(context)
                         .textTheme
                         .titleSmall
@@ -409,24 +432,21 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   SizedBox(
                     height: 10,
                   ),
-                  Text(
-                    DateFormat.yMMMd().format(_startDate) +
-                        ' - ' +
-                        DateFormat.yMMMd().format(_endDate),
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge
-                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      GradientButton(
-                        child: Icon(Icons.date_range,
-                            color: Theme.of(context).colorScheme.onSecondary),
+                      Text(
+                        DateFormat.yMMMd().format(_startDate) +
+                            ' - ' +
+                            DateFormat.yMMMd().format(_endDate),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.date_range,
+                            color: Theme.of(context).colorScheme.primary),
                         onPressed: () async {
                           DateTimeRange range = await showDateRangePicker(
                               context: context,
@@ -441,14 +461,48 @@ class _StatisticsPageState extends State<StatisticsPage> {
                             _startDate = range.start;
                             _endDate = range.end;
                             setState(() {
+                              _paymentStats = null;
+                              _purchaseStats = null;
+                              _groupStats = null;
                               _paymentStats = _getPaymentStats();
                               _purchaseStats = _getPurchaseStats();
                               _groupStats = _getGroupStats();
                             });
                           }
                         },
-                      ),
+                      )
                     ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'category'.tr(),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                      CategoryPickerIconButton(
+                        selectedCategory: _category,
+                        onCategoryChanged: (category) {
+                          if(_category?.type == category?.type){
+                            _category = null;
+                          } else {
+                            _category = category;
+                          }
+                          print('asdasd');
+                          setState(() {
+                            _paymentStats = _getPaymentStats();
+                            _purchaseStats = _getPurchaseStats();
+                            _groupStats = _getGroupStats();
+                          });
+                        },
+                      )
+                    ]
                   )
                 ],
               ),

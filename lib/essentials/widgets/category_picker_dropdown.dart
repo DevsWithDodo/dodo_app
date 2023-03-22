@@ -25,17 +25,8 @@ class CategoryPickerDropdown extends StatefulWidget {
 }
 
 class _CategoryPickerDropdown extends State<CategoryPickerDropdown> {
-  // Category _defaultCurrencyValue;
-
-  @override
-  void initState() {
-    super.initState();
-    // _defaultCurrencyValue = widget.defaultCategoryValue;
-  }
-
   @override
   Widget build(BuildContext context) {
-    // _defaultCurrencyValue = widget.defaultCategoryValue;
     return Wrap(
       spacing: 8,
       runSpacing: 8,
@@ -48,7 +39,6 @@ class _CategoryPickerDropdown extends State<CategoryPickerDropdown> {
           },
           child: Ink(
             width: 75,
-            // height: 75,
             decoration: BoxDecoration(
               color: widget.defaultCategoryValue == category
                   ? Theme.of(context).colorScheme.tertiary

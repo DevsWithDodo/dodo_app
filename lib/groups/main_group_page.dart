@@ -16,7 +16,6 @@ import 'package:csocsort_szamla/main/trial_ended_dialog.dart';
 import 'package:csocsort_szamla/shopping/shopping_list.dart';
 import 'package:csocsort_szamla/user_settings/user_settings_page.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -184,7 +183,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     } else {
       _scaffoldKey.currentState.openDrawer();
     }
-    FeatureDiscovery.discoverFeatures(context, <String>['drawer', 'settings']);
     _groups = null;
     _groups = _getGroups();
   }
@@ -234,28 +232,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 onPressed: () {
                   _handleDrawer(bigScreen);
                 },
-                icon: DescribedFeatureOverlay(
-                  tapTarget: Icon(Icons.menu, color: Colors.black),
-                  featureId: 'drawer',
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  overflowMode: OverflowMode.extendBackground,
-                  title: Text(
-                    'discovery_drawer_title'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        .copyWith(color: Theme.of(context).colorScheme.onTertiary),
-                  ),
-                  description: Text(
-                    'discovery_drawer_description'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge
-                        .copyWith(color: Theme.of(context).colorScheme.onTertiary),
-                  ),
-                  barrierDismissible: false,
-                  child: Icon(Icons.menu),
-                ),
+                icon: Icon(Icons.menu),
               )
             : null,
         actions: [Container()],
@@ -291,11 +268,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 } else {
                   _handleDrawer(bigScreen);
                 }
-                if (_selectedIndex == 1) {
-                  FeatureDiscovery.discoverFeatures(context, ['shopping_list']);
-                } else if (_selectedIndex == 2) {
-                  FeatureDiscovery.discoverFeatures(context, ['group_settings']);
-                }
               },
               selectedIndex: _selectedIndex,
               destinations: _bottomNavbarItems(),
@@ -315,7 +287,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           : Visibility(
               visible: _selectedIndex == 0,
               child: MainPageSpeedDial(
-                callback: this.callback,
+                onReturn: this.callback,
               ),
             ),
       body: kIsWeb || Platform.isWindows
@@ -363,9 +335,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     _tabController.animateTo(_index);
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
                   });
-                  if (_selectedIndex == 1) {
-                    FeatureDiscovery.discoverFeatures(context, ['group_settings']);
-                  }
                 },
                 selectedIndex: _selectedIndex)
             : Container(),
@@ -716,31 +685,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 borderRadius: BorderRadius.all(Radius.circular(28)),
               ),
               dense: true,
-              leading: DescribedFeatureOverlay(
-                tapTarget: Icon(Icons.settings, color: Colors.black),
-                featureId: 'settings',
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                overflowMode: OverflowMode.extendBackground,
-                allowShowingDuplicate: true,
-                contentLocation: ContentLocation.above,
-                title: Text(
-                  'discovery_settings_title'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      .copyWith(color: Theme.of(context).colorScheme.onTertiary),
-                ),
-                description: Text(
-                  'discovery_settings_description'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge
-                      .copyWith(color: Theme.of(context).colorScheme.onTertiary),
-                ),
-                child: Icon(
-                  Icons.settings,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              leading: Icon(
+                Icons.settings,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               title: Text(
                 'settings'.tr(),
@@ -817,27 +764,40 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         label: Text('home'.tr()),
       ),
       NavigationRailDestination(
-        icon: DescribedFeatureOverlay(
-          featureId: 'group_settings',
-          tapTarget: Icon(Icons.supervisor_account, color: Colors.black),
-          targetColor: Colors.white,
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          title: Text(
-            'discover_group_settings_title'.tr(),
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                .copyWith(color: Theme.of(context).colorScheme.onTertiary),
-          ),
-          description: Text(
-            'discover_group_settings_description'.tr(),
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge
-                .copyWith(color: Theme.of(context).colorScheme.onTertiary),
-          ),
-          overflowMode: OverflowMode.extendBackground,
-          child: Stack(
+        icon: Stack(
+          children: [
+            Container(
+              margin: EdgeInsets.only(right: 5),
+              child: Icon(
+                Icons.group,
+                size: 22,
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(left: 17),
+              child: Icon(
+                Icons.settings,
+                size: 12,
+              ),
+            ),
+          ],
+        ),
+        label: Text('group'.tr()),
+      ),
+    ];
+  }
+
+  List<Widget> _bottomNavbarItems() {
+    return [
+      NavigationDestination(
+        icon: Icon(
+          Icons.home,
+        ),
+        label: 'home'.tr(),
+      ),
+      NavigationDestination(icon: Icon(Icons.receipt_long), label: 'shopping_list'.tr()),
+      NavigationDestination(
+          icon: Stack(
             children: [
               Container(
                 margin: EdgeInsets.only(right: 5),
@@ -855,107 +815,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               ),
             ],
           ),
-        ),
-        label: Text('group'.tr()),
-      ),
-    ];
-  }
-
-  List<Widget> _bottomNavbarItems() {
-    return [
-      NavigationDestination(
-        icon: Icon(
-          Icons.home,
-        ),
-        label: 'home'.tr(),
-      ),
-      NavigationDestination(
-          icon: DescribedFeatureOverlay(
-              featureId: 'shopping_list',
-              tapTarget: Icon(Icons.receipt_long, color: Colors.black),
-              targetColor: Colors.white,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              title: Text(
-                'discover_shopping_title'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    .copyWith(color: Theme.of(context).colorScheme.onTertiary),
-              ),
-              description: Text(
-                'discover_shopping_description'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge
-                    .copyWith(color: Theme.of(context).colorScheme.onTertiary),
-              ),
-              overflowMode: OverflowMode.extendBackground,
-              child: Icon(Icons.receipt_long)),
-          label: 'shopping_list'.tr()),
-      NavigationDestination(
-          icon: DescribedFeatureOverlay(
-            featureId: 'group_settings',
-            tapTarget: Icon(Icons.supervisor_account, color: Colors.black),
-            targetColor: Colors.white,
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            title: Text(
-              'discover_group_settings_title'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  .copyWith(color: Theme.of(context).colorScheme.onTertiary),
-            ),
-            description: Text(
-              'discover_group_settings_description'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  .copyWith(color: Theme.of(context).colorScheme.onTertiary),
-            ),
-            overflowMode: OverflowMode.extendBackground,
-            child: Stack(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(right: 5),
-                  child: Icon(
-                    Icons.group,
-                    size: 22,
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 17),
-                  child: Icon(
-                    Icons.settings,
-                    size: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
           label: 'group'.tr()),
       NavigationDestination(
-        icon: DescribedFeatureOverlay(
-          tapTarget: Icon(Icons.menu, color: Colors.black),
-          featureId: 'drawer',
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          overflowMode: OverflowMode.extendBackground,
-          title: Text(
-            'discovery_drawer_title'.tr(),
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                .copyWith(color: Theme.of(context).colorScheme.onTertiary),
-          ),
-          description: Text(
-            'discovery_drawer_description'.tr(),
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge
-                .copyWith(color: Theme.of(context).colorScheme.onTertiary),
-          ),
-          barrierDismissible: false,
-          child: Icon(Icons.menu),
-        ),
+        icon: Icon(Icons.menu),
         label: 'more'.tr(),
       )
     ];

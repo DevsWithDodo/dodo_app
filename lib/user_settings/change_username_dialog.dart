@@ -64,10 +64,10 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
               Padding(
                 padding: const EdgeInsets.only(left: 8, right: 8),
                 child: TextFormField(
-                  validator: (value) => validateTextField({
-                    isEmpty: [value],
-                    minimalLength: [value, 1],
-                  }),
+                  validator: (value) => validateTextField([
+                    isEmpty(value),
+                    minimalLength(value, 1),
+                  ]),
                   controller: _usernameController,
                   decoration: InputDecoration(
                     hintText: 'new_name'.tr(),

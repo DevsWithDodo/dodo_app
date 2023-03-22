@@ -60,9 +60,9 @@ class _PasswordPageState extends State<PasswordPage> {
                       shrinkWrap: true,
                       children: [
                         TextFormField(
-                          validator: (value) => validateTextField({
-                            isEmpty: [value],
-                          }),
+                          validator: (value) => validateTextField([
+                            isEmpty(value),
+                          ]),
                           controller: _passwordController,
                           decoration: InputDecoration(
                             hintText: 'password'.tr(),

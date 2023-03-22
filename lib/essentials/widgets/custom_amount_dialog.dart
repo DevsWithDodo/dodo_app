@@ -12,6 +12,7 @@ class CustomAmountDialog extends StatefulWidget {
   final double minValue;
   final bool alreadyCustom;
   final String currency;
+
   const CustomAmountDialog(
       {this.initialValue,
       this.maxValue,
@@ -28,28 +29,24 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
   double sliderValue;
   double magnet;
   String currency;
+  TextEditingController customAmountController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     sliderValue = widget.initialValue;
     magnet = 0.5;
     currency = widget.currency ?? currentGroupCurrency;
+    customAmountController.text = sliderValue.toMoneyString(currency);
   }
 
-  double roundLogically(double value) {
-    double stepSize = (widget.maxValue - widget.minValue) / 20;
-    print(stepSize);
-    double roundTo = 1;
-    if (hasSubunit(currency)) {
-      if (stepSize < 0.01) {
-        roundTo = 0.01;
-      } else if (stepSize < 0.1) {
-        roundTo = 0.1;
-      } else if (stepSize < 0.5) {
-        roundTo = 0.5;
+  void setSliderValue(newValue, {bool setController = true}) {
+    setState(() {
+      sliderValue = newValue;
+      if (setController) {
+        customAmountController.text = sliderValue.toMoneyString(currency);
       }
-    }
-    return (value - roundTo).roundToDouble() + roundTo;
+    });
   }
 
   @override
@@ -79,26 +76,37 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
             SizedBox(
               height: 10,
             ),
-            Text(
-                'chosen_amount'.tr() +
-                    sliderValue.toMoneyString(currency, withSymbol: true) +
-                    ' / ' +
-                    (sliderValue / widget.maxMoney * 100).roundToDouble().toStringAsFixed(0) +
-                    '%',
+            TextFormField(
+                controller: customAmountController,
+                decoration: InputDecoration(
+                  prefixText: 'chosen_amount'.tr() + ' (${currencies[currency]['symbol']}) ',
+                  suffixText: '${(sliderValue / widget.maxMoney * 100).roundToDouble().toStringAsFixed(0)}%',
+                ),
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              onChanged: (value) {
+                double newValue = double.tryParse(value);
+                if (newValue != null) {
+                  if (newValue > widget.maxValue) {
+                    newValue = widget.maxValue;
+                  }
+                  if (newValue < widget.minValue) {
+                    newValue = widget.minValue;
+                  }
+                  setSliderValue(newValue, setController: false);
+                }
+              },
+            ),
             Row(
               children: [
                 TapOrHoldButton(
                   onUpdate: () {
                     double value = hasSubunit(currency) ? 0.01 : 1;
-                    setState(() {
-                      if (sliderValue - value >= widget.minValue) {
-                        sliderValue -= value;
-                      }
-                    });
+                    if (sliderValue - value >= widget.minValue) {
+                      setSliderValue(sliderValue - value);
+                    }
                   },
                   icon: Icons.remove,
                 ),
@@ -111,20 +119,16 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
                     thumbColor: Theme.of(context).colorScheme.secondary,
                     activeColor: Theme.of(context).colorScheme.secondary,
                     onChanged: (value) {
-                      setState(() {
-                        sliderValue = value;
-                      });
+                      setSliderValue(value);
                     },
                   ),
                 ),
                 TapOrHoldButton(
                   onUpdate: () {
                     double value = hasSubunit(currency) ? 0.01 : 1;
-                    setState(() {
-                      if (sliderValue + value <= widget.maxValue) {
-                        sliderValue += value;
-                      }
-                    });
+                    if (sliderValue + value <= widget.maxValue) {
+                      setSliderValue(sliderValue + value);
+                    }
                   },
                   icon: Icons.add,
                 ),

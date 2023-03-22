@@ -86,10 +86,10 @@ class _CreateGroupState extends State<CreateGroup> {
                         child: Column(
                           children: [
                             TextFormField(
-                              validator: (value) => validateTextField({
-                                isEmpty: [value.trim()],
-                                minimalLength: [value.trim(), 1],
-                              }),
+                              validator: (value) => validateTextField([
+                                isEmpty(value),
+                                minimalLength(value.trim(), 1),
+                              ]),
                               decoration: InputDecoration(
                                 hintText: 'group_name'.tr(),
                                 prefixIcon: Icon(
@@ -105,10 +105,10 @@ class _CreateGroupState extends State<CreateGroup> {
                               height: 20,
                             ),
                             TextFormField(
-                              validator: (value) => validateTextField({
-                                isEmpty: [value.trim()],
-                                minimalLength: [value.trim(), 1],
-                              }),
+                              validator: (value) => validateTextField([
+                                isEmpty(value),
+                                minimalLength(value, 1),
+                              ]),
                               decoration: InputDecoration(
                                 hintText: 'nickname_in_group'.tr(),
                                 labelText: 'nickname_in_group'.tr(),

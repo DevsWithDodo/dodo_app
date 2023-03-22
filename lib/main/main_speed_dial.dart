@@ -1,15 +1,14 @@
 import 'package:csocsort_szamla/payment/add_payment_page.dart';
 import 'package:csocsort_szamla/purchase/add_purchase_page.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import 'package:csocsort_szamla/purchase/add_modify_purchase.dart';
 
 class MainPageSpeedDial extends StatefulWidget {
-  final Function callback;
-  MainPageSpeedDial({this.callback});
+  final Function onReturn;
+  MainPageSpeedDial({this.onReturn});
   @override
   _MainPageSpeedDialState createState() => _MainPageSpeedDialState();
 }
@@ -23,36 +22,9 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
       ),
       backgroundColor: Theme.of(context).colorScheme.tertiary,
       foregroundColor: Theme.of(context).colorScheme.onTertiary,
-      child: DescribedFeatureOverlay(
-        featureId: 'add_payment_expense',
-        tapTarget: Icon(
-          Icons.add,
-          color: Colors.black,
-        ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text(
-          'discovery_add_floating_title'.tr(),
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              .copyWith(color: Theme.of(context).colorScheme.onPrimary),
-        ),
-        description: Text(
-          'discovery_add_floating_description'.tr(),
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge
-              .copyWith(color: Theme.of(context).colorScheme.onPrimary),
-        ),
-        contentLocation: ContentLocation.above,
-        overflowMode: OverflowMode.extendBackground,
-        child: Icon(Icons.add),
-      ),
+      child: Icon(Icons.add),
       overlayColor: (Theme.of(context).brightness == Brightness.dark) ? Colors.black : Colors.white,
       curve: Curves.bounceIn,
-      onOpen: () {
-        FeatureDiscovery.discoverFeatures(context, <String>['add_payment_expense']);
-      },
       children: [
         SpeedDialChild(
           elevation: 0,
@@ -91,7 +63,7 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
           child: Icon(Icons.payments),
           onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (context) => AddPaymentRoute()))
-                .then((value) => widget.callback());
+                .then((value) => widget.onReturn());
           },
         ),
         SpeedDialChild(
@@ -140,7 +112,7 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
                   ),
                 ),
               ).then((value) {
-                widget.callback();
+                widget.onReturn();
               });
             }),
       ],
