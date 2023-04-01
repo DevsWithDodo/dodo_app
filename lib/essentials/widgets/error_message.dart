@@ -4,15 +4,15 @@ import '../../main/report_a_bug_page.dart';
 
 class ErrorMessage extends StatelessWidget {
   final String error;
-  final Function callback;
-  final String locationOfError;
+  final Function onTap;
+  final String errorLocation;
 
   ///Displays an error message with the given [error].
-  ///When tapped on, the [callback] method is called.
+  ///When tapped on, the [onTap] method is called.
   ///If the error isn't 'no internet', the user can decide to report the error.
-  ///Then the 'report a bug' is navigated to with the given [locationOfError] as the location.
+  ///Then the 'report a bug' is navigated to with the given [errorLocation] as the location.
   ErrorMessage(
-      {@required this.error, @required this.callback, this.locationOfError});
+      {@required this.error, @required this.onTap, this.errorLocation});
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -46,7 +46,7 @@ class ErrorMessage extends StatelessWidget {
                                 builder: (context) => ReportABugPage(
                                       error: error,
                                       date: now,
-                                      location: locationOfError,
+                                      location: errorLocation,
                                     )));
                       },
                       child: Text('report_this_error'.tr(),
@@ -65,7 +65,7 @@ class ErrorMessage extends StatelessWidget {
           ),
         ),
         onTap: () {
-          callback();
+          onTap();
         });
   }
 }

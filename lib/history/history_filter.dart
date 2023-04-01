@@ -142,13 +142,13 @@ class _HistoryFilterState extends State<HistoryFilter> {
                 if (!snapshot.hasData) {
                   return ErrorMessage(
                     error: snapshot.error.toString(),
-                    callback: () {
+                    onTap: () {
                       setState(() {
                         _members = null;
                         _members = _getMembers();
                       });
                     },
-                    locationOfError: 'history_filter',
+                    errorLocation: 'history_filter',
                   );
                 }
                 if (_membersChosen == null) {

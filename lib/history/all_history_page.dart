@@ -281,8 +281,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
             } else {
               return ErrorMessage(
                 error: snapshot.error.toString(),
-                locationOfError: 'purchase_history_page',
-                callback: () {
+                errorLocation: 'purchase_history_page',
+                onTap: () {
                   setState(() {
                     _purchases = null;
                     _purchases = _getPurchases();
@@ -310,8 +310,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
             } else {
               return ErrorMessage(
                 error: snapshot.error.toString(),
-                locationOfError: 'payment_history_page',
-                callback: () {
+                errorLocation: 'payment_history_page',
+                onTap: () {
                   setState(() {
                     _payments = null;
                     _payments = _getPayments();

@@ -432,5 +432,15 @@
 
     "trial_ended": "Trial time ended",
     "trial_ended_explanation": "From now on you will see ads and you will only be able to use the simple color themes.",
-    "trial_ended_explanation_2": "If you want to keep using these functions (and support us) you can buy them in the Dodo shop."
+    "trial_ended_explanation_2": "If you want to keep using these functions (and support us) you can buy them in the Dodo shop.",
+
+    "filter_statistics": "Filter statistics",
+    "filter_statistics_explanation": "Filter by date range and category",
+
+    "statistics_and_export": "Statistics and data export",
+    "statistics_and_export_explanation_1": "View the statistics inside the app",
+    "statistics_and_export_explanation_2": "Or download the data as PDF or XLS files.",
+
+    "report_bug": "Report a bug",
+    "report_bug_explanation": "Tell us if you found something not working as intended."
 }

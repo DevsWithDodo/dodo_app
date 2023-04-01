@@ -137,8 +137,8 @@ class _GroupSettingState extends State<GroupSettings> {
                       } else {
                         return ErrorMessage(
                           error: snapshot.error.toString(),
-                          locationOfError: 'is_user_admin',
-                          callback: () {
+                          errorLocation: 'is_user_admin',
+                          onTap: () {
                             setState(() {
                               _isUserAdmin = null;
                               _isUserAdmin = _getIsUserAdmin();

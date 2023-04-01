@@ -13,6 +13,7 @@ import 'personalised_ads.dart';
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
 import 'package:csocsort_szamla/user_settings/delete_all_data.dart';
+import 'report_bug.dart';
 
 class Settings extends StatefulWidget {
   @override
@@ -25,7 +26,7 @@ class _SettingsState extends State<Settings> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -
-        (kIsWeb || Platform.isWindows ? 64 : 0) - //appbar
+        56 - //appbar
         adHeight(); //Height without status bar and appbar
     return Scaffold(
       appBar: AppBar(
@@ -87,6 +88,7 @@ class _SettingsState extends State<Settings> {
       Visibility(visible: showAds, child: PersonalisedAds()),
       AboutUs(),
       DeleteAllData(),
+      ReportBug(),
     ];
   }
 }

@@ -411,7 +411,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               child: Column(
                 children: [
                   Text(
-                    'filter'.tr(),
+                    'filter_statistics'.tr(),
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge
@@ -422,7 +422,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     height: 10,
                   ),
                   Text(
-                    'filter_explanation'.tr(),
+                    'filter_statistics_explanation'.tr(),
                     style: Theme.of(context)
                         .textTheme
                         .titleSmall
@@ -599,8 +599,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                         if (snapshot.hasError) {
                           return ErrorMessage(
                               error: snapshot.error.toString(),
-                              locationOfError: 'statistics',
-                              callback: () {
+                              errorLocation: 'statistics',
+                              onTap: () {
                                 setState(() {
                                   _paymentStats = _getPaymentStats();
                                 });
@@ -705,8 +705,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                         if (snapshot.hasError) {
                           return ErrorMessage(
                               error: snapshot.error.toString(),
-                              locationOfError: 'statistics',
-                              callback: () {
+                              errorLocation: 'statistics',
+                              onTap: () {
                                 setState(() {
                                   _purchaseStats = _getPurchaseStats();
                                 });
@@ -811,8 +811,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                         if (snapshot.hasError) {
                           return ErrorMessage(
                               error: snapshot.error.toString(),
-                              locationOfError: 'statistics',
-                              callback: () {
+                              errorLocation: 'statistics',
+                              onTap: () {
                                 setState(() {
                                   _groupStats = _getGroupStats();
                                 });

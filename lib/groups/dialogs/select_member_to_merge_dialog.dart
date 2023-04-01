@@ -119,12 +119,12 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
                     );
                   }
                   return ErrorMessage(
-                    callback: () {
+                    onTap: () {
                       _allMembers = null;
                       _allMembers = _getAllMembers();
                     },
                     error: snapshot.error,
-                    locationOfError: 'merge_guest',
+                    errorLocation: 'merge_guest',
                   );
                 }
                 return Padding(

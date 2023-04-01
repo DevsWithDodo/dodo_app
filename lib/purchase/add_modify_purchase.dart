@@ -298,8 +298,8 @@ class AddModifyPurchase {
               }
               return ErrorMessage(
                 error: snapshot.error.toString(),
-                locationOfError: 'add_purchase',
-                callback: () {
+                errorLocation: 'add_purchase',
+                onTap: () {
                   _setState(() {
                     members = null;
                     members = getMembers(context);
@@ -362,8 +362,8 @@ class AddModifyPurchase {
               } else {
                 return ErrorMessage(
                   error: snapshot.error.toString(),
-                  locationOfError: 'add_purchase',
-                  callback: () {
+                  errorLocation: 'add_purchase',
+                  onTap: () {
                     _setState(() {
                       members = null;
                       members = getMembers(context);

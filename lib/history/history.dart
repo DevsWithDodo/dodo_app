@@ -103,296 +103,307 @@ class _HistoryState extends State<History> {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(15),
-        child: Column(
-          children: <Widget>[
-            Text(
-              'history'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              'history_explanation'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
+        child: Stack(
+          children: [
+            Column(
               children: <Widget>[
-                Flexible(
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(30),
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      _selectedIndex = 0;
-                      setState(() {});
-                    },
-                    child: Ink(
-                      decoration: BoxDecoration(
+                Text(
+                  'history'.tr(),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'history_explanation'.tr(),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall
+                      .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: <Widget>[
+                    Flexible(
+                      child: InkWell(
                         borderRadius: BorderRadius.circular(30),
-                        gradient: _selectedIndex == 0
-                            ? AppTheme.gradientFromTheme(currentThemeName)
-                            : LinearGradient(colors: [
-                                ElevationOverlay.applyOverlay(
-                                    context, Theme.of(context).colorScheme.surface, 10),
-                                ElevationOverlay.applyOverlay(
-                                    context, Theme.of(context).colorScheme.surface, 10)
-                              ]),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.shopping_cart,
-                              color: _selectedIndex == 0
-                                  ? Theme.of(context).colorScheme.onPrimary
-                                  : Theme.of(context).colorScheme.onSurfaceVariant),
-                          SizedBox(
-                            width: 3,
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          _selectedIndex = 0;
+                          setState(() {});
+                        },
+                        child: Ink(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            gradient: _selectedIndex == 0
+                                ? AppTheme.gradientFromTheme(currentThemeName)
+                                : LinearGradient(colors: [
+                                    ElevationOverlay.applyOverlay(
+                                        context, Theme.of(context).colorScheme.surface, 10),
+                                    ElevationOverlay.applyOverlay(
+                                        context, Theme.of(context).colorScheme.surface, 10)
+                                  ]),
                           ),
-                          Flexible(
-                            child: Text(
-                              'purchases'.tr(),
-                              style: Theme.of(context).textTheme.labelLarge.copyWith(
+                          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.shopping_cart,
                                   color: _selectedIndex == 0
                                       ? Theme.of(context).colorScheme.onPrimary
                                       : Theme.of(context).colorScheme.onSurfaceVariant),
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                              SizedBox(
+                                width: 3,
+                              ),
+                              Flexible(
+                                child: Text(
+                                  'purchases'.tr(),
+                                  style: Theme.of(context).textTheme.labelLarge.copyWith(
+                                      color: _selectedIndex == 0
+                                          ? Theme.of(context).colorScheme.onPrimary
+                                          : Theme.of(context).colorScheme.onSurfaceVariant),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                SizedBox(width: 20),
-                Flexible(
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(30),
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      _selectedIndex = 1;
-                      setState(() {});
-                    },
-                    child: Ink(
-                      decoration: BoxDecoration(
+                    SizedBox(width: 20),
+                    Flexible(
+                      child: InkWell(
                         borderRadius: BorderRadius.circular(30),
-                        gradient: _selectedIndex == 1
-                            ? AppTheme.gradientFromTheme(currentThemeName)
-                            : LinearGradient(colors: [
-                                ElevationOverlay.applyOverlay(
-                                    context, Theme.of(context).colorScheme.surface, 10),
-                                ElevationOverlay.applyOverlay(
-                                    context, Theme.of(context).colorScheme.surface, 10)
-                              ]),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.attach_money,
-                              color: _selectedIndex == 1
-                                  ? Theme.of(context).colorScheme.onPrimary
-                                  : Theme.of(context).colorScheme.onSurfaceVariant),
-                          SizedBox(
-                            width: 3,
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          _selectedIndex = 1;
+                          setState(() {});
+                        },
+                        child: Ink(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            gradient: _selectedIndex == 1
+                                ? AppTheme.gradientFromTheme(currentThemeName)
+                                : LinearGradient(colors: [
+                                    ElevationOverlay.applyOverlay(
+                                        context, Theme.of(context).colorScheme.surface, 10),
+                                    ElevationOverlay.applyOverlay(
+                                        context, Theme.of(context).colorScheme.surface, 10)
+                                  ]),
                           ),
-                          Flexible(
-                            child: Text(
-                              'payments'.tr(),
-                              style: Theme.of(context).textTheme.labelLarge.copyWith(
+                          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.attach_money,
                                   color: _selectedIndex == 1
                                       ? Theme.of(context).colorScheme.onPrimary
                                       : Theme.of(context).colorScheme.onSurfaceVariant),
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                              SizedBox(
+                                width: 3,
+                              ),
+                              Flexible(
+                                child: Text(
+                                  'payments'.tr(),
+                                  style: Theme.of(context).textTheme.labelLarge.copyWith(
+                                      color: _selectedIndex == 1
+                                          ? Theme.of(context).colorScheme.onPrimary
+                                          : Theme.of(context).colorScheme.onSurfaceVariant),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
+                  ],
+                ),
+                AnimatedCrossFade(
+                  crossFadeState:
+                      _selectedIndex == 0 ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                  duration: Duration(milliseconds: 100),
+                  firstChild: FutureBuilder(
+                    future: _purchases,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data.length == 0) {
+                            return Padding(
+                              padding: EdgeInsets.all(25),
+                              child: Text(
+                                'nothing_to_show'.tr(),
+                                style: Theme.of(context).textTheme.bodyText1,
+                                textAlign: TextAlign.center,
+                              ),
+                            );
+                          }
+                          return Column(
+                            children: <Widget>[
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Container(
+                                // height: 490,
+                                child: Column(
+                                  children: _generatePurchases(snapshot.data),
+                                ),
+                              ),
+                              Visibility(
+                                  visible: (snapshot.data as List).length > 5,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(top: 10),
+                                    child: GradientButton(
+                                      useSecondary: true,
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                AllHistoryRoute(startingIndex: _selectedIndex),
+                                          ),
+                                        );
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.more_horiz,
+                                            size: 18,
+                                            color: Theme.of(context).colorScheme.onSecondary,
+                                          ),
+                                          SizedBox(
+                                            width: 8,
+                                          ),
+                                          Text(
+                                            'more'.tr(),
+                                            style: Theme.of(context).textTheme.button.copyWith(
+                                                color: Theme.of(context).colorScheme.onSecondary),
+                                          ),
+                                          SizedBox(
+                                            width: 8,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ))
+                            ],
+                          );
+                        } else {
+                          return ErrorMessage(
+                            error: snapshot.error.toString(),
+                            errorLocation: 'purchase_history',
+                            onTap: () {
+                              setState(() {
+                                _purchases = null;
+                                _purchases = _getPurchases();
+                              });
+                            },
+                          );
+                        }
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.all(80),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    },
+                  ),
+                  secondChild: FutureBuilder(
+                    future: _payments,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data.length == 0) {
+                            return Padding(
+                              padding: EdgeInsets.all(25),
+                              child: Text(
+                                'nothing_to_show'.tr(),
+                                style: Theme.of(context).textTheme.bodyLarge,
+                                textAlign: TextAlign.center,
+                              ),
+                            );
+                          }
+                          return Column(
+                            children: <Widget>[
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Container(
+                                // height: 490,
+                                child: Column(children: _generatePayments(snapshot.data)),
+                              ),
+                              Visibility(
+                                //TODO: merge two buttons
+                                visible: (snapshot.data as List).length > 5,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: GradientButton(
+                                    useSecondary: true,
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => AllHistoryRoute(
+                                            startingIndex: _selectedIndex,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.more_horiz,
+                                          color: Theme.of(context).colorScheme.onSecondary,
+                                        ),
+                                        SizedBox(
+                                          width: 4,
+                                        ),
+                                        Text(
+                                          'more'.tr(),
+                                          style: Theme.of(context).textTheme.labelLarge.copyWith(
+                                              color: Theme.of(context).colorScheme.onSecondary),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          );
+                        } else {
+                          return ErrorMessage(
+                            error: snapshot.error.toString(),
+                            errorLocation: 'payment_history',
+                            onTap: () {
+                              setState(() {
+                                _payments = null;
+                                _payments = _getPayments();
+                              });
+                            },
+                          );
+                        }
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.all(80),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    },
                   ),
                 ),
               ],
             ),
-            AnimatedCrossFade(
-              crossFadeState:
-                  _selectedIndex == 0 ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-              duration: Duration(milliseconds: 100),
-              firstChild: FutureBuilder(
-                future: _purchases,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data.length == 0) {
-                        return Padding(
-                          padding: EdgeInsets.all(25),
-                          child: Text(
-                            'nothing_to_show'.tr(),
-                            style: Theme.of(context).textTheme.bodyText1,
-                            textAlign: TextAlign.center,
-                          ),
-                        );
-                      }
-                      return Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            // height: 490,
-                            child: Column(
-                              children: _generatePurchases(snapshot.data),
-                            ),
-                          ),
-                          Visibility(
-                              visible: (snapshot.data as List).length > 5,
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: GradientButton(
-                                  useSecondary: true,
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            AllHistoryRoute(startingIndex: _selectedIndex),
-                                      ),
-                                    );
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.more_horiz,
-                                        size: 18,
-                                        color: Theme.of(context).colorScheme.onSecondary,
-                                      ),
-                                      SizedBox(
-                                        width: 8,
-                                      ),
-                                      Text(
-                                        'more'.tr(),
-                                        style: Theme.of(context).textTheme.button.copyWith(
-                                            color: Theme.of(context).colorScheme.onSecondary),
-                                      ),
-                                      SizedBox(
-                                        width: 8,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ))
-                        ],
-                      );
-                    } else {
-                      return ErrorMessage(
-                        error: snapshot.error.toString(),
-                        locationOfError: 'purchase_history',
-                        callback: () {
-                          setState(() {
-                            _purchases = null;
-                            _purchases = _getPurchases();
-                          });
-                        },
-                      );
-                    }
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.all(80),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                },
-              ),
-              secondChild: FutureBuilder(
-                future: _payments,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data.length == 0) {
-                        return Padding(
-                          padding: EdgeInsets.all(25),
-                          child: Text(
-                            'nothing_to_show'.tr(),
-                            style: Theme.of(context).textTheme.bodyLarge,
-                            textAlign: TextAlign.center,
-                          ),
-                        );
-                      }
-                      return Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            // height: 490,
-                            child: Column(children: _generatePayments(snapshot.data)),
-                          ),
-                          Visibility(
-                            //TODO: merge two buttons
-                            visible: (snapshot.data as List).length > 5,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: GradientButton(
-                                useSecondary: true,
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AllHistoryRoute(
-                                        startingIndex: _selectedIndex,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.more_horiz,
-                                      color: Theme.of(context).colorScheme.onSecondary,
-                                    ),
-                                    SizedBox(
-                                      width: 4,
-                                    ),
-                                    Text(
-                                      'more'.tr(),
-                                      style: Theme.of(context).textTheme.labelLarge.copyWith(
-                                          color: Theme.of(context).colorScheme.onSecondary),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      );
-                    } else {
-                      return ErrorMessage(
-                        error: snapshot.error.toString(),
-                        locationOfError: 'payment_history',
-                        callback: () {
-                          setState(() {
-                            _payments = null;
-                            _payments = _getPayments();
-                          });
-                        },
-                      );
-                    }
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.all(80),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                },
-              ),
-            ),
+            // Align(
+            //   alignment: Alignment.topRight,
+            //   child: IconButton(
+            //     icon: Icon(Icons.ssid_chart_rounded, size: 30,),
+            //     onPressed: () {},
+            //   ),
+            // )
           ],
         ),
       ),

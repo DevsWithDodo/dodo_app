@@ -244,8 +244,8 @@ class AddModifyPayment {
               }
               return ErrorMessage(
                 error: snapshot.error.toString(),
-                locationOfError: 'add_payment',
-                callback: () {
+                errorLocation: 'add_payment',
+                onTap: () {
                   _setState(() {
                     members = null;
                     members = getMembers(context);
@@ -285,8 +285,8 @@ class AddModifyPayment {
               } else {
                 return ErrorMessage(
                   error: snapshot.error.toString(),
-                  locationOfError: 'add_payment',
-                  callback: () {
+                  errorLocation: 'add_payment',
+                  onTap: () {
                     _setState(() {
                       members = null;
                       members = getMembers(context);

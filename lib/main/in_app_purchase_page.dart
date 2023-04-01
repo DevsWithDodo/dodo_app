@@ -143,10 +143,10 @@ class _InAppPurchasePageState extends State<InAppPurchasePage> {
                             } else {
                               return ErrorMessage(
                                 error: snapshot.error,
-                                callback: () {
+                                onTap: () {
                                   setState(() {});
                                 },
-                                locationOfError: 'in_app_purchase',
+                                errorLocation: 'in_app_purchase',
                               );
                             }
                           }
@@ -160,19 +160,19 @@ class _InAppPurchasePageState extends State<InAppPurchasePage> {
                     } else {
                       return ErrorMessage(
                         error: 'error',
-                        callback: () {
+                        onTap: () {
                           setState(() {});
                         },
-                        locationOfError: 'in_app_purchase',
+                        errorLocation: 'in_app_purchase',
                       );
                     }
                   } else {
                     return ErrorMessage(
                       error: snapshot.error,
-                      callback: () {
+                      onTap: () {
                         setState(() {});
                       },
-                      locationOfError: 'in_app_purchase',
+                      errorLocation: 'in_app_purchase',
                     );
                   }
                 }

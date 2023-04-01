@@ -6,15 +6,18 @@ import 'dart:math';
 import 'package:connectivity_widget/connectivity_widget.dart';
 import 'package:csocsort_szamla/auth/login_or_register_page.dart';
 import 'package:csocsort_szamla/essentials/save_preferences.dart';
+import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/groups/create_group.dart';
+import 'package:csocsort_szamla/groups/dialogs/download_export_dialog.dart';
 import 'package:csocsort_szamla/groups/group_settings_page.dart';
 import 'package:csocsort_szamla/groups/join_group.dart';
 import 'package:csocsort_szamla/history/history.dart';
-import 'package:csocsort_szamla/main/group_settings_speed_dial.dart';
 import 'package:csocsort_szamla/main/in_app_purchase_page.dart';
+import 'package:csocsort_szamla/main/statistics_page.dart';
 import 'package:csocsort_szamla/main/trial_ended_dialog.dart';
 import 'package:csocsort_szamla/shopping/shopping_list.dart';
 import 'package:csocsort_szamla/user_settings/user_settings_page.dart';
+import 'package:csocsort_szamla/main/statistics_export_card.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -39,6 +42,7 @@ class MainPage extends StatefulWidget {
   final int selectedHistoryIndex;
   final int selectedIndex;
   final String scrollTo;
+
   MainPage({this.selectedHistoryIndex = 0, this.selectedIndex = 0, this.scrollTo});
 
   @override
@@ -282,9 +286,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               child: _drawer(),
             )
           : null,
-      floatingActionButton: _selectedIndex == (bigScreen ? 1 : 2)
-          ? GroupSettingsSpeedDial()
-          : Visibility(
+      floatingActionButton: Visibility(
               visible: _selectedIndex == 0,
               child: MainPageSpeedDial(
                 onReturn: this.callback,
@@ -318,7 +320,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     double width = MediaQuery.of(context).size.width - (bigScreen ? 80 : 0);
     double height = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -
-        (kIsWeb || Platform.isWindows ? 56 : 0) - //appbar
+        56 - //appbar
         (bigScreen ? 0 : 56) - //bottomNavbar
         adHeight();
     List<Widget> tabWidgets = _tabWidgets(isOnline, bigScreen, height, width);
@@ -400,6 +402,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               selectedIndex: widget.selectedHistoryIndex,
               callback: callback,
             ),
+            StatisticsDataExport(),
+            SizedBox(height: 70), // So the floating button doesn't block info
           ],
         ),
       ),
@@ -494,8 +498,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                       } else {
                         return ErrorMessage(
                           error: snapshot.error.toString(),
-                          locationOfError: 'home_groups',
-                          callback: () {
+                          errorLocation: 'home_groups',
+                          onTap: () {
                             setState(() {
                               _groups = null;
                               _groups = _getGroups();

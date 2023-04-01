@@ -155,7 +155,7 @@ class _BoostGroupState extends State<BoostGroup> {
             } else {
               return ErrorMessage(
                   error: snapshot.error.toString(),
-                  callback: () {
+                  onTap: () {
                     setState(() {
                       _boostNumber = null;
                       _boostNumber = _getBoostNumber();

@@ -149,7 +149,7 @@ class _BalancesState extends State<Balances> {
                                   SizedBox(
                                     height: 10,
                                   ),
-                                  OutlinedButton(
+                                  TextButton(
                                     onPressed: () {
                                       List<Payment> payments = paymentsNeeded(snapshot.data)
                                           .where((payment) => payment.payerId == currentUserId)
@@ -267,8 +267,8 @@ class _BalancesState extends State<Balances> {
                       } else {
                         return ErrorMessage(
                           error: snapshot.error.toString(),
-                          locationOfError: 'balances',
-                          callback: () {
+                          errorLocation: 'balances',
+                          onTap: () {
                             setState(() {
                               _members = null;
                               _members = _getMembers();
@@ -406,8 +406,8 @@ class _BalancesState extends State<Balances> {
               } else {
                 return ErrorMessage(
                   error: snapshot.error.toString(),
-                  locationOfError: 'invitation',
-                  callback: () {
+                  errorLocation: 'invitation',
+                  onTap: () {
                     setState(() {});
                   },
                 );

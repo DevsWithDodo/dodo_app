@@ -290,8 +290,8 @@ class _InvitationState extends State<Invitation> {
                                 } else {
                                   return ErrorMessage(
                                     error: snapshot.error.toString(),
-                                    locationOfError: 'approve_members',
-                                    callback: () {
+                                    errorLocation: 'approve_members',
+                                    onTap: () {
                                       setState(() {
                                         _unapproved = null;
                                         _unapproved = _getUnapprovedMembers();
@@ -309,8 +309,8 @@ class _InvitationState extends State<Invitation> {
                   } else {
                     return ErrorMessage(
                       error: snapshot.error.toString(),
-                      locationOfError: 'invitation',
-                      callback: () {
+                      errorLocation: 'invitation',
+                      onTap: () {
                         setState(() {
                           _invitation = null;
                           _invitation = _getInvitation();
