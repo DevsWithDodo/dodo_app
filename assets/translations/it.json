@@ -429,7 +429,17 @@
 
     "trial_ended": "Il tempo di prova è terminato",
     "trial_ended_explanation": "D'ora in poi vedrete gli annunci e potrete utilizzare solo i temi a colori semplici",
-    "trial_ended_explanation_2": "Se vuoi continuare a usare queste funzioni (e sostenerci) puoi acquistarle nel negozio Dodo."
+    "trial_ended_explanation_2": "Se vuoi continuare a usare queste funzioni (e sostenerci) puoi acquistarle nel negozio Dodo.",
 
+    "filter_statistics": "Filtrare le statistiche",
+    "filter_statistics_explanation": "Filtra per intervallo di date e categoria",
 
+    "statistics_and_export": "Statistiche ed esportazione dati",
+    "statistics_and_export_explanation_1": "Visualizza le statistiche all'interno dell'app",
+    "statistics_and_export_explanation_2": "Oppure scaricare i dati come file PDF o XLS.",
+
+    "report_bug": "Segnala un bug",
+    "report_bug_explanation": "Segnalaci se hai trovato qualcosa che non funziona come previsto.",
+
+    "bills": "Bollette"
 }

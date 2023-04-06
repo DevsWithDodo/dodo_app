@@ -433,5 +433,17 @@
 
     "trial_ended": "Probezeit zuende",
     "trial_ended_explanation": "Von nun an wirst du in der App Werbung sehen und kannst nur noch die einfachen Farbthemen verwenden.",
-    "trial_ended_explanation_2": "Wenn du diese Funktionen weiter nutzen (und uns unterstützen) möchtest, kannst du sie im Dodo-Shop kaufen."
+    "trial_ended_explanation_2": "Wenn du diese Funktionen weiter nutzen (und uns unterstützen) möchtest, kannst du sie im Dodo-Shop kaufen.",
+
+    "filter_statistics": "Statistik Filter",
+    "filter_statistics_explanation": "Filter nach Datumsbereich und Kategorie",
+
+    "statistics_and_export": "Statistik und Datenexport",
+    "statistics_and_export_explanation_1": "Schaue dir die Statistiken innerhalb der App an",
+    "statistics_and_export_explanation_2": "Oder lade dir die Daten als PDF- oder XLS-Dateien herunter.",
+
+    "report_bug": "Einen Fehler melden",
+    "report_bug_explanation": "Sag uns, wenn du etwas gefunden hast, das nicht so funktioniert wie geplant.",
+
+    "bills": "Rechnungen"
 }

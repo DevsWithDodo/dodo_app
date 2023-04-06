@@ -442,5 +442,7 @@
     "statistics_and_export_explanation_2": "Or download the data as PDF or XLS files.",
 
     "report_bug": "Report a bug",
-    "report_bug_explanation": "Tell us if you found something not working as intended."
+    "report_bug_explanation": "Tell us if you found something not working as intended.",
+
+    "bills": "Bills"
 }

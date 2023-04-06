@@ -432,6 +432,18 @@
     "trial_ended_explanation": "Mostantól látni fogsz az alkalmazásban reklámokat és csak az egyszínű témákat használhatod, emellett a csoport statisztikáit sem láthatod.",
     "trial_ended_explanation_2": "Ha mégis használni szeretnéd ezeket a funkciókat (vagy támogatni szeretnél minket), vedd meg őketa a Dodó boltban.",
 
-    "group_count": "Csoportjaid száma"
+    "filter_statistics": "Stisztikák szűrése",
+    "filter_statistics_explanation": "Szűrd az adatokat dátum és kategória szerint",
+
+    "statistics_and_export": "Statisztika és adatexport",
+    "statistics_and_export_explanation_1": "Nézd meg a statisztikákat az appon belül",
+    "statistics_and_export_explanation_2": "Vagy töltsd le PDF vagy XLS fájlként",
+
+    "report_bug": "Hiba jelentése",
+    "report_bug_explanation": "Szólj, ha valami nem úgy működik, mint ahogy kéne.",
+
+    "bills": "Számlák"
+
+
 
 }

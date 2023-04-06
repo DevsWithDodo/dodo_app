@@ -79,7 +79,8 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
             TextFormField(
                 controller: customAmountController,
                 decoration: InputDecoration(
-                  prefixText: 'chosen_amount'.tr() + ' (${currencies[currency]['symbol']}) ',
+                  helperText: (customAmountController.text.length > 0 ? 'chosen_amount'.tr() + ' (${currencies[currency]['symbol']}) ' : null),
+                  hintText: 'custom_amount'.tr() + ' (${currencies[currency]['symbol']}) ',
                   suffixText: '${(sliderValue / widget.maxMoney * 100).roundToDouble().toStringAsFixed(0)}%',
                 ),
                 style: Theme.of(context)
@@ -96,9 +97,12 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
                     newValue = widget.minValue;
                   }
                   setSliderValue(newValue, setController: false);
+                } else {
+                  setState(() {});
                 }
               },
             ),
+            SizedBox(height: 10,),
             Row(
               children: [
                 TapOrHoldButton(

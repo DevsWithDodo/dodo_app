@@ -181,15 +181,28 @@ class _AddPurchaseRouteState extends State<AddPurchaseRoute> with AddModifyPurch
                                   Visibility(
                                     visible: amountController.text != "" &&
                                         membersMap.containsValue(true),
-                                    child: Center(
-                                      child: Text(
-                                          'per_person'.tr(args: [
-                                            amountForNonCustom()
-                                                .toMoneyString(selectedCurrency, withSymbol: true)
-                                          ]),
-                                          style: Theme.of(context).textTheme.bodySmall.copyWith(
-                                                color: Theme.of(context).colorScheme.tertiary,
-                                              )),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                            'per_person'.tr(args: [
+                                              amountForNonCustom()
+                                                  .toMoneyString(selectedCurrency, withSymbol: true)
+                                            ]),
+                                            style: Theme.of(context).textTheme.bodySmall.copyWith(
+                                                  color: Theme.of(context).colorScheme.tertiary,
+                                                ),
+                                        ),
+                                        ...(customAmountMap.keys.map<Widget>((member) {
+                                            return Text(member.nickname +
+                                                ': ' +
+                                                customAmountMap[member]
+                                                    .toMoneyString(selectedCurrency, withSymbol: true), style: Theme.of(context).textTheme.bodySmall.copyWith(
+                                                  color: Theme.of(context).colorScheme.tertiary,
+                                                ),
+                                            );
+                                          }).toList())
+
+                                      ],
                                     ),
                                   ),
                                   IconButton(
