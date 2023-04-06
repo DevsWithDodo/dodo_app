@@ -199,11 +199,25 @@ class Category {
 
   static List<Category> categories = [
     Category(type: CategoryType.food, icon: Icons.fastfood, text: 'food'),
-    Category(type: CategoryType.groceries, icon: Icons.shopping_basket, text: 'groceries'),
-    Category(type: CategoryType.transport, icon: Icons.train, text: 'transport'),
-    Category(type: CategoryType.entertainment, icon: Icons.movie_filter, text: 'entertainment'),
-    Category(type: CategoryType.shopping, icon: Icons.shopping_bag, text: 'shopping'),
-    Category(type: CategoryType.health, icon: Icons.health_and_safety, text: 'health'),
+    Category(
+        type: CategoryType.groceries,
+        icon: Icons.shopping_basket,
+        text: 'groceries'),
+    Category(
+        type: CategoryType.transport, icon: Icons.train, text: 'transport'),
+    Category(
+        type: CategoryType.entertainment,
+        icon: Icons.movie_filter,
+        text: 'entertainment'),
+    Category(
+        type: CategoryType.shopping,
+        icon: Icons.shopping_bag,
+        text: 'shopping'),
+    Category(
+        type: CategoryType.health,
+        icon: Icons.health_and_safety,
+        text: 'health'),
+    Category(type: CategoryType.bills, icon: Icons.house, text: 'bills'),
     Category(type: CategoryType.other, icon: Icons.more_horiz, text: 'other'),
   ];
 }
