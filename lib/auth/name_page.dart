@@ -101,7 +101,7 @@ class _NamePageState extends State<NamePage> {
                             ],
                           ),
                           Visibility(
-                            visible: widget.isLogin,
+                            visible: false && widget.isLogin,
                             child: Padding(
                               padding: EdgeInsets.only(top: 20),
                               child: Row(
