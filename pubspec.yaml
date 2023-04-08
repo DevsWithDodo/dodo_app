@@ -12,7 +12,7 @@ description: Csocsort
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 
-version: 3.0.5+84
+version: 3.0.6+85
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
