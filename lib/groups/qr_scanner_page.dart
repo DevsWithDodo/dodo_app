@@ -15,6 +15,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
   MobileScannerController _controller = MobileScannerController(
     torchEnabled: false,
     facing: CameraFacing.back,
+    detectionSpeed: DetectionSpeed.noDuplicates,
   );
   @override
   Widget build(BuildContext context) {
@@ -36,13 +37,26 @@ class _QRScannerPageState extends State<QRScannerPage> {
             child: Stack(
               children: [
                 MobileScanner(
-                  allowDuplicates: false,
                   controller: _controller,
-                  onDetect: (barcode, args) {
-                    if (barcode.rawValue == null) {
+                  onDetect: (barcodeCapture) {
+                    print(barcodeCapture.barcodes
+                        .map((e) => e.rawValue)
+                        .toList());
+                    if (barcodeCapture.barcodes.isEmpty ||
+                        barcodeCapture.barcodes
+                            .every((element) => element.rawValue == null)) {
                       debugPrint('Failed to scan Barcode');
                     } else {
-                      final String code = barcode.rawValue;
+                      String code = barcodeCapture.barcodes
+                          .firstWhere(
+                              (element) =>
+                                  element.rawValue.startsWith('dodo://'),
+                              orElse: null)
+                          .rawValue;
+                      if (code == null) {
+                        return;
+                      }
+                      code = code.replaceAll('dodo://', '');
                       debugPrint('code: ' + code);
                       showDialog(
                           context: context,

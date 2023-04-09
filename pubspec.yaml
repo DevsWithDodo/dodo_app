@@ -18,32 +18,32 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
-  firebase_core: ^2.1.0
-  firebase_analytics: ^10.0.2
+  firebase_core: ^2.9.0
+  firebase_analytics: ^10.2.0
   http: ^0.13.5
-  shared_preferences: ^2.0.15
-  intl: 0.17.0
-  fluttertoast: ^8.1.1
-  provider: ^6.0.4
+  shared_preferences: ^2.1.0
+  intl: ^0.17.0
+  fluttertoast: ^8.2.1
+  provider: ^6.0.5
   flutter_speed_dial: ^6.2.0
   easy_localization: ^3.0.1
   uni_links: ^0.5.1
-  share_plus: ^6.0.1
-  firebase_messaging: ^14.0.2
+  share_plus: ^6.3.1
+  firebase_messaging: ^14.4.0
   flutter_local_notifications: ^9.9.1
-  connectivity_widget: ^0.1.8
-  path_provider: ^2.0.11
+  connectivity_widget: ^1.0.0
+  path_provider: ^2.0.14
   get_it: ^7.2.0
   expandable: ^5.0.1
-  url_launcher: ^6.1.6
-  in_app_purchase: ^3.0.8
-  fl_chart: ^0.55.2
+  url_launcher: ^6.1.10
+  in_app_purchase: ^3.1.5
+  fl_chart: ^0.61.0
   rive: ^0.9.1
-  pretty_qr_code: ^2.0.2
+  pretty_qr_code: ^2.0.3
   permission_handler: ^10.2.0
-  google_mobile_ads: ^2.3.0
-  dynamic_color: ^1.5.4
-  mobile_scanner: ^2.0.0
+  google_mobile_ads: ^2.4.0
+  dynamic_color: ^1.6.3
+  mobile_scanner: ^3.2.0
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -51,12 +51,12 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
+  cupertino_icons: ^1.0.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  msix: ^2.8.1
+  msix: ^3.9.2
 
 
 # For information on the generic Dart part of this file, see the

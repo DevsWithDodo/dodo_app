@@ -43,7 +43,8 @@ class MainPage extends StatefulWidget {
   final int selectedIndex;
   final String scrollTo;
 
-  MainPage({this.selectedHistoryIndex = 0, this.selectedIndex = 0, this.scrollTo});
+  MainPage(
+      {this.selectedHistoryIndex = 0, this.selectedIndex = 0, this.scrollTo});
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -66,7 +67,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   Future<List<Group>> _getGroups() async {
-    http.Response response = await httpGet(context: context, uri: generateUri(GetUriKeys.groups));
+    http.Response response =
+        await httpGet(context: context, uri: generateUri(GetUriKeys.groups));
     Map<String, dynamic> decoded = jsonDecode(response.body);
     List<Group> groups = [];
     for (var group in decoded['data']) {
@@ -82,7 +84,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     saveUsersGroupIds();
     //The group ID cannot change, but the group name and currency can change
     if (groups.any((element) => element.groupId == currentGroupId)) {
-      var group = groups.firstWhere((element) => element.groupId == currentGroupId);
+      var group =
+          groups.firstWhere((element) => element.groupId == currentGroupId);
       saveGroupName(group.groupName);
       saveGroupCurrency(group.groupCurrency);
     }
@@ -92,7 +95,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   Future<String> _getCurrentGroup() async {
     http.Response response = await httpGet(
       context: context,
-      uri: generateUri(GetUriKeys.groupCurrent, args: [currentGroupId.toString()]),
+      uri: generateUri(GetUriKeys.groupCurrent,
+          args: [currentGroupId.toString()]),
     );
     Map<String, dynamic> decoded = jsonDecode(response.body);
     saveGroupName(decoded['data']['group_name']);
@@ -101,8 +105,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   Future<dynamic> _getSumBalance() async {
     try {
-      http.Response response =
-          await httpGet(context: context, uri: generateUri(GetUriKeys.userBalanceSum));
+      http.Response response = await httpGet(
+          context: context, uri: generateUri(GetUriKeys.userBalanceSum));
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data'];
     } catch (_) {
@@ -144,14 +148,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
             title: Text(
               group.groupName,
               style: (group.groupName == currentGroupName)
-                  ? Theme.of(context)
-                      .textTheme
-                      .labelLarge
-                      .copyWith(color: Theme.of(context).colorScheme.onSecondaryContainer)
-                  : Theme.of(context)
-                      .textTheme
-                      .labelLarge
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  ? Theme.of(context).textTheme.labelLarge.copyWith(
+                      color: Theme.of(context).colorScheme.onSecondaryContainer)
+                  : Theme.of(context).textTheme.labelLarge.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             onTap: () async {
               saveGroupName(group.groupName);
@@ -172,7 +172,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _selectedIndex = widget.selectedIndex;
-    _tabController = TabController(length: 3, vsync: this, initialIndex: widget.selectedIndex);
+    _tabController = TabController(
+        length: 3, vsync: this, initialIndex: widget.selectedIndex);
     _groups = null;
     _groups = _getGroups();
     scrollTo = widget.scrollTo;
@@ -287,12 +288,12 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
             )
           : null,
       floatingActionButton: Visibility(
-              visible: _selectedIndex == 0,
-              child: MainPageSpeedDial(
-                onReturn: this.callback,
-              ),
-            ),
-      body: kIsWeb || Platform.isWindows
+        visible: _selectedIndex == 0,
+        child: MainPageSpeedDial(
+          onReturn: this.callback,
+        ),
+      ),
+      body: kIsWeb
           ? _body(true, bigScreen)
           : ConnectivityWidget(
               offlineBanner: kIsWeb
@@ -300,11 +301,13 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   : Container(
                       padding: EdgeInsets.all(8),
                       width: double.infinity,
-                      color: Colors.red,
+                      color: Theme.of(context).colorScheme.error,
                       child: Text(
                         'no_connection'.tr(),
                         style: TextStyle(
-                            fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onError,
+                            fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -382,7 +385,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     );
   }
 
-  List<Widget> _tabWidgets(bool isOnline, bool bigScreen, double height, double width) {
+  List<Widget> _tabWidgets(
+      bool isOnline, bool bigScreen, double height, double width) {
     return [
       RefreshIndicator(
         onRefresh: () async {
@@ -424,7 +428,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   Widget _drawer() {
     return Ink(
       decoration: BoxDecoration(
-        color: ElevationOverlay.applyOverlay(context, Theme.of(context).colorScheme.surface, 1),
+        color: ElevationOverlay.applyOverlay(
+            context, Theme.of(context).colorScheme.surface, 1),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -441,7 +446,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                         child: ColorFiltered(
                           colorFilter: ColorFilter.mode(
                               Theme.of(context).colorScheme.primary,
-                              currentThemeName.toLowerCase().contains('dodo') && !kIsWeb
+                              currentThemeName.toLowerCase().contains('dodo') &&
+                                      !kIsWeb
                                   ? BlendMode.dst
                                   : BlendMode.srcIn),
                           child: Image(
@@ -454,14 +460,15 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                         style: Theme.of(context)
                             .textTheme
                             .headlineSmall
-                            .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                            .copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant),
                       ),
                       Text(
                         'hi'.tr() + ' ' + currentUsername + '!',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge
-                            .copyWith(color: Theme.of(context).colorScheme.primary),
+                        style: Theme.of(context).textTheme.bodyLarge.copyWith(
+                            color: Theme.of(context).colorScheme.primary),
                       ),
                     ],
                   ),
@@ -479,7 +486,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                               color: Colors.transparent,
                               margin: EdgeInsets.symmetric(horizontal: 12),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(28)),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(28)),
                               ),
                             ),
                           ),
@@ -487,10 +495,17 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                             clipBehavior: Clip.antiAlias,
                             child: ExpansionTile(
                               title: Text('groups'.tr(),
-                                  style: Theme.of(context).textTheme.labelLarge.copyWith(
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge
+                                      .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant)),
                               leading: Icon(Icons.group,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant),
                               children: _generateListTiles(snapshot.data),
                             ),
                           ),
@@ -525,13 +540,13 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     ),
                     title: Text(
                       'join_group'.tr(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelLarge
-                          .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      style: Theme.of(context).textTheme.labelLarge.copyWith(
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => JoinGroup()));
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => JoinGroup()));
                     },
                   ),
                 ),
@@ -547,10 +562,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     ),
                     title: Text(
                       'create_group'.tr(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelLarge
-                          .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      style: Theme.of(context).textTheme.labelLarge.copyWith(
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     onTap: () {
                       Navigator.push(
@@ -572,11 +586,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 if (snapshot.hasData) {
                   String currency = snapshot.data['currency'];
                   double balance = snapshot.data['balance'] * 1.0;
-                  return Text('Σ: ' + balance.toMoneyString(currency, withSymbol: true),
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          .copyWith(color: Theme.of(context).colorScheme.secondary));
+                  return Text(
+                      'Σ: ' + balance.toMoneyString(currency, withSymbol: true),
+                      style: Theme.of(context).textTheme.bodyMedium.copyWith(
+                          color: Theme.of(context).colorScheme.secondary));
                 }
               }
               return Text(
@@ -598,17 +611,24 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               dense: true,
               onTap: () {
                 if (trialVersion) {
-                  showDialog(builder: (context) => TrialVersionDialog(), context: context);
+                  showDialog(
+                      builder: (context) => TrialVersionDialog(),
+                      context: context);
                 } else if (!isIAPPlatformEnabled) {
-                  showDialog(builder: (context) => IAPPNotSupportedDialog(), context: context);
+                  showDialog(
+                      builder: (context) => IAPPNotSupportedDialog(),
+                      context: context);
                 } else {
                   Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => InAppPurchasePage()));
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => InAppPurchasePage()));
                 }
               },
               leading: ColorFiltered(
                 colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.onSurfaceVariant, BlendMode.srcIn),
+                    Theme.of(context).colorScheme.onSurfaceVariant,
+                    BlendMode.srcIn),
                 child: Image.asset(
                   'assets/dodo.png',
                   width: 25,
@@ -617,24 +637,19 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               subtitle: trialVersion
                   ? Text(
                       'trial_version'.tr().toUpperCase(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelSmall
-                          .copyWith(color: Theme.of(context).colorScheme.secondary),
+                      style: Theme.of(context).textTheme.labelSmall.copyWith(
+                          color: Theme.of(context).colorScheme.secondary),
                     )
                   : Text(
                       'in_app_purchase_description'.tr(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelLarge
-                          .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      style: Theme.of(context).textTheme.labelLarge.copyWith(
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
               title: Text(
                 'in_app_purchase'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.labelLarge.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
           ),
@@ -653,23 +668,23 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 dense: true,
                 title: Text(
                   'rate_app'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  style: Theme.of(context).textTheme.labelLarge.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
                 onTap: () {
                   String url = "";
                   String platform = kIsWeb ? "web" : Platform.operatingSystem;
                   switch (platform) {
                     case "android":
-                      url = "market://details?id=csocsort.hu.machiato32.csocsort_szamla";
+                      url =
+                          "market://details?id=csocsort.hu.machiato32.csocsort_szamla";
                       break;
                     case "windows":
                       url = "ms-windows-store://pdp/?productid=9NVB4CZJDSQ7";
                       break;
                     case "ios":
-                      url = "itms-apps://itunes.apple.com/app/id1558223634?action=write-review";
+                      url =
+                          "itms-apps://itunes.apple.com/app/id1558223634?action=write-review";
                       break;
                     default:
                       url =
@@ -695,13 +710,12 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               ),
               title: Text(
                 'settings'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.labelLarge.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => Settings()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Settings()));
               },
             ),
           ),
@@ -742,15 +756,16 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               dense: true,
               title: Text(
                 'logout'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.labelLarge.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               onTap: () async {
                 _logout();
-                Navigator.pushAndRemoveUntil(context,
-                    MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LoginOrRegisterPage()),
+                    (r) => false);
               },
             ),
           ),
@@ -799,7 +814,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         ),
         label: 'home'.tr(),
       ),
-      NavigationDestination(icon: Icon(Icons.receipt_long), label: 'shopping_list'.tr()),
+      NavigationDestination(
+          icon: Icon(Icons.receipt_long), label: 'shopping_list'.tr()),
       NavigationDestination(
           icon: Stack(
             children: [
