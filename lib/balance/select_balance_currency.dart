@@ -2,11 +2,10 @@ import 'package:csocsort_szamla/essentials/widgets/currency_picker_dropdown.dart
 import 'package:flutter/material.dart';
 
 import '../config.dart';
-import '../essentials/app_theme.dart';
 
 class SelectBalanceCurrency extends StatefulWidget {
-  final String selectedCurrency;
-  final Function(String) onCurrencyChange;
+  final String? selectedCurrency;
+  final Function(String?)? onCurrencyChange;
   const SelectBalanceCurrency({this.selectedCurrency, this.onCurrencyChange});
 
   @override
@@ -14,7 +13,7 @@ class SelectBalanceCurrency extends StatefulWidget {
 }
 
 class _SelectBalanceCurrencyState extends State<SelectBalanceCurrency> {
-  String _selectedCurrency;
+  String? _selectedCurrency;
   @override
   void initState() {
     super.initState();
@@ -36,7 +35,7 @@ class _SelectBalanceCurrencyState extends State<SelectBalanceCurrency> {
           borderRadius: BorderRadius.circular(12),
           onDoubleTap: () {
             _selectedCurrency = currentGroupCurrency;
-            widget.onCurrencyChange(_selectedCurrency);
+            widget.onCurrencyChange!(_selectedCurrency);
           },
           child: Ink(
             decoration: BoxDecoration(
@@ -50,7 +49,7 @@ class _SelectBalanceCurrencyState extends State<SelectBalanceCurrency> {
             child: CurrencyPickerDropdown(
               currencyChanged: (newCurrency) {
                 _selectedCurrency = newCurrency;
-                widget.onCurrencyChange(newCurrency);
+                widget.onCurrencyChange!(newCurrency);
               },
               defaultCurrencyValue: _selectedCurrency,
               filled: false,

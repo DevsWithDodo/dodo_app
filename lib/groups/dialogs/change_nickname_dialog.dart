@@ -9,9 +9,9 @@ import '../../essentials/widgets/future_success_dialog.dart';
 import '../../essentials/widgets/gradient_button.dart';
 
 class ChangeNicknameDialog extends StatefulWidget {
-  final String username;
-  final int memberId;
-  ChangeNicknameDialog({@required this.username, @required this.memberId});
+  final String? username;
+  final int? memberId;
+  ChangeNicknameDialog({required this.username, required this.memberId});
 
   @override
   _ChangeNicknameDialogState createState() => _ChangeNicknameDialogState();
@@ -21,7 +21,7 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
   TextEditingController _nicknameController = TextEditingController();
   var _nicknameFormKey = GlobalKey<FormState>();
 
-  Future<bool> _updateNickname(String nickname, int memberId) async {
+  Future<bool> _updateNickname(String nickname, int? memberId) async {
     try {
       Map<String, dynamic> body = {"member_id": memberId, "nickname": nickname};
       await httpPut(
@@ -53,7 +53,7 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
                 'edit_nickname'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleLarge
+                    .titleLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
@@ -106,7 +106,7 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
   }
 
   void _buttonPushed() {
-    if (_nicknameFormKey.currentState.validate()) {
+    if (_nicknameFormKey.currentState!.validate()) {
       FocusScope.of(context).requestFocus(FocusNode());
       String nickname =
           _nicknameController.text[0].toUpperCase() + _nicknameController.text.substring(1);

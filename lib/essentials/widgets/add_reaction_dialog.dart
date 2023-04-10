@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -12,8 +13,13 @@ class AddReactionDialog extends StatefulWidget {
   final String type;
   final List<Reaction> reactions;
   final int reactToId;
-  final Function(String reaction) callback;
-  AddReactionDialog({this.type, this.reactions, this.reactToId, this.callback});
+  final Function(String reaction) onSend;
+  AddReactionDialog({
+    required this.type,
+    required this.reactions,
+    required this.reactToId,
+    required this.onSend,
+  });
   @override
   _AddReactionDialogState createState() => _AddReactionDialogState();
 }
@@ -21,16 +27,18 @@ class AddReactionDialog extends StatefulWidget {
 class _AddReactionDialogState extends State<AddReactionDialog> {
   void _onSendReaction(String reaction) {
     Navigator.pop(context);
-    widget.callback(reaction);
+    widget.onSend(reaction);
   }
 
   Future<bool> _sendReaction(String reaction) async {
     try {
       Map<String, dynamic> body = {
-        widget.type.substring(0, widget.type.length - 1) + "_id": widget.reactToId,
+        widget.type.substring(0, widget.type.length - 1) + "_id":
+            widget.reactToId,
         "reaction": reaction
       };
-      await httpPost(context: context, uri: '/' + widget.type + '/reaction', body: body);
+      await httpPost(
+          context: context, uri: '/' + widget.type + '/reaction', body: body);
       return true;
     } catch (_) {
       throw _;
@@ -44,8 +52,10 @@ class _AddReactionDialogState extends State<AddReactionDialog> {
         margin: EdgeInsets.fromLTRB(4, 0, 4, 4),
         decoration: BoxDecoration(
           gradient: e.userId == currentUserId
-              ? AppTheme.gradientFromTheme(currentThemeName, useSecondaryContainer: true)
-              : LinearGradient(colors: [Colors.transparent, Colors.transparent]),
+              ? AppTheme.gradientFromTheme(currentThemeName,
+                  useSecondaryContainer: true)
+              : LinearGradient(
+                  colors: [Colors.transparent, Colors.transparent]),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -55,14 +65,14 @@ class _AddReactionDialogState extends State<AddReactionDialog> {
               child: Text(
                 e.nickname,
                 style: e.userId == currentUserId
-                    ? Theme.of(context).textTheme.bodyLarge.copyWith(
-                        color: currentThemeName.contains('Gradient')
+                    ? Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: currentThemeName!.contains('Gradient')
                             ? Theme.of(context).colorScheme.onPrimary
-                            : Theme.of(context).colorScheme.onSecondaryContainer)
-                    : Theme.of(context)
-                        .textTheme
-                        .bodyLarge
-                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                            : Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer)
+                    : Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -83,10 +93,8 @@ class _AddReactionDialogState extends State<AddReactionDialog> {
           children: [
             Text(
               'reactions'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -106,16 +114,17 @@ class _AddReactionDialogState extends State<AddReactionDialog> {
                         padding: EdgeInsets.all(3),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          color: widget.reactions.firstWhere(
-                                      (el) => el.userId == currentUserId && el.reaction == reaction,
-                                      orElse: () => null) !=
+                          color: widget.reactions.firstWhereOrNull((el) =>
+                                      el.userId == currentUserId &&
+                                      el.reaction == reaction) !=
                                   null
                               ? Theme.of(context).colorScheme.secondaryContainer
                               : Colors.transparent,
                         ),
                         child: Container(
                           constraints: BoxConstraints(
-                              maxWidth: min(50, MediaQuery.of(context).size.width / 2 / 6)),
+                              maxWidth: min(50,
+                                  MediaQuery.of(context).size.width / 2 / 6)),
                           child: FittedBox(
                             fit: BoxFit.fitWidth,
                             child: Text(

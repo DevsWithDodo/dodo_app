@@ -47,10 +47,10 @@ class _QRScannerPageState extends State<QRScannerPage> {
                             .every((element) => element.rawValue == null)) {
                       debugPrint('Failed to scan Barcode');
                     } else {
-                      String code = barcodeCapture.barcodes
+                      String? code = barcodeCapture.barcodes
                           .firstWhere(
                               (element) =>
-                                  element.rawValue.startsWith('dodo://'),
+                                  element.rawValue!.startsWith('dodo://'),
                               orElse: null)
                           .rawValue;
                       if (code == null) {
@@ -108,7 +108,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
     );
   }
 
-  Future<bool> _qrRead(String code) async {
+  Future<bool> _qrRead(String? code) async {
     await Future.delayed(Duration(milliseconds: 400));
     Future.delayed(delayTime()).then((value) => _onQRRead(code));
     return Future.value(true);

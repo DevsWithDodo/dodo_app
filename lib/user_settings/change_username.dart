@@ -23,7 +23,7 @@ class _ChangeUsernameState extends State<ChangeUsername> {
               Center(
                 child: Text(
                   'change_username'.tr(),
-                  style: Theme.of(context).textTheme.titleLarge.copyWith(
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                   textAlign: TextAlign.center,
                 ),
@@ -34,7 +34,7 @@ class _ChangeUsernameState extends State<ChangeUsername> {
               Center(
                   child: Text(
                 'change_username_explanation'.tr(),
-                style: Theme.of(context).textTheme.titleSmall.copyWith(
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               )),

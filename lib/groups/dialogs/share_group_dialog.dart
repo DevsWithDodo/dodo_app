@@ -6,8 +6,8 @@ import 'package:share_plus/share_plus.dart';
 import '../../essentials/widgets/gradient_button.dart';
 
 class ShareGroupDialog extends StatefulWidget {
-  final String inviteCode;
-  ShareGroupDialog({@required this.inviteCode});
+  final String? inviteCode;
+  ShareGroupDialog({required this.inviteCode});
 
   @override
   _ShareGroupDialogState createState() => _ShareGroupDialogState();
@@ -25,7 +25,7 @@ class _ShareGroupDialogState extends State<ShareGroupDialog> {
             Center(
               child: Text(
                 'share'.tr(),
-                style: Theme.of(context).textTheme.titleLarge.copyWith(
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
@@ -44,7 +44,7 @@ class _ShareGroupDialogState extends State<ShareGroupDialog> {
             Divider(),
             Text(
               'share_url'.tr(),
-              style: Theme.of(context).textTheme.bodyLarge.copyWith(
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -52,7 +52,7 @@ class _ShareGroupDialogState extends State<ShareGroupDialog> {
             GradientButton(
               onPressed: () {
                 Share.share(
-                  'https://dodoapp.net/join/' + widget.inviteCode,
+                  'https://dodoapp.net/join/' + widget.inviteCode!,
                   subject: 'invitation_to_lender'.tr(),
                 );
               },

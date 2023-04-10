@@ -4,8 +4,9 @@ import '../../config.dart';
 import '../app_theme.dart';
 
 class GradientButton extends StatelessWidget {
-  final Widget child;
-  final Function() onPressed;
+  // TODO: GradientButton.icon()
+  final Widget? child;
+  final Function()? onPressed;
   final bool useSecondary;
   final double borderRadius;
   final bool useTertiary;

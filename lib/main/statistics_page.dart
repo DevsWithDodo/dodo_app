@@ -4,7 +4,6 @@ import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/widgets/category_picker_icon_button.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
-import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -14,25 +13,26 @@ import 'package:csocsort_szamla/essentials/http_handler.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 
 class StatisticsPage extends StatefulWidget {
-  final DateTime groupCreation;
+  final DateTime? groupCreation;
   StatisticsPage({this.groupCreation});
   @override
   _StatisticsPageState createState() => _StatisticsPageState();
 }
 
 class _StatisticsPageState extends State<StatisticsPage> {
-  Future<List<Map<DateTime, double>>> _paymentStats;
-  Future<List<Map<DateTime, double>>> _purchaseStats;
-  Future<List<Map<DateTime, double>>> _groupStats;
+  Future<List<Map<DateTime, double?>>>? _paymentStats;
+  Future<List<Map<DateTime, double?>>>? _purchaseStats;
+  Future<List<Map<DateTime, double?>>>? _groupStats;
 
-  DateTime _startDate = DateTime.now().subtract(Duration(days: 30));
+  DateTime? _startDate = DateTime.now().subtract(Duration(days: 30));
   DateTime _endDate = DateTime.now();
-  Category _category = Category.fromType(null);
+  Category? _category = Category.fromType(null);
 
   @override
   void initState() {
     super.initState();
-    if (widget.groupCreation != null && _startDate.isBefore(widget.groupCreation)) {
+    if (widget.groupCreation != null &&
+        _startDate!.isBefore(widget.groupCreation!)) {
       _startDate = widget.groupCreation;
     }
     _paymentStats = _getPaymentStats();
@@ -40,15 +40,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
     _groupStats = _getGroupStats();
   }
 
-  Future<List<Map<DateTime, double>>> _getPaymentStats() async {
+  Future<List<Map<DateTime, double?>>> _getPaymentStats() async {
     try {
-      String startDate = DateFormat('yyyy-MM-dd').format(_startDate);
+      String startDate = DateFormat('yyyy-MM-dd').format(_startDate!);
       String endDate = DateFormat('yyyy-MM-dd').format(_endDate);
       http.Response response = await httpGet(
           useCache: false,
           overwriteCache: true,
           context: context,
-          uri: generateUri(GetUriKeys.statisticsPayments,
+          uri: generateUri(
+            GetUriKeys.statisticsPayments,
             queryParams: {
               'from_date': startDate,
               'until_date': endDate,
@@ -57,10 +58,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
           ));
       Map<String, dynamic> decoded = jsonDecode(response.body);
 
-      Map<DateTime, double> payed = (decoded['data']['payed'] as Map<String, dynamic>)
-          .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
-      Map<DateTime, double> taken = (decoded['data']['taken'] as Map<String, dynamic>)
-          .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
+      Map<DateTime, double?> payed =
+          (decoded['data']['payed'] as Map<String, dynamic>)
+              .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
+      Map<DateTime, double?> taken =
+          (decoded['data']['taken'] as Map<String, dynamic>)
+              .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
       return [
         payed,
         taken,
@@ -72,11 +75,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
     }
   }
 
-  Future<List<Map<DateTime, double>>> _getPurchaseStats() async {
+  Future<List<Map<DateTime, double?>>> _getPurchaseStats() async {
     try {
-      String startDate = DateFormat('yyyy-MM-dd').format(_startDate);
+      String startDate = DateFormat('yyyy-MM-dd').format(_startDate!);
       String endDate = DateFormat('yyyy-MM-dd').format(_endDate);
-      print(generateUri(GetUriKeys.statisticsPayments,
+      print(generateUri(
+        GetUriKeys.statisticsPayments,
         queryParams: {
           'from_date': startDate,
           'until_date': endDate,
@@ -87,7 +91,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
           useCache: false,
           overwriteCache: true,
           context: context,
-          uri: generateUri(GetUriKeys.statisticsPurchases,
+          uri: generateUri(
+            GetUriKeys.statisticsPurchases,
             queryParams: {
               'from_date': startDate,
               'until_date': endDate,
@@ -97,10 +102,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
       Map<String, dynamic> decoded = jsonDecode(response.body);
       print(response.headers);
 
-      Map<DateTime, double> bought = (decoded['data']['bought'] as Map<String, dynamic>)
-          .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
-      Map<DateTime, double> received = (decoded['data']['received'] as Map<String, dynamic>)
-          .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
+      Map<DateTime, double?> bought =
+          (decoded['data']['bought'] as Map<String, dynamic>)
+              .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
+      Map<DateTime, double?> received =
+          (decoded['data']['received'] as Map<String, dynamic>)
+              .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
       return [
         bought,
         received,
@@ -112,15 +119,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
     }
   }
 
-  Future<List<Map<DateTime, double>>> _getGroupStats() async {
+  Future<List<Map<DateTime, double?>>> _getGroupStats() async {
     try {
-      String startDate = DateFormat('yyyy-MM-dd').format(_startDate);
+      String startDate = DateFormat('yyyy-MM-dd').format(_startDate!);
       String endDate = DateFormat('yyyy-MM-dd').format(_endDate);
       http.Response response = await httpGet(
           useCache: false,
           overwriteCache: true,
           context: context,
-          uri: generateUri(GetUriKeys.statisticsAll,
+          uri: generateUri(
+            GetUriKeys.statisticsAll,
             queryParams: {
               'from_date': startDate,
               'until_date': endDate,
@@ -129,10 +137,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
           ));
       Map<String, dynamic> decoded = jsonDecode(response.body);
 
-      Map<DateTime, double> purchases = (decoded['data']['purchases'] as Map<String, dynamic>)
-          .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
-      Map<DateTime, double> payments = (decoded['data']['payments'] as Map<String, dynamic>)
-          .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
+      Map<DateTime, double?> purchases =
+          (decoded['data']['purchases'] as Map<String, dynamic>)
+              .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
+      Map<DateTime, double?> payments =
+          (decoded['data']['payments'] as Map<String, dynamic>)
+              .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
       return [
         purchases,
         payments,
@@ -144,10 +154,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
     }
   }
 
-  LineChartBarData _generateLineChartBarData(Map<DateTime, double> map, int index) {
+  LineChartBarData _generateLineChartBarData(
+      Map<DateTime, double?> map, int index) {
     return LineChartBarData(
       spots: (map.keys.map<FlSpot>((DateTime key) {
-        return FlSpot(key.millisecondsSinceEpoch.toDouble(), map[key]);
+        return FlSpot(key.millisecondsSinceEpoch.toDouble(), map[key]!);
       }).toList()),
       color: (index == 0)
           ? Theme.of(context).colorScheme.primary
@@ -166,11 +177,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
     );
   }
 
-  LineChartData _generateLineChartData(List<Map<DateTime, double>> maps, List<String> keywords) {
+  LineChartData _generateLineChartData(
+      List<Map<DateTime, double?>> maps, List<String> keywords) {
     int minX = maps[0].keys.toList()[0].millisecondsSinceEpoch;
     int maxX = maps[0].keys.toList()[maps[0].length - 1].millisecondsSinceEpoch;
     double minY = 0;
-    double maxY = max(maps[0].values.reduce(max), maps[1].values.reduce(max));
+    double maxY = max(
+        maps[0].values.reduce((value1, value2) => max(value1!, value2!))!,
+        maps[1].values.reduce((value1, value2) => max(value1!, value2!))!);
     double sideScale = 1;
     if (maxY > 0) {
       sideScale = pow(10, (log(maxY) / log(10)).floor() - 1).toDouble();
@@ -179,7 +193,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
     }
     maxY += sideScale;
     double sideInterval =
-        ((maxY / sideScale).round() + (3 - (maxY / sideScale).round()) % 3).toDouble() *
+        ((maxY / sideScale).round() + (3 - (maxY / sideScale).round()) % 3)
+                .toDouble() *
             sideScale /
             3;
 
@@ -203,7 +218,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
       lineTouchData: LineTouchData(
           enabled: true,
           handleBuiltInTouches: true,
-          getTouchedSpotIndicator: (LineChartBarData barData, List<int> spotIndexes) {
+          getTouchedSpotIndicator:
+              (LineChartBarData barData, List<int> spotIndexes) {
             return spotIndexes.map((index) {
               return TouchedSpotIndicatorData(
                 FlLine(
@@ -218,20 +234,21 @@ class _StatisticsPageState extends State<StatisticsPage> {
           touchTooltipData: LineTouchTooltipData(
             showOnTopOfTheChartBoxArea: true,
             tooltipRoundedRadius: 15,
-            tooltipBgColor:
-                ElevationOverlay.applyOverlay(context, Theme.of(context).colorScheme.surface, 10),
+            tooltipBgColor: ElevationOverlay.applyOverlay(
+                context, Theme.of(context).colorScheme.surface, 10),
             getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
               lineBarsSpot.sort((a, b) => a.barIndex.compareTo(b.barIndex));
               return lineBarsSpot.map((lineBarSpot) {
-                String date = DateFormat('yyyy-MM-dd')
-                    .format(DateTime.fromMillisecondsSinceEpoch(lineBarSpot.x.toInt()));
+                String date = DateFormat('yyyy-MM-dd').format(
+                    DateTime.fromMillisecondsSinceEpoch(lineBarSpot.x.toInt()));
                 return LineTooltipItem(
                   (lineBarSpot.barIndex == 0 ? date + '\n' : '') +
                       (lineBarSpot.barIndex == 0
                           ? keywords[0].tr() + ' '
                           : keywords[1].tr() + ' ') +
-                      lineBarSpot.y.toMoneyString(currentGroupCurrency, withSymbol: true),
-                  Theme.of(context).textTheme.bodySmall.copyWith(
+                      lineBarSpot.y.toMoneyString(currentGroupCurrency,
+                          withSymbol: true),
+                  Theme.of(context).textTheme.bodySmall!.copyWith(
                       height: lineBarSpot.barIndex == 0 ? 1.5 : 1,
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                 );
@@ -239,14 +256,18 @@ class _StatisticsPageState extends State<StatisticsPage> {
             },
           )),
       // backgroundColor: Theme.of(context).cardTheme.color,
-      lineBarsData: [_generateLineChartBarData(maps[0], 0), _generateLineChartBarData(maps[1], 1)],
+      lineBarsData: [
+        _generateLineChartBarData(maps[0], 0),
+        _generateLineChartBarData(maps[1], 1)
+      ],
       titlesData: FlTitlesData(
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
             getTitlesWidget: (value, titleMeta) {
               String text = '';
-              DateTime date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
+              DateTime date =
+                  DateTime.fromMillisecondsSinceEpoch(value.toInt());
               if (bottomDuration.inDays < 65) {
                 if (date.day == 1) {
                   text = DateFormat.d().format(date);
@@ -267,10 +288,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 }
               }
               return Text(text,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant));
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant));
             },
             interval: Duration(days: 1).inMilliseconds.toDouble(),
           ),
@@ -280,7 +299,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
             showTitles: true,
             getTitlesWidget: (value, titleMeta) {
               String text = '';
-              DateTime date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
+              DateTime date =
+                  DateTime.fromMillisecondsSinceEpoch(value.toInt());
               if ((bottomDuration.inDays < 270 && date.day == 1) ||
                   (date.month % 3 == 1 && date.day == 1)) {
                 if (date.month == 1) {
@@ -294,10 +314,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 }
               }
               return Text(text,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant));
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant));
             },
             interval: Duration(days: 1).inMilliseconds.toDouble(),
           ),
@@ -313,10 +331,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 padding: const EdgeInsets.all(0),
                 child: Text(
                   value.toMoneyString(currentGroupCurrency),
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               );
             },
@@ -359,7 +375,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     );
   }
 
-  Widget _sumOf(double amount, int type) {
+  Widget _sumOf(double? amount, int type) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -367,10 +383,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
           children: [
             Text(
               'sum_of'.tr() + ' ',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             Container(
               width: 15,
@@ -388,7 +402,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
           amount.toMoneyString(currentGroupCurrency, withSymbol: true),
           style: Theme.of(context)
               .textTheme
-              .bodyLarge
+              .bodyLarge!
               .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ))
       ],
@@ -412,10 +426,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 children: [
                   Text(
                     'filter_statistics'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
@@ -423,10 +435,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ),
                   Text(
                     'filter_statistics_explanation'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall
-                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
@@ -436,26 +446,26 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        DateFormat.yMMMd().format(_startDate) +
+                        DateFormat.yMMMd().format(_startDate!) +
                             ' - ' +
                             DateFormat.yMMMd().format(_endDate),
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge
-                            .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
                       IconButton(
                         icon: Icon(Icons.date_range,
                             color: Theme.of(context).colorScheme.primary),
                         onPressed: () async {
-                          DateTimeRange range = await showDateRangePicker(
+                          DateTimeRange? range = await showDateRangePicker(
                               context: context,
-                              firstDate: widget.groupCreation,
+                              firstDate: widget.groupCreation!,
                               lastDate: DateTime.now(),
                               currentDate: DateTime.now(),
-                              initialDateRange: DateTimeRange(start: _startDate, end: _endDate),
+                              initialDateRange: DateTimeRange(
+                                  start: _startDate!, end: _endDate),
                               builder: (context, child) {
-                                return child;
+                                return child!;
                               });
                           if (range != null) {
                             _startDate = range.start;
@@ -477,33 +487,35 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     height: 10,
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'category'.tr(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge
-                            .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                      ),
-                      CategoryPickerIconButton(
-                        selectedCategory: _category,
-                        onCategoryChanged: (category) {
-                          if(_category?.type == category?.type){
-                            _category = null;
-                          } else {
-                            _category = category;
-                          }
-                          print('asdasd');
-                          setState(() {
-                            _paymentStats = _getPaymentStats();
-                            _purchaseStats = _getPurchaseStats();
-                            _groupStats = _getGroupStats();
-                          });
-                        },
-                      )
-                    ]
-                  )
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'category'.tr(),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant),
+                        ),
+                        CategoryPickerIconButton(
+                          selectedCategory: _category,
+                          onCategoryChanged: (category) {
+                            if (_category?.type == category?.type) {
+                              _category = null;
+                            } else {
+                              _category = category;
+                            }
+                            print('asdasd');
+                            setState(() {
+                              _paymentStats = _getPaymentStats();
+                              _purchaseStats = _getPurchaseStats();
+                              _groupStats = _getGroupStats();
+                            });
+                          },
+                        )
+                      ])
                 ],
               ),
             ),
@@ -515,10 +527,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 children: [
                   Text(
                     'payments_stats'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
@@ -526,10 +536,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ),
                   Text(
                     'payments_stats_explanation'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall
-                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
@@ -537,15 +545,16 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ),
                   FutureBuilder(
                     future: _paymentStats,
-                    builder: (context, AsyncSnapshot<List<Map<DateTime, double>>> snapshot) {
+                    builder: (context,
+                        AsyncSnapshot<List<Map<DateTime, double?>>> snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (snapshot.hasData) {
                           return Column(
                             children: [
                               AspectRatio(
                                 aspectRatio: 21 / 9,
-                                child: LineChart(
-                                    _generateLineChartData(snapshot.data, ['payed', 'taken'])),
+                                child: LineChart(_generateLineChartData(
+                                    snapshot.data!, ['payed', 'taken'])),
                               ),
                               SizedBox(height: 5),
                               Row(
@@ -555,16 +564,24 @@ class _StatisticsPageState extends State<StatisticsPage> {
                                     width: 20,
                                     height: 20,
                                     decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.primary,
-                                        borderRadius: BorderRadius.circular(15)),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
                                   ),
                                   SizedBox(
                                     width: 10,
                                   ),
                                   Text(
                                     'you_payed'.tr(),
-                                    style: Theme.of(context).textTheme.bodyLarge.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge!
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant),
                                   )
                                 ],
                               ),
@@ -575,24 +592,32 @@ class _StatisticsPageState extends State<StatisticsPage> {
                                     width: 20,
                                     height: 20,
                                     decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.tertiary,
-                                        borderRadius: BorderRadius.circular(15)),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .tertiary,
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
                                   ),
                                   SizedBox(
                                     width: 10,
                                   ),
                                   Text(
                                     'you_took'.tr(),
-                                    style: Theme.of(context).textTheme.bodyLarge.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge!
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant),
                                   )
                                 ],
                               ),
                               SizedBox(
                                 height: 10,
                               ),
-                              _sumOf(snapshot.data[2].values.first, 1),
-                              _sumOf(snapshot.data[3].values.first, 2),
+                              _sumOf(snapshot.data![2].values.first, 1),
+                              _sumOf(snapshot.data![3].values.first, 2),
                             ],
                           );
                         }
@@ -621,10 +646,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 children: [
                   Text(
                     'purchases_stats'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
@@ -632,10 +655,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ),
                   Text(
                     'purchases_stats_explanation'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall
-                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
@@ -643,7 +664,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ),
                   FutureBuilder(
                     future: _purchaseStats,
-                    builder: (context, AsyncSnapshot<List<Map<DateTime, double>>> snapshot) {
+                    builder: (context,
+                        AsyncSnapshot<List<Map<DateTime, double?>>> snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (snapshot.hasData) {
                           return Column(
@@ -651,7 +673,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                               AspectRatio(
                                 aspectRatio: 21 / 9,
                                 child: LineChart(_generateLineChartData(
-                                    snapshot.data, ['stat_bought', 'received'])),
+                                    snapshot.data!,
+                                    ['stat_bought', 'received'])),
                               ),
                               SizedBox(height: 5),
                               Row(
@@ -661,16 +684,24 @@ class _StatisticsPageState extends State<StatisticsPage> {
                                     width: 20,
                                     height: 20,
                                     decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.primary,
-                                        borderRadius: BorderRadius.circular(15)),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
                                   ),
                                   SizedBox(
                                     width: 10,
                                   ),
                                   Text(
                                     'you_bought'.tr(),
-                                    style: Theme.of(context).textTheme.bodyLarge.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge!
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant),
                                   )
                                 ],
                               ),
@@ -681,24 +712,32 @@ class _StatisticsPageState extends State<StatisticsPage> {
                                     width: 20,
                                     height: 20,
                                     decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.tertiary,
-                                        borderRadius: BorderRadius.circular(15)),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .tertiary,
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
                                   ),
                                   SizedBox(
                                     width: 10,
                                   ),
                                   Text(
                                     'you_received'.tr(),
-                                    style: Theme.of(context).textTheme.bodyLarge.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge!
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant),
                                   )
                                 ],
                               ),
                               SizedBox(
                                 height: 10,
                               ),
-                              _sumOf(snapshot.data[2].values.first, 1),
-                              _sumOf(snapshot.data[3].values.first, 2),
+                              _sumOf(snapshot.data![2].values.first, 1),
+                              _sumOf(snapshot.data![3].values.first, 2),
                             ],
                           );
                         }
@@ -727,10 +766,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 children: [
                   Text(
                     'group_stats'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
@@ -738,10 +775,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ),
                   Text(
                     'group_stats_explanation'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall
-                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
@@ -749,7 +784,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ),
                   FutureBuilder(
                     future: _groupStats,
-                    builder: (context, AsyncSnapshot<List<Map<DateTime, double>>> snapshot) {
+                    builder: (context,
+                        AsyncSnapshot<List<Map<DateTime, double?>>> snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (snapshot.hasData) {
                           return Column(
@@ -757,7 +793,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                               AspectRatio(
                                 aspectRatio: 21 / 9,
                                 child: LineChart(_generateLineChartData(
-                                    snapshot.data, ['stats_purchases', 'stats_payments'])),
+                                    snapshot.data!,
+                                    ['stats_purchases', 'stats_payments'])),
                               ),
                               SizedBox(height: 5),
                               Row(
@@ -767,16 +804,24 @@ class _StatisticsPageState extends State<StatisticsPage> {
                                     width: 20,
                                     height: 20,
                                     decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.primary,
-                                        borderRadius: BorderRadius.circular(15)),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
                                   ),
                                   SizedBox(
                                     width: 10,
                                   ),
                                   Text(
                                     'purchases_stats'.tr(),
-                                    style: Theme.of(context).textTheme.bodyLarge.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge!
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant),
                                   )
                                 ],
                               ),
@@ -787,24 +832,32 @@ class _StatisticsPageState extends State<StatisticsPage> {
                                     width: 20,
                                     height: 20,
                                     decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.tertiary,
-                                        borderRadius: BorderRadius.circular(15)),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .tertiary,
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
                                   ),
                                   SizedBox(
                                     width: 10,
                                   ),
                                   Text(
                                     'payments_stats'.tr(),
-                                    style: Theme.of(context).textTheme.bodyLarge.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge!
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant),
                                   )
                                 ],
                               ),
                               SizedBox(
                                 height: 10,
                               ),
-                              _sumOf(snapshot.data[2].values.first, 1),
-                              _sumOf(snapshot.data[3].values.first, 2),
+                              _sumOf(snapshot.data![2].values.first, 1),
+                              _sumOf(snapshot.data![3].values.first, 2),
                             ],
                           );
                         }

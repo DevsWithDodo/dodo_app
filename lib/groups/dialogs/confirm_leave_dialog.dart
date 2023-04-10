@@ -8,7 +8,7 @@ class ConfirmLeaveDialog extends StatefulWidget {
 
   /// Confirms user choice. Has border and title.
   /// Translates the required [title] and [choice] automatically.
-  ConfirmLeaveDialog({@required this.choice, @required this.title});
+  ConfirmLeaveDialog({required this.choice, required this.title});
   @override
   _ConfirmLeaveDialogState createState() => _ConfirmLeaveDialogState();
 }
@@ -27,7 +27,7 @@ class _ConfirmLeaveDialogState extends State<ConfirmLeaveDialog> {
               widget.title.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleLarge
+                  .titleLarge!
                   .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -38,7 +38,7 @@ class _ConfirmLeaveDialogState extends State<ConfirmLeaveDialog> {
               widget.choice.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleSmall
+                  .titleSmall!
                   .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -55,7 +55,7 @@ class _ConfirmLeaveDialogState extends State<ConfirmLeaveDialog> {
                   child: Text('yes'.tr(),
                       style: Theme.of(context)
                           .textTheme
-                          .labelLarge
+                          .labelLarge!
                           .copyWith(color: Theme.of(context).colorScheme.onPrimary)),
                 ),
                 GradientButton(
@@ -65,7 +65,7 @@ class _ConfirmLeaveDialogState extends State<ConfirmLeaveDialog> {
                   child: Text('no'.tr(),
                       style: Theme.of(context)
                           .textTheme
-                          .labelLarge
+                          .labelLarge!
                           .copyWith(color: Theme.of(context).colorScheme.onPrimary)),
                 )
               ],

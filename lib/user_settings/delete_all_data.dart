@@ -53,7 +53,7 @@ class _DeleteAllDataState extends State<DeleteAllData> {
               'delete_all_data'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleLarge
+                  .titleLarge!
                   .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             )),
@@ -65,7 +65,7 @@ class _DeleteAllDataState extends State<DeleteAllData> {
                 'delete_all_data_explanation'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleSmall
+                    .titleSmall!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),

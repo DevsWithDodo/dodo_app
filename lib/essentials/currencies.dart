@@ -1,47 +1,57 @@
 import 'dart:collection';
 
-extension Money on double {
-  String toMoneyString(String code, {withSymbol = false}) {
+extension Money on double? {
+  String toMoneyString(String? code, {withSymbol = false}) {
     if (!withSymbol) {
-      double d = this;
-      if (this > -threshold(code) && this < 0) {
-        d = -this;
+      double? d = this;
+      if (this! > -threshold(code) && this! < 0) {
+        d = -this!;
       }
-      return currencies[code]["subunit"] == 1 ? d.toStringAsFixed(2) : d.toStringAsFixed(0);
+      return currencies[code]!["subunit"] == 1
+          ? d!.toStringAsFixed(2)
+          : d!.toStringAsFixed(0);
     } else {
-      return currencies[code]["before"] == 1
-          ? this < 0
-              ? "-" + currencies[code]["symbol"] + "" + this.abs().toMoneyString(code)
-              : currencies[code]["symbol"] + "" + this.toMoneyString(code)
-          : this.toMoneyString(code) + " " + currencies[code]["symbol"];
+      return currencies[code]!["before"] == 1
+          ? this! < 0
+              ? "-" +
+                  currencies[code]!["symbol"] +
+                  "" +
+                  this!.abs().toMoneyString(code)
+              : currencies[code]!["symbol"] + "" + this.toMoneyString(code)
+          : this.toMoneyString(code) + " " + currencies[code]!["symbol"];
     }
   }
 
-  double exchange(String fromCurrency, String toCurrency) {
+  double? exchange(String? fromCurrency, String? toCurrency) {
     if (fromCurrency == toCurrency) {
       return this;
     }
-    if (currencies[toCurrency]["rate"] == null || currencies[fromCurrency]["rate"] == null) {
+    if (currencies[toCurrency]!["rate"] == null ||
+        currencies[fromCurrency]!["rate"] == null) {
       return this;
     }
-    return this * currencies[toCurrency]["rate"] / currencies[fromCurrency]["rate"];
+    return this! *
+        currencies[toCurrency]!["rate"] /
+        currencies[fromCurrency]!["rate"];
   }
 }
 
-double threshold(String code) {
-  return (currencies[code]['subunit'] == 1 ? 0.01 : 1) / 2;
+double threshold(String? code) {
+  return (currencies[code]!['subunit'] == 1 ? 0.01 : 1) / 2;
 }
 
-bool hasSubunit(String code) {
-  return currencies[code]["subunit"] == 1;
+bool hasSubunit(String? code) {
+  return currencies[code]!["subunit"] == 1;
 }
 
-String getSymbol(String code) {
-  return currencies[code]["symbol"];
+String? getSymbol(String? code) {
+  return currencies[code]!["symbol"];
 }
 
 List<String> enumerateCurrencies() {
-  return currencies.keys.map((key) => key + ";" + currencies[key]["symbol"]).toList();
+  return currencies.keys
+      .map((key) => key + ";" + currencies[key]!["symbol"])
+      .toList();
 }
 
 Map<String, Map<String, dynamic>> currencies =

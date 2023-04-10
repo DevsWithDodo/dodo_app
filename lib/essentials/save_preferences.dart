@@ -6,15 +6,15 @@ Future<SharedPreferences> _getPrefs() async {
   return await SharedPreferences.getInstance();
 }
 
-Future _saveString(String key, String value) async {
+Future _saveString(String key, String? value) async {
   return await _getPrefs().then((prefs) {
-    prefs.setString(key, value);
+    prefs.setString(key, value!);
   });
 }
 
-Future _saveInt(String key, int value) async {
+Future _saveInt(String key, int? value) async {
   return await _getPrefs().then((prefs) {
-    prefs.setInt(key, value);
+    prefs.setInt(key, value!);
   });
 }
 
@@ -30,22 +30,22 @@ Future _delete(String key) async {
   });
 }
 
-void saveApiToken(String newApiToken) {
+void saveApiToken(String? newApiToken) {
   apiToken = newApiToken;
   _saveString('api_token', newApiToken);
 }
 
-void saveUsername(String newUsername) {
+void saveUsername(String? newUsername) {
   currentUsername = newUsername;
   _saveString('current_username', newUsername);
 }
 
-void saveUserId(int newUserId) {
+void saveUserId(int? newUserId) {
   currentUserId = newUserId;
   _saveInt('current_user_id', newUserId);
 }
 
-void saveUserCurrency(String newUserCurrency) {
+void saveUserCurrency(String? newUserCurrency) {
   currentUserCurrency = newUserCurrency;
   _saveString('current_user_currency', newUserCurrency);
 }
@@ -55,17 +55,17 @@ void saveUsesPassword(bool newUsesPassword) {
   _saveBool('uses_password', newUsesPassword);
 }
 
-void saveGroupName(String groupName) {
+void saveGroupName(String? groupName) {
   currentGroupName = groupName;
   _saveString('current_group_name', groupName);
 }
 
-void saveGroupId(int groupId) {
+void saveGroupId(int? groupId) {
   currentGroupId = groupId;
   _saveInt('current_group_id', groupId);
 }
 
-void saveGroupCurrency(String groupCurrency) {
+void saveGroupCurrency(String? groupCurrency) {
   currentGroupCurrency = groupCurrency;
   _saveString('current_group_currency', groupCurrency);
 }
@@ -77,13 +77,14 @@ void saveRatedApp(bool newRatedApp) {
 
 ///If [usersGroupIds] are already saved locally
 void saveUsersGroupIds() {
-  _getPrefs().then((value) => value.setStringList(
-      'users_group_ids', usersGroupIds.map<String>((e) => e.toString()).toList()));
+  _getPrefs().then((value) => value.setStringList('users_group_ids',
+      usersGroupIds!.map<String>((e) => e.toString()).toList()));
 }
 
 ///If [usersGroups] are already saved locally
 void saveUsersGroups() {
-  _getPrefs().then((value) => value.setStringList('users_groups', usersGroups));
+  _getPrefs()
+      .then((value) => value.setStringList('users_groups', usersGroups!));
 }
 
 //-------------------------------------------------------//
@@ -176,8 +177,10 @@ Future loadAllPrefs() async {
     }
     if (preferences.containsKey('users_groups')) {
       usersGroups = preferences.getStringList('users_groups');
-      usersGroupIds =
-          preferences.getStringList('users_group_ids').map((e) => int.parse(e)).toList();
+      usersGroupIds = preferences
+          .getStringList('users_group_ids')!
+          .map((e) => int.parse(e))
+          .toList();
     }
   });
 }

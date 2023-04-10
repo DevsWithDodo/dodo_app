@@ -8,45 +8,46 @@ class CustomChoiceChip extends StatefulWidget {
   final Color notSelectedColor;
   final Color selectedFontColor;
   final Color notSelectedFontColor;
-  final Function(bool) onMemberChosen;
+  final Function(bool) onChipClicked;
   final bool selected;
-  final Function onLongPress;
+  final Function? onLongPress;
   final double fillRatio;
   final bool enabled;
   final bool showCheck;
-  final bool noAnimation;
+  final bool showAnimation;
   CustomChoiceChip({
-    @required this.member,
-    @required this.selected,
-    @required this.selectedColor,
-    @required this.notSelectedColor,
-    @required this.selectedFontColor,
-    @required this.notSelectedFontColor,
-    @required this.onMemberChosen,
-    @required this.fillRatio,
+    required this.member,
+    required this.selected,
+    required this.selectedColor,
+    required this.notSelectedColor,
+    required this.selectedFontColor,
+    required this.notSelectedFontColor,
+    required this.onChipClicked,
+    required this.fillRatio,
     this.onLongPress,
     this.enabled = true,
     this.showCheck = true,
-    this.noAnimation = false,
+    this.showAnimation = true,
   }) {}
 
   @override
   State<CustomChoiceChip> createState() => _CustomChoiceChipState();
 }
 
-class _CustomChoiceChipState extends State<CustomChoiceChip> with SingleTickerProviderStateMixin {
-  Animation<double> ratioAnimation;
-  AnimationController controller;
+class _CustomChoiceChipState extends State<CustomChoiceChip>
+    with SingleTickerProviderStateMixin {
+  late Animation<double> ratioAnimation;
+  late AnimationController controller;
 
   Duration checkAnimationDuration = Duration(milliseconds: 300);
 
   void animateColor(bool forward) {
     if (forward) {
       controller.animateTo(widget.fillRatio,
-          duration: Duration(milliseconds: widget.noAnimation ? 0 : 500));
+          duration: Duration(milliseconds: widget.showAnimation ? 500 : 0));
     } else {
       controller.animateBack(widget.fillRatio,
-          duration: Duration(milliseconds: widget.noAnimation ? 0 : 500));
+          duration: Duration(milliseconds: widget.showAnimation ? 500 : 0));
     }
   }
 
@@ -59,7 +60,8 @@ class _CustomChoiceChipState extends State<CustomChoiceChip> with SingleTickerPr
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
+    controller = AnimationController(
+        duration: const Duration(milliseconds: 500), vsync: this);
     ratioAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(controller)
       ..addListener(() {
         setState(() {
@@ -84,14 +86,17 @@ class _CustomChoiceChipState extends State<CustomChoiceChip> with SingleTickerPr
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
             width: 0.7,
-            color: widget.selected ? Colors.transparent : Theme.of(context).colorScheme.outline),
+            color: widget.selected
+                ? Colors.transparent
+                : Theme.of(context).colorScheme.outline),
         gradient: LinearGradient(
           colors: [widget.selectedColor, widget.notSelectedColor],
           stops: [ratioAnimation.value, ratioAnimation.value],
         ),
       ),
       child: InkWell(
-        splashFactory: widget.enabled ? InkSplash.splashFactory : NoSplash.splashFactory,
+        splashFactory:
+            widget.enabled ? InkSplash.splashFactory : NoSplash.splashFactory,
         borderRadius: BorderRadius.circular(8),
         child: AnimatedPadding(
           duration: checkAnimationDuration,
@@ -114,11 +119,12 @@ class _CustomChoiceChipState extends State<CustomChoiceChip> with SingleTickerPr
                       : Container(),
                 ),
                 duration: checkAnimationDuration,
-                crossFadeState:
-                    widget.selected ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                crossFadeState: widget.selected
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
               ),
-              Text(widget.member.nickname,
-                  style: Theme.of(context).textTheme.labelLarge.copyWith(
+              Text(widget.member.nickname!,
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
                       color: widget.selected
                           ? widget.selectedFontColor
                           : widget.notSelectedFontColor)),
@@ -129,11 +135,11 @@ class _CustomChoiceChipState extends State<CustomChoiceChip> with SingleTickerPr
             ? () {
                 FocusScope.of(context).unfocus();
                 bool selected = !widget.selected;
-                widget.onMemberChosen(selected);
+                widget.onChipClicked(selected);
                 animateColor(selected);
               }
             : null,
-        onLongPress: widget.onLongPress,
+        onLongPress: widget.onLongPress as void Function()?,
       ),
     );
   }

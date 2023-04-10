@@ -21,7 +21,7 @@ class LikeTheAppDialog extends StatelessWidget {
             child: Text('no'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .labelLarge
+                    .labelLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSecondary)),
             onPressed: () => Navigator.pop(context),
           ),
@@ -29,7 +29,7 @@ class LikeTheAppDialog extends StatelessWidget {
             child: Text('yes'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .labelLarge
+                    .labelLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onPrimary)),
             onPressed: () {
               Navigator.pop(context);

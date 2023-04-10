@@ -9,8 +9,8 @@ import '../../essentials/widgets/future_success_dialog.dart';
 import '../../essentials/widgets/gradient_button.dart';
 
 class LoginPinPage extends StatefulWidget {
-  final String inviteUrl;
-  final String username;
+  final String? inviteUrl;
+  final String? username;
   LoginPinPage({this.inviteUrl, this.username});
   @override
   State<LoginPinPage> createState() => _LoginPinPageState();
@@ -18,7 +18,7 @@ class LoginPinPage extends StatefulWidget {
 
 class _LoginPinPageState extends State<LoginPinPage> {
   String _pin = '';
-  String _validationText = null;
+  String? _validationText = null;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,11 +44,12 @@ class _LoginPinPageState extends State<LoginPinPage> {
                       children: [
                         PinPad(
                           pin: _pin,
-                          onPinChanged: (newPin) => setState(() => _pin = newPin),
+                          onPinChanged: (newPin) =>
+                              setState(() => _pin = newPin),
                           validationText: _validationText,
                           onValidationTextChanged: (newText) =>
                               setState(() => _validationText = newText),
-                          useConfirm: false,
+                          showConfirm: false,
                         ),
                       ],
                     ),
@@ -114,7 +115,7 @@ class _LoginPinPageState extends State<LoginPinPage> {
   }
 
   void _pushedButton() {
-    String username = widget.username;
+    String? username = widget.username;
     String pin = _pin;
     saveUsesPassword(false);
     showDialog(
@@ -122,7 +123,8 @@ class _LoginPinPageState extends State<LoginPinPage> {
       context: context,
       builder: (context) {
         return FutureSuccessDialog(
-          future: LoginMethods.login(username, pin, context, widget.inviteUrl, false),
+          future: LoginMethods.login(
+              username, pin, context, widget.inviteUrl, false),
         );
       },
     );

@@ -18,12 +18,12 @@ class StatisticsDataExport extends StatefulWidget {
 }
 
 class _StatisticsDataExportState extends State<StatisticsDataExport> {
-  Future _group;
+  Future<Map<String, dynamic>>? _group;
 
-  Future<dynamic> _getGroup() async {
+  Future<Map<String, dynamic>> _getGroup() async {
     try {
-      http.Response response =
-          await httpGet(context: context, uri: generateUri(GetUriKeys.groupBoost));
+      http.Response response = await httpGet(
+          context: context, uri: generateUri(GetUriKeys.groupBoost));
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data'];
     } catch (_) {
@@ -41,18 +41,14 @@ class _StatisticsDataExportState extends State<StatisticsDataExport> {
                   children: [
                     Text(
                       'statistics_not_available'.tr(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 10),
                     Text('statistics_not_available_explanation'.tr(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall
-                            .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface),
                         textAlign: TextAlign.center),
                     SizedBox(height: 15),
                     Row(
@@ -61,14 +57,17 @@ class _StatisticsDataExportState extends State<StatisticsDataExport> {
                         GradientButton(
                           child: ColorFiltered(
                               colorFilter: ColorFilter.mode(
-                                  Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
+                                  Theme.of(context).colorScheme.onPrimary,
+                                  BlendMode.srcIn),
                               child: Image.asset(
                                 'assets/dodo.png',
                                 width: 25,
                               )),
                           onPressed: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) => InAppPurchasePage()));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => InAppPurchasePage()));
                           },
                         ),
                       ],
@@ -104,37 +103,46 @@ class _StatisticsDataExportState extends State<StatisticsDataExport> {
               'statistics_and_export'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleLarge
+                  .titleLarge!
                   .copyWith(color: Theme.of(context).colorScheme.onSurface),
             ),
             SizedBox(height: 10),
             FutureBuilder(
                 future: _group,
-                builder: (context, snapshot) {
+                builder:
+                    (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasData) {
-                      bool statisticsEnabled = snapshot.data['is_boosted'] == 1 || snapshot.data['trial'] == 1;
-                      DateTime createdAt = DateTime.parse(snapshot.data['created_at'] ?? '2020-01-17').toLocal();
+                      bool statisticsEnabled =
+                          snapshot.data!['is_boosted'] == 1 ||
+                              snapshot.data!['trial'] == 1;
+                      DateTime createdAt = DateTime.parse(
+                              snapshot.data!['created_at'] ?? '2020-01-17')
+                          .toLocal();
                       return Column(
                         children: [
                           Text(
                             'statistics_and_export_explanation_1'.tr(),
                             style: Theme.of(context)
                                 .textTheme
-                                .titleSmall
-                                .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                                .titleSmall!
+                                .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface),
                             textAlign: TextAlign.center,
                           ),
                           SizedBox(height: 10),
                           GradientButton(
-                            child:
-                                Icon(Icons.show_chart, color: Theme.of(context).colorScheme.onPrimary),
+                            child: Icon(Icons.show_chart,
+                                color: Theme.of(context).colorScheme.onPrimary),
                             onPressed: () {
                               if (statisticsEnabled) {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => StatisticsPage(groupCreation: createdAt)));
+                                        builder: (context) => StatisticsPage(
+                                            groupCreation: createdAt)));
                               } else {
                                 showNoStatisticsDialog();
                               }
@@ -145,13 +153,17 @@ class _StatisticsDataExportState extends State<StatisticsDataExport> {
                             'statistics_and_export_explanation_2'.tr(),
                             style: Theme.of(context)
                                 .textTheme
-                                .titleSmall
-                                .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                                .titleSmall!
+                                .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface),
                             textAlign: TextAlign.center,
                           ),
                           SizedBox(height: 10),
                           GradientButton(
-                            child: Icon(Icons.download, color: Theme.of(context).colorScheme.onPrimary),
+                            child: Icon(Icons.download,
+                                color: Theme.of(context).colorScheme.onPrimary),
                             onPressed: () {
                               showDialog(
                                 context: context,

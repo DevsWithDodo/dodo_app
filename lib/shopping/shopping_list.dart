@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/shopping/im_shopping_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -14,31 +15,35 @@ import '../essentials/widgets/error_message.dart';
 import 'shopping_list_entry.dart';
 
 class ShoppingList extends StatefulWidget {
-  final bool bigScreen;
-  final bool isOnline;
+  final bool? bigScreen;
+  final bool? isOnline;
   ShoppingList({this.isOnline, this.bigScreen});
   @override
   _ShoppingListState createState() => _ShoppingListState();
 }
 
 class _ShoppingListState extends State<ShoppingList> {
-  Future<List<ShoppingRequestData>> _shoppingList;
+  Future<List<ShoppingRequest>>? _shoppingList;
 
   TextEditingController _addRequestController = TextEditingController();
 
-  ScrollController _scrollController;
+  ScrollController? _scrollController;
 
   var _formKey = GlobalKey<FormState>();
 
-  Future<List<ShoppingRequestData>> _getShoppingList({bool overwriteCache = false}) async {
+  Future<List<ShoppingRequest>> _getShoppingList(
+      {bool overwriteCache = false}) async {
     try {
       http.Response response = await httpGet(
-          uri: generateUri(GetUriKeys.requests), context: context, overwriteCache: overwriteCache);
+        uri: generateUri(GetUriKeys.requests),
+        context: context,
+        overwriteCache: overwriteCache,
+      );
       Map<String, dynamic> decoded = jsonDecode(response.body);
 
-      List<ShoppingRequestData> shopping = <ShoppingRequestData>[];
+      List<ShoppingRequest> shopping = <ShoppingRequest>[];
       decoded['data'].forEach((element) {
-        shopping.add(ShoppingRequestData.fromJson(element));
+        shopping.add(ShoppingRequest.fromJson(element));
       });
       shopping = shopping.reversed.toList();
       return shopping;
@@ -69,7 +74,8 @@ class _ShoppingListState extends State<ShoppingList> {
 
   Future<bool> _undoDeleteRequest(int id) async {
     try {
-      await httpPost(context: context, uri: '/requests/restore/' + id.toString());
+      await httpPost(
+          context: context, uri: '/requests/restore/' + id.toString());
       Future.delayed(delayTime()).then((value) => _onUndoDeleteRequest());
       return true;
     } catch (_) {
@@ -82,7 +88,7 @@ class _ShoppingListState extends State<ShoppingList> {
     Navigator.pop(context, true);
   }
 
-  void callback({int restoreId}) {
+  void handleDeleteEditShoppingRequest({int? restoreId}) {
     setState(() {
       _shoppingList = null;
       _shoppingList = _getShoppingList(overwriteCache: true);
@@ -90,10 +96,8 @@ class _ShoppingListState extends State<ShoppingList> {
     if (restoreId != null) {
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        // behavior: SnackBarBehavior.floating,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        // padding: EdgeInsets.all(24),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
         duration: Duration(seconds: 3),
         backgroundColor: Theme.of(context).colorScheme.secondary,
         content: Row(
@@ -103,7 +107,7 @@ class _ShoppingListState extends State<ShoppingList> {
               'request_deleted'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .labelLarge
+                  .labelLarge!
                   .copyWith(color: Theme.of(context).colorScheme.onSecondary),
             ),
             InkWell(
@@ -119,7 +123,7 @@ class _ShoppingListState extends State<ShoppingList> {
                         context: context,
                         barrierDismissible: false)
                     .then((value) {
-                  if (value ?? false) callback();
+                  if (value ?? false) handleDeleteEditShoppingRequest();
                 });
               },
               child: Container(
@@ -133,10 +137,8 @@ class _ShoppingListState extends State<ShoppingList> {
                     SizedBox(width: 3),
                     Text(
                       'undo'.tr(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelLarge
-                          .copyWith(color: Theme.of(context).colorScheme.onSecondary),
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                          color: Theme.of(context).colorScheme.onSecondary),
                     ),
                   ],
                 ),
@@ -150,7 +152,7 @@ class _ShoppingListState extends State<ShoppingList> {
 
   void _buttonPush() {
     FocusScope.of(context).unfocus();
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       String name = _addRequestController.text;
       showDialog(
           builder: (context) => FutureSuccessDialog(
@@ -187,7 +189,7 @@ class _ShoppingListState extends State<ShoppingList> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
-        if (widget.isOnline) await deleteCache(uri: '/groups');
+        if (widget.isOnline!) await deleteCache(uri: '/groups');
         setState(() {
           _shoppingList = null;
           _shoppingList = _getShoppingList(overwriteCache: true);
@@ -210,10 +212,11 @@ class _ShoppingListState extends State<ShoppingList> {
                   Expanded(
                     child: FutureBuilder(
                       future: _shoppingList,
-                      builder: (context, snapshot) {
+                      builder: (context,
+                          AsyncSnapshot<List<ShoppingRequest>> snapshot) {
                         if (snapshot.connectionState == ConnectionState.done) {
                           if (snapshot.hasData) {
-                            if (snapshot.data.length == 0) {
+                            if (snapshot.data!.length == 0) {
                               return ListView(
                                 controller: _scrollController,
                                 padding: EdgeInsets.all(15),
@@ -223,7 +226,8 @@ class _ShoppingListState extends State<ShoppingList> {
                                   ),
                                   Text(
                                     'nothing_to_show'.tr(),
-                                    style: Theme.of(context).textTheme.bodyText1,
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
                                     textAlign: TextAlign.center,
                                   ),
                                 ],
@@ -231,11 +235,13 @@ class _ShoppingListState extends State<ShoppingList> {
                             }
                             return ListView(children: [
                               Container(
-                                transform: Matrix4.translationValues(0.0, 0.0, 0.0),
+                                transform:
+                                    Matrix4.translationValues(0.0, 0.0, 0.0),
                                 child: Padding(
                                   padding: EdgeInsets.all(15),
                                   child: Column(
-                                    children: _generateShoppingList(snapshot.data),
+                                    children:
+                                        _generateShoppingList(snapshot.data!),
                                   ),
                                 ),
                               )
@@ -273,8 +279,10 @@ class _ShoppingListState extends State<ShoppingList> {
                           'shopping_list'.tr(),
                           style: Theme.of(context)
                               .textTheme
-                              .titleLarge
-                              .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                              .titleLarge!
+                              .copyWith(
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface),
                         )),
                         SizedBox(
                           height: 20,
@@ -288,7 +296,9 @@ class _ShoppingListState extends State<ShoppingList> {
                             hintText: 'wish'.tr(),
                             prefixIcon: Icon(
                               Icons.shopping_cart,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(Icons.add_shopping_cart,
@@ -297,7 +307,9 @@ class _ShoppingListState extends State<ShoppingList> {
                             ),
                           ),
                           controller: _addRequestController,
-                          inputFormatters: [LengthLimitingTextInputFormatter(255)],
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(255)
+                          ],
                           onFieldSubmitted: (value) => _buttonPush(),
                         ),
                         SizedBox(
@@ -315,7 +327,9 @@ class _ShoppingListState extends State<ShoppingList> {
                   child: IconButton(
                       icon: Icon(Icons.notifications_active),
                       onPressed: () {
-                        showDialog(context: context, builder: (context) => ImShoppingDialog());
+                        showDialog(
+                            context: context,
+                            builder: (context) => ImShoppingDialog());
                       }),
                 ),
               )
@@ -326,19 +340,23 @@ class _ShoppingListState extends State<ShoppingList> {
     );
   }
 
-  List<Widget> _generateShoppingList(List<ShoppingRequestData> data) {
+  List<Widget> _generateShoppingList(List<ShoppingRequest> data) {
     data.sort((requestData1, requestData2) {
-      int e2Length = requestData2.reactions.where((reaction) => reaction.reaction == '❗').length;
-      int e1Length = requestData1.reactions.where((reaction) => reaction.reaction == '❗').length;
+      int e2Length = requestData2.reactions!
+          .where((reaction) => reaction.reaction == '❗')
+          .length;
+      int e1Length = requestData1.reactions!
+          .where((reaction) => reaction.reaction == '❗')
+          .length;
       if (e2Length > e1Length) return 1;
       if (e2Length < e1Length) return -1;
-      if (requestData1.updatedAt.isAfter(requestData2.updatedAt)) return -1;
+      if (requestData1.updatedAt!.isAfter(requestData2.updatedAt!)) return -1;
       return 1;
     });
     return data.map((element) {
       return ShoppingListEntry(
-        data: element,
-        callback: this.callback,
+        shoppingRequest: element,
+        onEditDeleteRequest: this.handleDeleteEditShoppingRequest,
       );
     }).toList();
   }

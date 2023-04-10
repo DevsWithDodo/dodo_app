@@ -13,11 +13,11 @@ import '../essentials/widgets/member_chips.dart';
 import 'package:http/http.dart' as http;
 
 class HistoryFilter extends StatefulWidget {
-  final DateTime startDate;
-  final DateTime endDate;
-  final Category selectedCategory;
-  final int selectedMember;
-  final Function(Member, DateTime, DateTime, Category) onValuesChanged;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final Category? selectedCategory;
+  final int? selectedMember;
+  final void Function(Member, DateTime?, DateTime?, Category?)? onValuesChanged;
   const HistoryFilter({
     this.startDate,
     this.endDate,
@@ -31,16 +31,16 @@ class HistoryFilter extends StatefulWidget {
 }
 
 class _HistoryFilterState extends State<HistoryFilter> {
-  DateTime _startDate;
-  DateTime _endDate;
-  Category _selectedCategory;
-  Future<List<Member>> _members;
-  List<Member> _membersChosen;
+  DateTime? _startDate;
+  DateTime? _endDate;
+  Category? _selectedCategory;
+  Future<List<Member>>? _members;
+  late List<Member>? _membersChosen;
 
   Future<List<Member>> _getMembers() async {
     try {
-      http.Response response =
-          await httpGet(uri: generateUri(GetUriKeys.groupCurrent), context: context);
+      http.Response response = await httpGet(
+          uri: generateUri(GetUriKeys.groupCurrent), context: context);
 
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = [];
@@ -67,7 +67,8 @@ class _HistoryFilterState extends State<HistoryFilter> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _selectedCategory = widget.selectedCategory;
-    _startDate = widget.startDate ?? DateTime.now().subtract(Duration(days: 30));
+    _startDate =
+        widget.startDate ?? DateTime.now().subtract(Duration(days: 30));
     _endDate = widget.endDate ?? DateTime.now();
     print(_membersChosen);
   }
@@ -82,9 +83,15 @@ class _HistoryFilterState extends State<HistoryFilter> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(_startDate == null ? 'no_date_range'.tr() : DateFormat.yMMMd(context.locale.languageCode).format(_startDate) +
-                      ' - ' +
-                      DateFormat.yMMMd(context.locale.languageCode).format(_endDate), style: Theme.of(context).textTheme.bodyLarge,
+              Text(
+                _startDate == null
+                    ? 'no_date_range'.tr()
+                    : DateFormat.yMMMd(context.locale.languageCode)
+                            .format(_startDate!) +
+                        ' - ' +
+                        DateFormat.yMMMd(context.locale.languageCode)
+                            .format(_endDate!),
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
               IconButton(
                 icon: Icon(
@@ -92,16 +99,16 @@ class _HistoryFilterState extends State<HistoryFilter> {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 onPressed: () async {
-                  DateTimeRange range = await showDateRangePicker(
+                  DateTimeRange? range = await showDateRangePicker(
                     context: context,
                     firstDate: DateTime.parse('2020-01-17'),
                     lastDate: DateTime.now(),
                     currentDate: DateTime.now(),
                     initialDateRange: DateTimeRange(
-                      start: _startDate,
-                      end: _endDate,
+                      start: _startDate!,
+                      end: _endDate!,
                     ),
-                    builder: (context, child) => child,
+                    builder: (context, child) => child!,
                   );
                   if (range != null) {
                     setState(() {
@@ -117,12 +124,13 @@ class _HistoryFilterState extends State<HistoryFilter> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('category'.tr(), style: Theme.of(context).textTheme.bodyLarge),
+              Text('category'.tr(),
+                  style: Theme.of(context).textTheme.bodyLarge),
               CategoryPickerIconButton(
                 selectedCategory: _selectedCategory,
                 onCategoryChanged: (newCategory) {
                   setState(() {
-                    if(_selectedCategory?.type == newCategory?.type) {
+                    if (_selectedCategory?.type == newCategory?.type) {
                       _selectedCategory = null;
                     } else {
                       _selectedCategory = newCategory;
@@ -154,38 +162,42 @@ class _HistoryFilterState extends State<HistoryFilter> {
                 if (_membersChosen == null) {
                   _membersChosen = [];
                   if (widget.selectedMember != null) {
-                    _membersChosen.add(snapshot.data
-                        .firstWhere((element) => element.memberId == widget.selectedMember));
+                    _membersChosen!.add(snapshot.data!.firstWhere((element) =>
+                        element.memberId == widget.selectedMember));
                   }
-                  if (_membersChosen.isEmpty) {
+                  if (_membersChosen!.isEmpty) {
                     _membersChosen = [
-                      snapshot.data.firstWhere((element) => element.memberId == currentUserId)
+                      snapshot.data!.firstWhere(
+                          (element) => element.memberId == currentUserId)
                     ];
                   }
                 }
                 return MemberChips(
-                  allMembers: snapshot.data,
-                  membersChosen: _membersChosen,
-                  membersChanged: (newMembersChosen) {
+                  allMembers: snapshot.data!,
+                  chosenMembers: _membersChosen!,
+                  chosenMembersChanged: (newMembersChosen) {
                     setState(() {
                       if (newMembersChosen.isEmpty) {
                         _membersChosen = [
-                          snapshot.data.firstWhere((element) => element.memberId == currentUserId)
+                          snapshot.data!.firstWhere(
+                              (element) => element.memberId == currentUserId)
                         ];
                       } else {
                         _membersChosen = newMembersChosen;
                       }
                     });
                   },
-                  allowMultiple: false,
-                  noAnimation: true,
+                  allowMultipleSelected: false,
+                  showAnimation: false,
                 );
               }),
           SizedBox(height: 15),
           GradientButton(
             useSecondary: true,
-            child: Icon(Icons.check, color: Theme.of(context).colorScheme.onSecondary),
-            onPressed: () => widget.onValuesChanged(_membersChosen.first, _startDate, _endDate, _selectedCategory),
+            child: Icon(Icons.check,
+                color: Theme.of(context).colorScheme.onSecondary),
+            onPressed: () => widget.onValuesChanged!(
+                _membersChosen!.first, _startDate, _endDate, _selectedCategory),
           ),
           SizedBox(height: 10),
           Divider(),

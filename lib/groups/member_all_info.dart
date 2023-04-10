@@ -19,10 +19,10 @@ import 'join_group.dart';
 import 'main_group_page.dart';
 
 class MemberAllInfo extends StatefulWidget {
-  final Member member;
-  final bool isCurrentUserAdmin;
+  final Member? member;
+  final bool? isCurrentUserAdmin;
 
-  MemberAllInfo({@required this.member, @required this.isCurrentUserAdmin});
+  MemberAllInfo({required this.member, required this.isCurrentUserAdmin});
 
   @override
   _MemberAllInfoState createState() => _MemberAllInfoState();
@@ -31,7 +31,7 @@ class MemberAllInfo extends StatefulWidget {
 class _MemberAllInfoState extends State<MemberAllInfo> {
   FocusNode _nicknameFocus = FocusNode();
 
-  Future<bool> _changeAdmin(int memberId, bool isAdmin) async {
+  Future<bool> _changeAdmin(int? memberId, bool isAdmin) async {
     try {
       Map<String, dynamic> body = {"member_id": memberId, "admin": isAdmin};
 
@@ -71,10 +71,10 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
               Icon(Icons.account_circle, color: Theme.of(context).colorScheme.secondary),
               Flexible(
                   child: Text(
-                ' - ' + widget.member.username,
+                ' - ' + widget.member!.username!,
                 style: Theme.of(context)
                     .textTheme
-                    .bodyLarge
+                    .bodyLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               )),
             ],
@@ -87,16 +87,16 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
               Icon(Icons.account_box, color: Theme.of(context).colorScheme.secondary),
               Flexible(
                   child: Text(
-                ' - ' + widget.member.nickname,
+                ' - ' + widget.member!.nickname!,
                 style: Theme.of(context)
                     .textTheme
-                    .bodyLarge
+                    .bodyLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               )),
             ],
           ),
           Visibility(
-            visible: widget.member.isAdmin && !widget.isCurrentUserAdmin,
+            visible: widget.member!.isAdmin! && !widget.isCurrentUserAdmin!,
             child: Center(
               child: Padding(
                 padding: const EdgeInsets.only(top: 5),
@@ -104,14 +104,14 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                   'Admin',
                   style: Theme.of(context)
                       .textTheme
-                      .bodyLarge
+                      .bodyLarge!
                       .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ),
             ),
           ),
           Visibility(
-            visible: widget.isCurrentUserAdmin && !widget.member.isGuest,
+            visible: widget.isCurrentUserAdmin! && !widget.member!.isGuest!,
             child: Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Row(
@@ -121,16 +121,16 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                     'Admin',
                     style: Theme.of(context)
                         .textTheme
-                        .bodyLarge
+                        .bodyLarge!
                         .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                   Switch(
-                    value: widget.member.isAdmin,
+                    value: widget.member!.isAdmin!,
                     activeColor: Theme.of(context).colorScheme.secondary,
                     onChanged: (value) {
                       showDialog(
                           builder: (context) => FutureSuccessDialog(
-                                future: _changeAdmin(widget.member.memberId, value),
+                                future: _changeAdmin(widget.member!.memberId, value),
                                 dataTrueText: 'admin_scf',
                                 onDataTrue: () {
                                   _onChangeAdmin();
@@ -145,7 +145,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
             ),
           ),
           Visibility(
-            visible: widget.isCurrentUserAdmin || widget.member.memberId == currentUserId,
+            visible: widget.isCurrentUserAdmin! || widget.member!.memberId == currentUserId,
             child: Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Center(
@@ -153,8 +153,8 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                   onPressed: () {
                     showDialog(
                             builder: (context) => ChangeNicknameDialog(
-                                  username: widget.member.username,
-                                  memberId: widget.member.memberId,
+                                  username: widget.member!.username,
+                                  memberId: widget.member!.memberId,
                                 ),
                             context: context)
                         .then((value) {
@@ -175,7 +175,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                         'edit_nickname'.tr(),
                         style: Theme.of(context)
                             .textTheme
-                            .labelLarge
+                            .labelLarge!
                             .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ],
@@ -185,7 +185,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
             ),
           ),
           Visibility(
-            visible: widget.isCurrentUserAdmin && widget.member.memberId != currentUserId,
+            visible: widget.isCurrentUserAdmin! && widget.member!.memberId != currentUserId,
             child: Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Center(
@@ -201,7 +201,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                       if (value != null && value) {
                         showDialog(
                             builder: (context) => FutureSuccessDialog(
-                                  future: _removeMember(widget.member.memberId),
+                                  future: _removeMember(widget.member!.memberId),
                                   dataTrueText: 'kick_member_scf',
                                   onDataTrue: () {
                                     _onRemoveMember();
@@ -225,7 +225,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                         'kick_member'.tr(),
                         style: Theme.of(context)
                             .textTheme
-                            .labelLarge
+                            .labelLarge!
                             .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ],
@@ -235,7 +235,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
             ),
           ),
           Visibility(
-            visible: widget.member.isGuest && widget.isCurrentUserAdmin,
+            visible: widget.member!.isGuest! && widget.isCurrentUserAdmin!,
             child: Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Center(
@@ -247,7 +247,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                         'merge_guest'.tr(),
                         style: Theme.of(context)
                             .textTheme
-                            .labelLarge
+                            .labelLarge!
                             .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ],
@@ -256,7 +256,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                     showDialog(
                       context: context,
                       builder: (context) => MergeGuestDialog(
-                        guestId: widget.member.memberId,
+                        guestId: widget.member!.memberId,
                       ),
                     );
                   },
@@ -265,15 +265,15 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
             ),
           ),
           Visibility(
-            visible: widget.member.memberId == currentUserId,
+            visible: widget.member!.memberId == currentUserId,
             child: Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Center(
                 child: GradientButton(
                   onPressed: () {
                     double currencyThreshold =
-                        (currencies[currentGroupCurrency]['subunit'] == 1 ? 0.01 : 1) / 2;
-                    if (widget.member.balance <= -currencyThreshold) {
+                        (currencies[currentGroupCurrency]!['subunit'] == 1 ? 0.01 : 1) / 2;
+                    if (widget.member!.balance! <= -currencyThreshold) {
                       FToast ft = FToast();
                       ft.init(context);
                       ft.showToast(
@@ -317,7 +317,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                         'leave_group'.tr(),
                         style: Theme.of(context)
                             .textTheme
-                            .labelLarge
+                            .labelLarge!
                             .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                       ),
                     ],
@@ -331,10 +331,10 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
     );
   }
 
-  Future<bool> _removeMember(int memberId) async {
+  Future<bool> _removeMember(int? memberId) async {
     Map<String, dynamic> body = {
       "member_id": memberId ?? currentUserId,
-      "threshold": (currencies[currentGroupCurrency]['subunit'] == 1 ? 0.01 : 1) / 2
+      "threshold": (currencies[currentGroupCurrency]!['subunit'] == 1 ? 0.01 : 1) / 2
     };
 
     http.Response response = await httpPost(
@@ -374,8 +374,8 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
       Navigator.pushAndRemoveUntil(
           context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
     } else {
-      usersGroupIds.remove(currentGroupId);
-      usersGroups.remove(currentGroupName);
+      usersGroupIds!.remove(currentGroupId);
+      usersGroups!.remove(currentGroupName);
       saveUsersGroupIds();
       saveUsersGroups();
       Navigator.pushAndRemoveUntil(

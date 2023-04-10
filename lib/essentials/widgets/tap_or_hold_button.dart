@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 /// decreasing time interval.
 class TapOrHoldButton extends StatefulWidget {
   /// Update callback
-  final VoidCallback onUpdate;
+  final VoidCallback? onUpdate;
 
   /// Minimum delay between update events when holding the button
   final int minDelay;
@@ -18,7 +18,7 @@ class TapOrHoldButton extends StatefulWidget {
   final int delaySteps;
 
   /// Icon on the button
-  final IconData icon;
+  final IconData? icon;
 
   const TapOrHoldButton(
       {this.onUpdate, this.minDelay = 1, this.initialDelay = 300, this.delaySteps = 15, this.icon})
@@ -67,7 +67,7 @@ class _TapOrHoldButtonState extends State<TapOrHoldButton> {
   void _startHolding() async {
     // Make sure this isn't called more than once for
     // whatever reason.
-    widget.onUpdate();
+    widget.onUpdate!();
     _tapDownCount += 1;
     final int myCount = _tapDownCount;
     if (_holding) return;
@@ -80,7 +80,7 @@ class _TapOrHoldButtonState extends State<TapOrHoldButton> {
     while (true) {
       await Future.delayed(Duration(milliseconds: delay.round()));
       if (_holding && myCount == _tapDownCount) {
-        widget.onUpdate();
+        widget.onUpdate!();
       } else {
         return;
       }

@@ -9,19 +9,18 @@ import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/http_handler.dart';
 
-import '../../essentials/widgets/error_message.dart';
-
 class ForgotPasswordPage extends StatefulWidget {
   final String username;
-  ForgotPasswordPage({@required this.username});
+  ForgotPasswordPage({required this.username});
   @override
   _ForgotPasswordPageState createState() => _ForgotPasswordPageState();
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  Future<String> _getPasswordReminder(String username) async {
+  Future<String?> _getPasswordReminder(String username) async {
     http.Response response = await httpGet(
-        context: context, uri: generateUri(GetUriKeys.passwordReminder, args: [username]));
+        context: context,
+        uri: generateUri(GetUriKeys.passwordReminder, args: [username]));
     Map<String, dynamic> decoded = jsonDecode(response.body);
     print(decoded);
     return decoded['data'];
@@ -44,10 +43,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         children: [
           Text(
             'need_answer_questions'.tr(),
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge
-                .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
           SizedBox(height: 20),
           TextFormField(
@@ -61,7 +58,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             onChanged: (value) => setState(() {}),
             decoration: InputDecoration(
               hintText: 'group_count'.tr(),
-              helperText: groupCountController.text != '' ? 'group_count'.tr() : null,
+              helperText:
+                  groupCountController.text != '' ? 'group_count'.tr() : null,
               filled: true,
               prefixIcon: Icon(Icons.question_answer),
               suffixIcon: IconButton(
@@ -79,7 +77,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextButton(
-                      onPressed: () => setState(() => submittedGroupCount = false),
+                      onPressed: () =>
+                          setState(() => submittedGroupCount = false),
                       child: Text('reset'.tr()),
                     ),
                   ],
@@ -107,7 +106,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           'group_num'.tr(args: [(i + 1).toString()]),
           style: Theme.of(context)
               .textTheme
-              .bodyLarge
+              .bodyLarge!
               .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         SizedBox(height: 10),
@@ -118,7 +117,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
             hintText: 'group_name'.tr(),
-            helperText: groupCountController.text != '' ? 'group_name'.tr() : null,
+            helperText:
+                groupCountController.text != '' ? 'group_name'.tr() : null,
             prefixIcon: Icon(Icons.question_answer),
             suffixIcon: IconButton(
               icon: Icon(Icons.send),
@@ -134,7 +134,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
             hintText: 'nickname'.tr(),
-            helperText: groupCountController.text != '' ? 'nickname'.tr() : null,
+            helperText:
+                groupCountController.text != '' ? 'nickname'.tr() : null,
             prefixIcon: Icon(Icons.question_answer),
             suffixIcon: IconButton(
               icon: Icon(Icons.send),
@@ -166,7 +167,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
             hintText: 'last_transaction_amount'.tr(),
-            helperText: groupCountController.text != '' ? 'last_transaction_amount'.tr() : null,
+            helperText: groupCountController.text != ''
+                ? 'last_transaction_amount'.tr()
+                : null,
             prefixIcon: Icon(Icons.question_answer),
             suffixIcon: IconButton(
               icon: Icon(Icons.send),
@@ -182,7 +185,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
             hintText: 'last_transaction_date'.tr(),
-            helperText: groupCountController.text != '' ? 'last_transaction_date'.tr() : null,
+            helperText: groupCountController.text != ''
+                ? 'last_transaction_date'.tr()
+                : null,
             prefixIcon: Icon(Icons.question_answer),
             suffixIcon: IconButton(
               icon: Icon(Icons.send),

@@ -25,7 +25,7 @@ class RateAppDialog extends StatelessWidget {
             'to_store'.tr(),
             style: Theme.of(context)
                 .textTheme
-                .labelLarge
+                .labelLarge!
                 .copyWith(color: Theme.of(context).colorScheme.onPrimary),
           ),
           onPressed: () {

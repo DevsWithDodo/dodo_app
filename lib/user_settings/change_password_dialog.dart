@@ -50,13 +50,13 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       TextFormField(
         validator: (value) => validateTextField([isEmpty(value)]),
         decoration: InputDecoration(
-          hintText: (usesPassword ? 'old_password' : 'old_pin').tr(),
+          hintText: (usesPassword! ? 'old_password' : 'old_pin').tr(),
           prefixIcon: Icon(
             Icons.password,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
-        keyboardType: usesPassword ? null : TextInputType.number,
+        keyboardType: usesPassword! ? null : TextInputType.number,
         inputFormatters: [
           FilteringTextInputFormatter.allow(RegExp('[A-Za-z0-9]')),
         ],
@@ -69,13 +69,13 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           minimalLength(value, 4),
         ]),
         decoration: InputDecoration(
-          hintText: (usesPassword ? 'new_password' : 'new_pin').tr(),
+          hintText: (usesPassword! ? 'new_password' : 'new_pin').tr(),
           prefixIcon: Icon(
             Icons.password,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
-        keyboardType: usesPassword ? null : TextInputType.number,
+        keyboardType: usesPassword! ? null : TextInputType.number,
         inputFormatters: [
           FilteringTextInputFormatter.allow(RegExp('[A-Za-z0-9]')),
         ],
@@ -89,12 +89,12 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           minimalLength(value, 4),
         ]),
         decoration: InputDecoration(
-          hintText: (usesPassword ? 'new_password_confirm' : 'new_pin_confirm').tr(),
+          hintText: (usesPassword! ? 'new_password_confirm' : 'new_pin_confirm').tr(),
           prefixIcon: Icon(
             Icons.password,
           ),
         ),
-        keyboardType: usesPassword ? null : TextInputType.number,
+        keyboardType: usesPassword! ? null : TextInputType.number,
         inputFormatters: [
           FilteringTextInputFormatter.allow(RegExp('[A-Za-z0-9]')),
         ],
@@ -133,10 +133,10 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
-                (usesPassword ? 'change_password' : 'change_pin').tr(),
+                (usesPassword! ? 'change_password' : 'change_pin').tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleLarge
+                    .titleLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
@@ -169,9 +169,9 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                   ),
                   GradientButton(
                     onPressed: () {
-                      if (_formKey.currentState.validate()) {
+                      if (_formKey.currentState!.validate()) {
                         FocusScope.of(context).unfocus();
-                        if (_index < (usesPassword ? 3 : 2)) {
+                        if (_index < (usesPassword! ? 3 : 2)) {
                           setState(() {
                             _index++;
                           });
@@ -183,7 +183,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                                         _newPasswordController.text,
                                         _passwordReminderController.text),
                                     dataTrueText:
-                                        usesPassword ? 'change_password_scf' : 'change_pin_scf',
+                                        usesPassword! ? 'change_password_scf' : 'change_pin_scf',
                                     onDataTrue: () {
                                       _onUpdatePassword();
                                     },

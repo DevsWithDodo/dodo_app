@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import '../currencies.dart';
 
 class CurrencyPickerIconButton extends StatefulWidget {
-  final String selectedCurrency;
-  final Function(String) onCurrencyChanged;
+  final String? selectedCurrency;
+  final Function(String?)? onCurrencyChanged;
 
   const CurrencyPickerIconButton({this.selectedCurrency, this.onCurrencyChanged});
 
@@ -33,15 +33,15 @@ class _CurrencyPickerIconButtonState extends State<CurrencyPickerIconButton> {
                   ),
                 ),
               );
-            }).then((newCurrency) => widget.onCurrencyChanged(newCurrency));
+            }).then((newCurrency) => widget.onCurrencyChanged!(newCurrency));
       },
       icon: Container(
         constraints: BoxConstraints(maxWidth: 15),
         child: FittedBox(
           fit: BoxFit.fitWidth,
           child: Text(
-            getSymbol(widget.selectedCurrency),
-            style: Theme.of(context).textTheme.labelLarge.copyWith(
+            getSymbol(widget.selectedCurrency)!,
+            style: Theme.of(context).textTheme.labelLarge!.copyWith(
                 color: widget.selectedCurrency == currentGroupCurrency
                     ? Theme.of(context).colorScheme.primary
                     : Theme.of(context).colorScheme.tertiary,

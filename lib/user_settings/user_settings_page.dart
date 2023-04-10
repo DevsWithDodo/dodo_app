@@ -1,7 +1,5 @@
-import 'dart:io' show Platform;
 import 'package:csocsort_szamla/user_settings/change_user_currency.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'about_us.dart';
@@ -50,7 +48,10 @@ class _SettingsState extends State<Settings> {
                   )
                 : Expanded(
                     child: Table(
-                      columnWidths: {0: FractionColumnWidth(0.5), 1: FractionColumnWidth(0.5)},
+                      columnWidths: {
+                        0: FractionColumnWidth(0.5),
+                        1: FractionColumnWidth(0.5)
+                      },
                       children: [
                         TableRow(children: [
                           AspectRatio(
@@ -64,7 +65,12 @@ class _SettingsState extends State<Settings> {
                             aspectRatio: width / 2 / height,
                             child: ListView(
                               controller: ScrollController(),
-                              children: _settings().reversed.take(6).toList().reversed.toList(),
+                              children: _settings()
+                                  .reversed
+                                  .take(6)
+                                  .toList()
+                                  .reversed
+                                  .toList(),
                             ),
                           )
                         ])

@@ -1,4 +1,3 @@
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
@@ -9,26 +8,26 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../shopping/shopping_list_entry.dart';
 
 class AddPurchaseRoute extends StatefulWidget {
   final PurchaseType type;
-  final ShoppingRequestData shoppingData;
+  final ShoppingRequest? shoppingData;
 
-  AddPurchaseRoute({@required this.type, this.shoppingData});
+  AddPurchaseRoute({required this.type, this.shoppingData});
 
   @override
   _AddPurchaseRouteState createState() => _AddPurchaseRouteState();
 }
 
-class _AddPurchaseRouteState extends State<AddPurchaseRoute> with AddModifyPurchase {
+class _AddPurchaseRouteState extends State<AddPurchaseRoute>
+    with AddModifyPurchase {
   _AddPurchaseRouteState() : super();
 
   var _formKey = GlobalKey<FormState>();
   ExpandableController _expandableController = ExpandableController();
 
-  Future<bool> _postPurchase(
-      List<Member> members, double amount, String name, BuildContext context) async {
+  Future<bool> _postPurchase(List<Member> members, double amount, String name,
+      BuildContext context) async {
     try {
       Map<String, dynamic> body = generateBody(name, amount, members);
 
@@ -106,11 +105,13 @@ class _AddPurchaseRouteState extends State<AddPurchaseRoute> with AddModifyPurch
                                 height: 10,
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'to_who'.plural(2),
-                                    style: Theme.of(context).textTheme.labelLarge,
+                                    style:
+                                        Theme.of(context).textTheme.labelLarge,
                                   ),
                                   IconButton(
                                     onPressed: () {
@@ -122,8 +123,12 @@ class _AddPurchaseRouteState extends State<AddPurchaseRoute> with AddModifyPurch
                                     icon: Icon(
                                       Icons.info_outline,
                                       color: _expandableController.expanded
-                                          ? Theme.of(context).colorScheme.primary
-                                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant,
                                     ),
                                   ),
                                 ],
@@ -140,15 +145,25 @@ class _AddPurchaseRouteState extends State<AddPurchaseRoute> with AddModifyPurch
                                       Text(
                                         'add_purchase_explanation'.tr(),
                                         textAlign: TextAlign.center,
-                                        style: Theme.of(context).textTheme.bodySmall.copyWith(
-                                            color: Theme.of(context).colorScheme.onSurface),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall!
+                                            .copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface),
                                       ),
                                       SizedBox(height: 10),
                                       Text(
                                         'custom_amount_hint'.tr(),
                                         textAlign: TextAlign.center,
-                                        style: Theme.of(context).textTheme.bodySmall.copyWith(
-                                            color: Theme.of(context).colorScheme.onSurface),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall!
+                                            .copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface),
                                       ),
                                     ],
                                   ),
@@ -162,20 +177,24 @@ class _AddPurchaseRouteState extends State<AddPurchaseRoute> with AddModifyPurch
                                 height: 20,
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   IconButton(
                                     onPressed: () {
                                       FocusScope.of(context).unfocus();
                                       setState(() {
                                         for (Member member in membersMap.keys) {
-                                          membersMap[member] = !membersMap[member];
+                                          membersMap[member] =
+                                              !membersMap[member]!;
                                         }
                                       });
                                     },
                                     icon: Icon(
                                       Icons.swap_horiz,
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
                                     ),
                                   ),
                                   Visibility(
@@ -184,24 +203,39 @@ class _AddPurchaseRouteState extends State<AddPurchaseRoute> with AddModifyPurch
                                     child: Column(
                                       children: [
                                         Text(
-                                            'per_person'.tr(args: [
-                                              amountForNonCustom()
-                                                  .toMoneyString(selectedCurrency, withSymbol: true)
-                                            ]),
-                                            style: Theme.of(context).textTheme.bodySmall.copyWith(
-                                                  color: Theme.of(context).colorScheme.tertiary,
-                                                ),
+                                          'per_person'.tr(args: [
+                                            amountForNonCustom().toMoneyString(
+                                                selectedCurrency,
+                                                withSymbol: true)
+                                          ]),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .tertiary,
+                                              ),
                                         ),
-                                        ...(customAmountMap.keys.map<Widget>((member) {
-                                            return Text(member.nickname +
+                                        ...(customAmountMap.keys
+                                            .map<Widget>((member) {
+                                          return Text(
+                                            member.nickname! +
                                                 ': ' +
                                                 customAmountMap[member]
-                                                    .toMoneyString(selectedCurrency, withSymbol: true), style: Theme.of(context).textTheme.bodySmall.copyWith(
-                                                  color: Theme.of(context).colorScheme.tertiary,
+                                                    .toMoneyString(
+                                                        selectedCurrency,
+                                                        withSymbol: true),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall!
+                                                .copyWith(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .tertiary,
                                                 ),
-                                            );
-                                          }).toList())
-
+                                          );
+                                        }).toList())
                                       ],
                                     ),
                                   ),
@@ -216,7 +250,9 @@ class _AddPurchaseRouteState extends State<AddPurchaseRoute> with AddModifyPurch
                                     },
                                     icon: Icon(
                                       Icons.delete,
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
                                     ),
                                   )
                                 ],
@@ -238,7 +274,8 @@ class _AddPurchaseRouteState extends State<AddPurchaseRoute> with AddModifyPurch
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.tertiary,
-          child: Icon(Icons.send, color: Theme.of(context).colorScheme.onTertiary),
+          child:
+              Icon(Icons.send, color: Theme.of(context).colorScheme.onTertiary),
           onPressed: () => buttonPush(context),
         ),
       ),
@@ -247,7 +284,7 @@ class _AddPurchaseRouteState extends State<AddPurchaseRoute> with AddModifyPurch
 
   void _buttonPush(BuildContext context) {
     FocusScope.of(context).unfocus();
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       if (!membersMap.containsValue(true)) {
         FToast ft = FToast();
         ft.init(context);

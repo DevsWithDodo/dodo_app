@@ -52,7 +52,7 @@ class _ImShoppingDialogState extends State<ImShoppingDialog> {
                 'where'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleLarge
+                    .titleLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurface),
               ),
               SizedBox(
@@ -62,7 +62,7 @@ class _ImShoppingDialogState extends State<ImShoppingDialog> {
                 'im_shopping_explanation'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleSmall
+                    .titleSmall!
                     .copyWith(color: Theme.of(context).colorScheme.onSurface),
                 textAlign: TextAlign.center,
               ),
@@ -95,7 +95,7 @@ class _ImShoppingDialogState extends State<ImShoppingDialog> {
                 children: [
                   GradientButton(
                     onPressed: () {
-                      if (_formKey.currentState.validate()) {
+                      if (_formKey.currentState!.validate()) {
                         String store = _controller.text;
                         showDialog(
                             builder: (context) => FutureSuccessDialog(

@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import '../../essentials/widgets/gradient_button.dart';
 
 class RegisterPinPage extends StatefulWidget {
-  final String inviteUrl;
-  final String username;
+  final String? inviteUrl;
+  final String? username;
   RegisterPinPage({this.inviteUrl, this.username});
   @override
   State<RegisterPinPage> createState() => _RegisterPinPageState();
@@ -16,7 +16,7 @@ class _RegisterPinPageState extends State<RegisterPinPage> {
   bool _isPinInput = true;
   String _pin = '';
   String _pinConfirm = '';
-  String _validationText = null;
+  String? _validationText = null;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,15 +42,16 @@ class _RegisterPinPageState extends State<RegisterPinPage> {
                       children: <Widget>[
                         PinPad(
                           pin: _pin,
-                          onPinChanged: (newPin) => setState(() => _pin = newPin),
+                          onPinChanged: (newPin) =>
+                              setState(() => _pin = newPin),
                           pinConfirm: _pinConfirm,
-                          onPinConfirmChanged: (newPin) => setState(() => _pinConfirm = newPin),
+                          onPinConfirmChanged: (newPin) =>
+                              setState(() => _pinConfirm = newPin),
                           isPinInput: _isPinInput,
-                          onIsPinInputChanged: (newValue) => setState(() => _isPinInput = newValue),
                           validationText: _validationText,
                           onValidationTextChanged: (newText) =>
                               setState(() => _validationText = newText),
-                          useConfirm: false,
+                          showConfirm: false,
                         ),
                       ],
                     ),

@@ -16,14 +16,15 @@ class GroupMembers extends StatefulWidget {
 }
 
 class _GroupMembersState extends State<GroupMembers> {
-  Future<List<Member>> _members;
+  Future<List<Member>>? _members;
 
-  Member currentMember;
+  Member? currentMember;
 
   Future<List<Member>> _getMembers() async {
     try {
       http.Response response = await httpGet(
-          uri: generateUri(GetUriKeys.groupCurrent, args: [currentGroupId.toString()]),
+          uri: generateUri(GetUriKeys.groupCurrent,
+              args: [currentGroupId.toString()]),
           context: context,
           useCache: false);
       Map<String, dynamic> decoded = jsonDecode(response.body);
@@ -31,10 +32,12 @@ class _GroupMembersState extends State<GroupMembers> {
       for (var member in decoded['data']['members']) {
         members.add(Member.fromJson(member));
       }
-      members.sort((member1, member2) => member1.nickname.compareTo(member2.nickname));
-      currentMember = members.firstWhere((member) => member.memberId == currentUserId);
+      members.sort(
+          (member1, member2) => member1.nickname!.compareTo(member2.nickname!));
+      currentMember =
+          members.firstWhere((member) => member.memberId == currentUserId);
       members.remove(currentMember);
-      members.insert(0, currentMember);
+      members.insert(0, currentMember!);
       return members;
     } catch (_) {
       throw _;
@@ -68,19 +71,19 @@ class _GroupMembersState extends State<GroupMembers> {
               'members'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleLarge
+                  .titleLarge!
                   .copyWith(color: Theme.of(context).colorScheme.onSurface),
             )),
             FutureBuilder(
               future: _members,
-              builder: (context, snapshot) {
+              builder: (context, AsyncSnapshot<List<Member>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Visibility(
-                            visible: !currentMember.isAdmin,
+                            visible: !currentMember!.isAdmin!,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -92,14 +95,17 @@ class _GroupMembersState extends State<GroupMembers> {
                                   'members_explanation'.tr(),
                                   style: Theme.of(context)
                                       .textTheme
-                                      .titleSmall
-                                      .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                                      .titleSmall!
+                                      .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface),
                                   textAlign: TextAlign.center,
                                 )),
                               ],
                             )),
                         Visibility(
-                            visible: currentMember.isAdmin,
+                            visible: currentMember!.isAdmin!,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -111,8 +117,11 @@ class _GroupMembersState extends State<GroupMembers> {
                                   'members_explanation_admin'.tr(),
                                   style: Theme.of(context)
                                       .textTheme
-                                      .titleSmall
-                                      .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                                      .titleSmall!
+                                      .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface),
                                   textAlign: TextAlign.center,
                                 )),
                               ],
@@ -120,7 +129,7 @@ class _GroupMembersState extends State<GroupMembers> {
                         SizedBox(
                           height: 40,
                         ),
-                        Column(children: _generateMembers(snapshot.data)),
+                        Column(children: _generateMembers(snapshot.data!)),
                       ],
                     );
                   } else {
@@ -159,7 +168,7 @@ class _GroupMembersState extends State<GroupMembers> {
     return members.map((member) {
       return MemberEntry(
         member: member,
-        isCurrentUserAdmin: currentMember.isAdmin,
+        isCurrentUserAdmin: currentMember!.isAdmin,
         callback: this.callback,
       );
     }).toList();
@@ -167,9 +176,9 @@ class _GroupMembersState extends State<GroupMembers> {
 }
 
 class MemberEntry extends StatefulWidget {
-  final Function callback;
-  final Member member;
-  final bool isCurrentUserAdmin;
+  final Function? callback;
+  final Member? member;
+  final bool? isCurrentUserAdmin;
 
   MemberEntry({this.member, this.isCurrentUserAdmin, this.callback});
 
@@ -178,38 +187,39 @@ class MemberEntry extends StatefulWidget {
 }
 
 class _MemberEntryState extends State<MemberEntry> {
-  TextStyle mainTextStyle;
-  TextStyle subTextStyle;
-  BoxDecoration boxDecoration;
-  Color iconColor;
+  TextStyle? mainTextStyle;
+  TextStyle? subTextStyle;
+  BoxDecoration? boxDecoration;
+  Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
-    if (widget.member.memberId == currentUserId) {
-      mainTextStyle = Theme.of(context).textTheme.bodyLarge.copyWith(
-          color: currentThemeName.contains('Gradient')
+    if (widget.member!.memberId == currentUserId) {
+      mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
+          color: currentThemeName!.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onTertiaryContainer);
-      subTextStyle = Theme.of(context).textTheme.bodySmall.copyWith(
-          color: currentThemeName.contains('Gradient')
+      subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
+          color: currentThemeName!.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onTertiaryContainer);
-      iconColor = currentThemeName.contains('Gradient')
+      iconColor = currentThemeName!.contains('Gradient')
           ? Theme.of(context).colorScheme.onPrimary
           : Theme.of(context).colorScheme.onTertiaryContainer;
       boxDecoration = BoxDecoration(
-        gradient: AppTheme.gradientFromTheme(currentThemeName, useTertiaryContainer: true),
+        gradient: AppTheme.gradientFromTheme(currentThemeName,
+            useTertiaryContainer: true),
         // color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(15),
       );
     } else {
       mainTextStyle = Theme.of(context)
           .textTheme
-          .bodyLarge
+          .bodyLarge!
           .copyWith(color: Theme.of(context).colorScheme.onSurface);
       subTextStyle = Theme.of(context)
           .textTheme
-          .bodySmall
+          .bodySmall!
           .copyWith(color: Theme.of(context).colorScheme.onSurface);
       iconColor = Theme.of(context).colorScheme.onSurface;
       boxDecoration = BoxDecoration();
@@ -232,7 +242,7 @@ class _MemberEntryState extends State<MemberEntry> {
                         isCurrentUserAdmin: widget.isCurrentUserAdmin,
                       ),
                     )).then((val) {
-              if (val == 'madeAdmin') widget.callback();
+              if (val == 'madeAdmin') widget.callback!();
             });
           },
           borderRadius: BorderRadius.circular(15),
@@ -262,13 +272,13 @@ class _MemberEntryState extends State<MemberEntry> {
                                 children: <Widget>[
                                   Flexible(
                                       child: Text(
-                                    widget.member.username,
+                                    widget.member!.username!,
                                     style: mainTextStyle,
                                     overflow: TextOverflow.ellipsis,
                                   )),
                                   Flexible(
                                       child: Text(
-                                    widget.member.nickname,
+                                    widget.member!.nickname!,
                                     style: subTextStyle,
                                     overflow: TextOverflow.ellipsis,
                                   ))
@@ -280,7 +290,7 @@ class _MemberEntryState extends State<MemberEntry> {
                       ),
                       Center(
                         child: Visibility(
-                          visible: widget.member.isAdmin,
+                          visible: widget.member!.isAdmin!,
                           child: Text(
                             '👑  ', //itt van egy korona emoji lol
                             style: mainTextStyle,
@@ -289,7 +299,7 @@ class _MemberEntryState extends State<MemberEntry> {
                       ),
                       Center(
                         child: Visibility(
-                          visible: widget.member.isGuest,
+                          visible: widget.member!.isGuest!,
                           child: Text(
                             'guest'.tr(),
                             style: mainTextStyle,

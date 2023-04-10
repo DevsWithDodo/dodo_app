@@ -3,8 +3,8 @@ import 'package:csocsort_szamla/essentials/widgets/category_picker_dropdown.dart
 import 'package:flutter/material.dart';
 
 class CategoryPickerIconButton extends StatefulWidget {
-  final Category selectedCategory;
-  final Function(Category) onCategoryChanged;
+  final Category? selectedCategory;
+  final Function(Category?)? onCategoryChanged;
 
   const CategoryPickerIconButton({this.selectedCategory, this.onCategoryChanged});
 
@@ -31,10 +31,10 @@ class _CategoryPickerIconButton extends State<CategoryPickerIconButton> {
                   ),
                 ),
               );
-            }).then((newCurrency) => widget.onCategoryChanged(newCurrency));
+            }).then((newCurrency) => widget.onCategoryChanged!(newCurrency));
       },
       icon: Icon(
-        widget.selectedCategory == null ? Icons.app_registration : widget.selectedCategory.icon,
+        widget.selectedCategory == null ? Icons.app_registration : widget.selectedCategory!.icon,
         color: widget.selectedCategory == null
             ? Theme.of(context).colorScheme.primary
             : Theme.of(context).colorScheme.tertiary,

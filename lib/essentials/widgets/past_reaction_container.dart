@@ -6,17 +6,31 @@ import 'add_reaction_dialog.dart';
 class PastReactionContainer extends StatelessWidget {
   final List<Reaction> reactions;
   final int reactedToId;
-  final Function callback;
+  final Function(String reaction) onSendReaction;
   final bool isSecondaryColor;
   final String type;
-  PastReactionContainer(
-      {this.reactions, this.reactedToId, this.callback, this.isSecondaryColor, this.type});
+  PastReactionContainer({
+    required this.reactions,
+    required this.reactedToId,
+    required this.onSendReaction,
+    required this.isSecondaryColor,
+    required this.type,
+  });
   @override
   Widget build(BuildContext context) {
-    Map<String, int> numberOfReactions = {'❗': 0, '👍': 0, '❤': 0, '😲': 0, '😥': 0, '❓': 0};
+    Map<String, int> numberOfReactions = {
+      '❗': 0,
+      '👍': 0,
+      '❤': 0,
+      '😲': 0,
+      '😥': 0,
+      '❓': 0
+    };
     for (Reaction reaction in reactions) {
-      if (numberOfReactions.keys.contains(reaction.reaction))
-        numberOfReactions[reaction.reaction]++;
+      if (numberOfReactions.keys.contains(reaction.reaction)) {
+        numberOfReactions[reaction.reaction] =
+            numberOfReactions[reaction.reaction]! + 1;
+      }
     }
     var sortedKeys = numberOfReactions.keys.toList(growable: false)
       ..sort((k1, k2) {
@@ -26,25 +40,25 @@ class PastReactionContainer extends StatelessWidget {
         if (k2 == '❗' && numberOfReactions[k2] != 0) {
           return 1;
         }
-        return numberOfReactions[k2].compareTo(numberOfReactions[k1]);
+        return numberOfReactions[k2]!.compareTo(numberOfReactions[k1]!);
       });
-    List<List<dynamic>> sortedReactions = [];
+    List<Map<String, int>> sortedReactions = [];
     for (String key in sortedKeys) {
-      sortedReactions.add([key, numberOfReactions[key]]);
+      sortedReactions.add({key: numberOfReactions[key]!});
     }
     int sum = 0;
-    for (var list in sortedReactions) {
-      sum += list[1];
+    for (Map<String, int> list in sortedReactions) {
+      sum += list.values.first;
     }
 
-    List<String> orderedReactions = [];
+    List<String?> orderedReactions = [];
     int index = 0;
-    if (sortedReactions[index][1] > 0) {
-      orderedReactions.add(sortedReactions[index][0]);
+    if (sortedReactions[index].values.first > 0) {
+      orderedReactions.add(sortedReactions[index].keys.first);
       index++;
     }
-    if (sortedReactions[index][1] > 0) {
-      orderedReactions.add(sortedReactions[index][0]);
+    if (sortedReactions[index].values.first > 0) {
+      orderedReactions.add(sortedReactions[index].keys.first);
     }
     if (sum > 1) {
       orderedReactions.add(sum.toString());
@@ -66,27 +80,32 @@ class PastReactionContainer extends StatelessWidget {
                             type: type,
                             reactions: reactions,
                             reactToId: reactedToId,
-                            callback: callback,
+                            onSend: onSendReaction,
                           ),
                       context: context);
                 },
                 borderRadius: BorderRadius.circular(10),
                 child: Ink(
-                    padding: EdgeInsets.only(top: 3, bottom: 4, left: 6, right: 5),
+                    padding:
+                        EdgeInsets.only(top: 3, bottom: 4, left: 6, right: 5),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: Theme.of(context).colorScheme.surfaceVariant),
                     child: Row(
                         children: orderedReactions.map((reaction) {
-                      if (reaction != null && double.tryParse(reaction) != null) {
+                      if (reaction != null &&
+                          double.tryParse(reaction) != null) {
                         return Text(reaction + ' ',
                             style: Theme.of(context)
                                 .textTheme
-                                .bodyLarge
-                                .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant));
+                                .bodyLarge!
+                                .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant));
                       }
                       return Text(
-                        reaction,
+                        reaction!,
                         style: Theme.of(context).textTheme.bodyMedium,
                       );
                     }).toList())),

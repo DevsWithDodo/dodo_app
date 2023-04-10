@@ -1,16 +1,17 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 import '../config.dart';
 
 class Member {
-  double balance;
-  String nickname;
-  String username;
-  String apiToken;
-  int memberId;
-  bool isAdmin;
-  double balanceOriginalCurrency;
-  bool isCustomAmount;
-  bool isGuest;
+  double? balance;
+  String? nickname;
+  String? username;
+  String? apiToken;
+  int? memberId;
+  bool? isAdmin;
+  double? balanceOriginalCurrency;
+  bool? isCustomAmount;
+  bool? isGuest;
   Member({
     this.username,
     this.nickname,
@@ -37,7 +38,7 @@ class Member {
 
   @override
   String toString() {
-    return nickname;
+    return nickname!;
   }
 
   Map toJson() {
@@ -46,9 +47,9 @@ class Member {
 }
 
 class Group {
-  String groupCurrency;
-  String groupName;
-  int groupId;
+  String? groupCurrency;
+  String? groupName;
+  int? groupId;
   Group({this.groupName, this.groupId, this.groupCurrency});
 }
 
@@ -56,8 +57,16 @@ class Reaction {
   String reaction;
   String nickname;
   int userId;
-  static List<String> possibleReactions = ['👍', '❤', '😲', '😥', '❗', '❓'];
-  Reaction({this.reaction, this.nickname, this.userId});
+  static const List<String> possibleReactions = [
+    '👍',
+    '❤',
+    '😲',
+    '😥',
+    '❗',
+    '❓'
+  ];
+  Reaction(
+      {required this.reaction, required this.nickname, required this.userId});
   factory Reaction.fromJson(Map<String, dynamic> reaction) {
     return Reaction(
         reaction: reaction['reaction'],
@@ -71,16 +80,16 @@ class Reaction {
 }
 
 class Purchase {
-  DateTime updatedAt;
-  String buyerUsername, buyerNickname;
-  int buyerId;
-  List<Member> receivers;
-  double totalAmount, totalAmountOriginalCurrency;
-  int purchaseId;
-  String name;
-  List<Reaction> reactions;
-  String originalCurrency;
-  Category category;
+  DateTime? updatedAt;
+  String? buyerUsername, buyerNickname;
+  int? buyerId;
+  List<Member>? receivers;
+  double? totalAmount, totalAmountOriginalCurrency;
+  int? purchaseId;
+  String? name;
+  List<Reaction>? reactions;
+  String? originalCurrency;
+  Category? category;
 
   Purchase({
     this.updatedAt,
@@ -110,22 +119,25 @@ class Purchase {
       buyerNickname: json['buyer_nickname'],
       totalAmount: (json['total_amount'] * 1.0),
       totalAmountOriginalCurrency: (json['original_total_amount'] ?? 0) * 1.0,
-      receivers: json['receivers'].map<Member>((element) => Member.fromJson(element)).toList(),
-      reactions:
-          json['reactions'].map<Reaction>((reaction) => Reaction.fromJson(reaction)).toList(),
-      category: Category.fromJson(json["category"]),
+      receivers: json['receivers']
+          .map<Member>((element) => Member.fromJson(element))
+          .toList(),
+      reactions: json['reactions']
+          .map<Reaction>((reaction) => Reaction.fromJson(reaction))
+          .toList(),
+      category: Category.fromName(json["category"]),
     );
   }
 }
 
 class Payment {
-  int paymentId;
-  double amount, amountOriginalCurrency;
-  DateTime updatedAt;
-  String payerUsername, payerNickname, takerUsername, takerNickname, note;
-  int payerId, takerId;
-  List<Reaction> reactions;
-  String originalCurrency;
+  int? paymentId;
+  double? amount, amountOriginalCurrency;
+  DateTime? updatedAt;
+  String? payerUsername, payerNickname, takerUsername, takerNickname, note;
+  int? payerId, takerId;
+  List<Reaction>? reactions;
+  String? originalCurrency;
 
   Payment({
     this.paymentId,
@@ -159,8 +171,9 @@ class Payment {
       note: json['note'],
       originalCurrency: json['original_currency'] ?? currentGroupCurrency,
       amountOriginalCurrency: (json['original_amount'] ?? json['amount']) * 1.0,
-      reactions:
-          json['reactions'].map<Reaction>((reaction) => Reaction.fromJson(reaction)).toList(),
+      reactions: json['reactions']
+          .map<Reaction>((reaction) => Reaction.fromJson(reaction))
+          .toList(),
     );
   }
 }
@@ -180,21 +193,16 @@ class Category {
   CategoryType type;
   IconData icon;
   String text;
-  Category({@required this.type, @required this.icon, @required this.text}) {
-    assert(type != null);
-    assert(icon != null);
-    assert(text != null);
+  Category({required this.type, required this.icon, required this.text});
+
+  static Category? fromName(String? categoryName) {
+    return Category.categories
+        .firstWhereOrNull((category) => category.text == categoryName);
   }
 
-  factory Category.fromJson(String categoryName) {
-    if (categoryName != null) {
-      return Category.categories.firstWhere((category) => category.text == categoryName);
-    }
-    return null;
-  }
-
-  factory Category.fromType(CategoryType type) {
-    return Category.categories.firstWhere((category) => category.type == type, orElse: () => null);
+  static Category? fromType(CategoryType? type) {
+    return Category.categories
+        .firstWhereOrNull((category) => category.type == type);
   }
 
   static List<Category> categories = [
@@ -220,4 +228,40 @@ class Category {
     Category(type: CategoryType.bills, icon: Icons.house, text: 'bills'),
     Category(type: CategoryType.other, icon: Icons.more_horiz, text: 'other'),
   ];
+}
+
+class ShoppingRequest {
+  int? requestId;
+  String? name;
+  String? requesterUsername, requesterNickname;
+  int? requesterId;
+  DateTime? updatedAt;
+  List<Reaction>? reactions;
+
+  ShoppingRequest(
+      {this.updatedAt,
+      this.requesterId,
+      this.requesterUsername,
+      this.name,
+      this.requestId,
+      this.requesterNickname,
+      this.reactions});
+
+  factory ShoppingRequest.fromJson(Map<String, dynamic> json) {
+    return ShoppingRequest(
+        requestId: json['request_id'],
+        requesterId: json['requester_id'],
+        requesterUsername: json['requester_username'],
+        requesterNickname: json['requester_nickname'],
+        name: json['name'],
+        updatedAt: DateTime.parse(json['updated_at']).toLocal(),
+        reactions: json['reactions']
+            .map<Reaction>((reaction) => Reaction.fromJson(reaction))
+            .toList());
+  }
+
+  @override
+  String toString() {
+    return name! + '; ' + updatedAt.toString() + '; ' + reactions!.join(', ');
+  }
 }

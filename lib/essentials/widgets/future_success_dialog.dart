@@ -4,17 +4,17 @@ import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 
 class FutureSuccessDialog extends StatefulWidget {
-  final Widget dataTrue;
-  final Widget dataFalse;
-  final Widget noData;
+  final Widget? dataTrue;
+  final Widget? dataFalse;
+  final Widget? noData;
 
   final Future<bool> future;
 
-  final Function onDataTrue;
-  final Function onDataFalse;
-  final Function onNoData;
+  final Function? onDataTrue;
+  final Function? onDataFalse;
+  final Function? onNoData;
 
-  final String dataTrueText;
+  final String? dataTrueText;
   final String dataFalseText;
 
   ///Dialog for http requests. Translates all text given.
@@ -24,7 +24,7 @@ class FutureSuccessDialog extends StatefulWidget {
       {this.dataTrue,
       this.dataFalse,
       this.noData,
-      @required this.future,
+      required this.future,
       this.onDataFalse,
       this.onDataTrue,
       this.onNoData,
@@ -36,14 +36,14 @@ class FutureSuccessDialog extends StatefulWidget {
 }
 
 class _FutureSuccessDialogState extends State<FutureSuccessDialog> {
-  Function _onDataFalse;
-  Function _onNoData;
+  Function? _onDataFalse;
+  Function? _onNoData;
 
   /// Tracks if the animation is playing by whether controller is running.
   bool get isPlaying => _controller?.isActive ?? false;
 
-  Artboard _riveArtboard;
-  RiveAnimationController _controller;
+  Artboard? _riveArtboard;
+  RiveAnimationController? _controller;
 
   @override
   void initState() {
@@ -77,7 +77,7 @@ class _FutureSuccessDialogState extends State<FutureSuccessDialog> {
     );
   }
 
-  Widget _buildDataTrue() {
+  Widget? _buildDataTrue() {
     if (widget.dataTrue == null) {
       // if(true){
       //   return Container();
@@ -90,14 +90,16 @@ class _FutureSuccessDialogState extends State<FutureSuccessDialog> {
               size: 50,
             )
           : ColorFiltered(
-              colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.primary, BlendMode.srcIn),
-              child: Container(height: 60, width: 60, child: Rive(artboard: _riveArtboard)),
+              colorFilter: ColorFilter.mode(
+                  Theme.of(context).colorScheme.primary, BlendMode.srcIn),
+              child: Container(
+                  height: 60, width: 60, child: Rive(artboard: _riveArtboard!)),
             );
     }
     return widget.dataTrue;
   }
 
-  Widget _buildDataFalse() {
+  Widget? _buildDataFalse() {
     if (widget.dataFalse == null) {
       return Container(
         color: Colors.transparent,
@@ -107,7 +109,10 @@ class _FutureSuccessDialogState extends State<FutureSuccessDialog> {
             Flexible(
               child: Text(
                 widget.dataFalseText.tr(),
-                style: Theme.of(context).textTheme.labelLarge.copyWith(color: Colors.white),
+                style: Theme.of(context)
+                    .textTheme
+                    .labelLarge!
+                    .copyWith(color: Colors.white),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -120,18 +125,18 @@ class _FutureSuccessDialogState extends State<FutureSuccessDialog> {
                 color: Theme.of(context).colorScheme.onError,
               ),
               onPressed: () {
-                _onDataFalse();
+                _onDataFalse!();
               },
               label: Text(
                 'back'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .labelLarge
+                    .labelLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onError),
               ),
               style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.error)),
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      Theme.of(context).colorScheme.error)),
             )
           ],
         ),
@@ -140,7 +145,7 @@ class _FutureSuccessDialogState extends State<FutureSuccessDialog> {
     return widget.dataFalse;
   }
 
-  Widget _buildNoData(AsyncSnapshot snapshot) {
+  Widget? _buildNoData(AsyncSnapshot snapshot) {
     if (widget.noData == null) {
       return Container(
         color: Colors.transparent,
@@ -150,7 +155,10 @@ class _FutureSuccessDialogState extends State<FutureSuccessDialog> {
             Flexible(
               child: Text(
                 snapshot.error.toString().tr(),
-                style: Theme.of(context).textTheme.bodyLarge.copyWith(color: Colors.white),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .copyWith(color: Colors.white),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -163,18 +171,18 @@ class _FutureSuccessDialogState extends State<FutureSuccessDialog> {
                 color: Theme.of(context).colorScheme.onError,
               ),
               onPressed: () {
-                _onNoData();
+                _onNoData!();
               },
               label: Text(
                 'back'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .labelLarge
+                    .labelLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onError),
               ),
               style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.error),
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Theme.of(context).colorScheme.error),
               ),
             )
           ],
@@ -192,19 +200,21 @@ class _FutureSuccessDialogState extends State<FutureSuccessDialog> {
       elevation: 0,
       child: FutureBuilder(
         future: widget.future,
-        builder: (context, snapshot) {
+        builder: (context, AsyncSnapshot<bool> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
-              if (snapshot.data) {
-                return _buildDataTrue();
+              if (snapshot.data!) {
+                return _buildDataTrue()!;
               } else {
-                return _buildDataFalse();
+                return _buildDataFalse()!;
               }
             } else {
-              return _buildNoData(snapshot);
+              return _buildNoData(snapshot)!;
             }
           }
-          return Center(child: SizedBox(width: 55, height: 55, child: CircularProgressIndicator()));
+          return Center(
+              child: SizedBox(
+                  width: 55, height: 55, child: CircularProgressIndicator()));
         },
       ),
     );

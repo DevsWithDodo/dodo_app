@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
@@ -33,24 +32,20 @@ class _InAppPurchasePageState extends State<InAppPurchasePage> {
     switch (id) {
       case 'gradients':
         return false;
-        break;
       case 'remove_ads':
         return false;
-        break;
       case 'ad_gradient_bundle_2':
         return false;
-        break;
       case 'group_boost':
         return true;
-        break;
       case 'big_lender_bundle':
         return false;
-        break;
     }
+    return false;
   }
 
   List<Widget> _buildItems(List<ProductDetails> details) {
-    details.sort((a, b) => sortBasic[a.id].compareTo(sortBasic[b.id]));
+    details.sort((a, b) => sortBasic[a.id]!.compareTo(sortBasic[b.id]!));
     return details.map((e) {
       return Card(
         child: Padding(
@@ -60,7 +55,7 @@ class _InAppPurchasePageState extends State<InAppPurchasePage> {
             children: [
               Text(
                 e.id.tr(),
-                style: Theme.of(context).textTheme.titleLarge.copyWith(
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
@@ -68,14 +63,14 @@ class _InAppPurchasePageState extends State<InAppPurchasePage> {
                 height: 10,
               ),
               Text((e.id + '_explanation').tr(),
-                  style: Theme.of(context).textTheme.titleSmall.copyWith(
+                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                   textAlign: TextAlign.center),
               SizedBox(
                 height: 10,
               ),
               Text('price'.tr() + e.price,
-                  style: Theme.of(context).textTheme.bodyLarge.copyWith(
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                   textAlign: TextAlign.center),
               Row(
@@ -84,7 +79,7 @@ class _InAppPurchasePageState extends State<InAppPurchasePage> {
                   GradientButton(
                     child: Text(
                       'buy'.tr(),
-                      style: Theme.of(context).textTheme.labelLarge.copyWith(
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
                           color: Theme.of(context).colorScheme.onPrimary),
                     ),
                     onPressed: () {
@@ -125,24 +120,26 @@ class _InAppPurchasePageState extends State<InAppPurchasePage> {
           ? Container()
           : FutureBuilder(
               future: iap.isAvailable(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.hasData) {
-                    if (snapshot.data) {
+              builder: (context, AsyncSnapshot<bool> isAvailableSnapshot) {
+                if (isAvailableSnapshot.connectionState ==
+                    ConnectionState.done) {
+                  if (isAvailableSnapshot.hasData) {
+                    if (isAvailableSnapshot.data!) {
                       return FutureBuilder(
                         future:
                             InAppPurchase.instance.queryProductDetails(_ids),
-                        builder: (context, snapshot) {
+                        builder: (context,
+                            AsyncSnapshot<ProductDetailsResponse> snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.done) {
                             if (snapshot.hasData) {
                               return ListView(
                                 children:
-                                    _buildItems(snapshot.data.productDetails),
+                                    _buildItems(snapshot.data!.productDetails),
                               );
                             } else {
                               return ErrorMessage(
-                                error: snapshot.error,
+                                error: snapshot.error as String?,
                                 onTap: () {
                                   setState(() {});
                                 },
@@ -168,7 +165,7 @@ class _InAppPurchasePageState extends State<InAppPurchasePage> {
                     }
                   } else {
                     return ErrorMessage(
-                      error: snapshot.error,
+                      error: isAvailableSnapshot.error as String?,
                       onTap: () {
                         setState(() {});
                       },

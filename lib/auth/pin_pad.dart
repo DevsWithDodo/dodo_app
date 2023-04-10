@@ -4,36 +4,27 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class PinPad extends StatefulWidget {
-  final String pin, pinConfirm;
+  final String pin;
+  final String? pinConfirm;
   final bool isPinInput;
   final ValueChanged<String> onPinChanged;
-  final ValueChanged<String> onPinConfirmChanged;
-  final ValueChanged<bool> onIsPinInputChanged;
-  final bool useConfirm;
-  final String validationText;
-  final ValueChanged<String> onValidationTextChanged;
-  final double maxWidth;
+  final ValueChanged<String>? onPinConfirmChanged;
+  final bool showConfirm;
+  final String? validationText;
+  final ValueChanged<String?> onValidationTextChanged;
+  final double? maxWidth;
   PinPad({
-    this.pin,
+    required String this.pin,
     this.pinConfirm,
     this.isPinInput = true,
-    this.onIsPinInputChanged,
-    this.onPinChanged,
+    required this.onPinChanged,
     this.onPinConfirmChanged,
     this.validationText,
-    this.onValidationTextChanged,
-    this.useConfirm = true,
+    required this.onValidationTextChanged,
+    this.showConfirm = true,
     this.maxWidth,
-  }) {
-    assert(pin != null);
-    assert(onPinChanged != null);
-    assert(onValidationTextChanged != null);
-    if (useConfirm) {
-      assert(pinConfirm != null);
-      assert(onPinConfirmChanged != null);
-      assert(onIsPinInputChanged != null);
-    }
-  }
+  });
+
   @override
   State<PinPad> createState() => _PinPadState();
 }
@@ -51,8 +42,8 @@ class _PinPadState extends State<PinPad> {
         Center(
           child: Ink(
             decoration: BoxDecoration(
-              color:
-                  ElevationOverlay.applyOverlay(context, Theme.of(context).colorScheme.surface, 8),
+              color: ElevationOverlay.applyOverlay(
+                  context, Theme.of(context).colorScheme.surface, 8),
               borderRadius: BorderRadius.circular(12),
             ),
             height: 56,
@@ -60,7 +51,7 @@ class _PinPadState extends State<PinPad> {
               children: [
                 Center(
                   child: Builder(builder: (context) {
-                    String textToShow = widget.pin;
+                    String? textToShow = widget.pin;
                     if (textToShow == '') {
                       textToShow = 'pin'.tr();
                     } else {
@@ -71,12 +62,12 @@ class _PinPadState extends State<PinPad> {
                       if (widget.pinConfirm == '') {
                         textToShow = 'confirm_pin'.tr();
                       } else {
-                        textToShow = '•' * textToShow.length;
+                        textToShow = '•' * textToShow!.length;
                       }
                     }
                     return Text(
                       textToShow,
-                      style: Theme.of(context).textTheme.subtitle1.copyWith(
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontSize: isPinFieldNotEmpty() ? 30 : null),
                     );
@@ -93,7 +84,7 @@ class _PinPadState extends State<PinPad> {
                     padding: const EdgeInsets.only(left: 16, top: 8),
                     child: Text(
                       widget.isPinInput ? 'pin'.tr() : 'confirm_pin'.tr(),
-                      style: Theme.of(context).textTheme.bodySmall.copyWith(
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),
                     ),
@@ -109,7 +100,7 @@ class _PinPadState extends State<PinPad> {
             padding: const EdgeInsets.only(left: 16, top: 4),
             child: Text(
               (widget.validationText ?? '').tr(),
-              style: Theme.of(context).textTheme.bodySmall.copyWith(
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
             ),
@@ -119,7 +110,8 @@ class _PinPadState extends State<PinPad> {
         Center(
           child: Container(
             constraints: BoxConstraints(
-              maxWidth: widget.maxWidth ?? min(300, MediaQuery.of(context).size.height / 7 * 3),
+              maxWidth: widget.maxWidth ??
+                  min(300, MediaQuery.of(context).size.height / 7 * 3),
             ),
             child: Table(
               columnWidths: {
@@ -137,10 +129,11 @@ class _PinPadState extends State<PinPad> {
                       onValidationTextChanged: widget.onValidationTextChanged,
                       onPinChanged: widget.onPinChanged,
                       onPinConfirmChanged: widget.onPinConfirmChanged,
-                      onIsPinInputChanged: widget.onIsPinInputChanged,
                       isPinInput: widget.isPinInput,
-                      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                      textColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.secondaryContainer,
+                      textColor:
+                          Theme.of(context).colorScheme.onSecondaryContainer,
                     );
                   }).toList(),
                 ),
@@ -153,10 +146,11 @@ class _PinPadState extends State<PinPad> {
                       onValidationTextChanged: widget.onValidationTextChanged,
                       onPinChanged: widget.onPinChanged,
                       onPinConfirmChanged: widget.onPinConfirmChanged,
-                      onIsPinInputChanged: widget.onIsPinInputChanged,
                       isPinInput: widget.isPinInput,
-                      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                      textColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.secondaryContainer,
+                      textColor:
+                          Theme.of(context).colorScheme.onSecondaryContainer,
                     );
                   }).toList(),
                 ),
@@ -169,27 +163,33 @@ class _PinPadState extends State<PinPad> {
                       onValidationTextChanged: widget.onValidationTextChanged,
                       onPinChanged: widget.onPinChanged,
                       onPinConfirmChanged: widget.onPinConfirmChanged,
-                      onIsPinInputChanged: widget.onIsPinInputChanged,
                       isPinInput: widget.isPinInput,
-                      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                      textColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                      backgroundColor:
+                          Theme.of(context).colorScheme.secondaryContainer,
+                      textColor:
+                          Theme.of(context).colorScheme.onSecondaryContainer,
                     );
                   }).toList(),
                 ),
                 TableRow(
                   children: ['', '0', 'C'].map((number) {
-                    return (number == 'C' && isPinFieldNotEmpty()) || number == '0'
+                    return (number == 'C' && isPinFieldNotEmpty()) ||
+                            number == '0'
                         ? PinNumberButton(
                             number: number,
                             pin: widget.pin,
                             pinConfirm: widget.pinConfirm,
-                            onValidationTextChanged: widget.onValidationTextChanged,
+                            onValidationTextChanged:
+                                widget.onValidationTextChanged,
                             onPinChanged: widget.onPinChanged,
                             onPinConfirmChanged: widget.onPinConfirmChanged,
-                            onIsPinInputChanged: widget.onIsPinInputChanged,
                             isPinInput: widget.isPinInput,
-                            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                            textColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                            backgroundColor: Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer,
+                            textColor: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
                           )
                         : Container();
                   }).toList(),

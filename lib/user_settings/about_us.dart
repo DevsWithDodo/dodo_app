@@ -15,7 +15,7 @@ class AboutUs extends StatelessWidget {
                 'about_us'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleLarge
+                    .titleLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
@@ -28,7 +28,7 @@ class AboutUs extends StatelessWidget {
               'about_us_explanation'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleSmall
+                  .titleSmall!
                   .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             )),
@@ -49,7 +49,7 @@ class AboutUs extends StatelessWidget {
                           'about_us_text'.tr(),
                           style: Theme.of(context)
                               .textTheme
-                              .bodyLarge
+                              .bodyLarge!
                               .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                           textAlign: TextAlign.justify,
                         )

@@ -60,7 +60,7 @@ class ForgotPasswordDialog extends StatelessWidget {
   }
 
   void _buttonPush(BuildContext context) {
-    if (formState.currentState.validate()) {
+    if (formState.currentState!.validate()) {
       String username = controller.text;
       Navigator.pop(context);
       Navigator.push(

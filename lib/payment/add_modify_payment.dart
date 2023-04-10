@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/widgets/custom_choice_chip.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -18,26 +19,26 @@ import '../essentials/widgets/member_chips.dart';
 enum PaymentType { newPayment, modifyPayment }
 
 class AddModifyPayment {
-  Member selectedMember;
+  Member? selectedMember;
   TextEditingController amountController = TextEditingController();
   TextEditingController noteController = TextEditingController();
-  Future<List<Member>> members;
-  String selectedCurrency = currentGroupCurrency;
-  Function(BuildContext context) _buttonPush;
-  void Function(void Function()) _setState;
-  PaymentType _paymentType;
-  Payment _savedPayment;
+  Future<List<Member>>? members;
+  String? selectedCurrency = currentGroupCurrency;
+  late Function(BuildContext context) _buttonPush;
+  late void Function(void Function()) _setState;
+  PaymentType? _paymentType;
+  Payment? _savedPayment;
   bool _alreadyInitializedSave = false;
-  ThemeData _theme = AppTheme.themes[currentThemeName];
-  int payerId;
+  ThemeData? _theme = AppTheme.themes[currentThemeName];
+  int? payerId;
   CrossFadeState purchaserSelector = CrossFadeState.showFirst;
 
   void initAddModifyPayment(
     BuildContext context,
     void Function(void Function()) setState, {
-    void Function(BuildContext context) buttonPush,
-    PaymentType paymentType,
-    Payment savedPayment,
+    void Function(BuildContext context)? buttonPush,
+    PaymentType? paymentType,
+    Payment? savedPayment,
   }) {
     assert((paymentType == PaymentType.newPayment) ||
         (paymentType == PaymentType.modifyPayment && savedPayment != null));
@@ -46,16 +47,17 @@ class AddModifyPayment {
     this._buttonPush = buttonPush ?? (context) {};
     if (_paymentType == PaymentType.modifyPayment) {
       this._savedPayment = savedPayment;
-      selectedCurrency = savedPayment.originalCurrency;
-      noteController.text = savedPayment.note;
-      amountController.text =
-          savedPayment.amountOriginalCurrency.toMoneyString(savedPayment.originalCurrency);
+      selectedCurrency = savedPayment!.originalCurrency;
+      noteController.text = savedPayment.note!;
+      amountController.text = savedPayment.amountOriginalCurrency
+          .toMoneyString(savedPayment.originalCurrency);
     }
     members = getMembers(context);
     payerId = currentUserId;
   }
 
-  Future<List<Member>> getMembers(BuildContext context, {bool overwriteCache = false}) async {
+  Future<List<Member>> getMembers(BuildContext context,
+      {bool overwriteCache = false}) async {
     try {
       http.Response response = await httpGet(
         uri: generateUri(GetUriKeys.groupCurrent),
@@ -77,7 +79,8 @@ class AddModifyPayment {
     }
   }
 
-  Map<String, dynamic> generateBody(String note, double amount, Member toMember) {
+  Map<String, dynamic> generateBody(
+      String note, double amount, Member toMember) {
     return {
       'group': currentGroupId,
       'currency': selectedCurrency,
@@ -93,7 +96,7 @@ class AddModifyPayment {
           hintText: 'note'.tr(),
           prefixIcon: Icon(
             Icons.note,
-            color: _theme.colorScheme.onSurface,
+            color: _theme!.colorScheme.onSurface,
           ),
         ),
         inputFormatters: [LengthLimitingTextInputFormatter(50)],
@@ -103,7 +106,7 @@ class AddModifyPayment {
 
   TextFormField amountTextField(BuildContext context) => TextFormField(
         validator: (value) => validateTextField([
-          isEmpty(value.trim()),
+          isEmpty(value!.trim()),
           notValidNumber(value.replaceAll(',', '.')),
         ]),
         controller: amountController,
@@ -127,7 +130,7 @@ class AddModifyPayment {
           suffixIcon: IconButton(
             icon: Icon(
               Icons.calculate,
-              color: _theme.colorScheme.primary,
+              color: _theme!.colorScheme.primary,
             ),
             onPressed: () {
               showModalBottomSheet(
@@ -150,7 +153,9 @@ class AddModifyPayment {
           ),
         ),
         keyboardType: TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))],
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))
+        ],
         onFieldSubmitted: (value) => _buttonPush(context),
       );
 
@@ -182,36 +187,43 @@ class AddModifyPayment {
                           reverseDuration: Duration(seconds: 0),
                           crossFadeState: purchaserSelector,
                           firstChild: Visibility(
-                            visible: purchaserSelector == CrossFadeState.showFirst,
+                            visible:
+                                purchaserSelector == CrossFadeState.showFirst,
                             child: CustomChoiceChip(
                               enabled: false,
                               selected: true,
                               showCheck: false,
-                              noAnimation: true,
-                              selectedColor: Theme.of(context).colorScheme.secondaryContainer,
-                              selectedFontColor: Theme.of(context).colorScheme.onSecondaryContainer,
-                              notSelectedColor: Theme.of(context).colorScheme.surface,
-                              notSelectedFontColor: Theme.of(context).colorScheme.onSurface,
+                              showAnimation: true,
+                              selectedColor: Theme.of(context)
+                                  .colorScheme
+                                  .secondaryContainer,
+                              selectedFontColor: Theme.of(context)
+                                  .colorScheme
+                                  .onSecondaryContainer,
+                              notSelectedColor:
+                                  Theme.of(context).colorScheme.surface,
+                              notSelectedFontColor:
+                                  Theme.of(context).colorScheme.onSurface,
                               fillRatio: 1,
-                              member: snapshot.data
-                                  .firstWhere((element) => element.memberId == payerId),
-                              onMemberChosen: (chosen) {},
+                              member: snapshot.data!.firstWhere(
+                                  (element) => element.memberId == payerId),
+                              onChipClicked: (chosen) {},
                             ),
                           ),
                           secondChild: MemberChips(
-                            allMembers: snapshot.data,
-                            allowMultiple: false,
-                            noAnimation: true,
-                            membersChosen: snapshot.data
+                            allMembers: snapshot.data!,
+                            allowMultipleSelected: false,
+                            showAnimation: false,
+                            chosenMembers: snapshot.data!
                                 .where((element) => element.memberId == payerId)
                                 .toList(),
-                            membersChanged: (newMembers) {
+                            chosenMembersChanged: (newMembers) {
                               _setState(() {
                                 purchaserSelector = CrossFadeState.showFirst;
                                 if (newMembers.isNotEmpty) {
                                   payerId = newMembers.first.memberId;
                                   if (selectedMember != null &&
-                                      selectedMember.memberId == payerId) {
+                                      selectedMember!.memberId == payerId) {
                                     selectedMember = null;
                                   }
                                 }
@@ -265,22 +277,24 @@ class AddModifyPayment {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
                 if (_savedPayment != null && !_alreadyInitializedSave) {
-                  Member selectedMember = snapshot.data.firstWhere(
-                      (element) => element.memberId == _savedPayment.takerId,
-                      orElse: () => null);
-                  if (selectedMember != null) this.selectedMember = selectedMember;
+                  Member? selectedMember = snapshot.data!.firstWhereOrNull(
+                      (element) => element.memberId == _savedPayment!.takerId);
+                  if (selectedMember != null)
+                    this.selectedMember = selectedMember;
                   _alreadyInitializedSave = true;
                 }
                 return MemberChips(
-                  allowMultiple: false,
-                  allMembers:
-                      snapshot.data.where((element) => element.memberId != payerId).toList(),
-                  membersChanged: (members) {
+                  allowMultipleSelected: false,
+                  allMembers: snapshot.data!
+                      .where((element) => element.memberId != payerId)
+                      .toList(),
+                  chosenMembersChanged: (members) {
                     _setState(() {
                       selectedMember = members.isEmpty ? null : members[0];
                     });
                   },
-                  membersChosen: [selectedMember],
+                  chosenMembers:
+                      selectedMember == null ? [] : [selectedMember!],
                 );
               } else {
                 return ErrorMessage(
@@ -302,9 +316,11 @@ class AddModifyPayment {
       );
 
   AnimatedCrossFade warningText() {
-    bool isVisible = (selectedMember != null && selectedMember.memberId != currentUserId) &&
-        payerId != currentUserId;
-    CrossFadeState state = isVisible ? CrossFadeState.showSecond : CrossFadeState.showFirst;
+    bool isVisible =
+        (selectedMember != null && selectedMember!.memberId != currentUserId) &&
+            payerId != currentUserId;
+    CrossFadeState state =
+        isVisible ? CrossFadeState.showSecond : CrossFadeState.showFirst;
     return AnimatedCrossFade(
       duration: Duration(milliseconds: 100),
       crossFadeState: state,
@@ -314,7 +330,8 @@ class AddModifyPayment {
         child: Center(
           child: Text(
             'warning_wont_see'.tr(),
-            style: _theme.textTheme.titleMedium.copyWith(color: _theme.colorScheme.error),
+            style: _theme!.textTheme.titleMedium!
+                .copyWith(color: _theme!.colorScheme.error),
             textAlign: TextAlign.center,
           ),
         ),

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'app_theme.dart';
 
 class AppStateNotifier extends ChangeNotifier {
-  String themeName = 'greenLightTheme';
-  ThemeData theme = AppTheme.themes['greenLightTheme'];
+  String? themeName = 'greenLightTheme';
+  ThemeData? theme = AppTheme.themes['greenLightTheme'];
 
   void updateThemeNoNotify(String themeName) {
     this.theme = AppTheme.themes[themeName];
@@ -13,7 +13,7 @@ class AppStateNotifier extends ChangeNotifier {
     this.themeName = themeName;
   }
 
-  void updateTheme(String themeName, {ColorScheme dynamicScheme}) {
+  void updateTheme(String? themeName, {ColorScheme? dynamicScheme}) {
     this.theme = AppTheme.themes[themeName];
     currentThemeName = themeName;
     this.themeName = themeName;

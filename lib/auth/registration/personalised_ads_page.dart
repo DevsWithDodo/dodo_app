@@ -13,10 +13,10 @@ import '../../essentials/widgets/gradient_button.dart';
 import '../../groups/join_group.dart';
 
 class PersonalisedAdsPage extends StatefulWidget {
-  final String inviteUrl;
-  final String username;
-  final String pin;
-  final String defaultCurrency;
+  final String? inviteUrl;
+  final String? username;
+  final String? pin;
+  final String? defaultCurrency;
 
   PersonalisedAdsPage({this.inviteUrl, this.username, this.pin, this.defaultCurrency});
 
@@ -64,7 +64,7 @@ class _PersonalisedAdsPageState extends State<PersonalisedAdsPage> {
                                     launchUrlString('https://policies.google.com/privacy'),
                                 child: Text(
                                   'personalised_ads'.tr(),
-                                  style: Theme.of(context).textTheme.labelLarge.copyWith(
+                                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
                                         decoration: TextDecoration.underline,
                                       ),
                                   textAlign: TextAlign.center,
@@ -132,7 +132,7 @@ class _PersonalisedAdsPageState extends State<PersonalisedAdsPage> {
         (r) => false);
   }
 
-  Future<bool> _register(String username, String password, String currency) async {
+  Future<bool> _register(String? username, String? password, String? currency) async {
     try {
       dynamic token;
       if (isFirebasePlatformEnabled) {

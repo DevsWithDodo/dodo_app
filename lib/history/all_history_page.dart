@@ -15,37 +15,42 @@ import 'history_filter.dart';
 
 class AllHistoryRoute extends StatefulWidget {
   ///Defines whether to show purchases (0) or payments (1)
-  final int startingIndex;
+  final int? startingIndex;
 
-  AllHistoryRoute({@required this.startingIndex});
+  AllHistoryRoute({required this.startingIndex});
 
   @override
   _AllHistoryRouteState createState() => _AllHistoryRouteState();
 }
 
-class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderStateMixin {
-  DateTime _startDate;
-  DateTime _endDate;
-  Category _category;
-  Future<List<Purchase>> _purchases;
-  Future<List<Payment>> _payments;
+class _AllHistoryRouteState extends State<AllHistoryRoute>
+    with TickerProviderStateMixin {
+  DateTime? _startDate;
+  DateTime? _endDate;
+  Category? _category;
+  Future<List<Purchase>>? _purchases;
+  Future<List<Payment>>? _payments;
 
   ScrollController _purchaseScrollController = ScrollController();
   ScrollController _paymentScrollController = ScrollController();
-  TabController _tabController;
-  int _selectedIndex = 0;
+  TabController? _tabController;
+  int? _selectedIndex = 0;
   bool _showFilter = false;
-  int _selectedMemberId = currentUserId;
+  int _selectedMemberId = currentUserId!;
 
   Future<List<Purchase>> _getPurchases({bool overwriteCache = false}) async {
     try {
       http.Response response;
       response = await httpGet(
         uri: generateUri(GetUriKeys.purchases, queryParams: {
-          'from_date': _startDate == null ? null : DateFormat('yyyy-MM-dd').format(_startDate),
-          'until_date': _endDate == null ? null : DateFormat('yyyy-MM-dd').format(_endDate),
+          'from_date': _startDate == null
+              ? null
+              : DateFormat('yyyy-MM-dd').format(_startDate!),
+          'until_date': _endDate == null
+              ? null
+              : DateFormat('yyyy-MM-dd').format(_endDate!),
           'user_id': _selectedMemberId.toString(),
-          ...(_category == null ? {} : {'category': _category.text})
+          ...(_category == null ? {} : {'category': _category!.text})
         }),
         context: context,
         overwriteCache: overwriteCache,
@@ -66,10 +71,14 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
       http.Response response;
       response = await httpGet(
         uri: generateUri(GetUriKeys.payments, queryParams: {
-          'from_date': _startDate == null ? null : DateFormat('yyyy-MM-dd').format(_startDate),
-          'until_date': _endDate == null ? null : DateFormat('yyyy-MM-dd').format(_endDate),
+          'from_date': _startDate == null
+              ? null
+              : DateFormat('yyyy-MM-dd').format(_startDate!),
+          'until_date': _endDate == null
+              ? null
+              : DateFormat('yyyy-MM-dd').format(_endDate!),
           'user_id': _selectedMemberId.toString(),
-          ...(_category == null ? {} : {'category': _category.text})
+          ...(_category == null ? {} : {'category': _category!.text})
         }),
         context: context,
         overwriteCache: overwriteCache,
@@ -86,8 +95,7 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
     }
   }
 
-  void callback({bool purchase = false, bool payment = false}) {
-    //TODO: rename
+  void onDeletePurchasePayment({bool purchase = false, bool payment = false}) {
     if (!purchase && !payment) {
       clearGroupCache();
       setState(() {
@@ -102,14 +110,16 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
       if (payment) {
         deleteCache(uri: generateUri(GetUriKeys.payments));
         deleteCache(
-            uri: 'payments?group=$currentGroupId&from_date', multipleArgs: true); //payments date
+            uri: 'payments?group=$currentGroupId&from_date',
+            multipleArgs: true); //payments date
         _payments = null;
         _payments = _getPayments(overwriteCache: true);
       }
       if (purchase) {
         deleteCache(uri: generateUri(GetUriKeys.purchases));
         deleteCache(
-            uri: 'purchases?group=$currentGroupId&from_date', multipleArgs: true); //purchases date
+            uri: 'purchases?group=$currentGroupId&from_date',
+            multipleArgs: true); //purchases date
         _purchases = null;
         _purchases = _getPurchases(overwriteCache: true);
       }
@@ -120,7 +130,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
 
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this, initialIndex: widget.startingIndex);
+    _tabController = TabController(
+        length: 2, vsync: this, initialIndex: widget.startingIndex!);
     _selectedIndex = widget.startingIndex;
 
     _purchases = null;
@@ -143,12 +154,13 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
           'history'.tr(),
           style: Theme.of(context)
               .textTheme
-              .titleLarge
+              .titleLarge!
               .copyWith(color: Theme.of(context).colorScheme.onBackground),
         ),
         actions: [
           IconButton(
-            icon: Icon(_showFilter ? Icons.arrow_drop_up : Icons.filter_list_alt),
+            icon:
+                Icon(_showFilter ? Icons.arrow_drop_up : Icons.filter_list_alt),
             onPressed: () {
               setState(() {
                 _showFilter = !_showFilter;
@@ -164,23 +176,26 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
               onDestinationSelected: (_index) {
                 setState(() {
                   _selectedIndex = _index;
-                  _tabController.animateTo(_index);
+                  _tabController!.animateTo(_index);
                 });
               },
-              selectedIndex: _selectedIndex,
+              selectedIndex: _selectedIndex!,
               destinations: [
                 NavigationDestination(
                   icon: Icon(Icons.shopping_cart),
                   label: 'purchases'.tr(),
                 ),
-                NavigationDestination(icon: Icon(Icons.attach_money), label: 'payments'.tr())
+                NavigationDestination(
+                    icon: Icon(Icons.attach_money), label: 'payments'.tr())
               ],
             ),
       body: Column(
         children: [
           AnimatedCrossFade(
             duration: Duration(milliseconds: 250),
-            crossFadeState: _showFilter ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            crossFadeState: _showFilter
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
             firstChild: Container(),
             secondChild: Visibility(
                 visible: _showFilter,
@@ -189,10 +204,12 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
                   endDate: _endDate,
                   startDate: _startDate,
                   selectedMember: _selectedMemberId,
-                  onValuesChanged: (Member newMemberChosen, DateTime newStartDate,
-                      DateTime newEndDate, Category newCategory) {
+                  onValuesChanged: (Member newMemberChosen,
+                      DateTime? newStartDate,
+                      DateTime? newEndDate,
+                      Category? newCategory) {
                     setState(() {
-                      _selectedMemberId = newMemberChosen.memberId;
+                      _selectedMemberId = newMemberChosen.memberId!;
                       _startDate = newStartDate;
                       _endDate = newEndDate;
                       _category = newCategory;
@@ -249,7 +266,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
                 curve: Curves.easeOut,
                 duration: const Duration(milliseconds: 300),
               );
-            } else if (_selectedIndex == 1 && _paymentScrollController.hasClients) {
+            } else if (_selectedIndex == 1 &&
+                _paymentScrollController.hasClients) {
               _paymentScrollController.animateTo(
                 0.0,
                 curve: Curves.easeOut,
@@ -270,14 +288,14 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
     return [
       FutureBuilder(
         future: _purchases,
-        builder: (context, snapshot) {
+        builder: (context, AsyncSnapshot<List<Purchase>> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               return ListView(
                   controller: _purchaseScrollController,
                   key: PageStorageKey('purchaseList'),
                   shrinkWrap: true,
-                  children: _generatePurchase(snapshot.data));
+                  children: _generatePurchase(snapshot.data!));
             } else {
               return ErrorMessage(
                 error: snapshot.error.toString(),
@@ -299,14 +317,14 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
       ),
       FutureBuilder(
         future: _payments,
-        builder: (context, snapshot) {
+        builder: (context, AsyncSnapshot<List<Payment>> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               return ListView(
                   controller: _paymentScrollController,
                   key: PageStorageKey('paymentList'),
                   shrinkWrap: true,
-                  children: _generatePayments(snapshot.data));
+                  children: _generatePayments(snapshot.data!));
             } else {
               return ErrorMessage(
                 error: snapshot.error.toString(),
@@ -337,32 +355,31 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
           padding: EdgeInsets.all(25),
           child: Text(
             'nothing_to_show'.tr(),
-            style: Theme.of(context).textTheme.bodyText1,
+            style: Theme.of(context).textTheme.bodyLarge,
             textAlign: TextAlign.center,
           ),
         )
       ];
     }
-    Function callback = this.callback;
     DateTime nowNow = DateTime.now();
     //Initial
     DateTime now = DateTime(nowNow.year, nowNow.month, nowNow.day);
     Widget initial;
-    if (now.difference(data[0].updatedAt).inDays > 7) {
-      int toSubtract = (now.difference(data[0].updatedAt).inDays / 7).floor();
+    if (now.difference(data[0].updatedAt!).inDays > 7) {
+      int toSubtract = (now.difference(data[0].updatedAt!).inDays / 7).floor();
       now = now.subtract(Duration(days: toSubtract * 7));
       initial = Column(
         children: [
           Container(
               padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
               child: Text(
-                DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 7))) +
+                DateFormat('yyyy/MM/dd')
+                        .format(now.subtract(Duration(days: 7))) +
                     ' - ' +
-                    DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 1))),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall
-                    .copyWith(color: Theme.of(context).colorScheme.onBackground),
+                    DateFormat('yyyy/MM/dd')
+                        .format(now.subtract(Duration(days: 1))),
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                    color: Theme.of(context).colorScheme.onBackground),
               )),
         ],
       );
@@ -373,10 +390,11 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
             child: Text(
               DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 7))) +
                   ' - ' +
-                  DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 1))),
+                  DateFormat('yyyy/MM/dd')
+                      .format(now.subtract(Duration(days: 1))),
               style: Theme.of(context)
                   .textTheme
-                  .titleSmall
+                  .titleSmall!
                   .copyWith(color: Theme.of(context).colorScheme.onBackground),
             )),
       );
@@ -384,8 +402,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
     List<Widget> allEntries = [initial];
     List<PaymentEntry> weekEntries = [];
     for (Payment data in data) {
-      if (now.difference(data.updatedAt).inDays > 7) {
-        int toSubtract = (now.difference(data.updatedAt).inDays / 7).floor();
+      if (now.difference(data.updatedAt!).inDays > 7) {
+        int toSubtract = (now.difference(data.updatedAt!).inDays / 7).floor();
         now = now.subtract(Duration(days: toSubtract * 7));
         allEntries.add(Padding(
           padding: const EdgeInsets.all(8.0),
@@ -395,8 +413,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
         ));
         weekEntries = [];
         weekEntries.add(PaymentEntry(
-          data: data,
-          callback: callback,
+          payment: data,
+          onDelete: onDeletePurchasePayment,
           selectedMemberId: _selectedMemberId,
         ));
         allEntries.add(Center(
@@ -405,18 +423,19 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
             child: Text(
               DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 7))) +
                   ' - ' +
-                  DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 1))),
+                  DateFormat('yyyy/MM/dd')
+                      .format(now.subtract(Duration(days: 1))),
               style: Theme.of(context)
                   .textTheme
-                  .titleSmall
+                  .titleSmall!
                   .copyWith(color: Theme.of(context).colorScheme.onBackground),
             ),
           ),
         ));
       } else {
         weekEntries.add(PaymentEntry(
-          data: data,
-          callback: callback,
+          payment: data,
+          onDelete: onDeletePurchasePayment,
           selectedMemberId: _selectedMemberId,
         ));
       }
@@ -441,19 +460,18 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
             'nothing_to_show'.tr(),
             style: Theme.of(context)
                 .textTheme
-                .bodyLarge
+                .bodyLarge!
                 .copyWith(color: Theme.of(context).colorScheme.onBackground),
             textAlign: TextAlign.center,
           ),
         )
       ];
     }
-    Function callback = this.callback;
     DateTime nowNow = DateTime.now();
     DateTime now = DateTime(nowNow.year, nowNow.month, nowNow.day);
     Widget initial;
-    if (now.difference(data[0].updatedAt).inDays > 7) {
-      int toSubtract = (now.difference(data[0].updatedAt).inDays / 7).floor();
+    if (now.difference(data[0].updatedAt!).inDays > 7) {
+      int toSubtract = (now.difference(data[0].updatedAt!).inDays / 7).floor();
       now = now.subtract(Duration(days: toSubtract * 7));
       initial = Column(
         children: [
@@ -462,10 +480,11 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
             child: Text(
               DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 7))) +
                   ' - ' +
-                  DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 1))),
+                  DateFormat('yyyy/MM/dd')
+                      .format(now.subtract(Duration(days: 1))),
               style: Theme.of(context)
                   .textTheme
-                  .titleSmall
+                  .titleSmall!
                   .copyWith(color: Theme.of(context).colorScheme.onBackground),
             ),
           ),
@@ -478,10 +497,11 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
             child: Text(
               DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 7))) +
                   ' - ' +
-                  DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 1))),
+                  DateFormat('yyyy/MM/dd')
+                      .format(now.subtract(Duration(days: 1))),
               style: Theme.of(context)
                   .textTheme
-                  .titleSmall
+                  .titleSmall!
                   .copyWith(color: Theme.of(context).colorScheme.onBackground),
             )),
       );
@@ -489,8 +509,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
     List<Widget> allEntries = [initial];
     List<PurchaseEntry> weekEntries = [];
     for (Purchase data in data) {
-      if (now.difference(data.updatedAt).inDays > 7) {
-        int toSubtract = (now.difference(data.updatedAt).inDays / 7).floor();
+      if (now.difference(data.updatedAt!).inDays > 7) {
+        int toSubtract = (now.difference(data.updatedAt!).inDays / 7).floor();
         now = now.subtract(Duration(days: toSubtract * 7));
         allEntries.add(Padding(
           padding: const EdgeInsets.all(8.0),
@@ -505,23 +525,24 @@ class _AllHistoryRouteState extends State<AllHistoryRoute> with TickerProviderSt
             child: Text(
               DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 7))) +
                   ' - ' +
-                  DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 1))),
+                  DateFormat('yyyy/MM/dd')
+                      .format(now.subtract(Duration(days: 1))),
               style: Theme.of(context)
                   .textTheme
-                  .titleSmall
+                  .titleSmall!
                   .copyWith(color: Theme.of(context).colorScheme.onBackground),
             ),
           ),
         ));
         weekEntries.add(PurchaseEntry(
           purchase: data,
-          callback: callback,
+          onDelete: onDeletePurchasePayment,
           selectedMemberId: _selectedMemberId,
         ));
       } else {
         weekEntries.add(PurchaseEntry(
           purchase: data,
-          callback: callback,
+          onDelete: onDeletePurchasePayment,
           selectedMemberId: _selectedMemberId,
         ));
       }

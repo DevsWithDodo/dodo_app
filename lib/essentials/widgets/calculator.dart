@@ -8,16 +8,16 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 
 class Calculator extends StatefulWidget {
-  final Function onCalculationReady;
-  final String initialNumber;
-  Calculator({this.onCalculationReady, this.initialNumber});
+  final void Function(String fromCalculation) onCalculationReady;
+  final String? initialNumber;
+  Calculator({required this.onCalculationReady, this.initialNumber});
   @override
   _CalculatorState createState() => _CalculatorState();
 }
 
 class _CalculatorState extends State<Calculator> {
   String _numToWrite = '';
-  Queue<String> _RPNintput = Queue<String>();
+  Queue<String?> _RPNintput = Queue<String?>();
   MyStack<String> _operators = MyStack<String>();
   bool _isStillNum = false;
   String _storeNum = '';
@@ -27,8 +27,8 @@ class _CalculatorState extends State<Calculator> {
     super.initState();
     if (widget.initialNumber != null) {
       _isStillNum = true;
-      _numToWrite = widget.initialNumber;
-      _storeNum = widget.initialNumber;
+      _numToWrite = widget.initialNumber!;
+      _storeNum = widget.initialNumber!;
     }
   }
 
@@ -112,7 +112,7 @@ class _CalculatorState extends State<Calculator> {
   String calculate() {
     MyStack newStack = MyStack();
     while (_RPNintput.length != 0) {
-      String something = _RPNintput.removeFirst();
+      String something = _RPNintput.removeFirst()!;
       if (double.tryParse(something) != null) {
         newStack.push(something);
       } else {
@@ -174,7 +174,7 @@ class _CalculatorState extends State<Calculator> {
             'calculator'.tr(),
             style: Theme.of(context)
                 .textTheme
-                .titleLarge
+                .titleLarge!
                 .copyWith(color: Theme.of(context).colorScheme.onSurface),
           ),
           SizedBox(
@@ -184,7 +184,7 @@ class _CalculatorState extends State<Calculator> {
             'calculator_explanation'.tr(),
             style: Theme.of(context)
                 .textTheme
-                .titleSmall
+                .titleSmall!
                 .copyWith(color: Theme.of(context).colorScheme.onSurface),
           ),
           SizedBox(
@@ -198,7 +198,7 @@ class _CalculatorState extends State<Calculator> {
                   '0',
                   style: Theme.of(context)
                       .textTheme
-                      .headlineSmall
+                      .headlineSmall!
                       .copyWith(color: Theme.of(context).colorScheme.tertiary),
                 ),
               ),
@@ -209,7 +209,7 @@ class _CalculatorState extends State<Calculator> {
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context)
                       .textTheme
-                      .headlineSmall
+                      .headlineSmall!
                       .copyWith(color: Theme.of(context).colorScheme.tertiary),
                 ),
               ),
@@ -251,8 +251,8 @@ class _CalculatorState extends State<Calculator> {
                   : () {
                       Navigator.pop(context);
                       if (double.tryParse(_numToWrite) != null) {
-                        widget.onCalculationReady(
-                            double.parse(_numToWrite).toMoneyString(currentGroupCurrency));
+                        widget.onCalculationReady(double.parse(_numToWrite)
+                            .toMoneyString(currentGroupCurrency));
                       }
                     },
               child: Icon(
@@ -275,7 +275,7 @@ class _CalculatorState extends State<Calculator> {
   List<String> _operatorsAndEquals = ['+', '-', '÷', '×', '='];
 
   List<Widget> _generateRow(int index) {
-    List row;
+    late List row;
     switch (index) {
       case 1:
         row = _firstRow;
@@ -291,7 +291,21 @@ class _CalculatorState extends State<Calculator> {
         break;
     }
     return row.map((e) {
-      List<String> notOperators = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '', 'C', '='];
+      List<String> notOperators = [
+        '0',
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+        '',
+        'C',
+        '='
+      ];
       Color color, textColor;
       if (_lastOperator == e) {
         color = Theme.of(context).colorScheme.secondary;
@@ -353,7 +367,10 @@ class _CalculatorState extends State<Calculator> {
                 child: e != 'b'
                     ? Text(
                         e,
-                        style: Theme.of(context).textTheme.headlineLarge.copyWith(color: textColor),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineLarge!
+                            .copyWith(color: textColor),
                       )
                     : Icon(Icons.backspace, color: textColor),
               ),

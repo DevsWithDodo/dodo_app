@@ -14,21 +14,23 @@ import '../config.dart';
 import 'dialogs/share_group_dialog.dart';
 
 class Invitation extends StatefulWidget {
-  final bool isAdmin;
+  final bool? isAdmin;
   Invitation({this.isAdmin});
   @override
   _InvitationState createState() => _InvitationState();
 }
 
 class _InvitationState extends State<Invitation> {
-  Future<String> _invitation;
-  Future<List<Member>> _unapproved;
-  bool _needsApproval;
+  Future<String>? _invitation;
+  Future<List<Member>>? _unapproved;
+  late bool _needsApproval;
 
   Future<String> _getInvitation() async {
     try {
       http.Response response = await httpGet(
-          uri: generateUri(GetUriKeys.groupCurrent), context: context, useCache: false);
+          uri: generateUri(GetUriKeys.groupCurrent),
+          context: context,
+          useCache: false);
       Map<String, dynamic> decoded = jsonDecode(response.body);
       _needsApproval = decoded['data']['admin_approval'] == 1;
       return decoded['data']['invitation'];
@@ -40,7 +42,9 @@ class _InvitationState extends State<Invitation> {
   Future<List<Member>> _getUnapprovedMembers() async {
     try {
       http.Response response = await httpGet(
-          uri: generateUri(GetUriKeys.groupUnapprovedMembers), context: context, useCache: false);
+          uri: generateUri(GetUriKeys.groupUnapprovedMembers),
+          context: context,
+          useCache: false);
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = <Member>[];
       for (Map<String, dynamic> member in decoded['data']) {
@@ -55,7 +59,10 @@ class _InvitationState extends State<Invitation> {
   Future<bool> _updateNeedsApproval() async {
     try {
       Map<String, dynamic> body = {'admin_approval': _needsApproval ? 1 : 0};
-      await httpPut(context: context, uri: '/groups/' + currentGroupId.toString(), body: body);
+      await httpPut(
+          context: context,
+          uri: '/groups/' + currentGroupId.toString(),
+          body: body);
       Future.delayed(delayTime()).then((value) => _onUpdateNeedsApproval());
       return true;
     } catch (_) {
@@ -96,7 +103,7 @@ class _InvitationState extends State<Invitation> {
               'invitation'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleLarge
+                  .titleLarge!
                   .copyWith(color: Theme.of(context).colorScheme.onSurface),
             ),
             SizedBox(
@@ -107,7 +114,7 @@ class _InvitationState extends State<Invitation> {
                 'invite_friends'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleSmall
+                    .titleSmall!
                     .copyWith(color: Theme.of(context).colorScheme.onSurface),
                 textAlign: TextAlign.center,
               ),
@@ -117,7 +124,7 @@ class _InvitationState extends State<Invitation> {
             ),
             FutureBuilder(
               future: _invitation,
-              builder: (context, snapshot) {
+              builder: (context, AsyncSnapshot<String> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {
                     print(snapshot.data);
@@ -138,19 +145,25 @@ class _InvitationState extends State<Invitation> {
                                 },
                                 child: Icon(
                                   Icons.share,
-                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
                                 ),
                               ),
                               Visibility(
-                                visible: widget.isAdmin,
+                                visible: widget.isAdmin!,
                                 child: Column(
                                   children: [
                                     SizedBox(height: 10),
                                     Center(
                                       child: Text(
                                         'add_guests_offline'.tr(),
-                                        style: Theme.of(context).textTheme.titleSmall.copyWith(
-                                            color: Theme.of(context).colorScheme.onSurface),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleSmall!
+                                            .copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -159,12 +172,15 @@ class _InvitationState extends State<Invitation> {
                                       onPressed: () {
                                         showDialog(
                                           context: context,
-                                          builder: (context) => AddGuestDialog(),
+                                          builder: (context) =>
+                                              AddGuestDialog(),
                                         );
                                       },
                                       child: Icon(
                                         Icons.person_add,
-                                        color: Theme.of(context).colorScheme.onPrimary,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
                                       ),
                                     ),
                                   ],
@@ -174,11 +190,13 @@ class _InvitationState extends State<Invitation> {
                           ),
                         ),
                         Visibility(
-                          visible: widget.isAdmin,
+                          visible: widget.isAdmin!,
                           child: FutureBuilder(
                             future: _unapproved,
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.done) {
+                            builder: (context,
+                                AsyncSnapshot<List<Member>> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.done) {
                                 if (snapshot.hasData) {
                                   return Column(
                                     children: [
@@ -193,17 +211,28 @@ class _InvitationState extends State<Invitation> {
                                         children: [
                                           Text(
                                             'group_needs_approval'.tr(),
-                                            style: Theme.of(context).textTheme.titleLarge.copyWith(
-                                                color: Theme.of(context).colorScheme.onSurface),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleLarge!
+                                                .copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurface),
                                             textAlign: TextAlign.center,
                                           ),
                                           SizedBox(
                                             height: 10,
                                           ),
                                           Text(
-                                            'group_needs_approval_explanation'.tr(),
-                                            style: Theme.of(context).textTheme.titleSmall.copyWith(
-                                                color: Theme.of(context).colorScheme.onSurface),
+                                            'group_needs_approval_explanation'
+                                                .tr(),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleSmall!
+                                                .copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurface),
                                             textAlign: TextAlign.center,
                                           ),
                                         ],
@@ -212,36 +241,50 @@ class _InvitationState extends State<Invitation> {
                                         height: 5,
                                       ),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
                                         children: [
                                           Text(
                                             'needs_approval'.tr(),
-                                            style: Theme.of(context).textTheme.titleSmall.copyWith(
-                                                color: Theme.of(context).colorScheme.onSurface),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleSmall!
+                                                .copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurface),
                                           ),
                                           Switch(
                                             value: _needsApproval,
-                                            activeColor: Theme.of(context).colorScheme.primary,
+                                            activeColor: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
                                             onChanged: (value) {
                                               setState(() {
                                                 _needsApproval = value;
                                               });
                                               showDialog(
-                                                  builder: (context) => FutureSuccessDialog(
-                                                        future: _updateNeedsApproval(),
+                                                  builder: (context) =>
+                                                      FutureSuccessDialog(
+                                                        future:
+                                                            _updateNeedsApproval(),
                                                         onDataTrue: () {
                                                           _onUpdateNeedsApproval();
                                                         },
                                                         onDataFalse: () {
-                                                          Navigator.pop(context);
+                                                          Navigator.pop(
+                                                              context);
                                                           setState(() {
-                                                            _needsApproval = !_needsApproval;
+                                                            _needsApproval =
+                                                                !_needsApproval;
                                                           });
                                                         },
                                                         onNoData: () {
-                                                          Navigator.pop(context);
+                                                          Navigator.pop(
+                                                              context);
                                                           setState(() {
-                                                            _needsApproval = !_needsApproval;
+                                                            _needsApproval =
+                                                                !_needsApproval;
                                                           });
                                                         },
                                                       ),
@@ -252,7 +295,7 @@ class _InvitationState extends State<Invitation> {
                                         ],
                                       ),
                                       Visibility(
-                                        visible: snapshot.data.length != 0,
+                                        visible: snapshot.data!.length != 0,
                                         child: Column(
                                           children: [
                                             SizedBox(height: 5),
@@ -262,26 +305,31 @@ class _InvitationState extends State<Invitation> {
                                               'approve_members'.tr(),
                                               style: Theme.of(context)
                                                   .textTheme
-                                                  .titleLarge
+                                                  .titleLarge!
                                                   .copyWith(
-                                                      color:
-                                                          Theme.of(context).colorScheme.onSurface),
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onSurface),
                                               textAlign: TextAlign.center,
                                             ),
                                             SizedBox(
                                               height: 10,
                                             ),
                                             Text(
-                                              'approve_members_explanation'.tr(),
+                                              'approve_members_explanation'
+                                                  .tr(),
                                               style: Theme.of(context)
                                                   .textTheme
-                                                  .titleSmall
+                                                  .titleSmall!
                                                   .copyWith(
-                                                      color:
-                                                          Theme.of(context).colorScheme.onSurface),
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onSurface),
                                               textAlign: TextAlign.center,
                                             ),
-                                            Column(children: _generateMembers(snapshot.data)),
+                                            Column(
+                                                children: _generateMembers(
+                                                    snapshot.data!)),
                                           ],
                                         ),
                                       ),
@@ -339,7 +387,7 @@ class _InvitationState extends State<Invitation> {
           boxShadow: (Theme.of(context).brightness == Brightness.light)
               ? [
                   BoxShadow(
-                    color: Colors.grey[500],
+                    color: Colors.grey[500]!,
                     offset: Offset(0.0, 1.5),
                     blurRadius: 1.5,
                   )
@@ -384,20 +432,26 @@ class _InvitationState extends State<Invitation> {
                             children: <Widget>[
                               Flexible(
                                   child: Text(
-                                member.username,
+                                member.username!,
                                 style: Theme.of(context)
                                     .textTheme
-                                    .bodyLarge
-                                    .copyWith(color: Theme.of(context).colorScheme.onSecondary),
+                                    .bodyLarge!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSecondary),
                                 overflow: TextOverflow.ellipsis,
                               )),
                               Flexible(
                                   child: Text(
-                                member.nickname ?? member.username,
+                                member.nickname ?? member.username!,
                                 style: Theme.of(context)
                                     .textTheme
-                                    .bodySmall
-                                    .copyWith(color: Theme.of(context).colorScheme.onSecondary),
+                                    .bodySmall!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSecondary),
                                 overflow: TextOverflow.ellipsis,
                               ))
                             ],
@@ -417,19 +471,21 @@ class _InvitationState extends State<Invitation> {
 }
 
 class ApproveMember extends StatefulWidget {
-  final Member member;
+  final Member? member;
   ApproveMember({this.member});
   @override
   _ApproveMemberState createState() => _ApproveMemberState();
 }
 
 class _ApproveMemberState extends State<ApproveMember> {
-  Future<bool> _postApproveMember(int memberId, bool approve) async {
+  Future<bool> _postApproveMember(int? memberId, bool approve) async {
     try {
       Map<String, dynamic> body = {'member_id': memberId, 'approve': approve};
       await httpPost(
           context: context,
-          uri: '/groups/' + currentGroupId.toString() + '/members/approve_or_deny',
+          uri: '/groups/' +
+              currentGroupId.toString() +
+              '/members/approve_or_deny',
           body: body);
       Future.delayed(delayTime()).then((value) => _onPostApproveMember());
       return true;
@@ -452,14 +508,15 @@ class _ApproveMemberState extends State<ApproveMember> {
         children: [
           Row(
             children: <Widget>[
-              Icon(Icons.account_circle, color: Theme.of(context).colorScheme.secondary),
+              Icon(Icons.account_circle,
+                  color: Theme.of(context).colorScheme.secondary),
               Text(' - '),
               Flexible(
                   child: Text(
-                widget.member.username,
+                widget.member!.username!,
                 style: Theme.of(context)
                     .textTheme
-                    .bodyLarge
+                    .bodyLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurface),
               )),
             ],
@@ -469,14 +526,15 @@ class _ApproveMemberState extends State<ApproveMember> {
           ),
           Row(
             children: <Widget>[
-              Icon(Icons.account_box, color: Theme.of(context).colorScheme.secondary),
+              Icon(Icons.account_box,
+                  color: Theme.of(context).colorScheme.secondary),
               Text(' - '),
               Flexible(
                   child: Text(
-                widget.member.username,
+                widget.member!.username!,
                 style: Theme.of(context)
                     .textTheme
-                    .bodyLarge
+                    .bodyLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurface),
               )),
             ],
@@ -488,7 +546,8 @@ class _ApproveMemberState extends State<ApproveMember> {
             onPressed: () {
               showDialog(
                   builder: (context) => FutureSuccessDialog(
-                        future: _postApproveMember(widget.member.memberId, true),
+                        future:
+                            _postApproveMember(widget.member!.memberId, true),
                       ),
                   context: context);
             },
@@ -505,7 +564,7 @@ class _ApproveMemberState extends State<ApproveMember> {
                   'approve'.tr(),
                   style: Theme.of(context)
                       .textTheme
-                      .labelLarge
+                      .labelLarge!
                       .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                 ),
               ],
@@ -516,7 +575,8 @@ class _ApproveMemberState extends State<ApproveMember> {
             onPressed: () {
               showDialog(
                   builder: (context) => FutureSuccessDialog(
-                        future: _postApproveMember(widget.member.memberId, false),
+                        future:
+                            _postApproveMember(widget.member!.memberId, false),
                       ),
                   context: context);
             },
@@ -533,7 +593,7 @@ class _ApproveMemberState extends State<ApproveMember> {
                   'disapprove'.tr(),
                   style: Theme.of(context)
                       .textTheme
-                      .labelLarge
+                      .labelLarge!
                       .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                 ),
               ],

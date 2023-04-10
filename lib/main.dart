@@ -38,7 +38,7 @@ final getIt = GetIt.instance;
 // Needed for HTTPS
 class MyHttpOverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext context) {
+  HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
@@ -49,22 +49,22 @@ void getItSetup() {
   getIt.registerSingleton<NavigationService>(NavigationService());
 }
 
-FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
 Future myBackgroundMessageHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   onSelectNotification(message.data['payload']);
 }
 
-Future onSelectNotification(String payload) async {
-  print("Payload: " + payload);
+Future onSelectNotification(String? payload) async {
+  print("Payload: " + payload!);
   try {
     Map<String, dynamic> decoded = jsonDecode(payload);
-    int groupId = decoded['group_id'];
-    String groupName = decoded['group_name'];
-    String currency = decoded['group_currency'];
-    String page = decoded['screen'];
-    String details = decoded['details'];
+    int? groupId = decoded['group_id'];
+    String? groupName = decoded['group_name'];
+    String? currency = decoded['group_currency'];
+    String? page = decoded['screen'];
+    String? details = decoded['details'];
 
     //If this notification is about a user who just got accepted to a group
     if (details == 'added_to_group') {
@@ -76,12 +76,12 @@ Future onSelectNotification(String payload) async {
         usersGroupIds = <int>[];
       }
       //Add the group to the list and save them to the cache
-      usersGroups.add(groupName);
-      usersGroupIds.add(groupId);
+      usersGroups!.add(groupName!);
+      usersGroupIds!.add(groupId!);
       saveUsersGroups();
       saveUsersGroupIds();
       //If the group is one of the user's groups
-    } else if (usersGroupIds != null && usersGroupIds.contains(groupId)) {
+    } else if (usersGroupIds != null && usersGroupIds!.contains(groupId)) {
       saveGroupId(groupId);
       saveGroupName(groupName);
       if (currency != null) saveGroupCurrency(currency);
@@ -138,7 +138,7 @@ void main() async {
   getItSetup();
   HttpOverrides.global = new MyHttpOverrides();
   SharedPreferences preferences = await SharedPreferences.getInstance();
-  String themeName = '';
+  String? themeName = '';
 
   if (!preferences.containsKey('theme')) {
     if (SchedulerBinding.instance.window.platformBrightness ==
@@ -153,7 +153,7 @@ void main() async {
     themeName = preferences.getString('theme');
   }
   await loadAllPrefs();
-  String initURL;
+  String? initURL;
   try {
     initURL = await getInitialLink();
   } catch (_) {}
@@ -163,7 +163,7 @@ void main() async {
       child: ChangeNotifierProvider<AppStateNotifier>(
         create: (context) => AppStateNotifier(),
         child: LenderApp(
-          themeName: themeName,
+          themeName: themeName!,
           initURL: initURL,
         ),
       ),
@@ -184,8 +184,8 @@ void main() async {
 
 class LenderApp extends StatefulWidget {
   final String themeName;
-  final String initURL;
-  const LenderApp({@required this.themeName, this.initURL});
+  final String? initURL;
+  const LenderApp({required this.themeName, this.initURL});
 
   @override
   State<StatefulWidget> createState() => _LenderAppState();
@@ -195,13 +195,13 @@ class _LenderAppState extends State<LenderApp> {
   bool _first = true;
   bool _dynamicColorLoaded = false;
   //deeplink
-  StreamSubscription _sub;
-  String _link;
+  StreamSubscription? _sub;
+  String? _link;
   //in-app purchase
-  StreamSubscription<List<PurchaseDetails>> _subscription;
+  late StreamSubscription<List<PurchaseDetails>> _subscription;
 
   void initUniLinks() {
-    _sub = linkStream.listen((String link) {
+    _sub = linkStream.listen((String? link) {
       _link = link;
       print(link);
       setState(() {
@@ -229,13 +229,13 @@ class _LenderAppState extends State<LenderApp> {
             groupId, (groupId + '_notification').tr());
     flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin>()!
         .createNotificationChannelGroup(androidNotificationChannelGroup);
 
     for (String channel in channels) {
       flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+              AndroidFlutterLocalNotificationsPlugin>()!
           .createNotificationChannel(AndroidNotificationChannel(
             channel,
             (channel + '_notification').tr(),
@@ -246,7 +246,7 @@ class _LenderAppState extends State<LenderApp> {
   }
 
   Future<void> setupInitialMessage() async {
-    RemoteMessage initialMessage =
+    RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
@@ -266,7 +266,7 @@ class _LenderAppState extends State<LenderApp> {
             String url = (!useTest ? APP_URL : TEST_URL) + '/user';
             Map<String, String> header = {
               "Content-Type": "application/json",
-              "Authorization": "Bearer " + (apiToken == null ? '' : apiToken)
+              "Authorization": "Bearer " + (apiToken == null ? '' : apiToken!)
             };
             Map<String, dynamic> body = {};
             switch (details.productID) {
@@ -304,7 +304,7 @@ class _LenderAppState extends State<LenderApp> {
           }
         }
         // _handlePurchaseUpdates(purchases);
-      });
+      }) as StreamSubscription<List<PurchaseDetails>>;
     }
     if (isFirebasePlatformEnabled) {
       initUniLinks();
@@ -334,7 +334,7 @@ class _LenderAppState extends State<LenderApp> {
                 ['shopping_created', 'shopping_fulfilled', 'shopping_shop']);
             flutterLocalNotificationsPlugin
                 .resolvePlatformSpecificImplementation<
-                    AndroidFlutterLocalNotificationsPlugin>()
+                    AndroidFlutterLocalNotificationsPlugin>()!
                 .requestPermission();
           });
         }
@@ -356,9 +356,9 @@ class _LenderAppState extends State<LenderApp> {
               android: androidPlatformChannelSpecifics,
               iOS: iOSPlatformChannelSpecifics);
           flutterLocalNotificationsPlugin.show(
-              int.parse(message.data['id']) ?? 0,
-              message.notification.title,
-              message.notification.body,
+              int.tryParse(message.data['id'] ?? '0') ?? 0,
+              message.notification!.title,
+              message.notification!.body,
               platformChannelSpecifics,
               payload: message.data['payload']);
         });
@@ -392,7 +392,7 @@ class _LenderAppState extends State<LenderApp> {
       for (String currency
           in (decoded["rates"] as LinkedHashMap<String, dynamic>).keys) {
         if (currencies.containsKey(currency)) {
-          currencies[currency]["rate"] = decoded["rates"][currency];
+          currencies[currency]!["rate"] = decoded["rates"][currency];
         }
       }
     } catch (_) {
@@ -400,7 +400,7 @@ class _LenderAppState extends State<LenderApp> {
     }
   }
 
-  Future<bool> _supportedVersion() async {
+  Future<bool?> _supportedVersion() async {
     try {
       Map<String, String> header = {
         "Content-Type": "application/json",
@@ -410,7 +410,7 @@ class _LenderAppState extends State<LenderApp> {
               '/supported?version=' +
               currentVersion.toString()),
           headers: header);
-      bool decoded = jsonDecode(response.body);
+      bool? decoded = jsonDecode(response.body);
       return decoded;
     } catch (_) {
       throw _;
@@ -421,7 +421,7 @@ class _LenderAppState extends State<LenderApp> {
     try {
       Map<String, String> header = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + (apiToken == null ? '' : apiToken)
+        "Authorization": "Bearer " + (apiToken == null ? '' : apiToken!)
       };
       http.Response response = await http.get(
           Uri.parse((useTest ? TEST_URL : APP_URL) + '/user'),
@@ -446,7 +446,7 @@ class _LenderAppState extends State<LenderApp> {
       }
       SharedPreferences preferences = await SharedPreferences.getInstance();
       if (!useGradients &&
-          preferences.getString('theme').contains('Gradient')) {
+          preferences.getString('theme')!.contains('Gradient')) {
         preferences.setString('theme', 'greenLightTheme');
       }
     } catch (_) {
@@ -456,7 +456,7 @@ class _LenderAppState extends State<LenderApp> {
 
   @override
   dispose() {
-    if (_sub != null) _sub.cancel();
+    if (_sub != null) _sub!.cancel();
     _subscription.cancel();
     super.dispose();
   }
@@ -466,9 +466,9 @@ class _LenderAppState extends State<LenderApp> {
     return Consumer<AppStateNotifier>(
       builder: (context, appState, child) {
         return DynamicColorBuilder(
-            builder: (ColorScheme lightDynamic, ColorScheme darkDynamic) {
+            builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
           if (lightDynamic != null && !_dynamicColorLoaded) {
-            AppTheme.addDynamicThemes(lightDynamic, darkDynamic);
+            AppTheme.addDynamicThemes(lightDynamic, darkDynamic!);
             appState.updateThemeNoNotify(widget.themeName);
             _dynamicColorLoaded = true;
           }

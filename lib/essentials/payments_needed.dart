@@ -14,7 +14,8 @@ List<Payment> paymentsNeeded(List<Member> members) {
           memberId: member.memberId));
     }
     do {
-      memberCopy.sort((member1, member2) => member1.balance.compareTo(member2.balance));
+      memberCopy.sort(
+          (member1, member2) => member1.balance!.compareTo(member2.balance!));
       var minPerson = memberCopy[0];
       var maxPerson = memberCopy[memberCopy.length - 1];
       payments.add(
@@ -28,25 +29,25 @@ List<Payment> paymentsNeeded(List<Member> members) {
           takerId: maxPerson.memberId,
           takerUsername: maxPerson.username,
           takerNickname: maxPerson.nickname,
-          amount: maxPerson.balance > minPerson.balance.abs()
-              ? minPerson.balance.abs()
-              : maxPerson.balance.abs(),
-          amountOriginalCurrency: maxPerson.balance > minPerson.balance.abs()
-              ? minPerson.balance.abs()
-              : maxPerson.balance.abs(),
+          amount: maxPerson.balance! > minPerson.balance!.abs()
+              ? minPerson.balance!.abs()
+              : maxPerson.balance!.abs(),
+          amountOriginalCurrency: maxPerson.balance! > minPerson.balance!.abs()
+              ? minPerson.balance!.abs()
+              : maxPerson.balance!.abs(),
           originalCurrency: currentGroupCurrency,
           updatedAt: DateTime.now(),
         ),
       );
-      if (maxPerson.balance > minPerson.balance.abs()) {
-        maxPerson.balance -= minPerson.balance.abs();
+      if (maxPerson.balance! > minPerson.balance!.abs()) {
+        maxPerson.balance = maxPerson.balance! - minPerson.balance!.abs();
         minPerson.balance = 0;
       } else {
-        minPerson.balance += maxPerson.balance;
+        minPerson.balance = minPerson.balance! + maxPerson.balance!;
         maxPerson.balance = 0;
       }
-    } while (memberCopy.where((member) => member.balance > 0).length > 0 &&
-        memberCopy.where((member) => member.balance < 0).length > 0);
+    } while (memberCopy.where((member) => member.balance! > 0).length > 0 &&
+        memberCopy.where((member) => member.balance! < 0).length > 0);
 
     return payments;
   } else {

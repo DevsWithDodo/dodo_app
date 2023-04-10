@@ -15,7 +15,7 @@ class TrialEndedDialog extends StatelessWidget {
               'trial_ended'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleLarge
+                  .titleLarge!
                   .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -26,7 +26,7 @@ class TrialEndedDialog extends StatelessWidget {
               'trial_ended_explanation'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleSmall
+                  .titleSmall!
                   .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -49,7 +49,7 @@ class TrialEndedDialog extends StatelessWidget {
               'trial_ended_explanation_2'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleSmall
+                  .titleSmall!
                   .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),

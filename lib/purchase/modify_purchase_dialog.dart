@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class ModifyPurchaseDialog extends StatefulWidget {
-  final Purchase savedPurchase;
-  ModifyPurchaseDialog({@required this.savedPurchase});
+  final Purchase? savedPurchase;
+  ModifyPurchaseDialog({required this.savedPurchase});
   @override
   _ModifyPurchaseDialogState createState() => _ModifyPurchaseDialogState();
 }
@@ -19,7 +19,7 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog> with AddMod
 
   int _index = 0;
 
-  Future<bool> _updatePurchase(List<Member> members, double amount, String name, int purchaseId,
+  Future<bool> _updatePurchase(List<Member> members, double amount, String name, int? purchaseId,
       BuildContext context) async {
     try {
       Map<String, dynamic> body = generateBody(name, amount, members);
@@ -67,7 +67,7 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog> with AddMod
                 'modify_purchase'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleLarge
+                    .titleLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               )),
@@ -79,7 +79,7 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog> with AddMod
                 'modify_purchase_explanation'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleSmall
+                    .titleSmall!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               )),
@@ -133,14 +133,14 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog> with AddMod
                   GradientButton(
                     onPressed: () {
                       if (_index != 3) {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           FocusScope.of(context).unfocus();
                           setState(() {
                             _index++;
                           });
                         }
                       } else {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           FocusScope.of(context).unfocus();
                           if (!membersMap.containsValue(true)) {
                             FToast ft = FToast();
@@ -160,7 +160,7 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog> with AddMod
                           showDialog(
                               builder: (context) => FutureSuccessDialog(
                                     future: _updatePurchase(members, amount, name,
-                                        widget.savedPurchase.purchaseId, context),
+                                        widget.savedPurchase!.purchaseId, context),
                                   ),
                               context: context);
                         }

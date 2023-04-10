@@ -60,7 +60,7 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
                 'rename_group'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleLarge
+                    .titleLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               SizedBox(
@@ -109,7 +109,7 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
   }
 
   void _buttonPush() {
-    if (_groupNameFormKey.currentState.validate()) {
+    if (_groupNameFormKey.currentState!.validate()) {
       FocusScope.of(context).unfocus();
       String groupName = _groupNameController.text;
       showDialog(

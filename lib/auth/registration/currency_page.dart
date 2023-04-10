@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import '../../essentials/widgets/gradient_button.dart';
 
 class CurrencyPage extends StatefulWidget {
-  final String inviteUrl;
-  final String username;
-  final String pin;
+  final String? inviteUrl;
+  final String? username;
+  final String? pin;
   CurrencyPage({this.inviteUrl, this.username, this.pin});
   @override
   State<CurrencyPage> createState() => _CurrencyPageState();

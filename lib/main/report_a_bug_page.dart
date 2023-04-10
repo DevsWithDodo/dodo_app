@@ -7,9 +7,9 @@ import '../essentials/validation_rules.dart';
 import '../essentials/widgets/future_success_dialog.dart';
 
 class ReportABugPage extends StatefulWidget {
-  final String location;
-  final DateTime date;
-  final String error;
+  final String? location;
+  final DateTime? date;
+  final String? error;
   ReportABugPage({this.error, this.date, this.location});
   @override
   _ReportABugPageState createState() => _ReportABugPageState();
@@ -54,8 +54,8 @@ class _ReportABugPageState extends State<ReportABugPage> {
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Text(
                                 DateFormat('yyyy/MM/dd - HH:mm')
-                                    .format(widget.date == null ? now : widget.date),
-                                style: Theme.of(context).textTheme.bodyLarge.copyWith(
+                                    .format(widget.date == null ? now : widget.date!),
+                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                                     color: Theme.of(context).colorScheme.onSurfaceVariant),
                               ),
                             ),
@@ -78,8 +78,8 @@ class _ReportABugPageState extends State<ReportABugPage> {
                                 : Padding(
                                     padding: const EdgeInsets.only(left: 8.0),
                                     child: Text(
-                                      widget.error.tr(),
-                                      style: Theme.of(context).textTheme.bodyLarge.copyWith(
+                                      widget.error!.tr(),
+                                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                                           color: Theme.of(context).colorScheme.onSurfaceVariant),
                                     ),
                                   ),
@@ -102,8 +102,8 @@ class _ReportABugPageState extends State<ReportABugPage> {
                                 : Padding(
                                     padding: const EdgeInsets.only(left: 8.0),
                                     child: Text(
-                                      widget.location,
-                                      style: Theme.of(context).textTheme.bodyLarge.copyWith(
+                                      widget.location!,
+                                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                                           color: Theme.of(context).colorScheme.onSurfaceVariant),
                                     ),
                                   ),
@@ -141,7 +141,7 @@ class _ReportABugPageState extends State<ReportABugPage> {
           backgroundColor: Theme.of(context).colorScheme.tertiary,
           foregroundColor: Theme.of(context).colorScheme.onTertiary,
           onPressed: () {
-            if (_formKey.currentState.validate()) {
+            if (_formKey.currentState!.validate()) {
               String error = widget.error ?? _bugController.text;
               DateTime date = widget.date ?? now;
               String location = widget.location ?? _locationController.text;

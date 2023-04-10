@@ -3,16 +3,16 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class CategoryPickerDropdown extends StatefulWidget {
-  final Category defaultCategoryValue;
+  final Category? defaultCategoryValue;
   final ValueChanged<Category> onCategoryChanged;
   final bool filled;
   final bool noContentPadding;
   final bool showSymbol;
-  final Color dropdownColor;
-  final Color textColor;
+  final Color? dropdownColor;
+  final Color? textColor;
   CategoryPickerDropdown({
-    @required this.defaultCategoryValue,
-    @required this.onCategoryChanged,
+    required this.defaultCategoryValue,
+    required this.onCategoryChanged,
     this.filled = true,
     this.noContentPadding = false,
     this.showSymbol = true,
@@ -57,7 +57,7 @@ class _CategoryPickerDropdown extends State<CategoryPickerDropdown> {
                 ),
                 Text(
                   category.text.tr(),
-                  style: Theme.of(context).textTheme.labelSmall.copyWith(
+                  style: Theme.of(context).textTheme.labelSmall!.copyWith(
                         color: widget.defaultCategoryValue == category
                             ? Theme.of(context).colorScheme.onTertiary
                             : Theme.of(context).colorScheme.onSurfaceVariant,

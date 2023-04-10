@@ -125,7 +125,7 @@ class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment
 
   void _buttonPush(BuildContext context) {
     FocusScope.of(context).unfocus();
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       if (selectedMember == null) {
         FToast ft = FToast();
         ft.init(context);
@@ -139,7 +139,7 @@ class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment
       String note = noteController.text;
       showDialog(
           builder: (context) => FutureSuccessDialog(
-                future: _postPayment(amount, note, selectedMember, context),
+                future: _postPayment(amount, note, selectedMember!, context),
               ),
           barrierDismissible: false,
           context: context);

@@ -25,7 +25,7 @@ class VersionNotSupportedPage extends StatelessWidget {
               'version_not_supported_explanation'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleLarge
+                  .titleLarge!
                   .copyWith(color: Theme.of(context).colorScheme.onSurface),
             ),
             SizedBox(
@@ -39,7 +39,7 @@ class VersionNotSupportedPage extends StatelessWidget {
                     'download_new_version'.tr(),
                     style: Theme.of(context)
                         .textTheme
-                        .labelLarge
+                        .labelLarge!
                         .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                   ),
                   onPressed: () {

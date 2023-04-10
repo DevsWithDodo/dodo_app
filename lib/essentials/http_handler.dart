@@ -15,72 +15,57 @@ import '../groups/join_group.dart';
 import '../groups/main_group_page.dart';
 
 enum GetUriKeys {
-  groupHasGuests,
-  groupCurrent,
-  groupMember,
-  groups,
-  userBalanceSum,
-  passwordReminder,
-  groupBoost,
-  groupGuests,
-  groupUnapprovedMembers,
-  groupExportXls,
-  groupExportPdf,
-  purchases,
-  payments,
-  statisticsPayments,
-  statisticsPurchases,
-  statisticsAll,
-  requests,
-}
+  groupHasGuests("/groups/{}/has_guests"),
+  groupCurrent("/groups/{}"),
+  groupMember("/groups/{}/member"),
+  groups("/groups"),
+  userBalanceSum("/balance"),
+  passwordReminder("/password_reminder?username={}"),
+  groupBoost("/groups/{}/boost"),
+  groupGuests("/groups/{}/guests"),
+  groupUnapprovedMembers("/groups/{}/members/unapproved"),
+  groupExportXls("/groups/{}/export/get_link_xls"),
+  groupExportPdf("/groups/{}/export/get_link_pdf"),
+  purchases("/purchases?group={}"),
+  payments("/payments?group={}"),
+  statisticsPayments("/groups/{}/statistics/payments"),
+  statisticsPurchases("/groups/{}/statistics/purchases"),
+  statisticsAll("/groups/{}/statistics/all"),
+  requests("/requests?group={}");
 
-Map<GetUriKeys, String> getUris = {
-  GetUriKeys.groupHasGuests: '/groups/{}/has_guests',
-  GetUriKeys.groupCurrent: '/groups/{}',
-  GetUriKeys.groupMember: '/groups/{}/member',
-  GetUriKeys.groups: '/groups',
-  GetUriKeys.userBalanceSum: '/balance',
-  GetUriKeys.passwordReminder: '/password_reminder?username={}',
-  GetUriKeys.groupBoost: '/groups/{}/boost',
-  GetUriKeys.groupGuests: '/groups/{}/guests',
-  GetUriKeys.groupUnapprovedMembers: '/groups/{}/members/unapproved',
-  GetUriKeys.groupExportXls: '/groups/{}/export/get_link_xls',
-  GetUriKeys.groupExportPdf: '/groups/{}/export/get_link_pdf',
-  GetUriKeys.purchases: '/purchases?group={}',
-  GetUriKeys.payments: '/payments?group={}',
-  GetUriKeys.statisticsPayments: '/groups/{}/statistics/payments',
-  GetUriKeys.statisticsPurchases: '/groups/{}/statistics/purchases',
-  GetUriKeys.statisticsAll: '/groups/{}/statistics/all',
-  GetUriKeys.requests: '/requests?group={}',
-}; //TODO: same for other types
+  const GetUriKeys(this.uri);
+  final String uri;
+}
 
 enum HttpType { get, post, put, delete }
 
 ///Generates URI-s from enum values. The default value of [args] is [currentGroupId].
-String generateUri(GetUriKeys key,
-    {HttpType type = HttpType.get, List<String> args, Map<String, String> queryParams}) {
+String? generateUri(GetUriKeys key,
+    {HttpType type = HttpType.get,
+    List<String>? args,
+    Map<String, String?>? queryParams}) {
   //TODO: query paramms normalisan
   if (type == HttpType.get) {
     if (args == null) {
       args = [currentGroupId.toString()];
     }
-    String uri = getUris[key];
-    if (args != null) {
-      for (String arg in args) {
-        if (uri.contains('{}')) {
-          uri = uri.replaceFirst('{}', arg);
-        } else {
-          break;
-        }
+    String uri = key.uri;
+
+    for (String arg in args) {
+      if (uri.contains('{}')) {
+        uri = uri.replaceFirst('{}', arg);
+      } else {
+        break;
       }
     }
+
     if (queryParams != null) {
       if (queryParams.values.any((element) => element != null)) {
         uri += !uri.contains('?') ? '?' : '&';
       }
       for (String name in queryParams.keys) {
         if (queryParams[name] != null) {
-          uri += name + '=' + queryParams[name] + '&';
+          uri += name + '=' + queryParams[name]! + '&';
         }
       }
     }
@@ -110,7 +95,7 @@ Widget errorToast(String msg, BuildContext context) {
             child: Text(msg.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .bodyLarge
+                    .bodyLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onError))),
       ],
     ),
@@ -118,8 +103,8 @@ Widget errorToast(String msg, BuildContext context) {
 }
 
 void memberNotInGroup(BuildContext context) {
-  usersGroupIds.remove(currentGroupId);
-  usersGroups.remove(currentGroupName);
+  usersGroupIds!.remove(currentGroupId);
+  usersGroups!.remove(currentGroupName);
   saveUsersGroupIds();
   saveUsersGroups();
   //TODO:currency DOMINIK MEG TUDJA OLDANI, nem tudni, hogy hova kellene mennie, csak currency nelkul
@@ -131,11 +116,11 @@ void memberNotInGroup(BuildContext context) {
       child: errorToast('not_in_group'.tr(), context),
       toastDuration: Duration(seconds: 2),
       gravity: ToastGravity.BOTTOM);
-  if (usersGroups.length > 0) {
-    currentGroupName = usersGroups[0];
-    currentGroupId = usersGroupIds[0];
-    Navigator.pushAndRemoveUntil(
-        context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
+  if (usersGroups!.length > 0) {
+    currentGroupName = usersGroups![0];
+    currentGroupId = usersGroupIds![0];
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
   } else {
     currentGroupName = null;
     currentGroupId = null;
@@ -154,11 +139,14 @@ Future<Directory> _getCacheDir() async {
   return Directory((await getTemporaryDirectory()).path + delimiter + 'lender');
 }
 
-Future<http.Response> fromCache(
-    {@required String uri, @required bool overwriteCache, bool alwaysReturnCache = false}) async {
+Future<http.Response?> fromCache(
+    {required String uri,
+    required bool overwriteCache,
+    bool alwaysReturnCache = false}) async {
   try {
     String s = Platform.isWindows ? '\\' : '/';
-    String fileName = uri.replaceAll('/', '-').replaceAll('&', '-').replaceAll('?', '-');
+    String fileName =
+        uri.replaceAll('/', '-').replaceAll('&', '-').replaceAll('?', '-');
     var cacheDir = await _getCacheDir();
     if (!cacheDir.existsSync()) {
       return null;
@@ -168,7 +156,8 @@ Future<http.Response> fromCache(
     if (alwaysReturnCache ||
         (!overwriteCache &&
             (file.existsSync() &&
-                DateTime.now().difference(await file.lastModified()).inMinutes < 5))) {
+                DateTime.now().difference(await file.lastModified()).inMinutes <
+                    5))) {
       // print('from cache');
       return http.Response(file.readAsStringSync(), 200);
     }
@@ -181,10 +170,11 @@ Future<http.Response> fromCache(
   }
 }
 
-Future toCache({@required String uri, @required http.Response response}) async {
+Future toCache({required String uri, required http.Response response}) async {
   // print('to cache');
   String s = Platform.isWindows ? '\\' : '/';
-  String fileName = uri.replaceAll('/', '-').replaceAll('&', '-').replaceAll('?', '-');
+  String fileName =
+      uri.replaceAll('/', '-').replaceAll('&', '-').replaceAll('?', '-');
   var cacheDir = await _getCacheDir();
   //print('itt');
   cacheDir.create();
@@ -196,10 +186,11 @@ Future toCache({@required String uri, @required http.Response response}) async {
 ///The [multipleArgs] bool is used for [uri]-s where not all of the [args]
 ///are known at the time of the removal. (See [generateUri] function)
 ///In this case the [uri] becomes a search word
-Future deleteCache({@required String uri, bool multipleArgs = false}) async {
+Future deleteCache({required String? uri, bool multipleArgs = false}) async {
   if (!kIsWeb) {
-    uri = uri.substring(1);
-    String fileName = uri.replaceAll('/', '-').replaceAll('&', '-').replaceAll('?', '-');
+    uri = uri!.substring(1);
+    String fileName =
+        uri.replaceAll('/', '-').replaceAll('&', '-').replaceAll('?', '-');
     String s = Platform.isWindows ? '\\' : '/';
     var cacheDir = await _getCacheDir();
     if (multipleArgs) {
@@ -249,7 +240,7 @@ Future clearAllCache() async {
     // print('all cache');
     var cacheDir = await _getCacheDir();
     if (cacheDir.existsSync()) {
-      for (File file in cacheDir.listSync()) {
+      for (FileSystemEntity file in cacheDir.listSync()) {
         if (file is File) {
           file.deleteSync();
           // print(delet)
@@ -275,16 +266,16 @@ Duration delayTime() {
 }
 
 Future<http.Response> httpGet({
-  @required BuildContext context,
-  @required String uri,
+  required BuildContext context,
+  required String? uri,
   bool overwriteCache = false,
   bool useCache = true,
 }) async {
   try {
     useCache = useCache && !kIsWeb;
     if (useCache) {
-      http.Response responseFromCache =
-          await fromCache(uri: uri.substring(1), overwriteCache: overwriteCache);
+      http.Response? responseFromCache = await fromCache(
+          uri: uri!.substring(1), overwriteCache: overwriteCache);
       if (responseFromCache != null) {
         //print('de cache!');
         return responseFromCache;
@@ -294,10 +285,10 @@ Future<http.Response> httpGet({
     //print('nem cache...');
     Map<String, String> header = {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + (apiToken == null ? '' : apiToken)
+      "Authorization": "Bearer " + (apiToken == null ? '' : apiToken!)
     };
-    http.Response response =
-        await http.get(Uri.parse((useTest ? TEST_URL : APP_URL) + uri), headers: header);
+    http.Response response = await http
+        .get(Uri.parse((useTest ? TEST_URL : APP_URL) + uri!), headers: header);
     if (response.statusCode < 300 && response.statusCode >= 200) {
       if (useCache) toCache(uri: uri.substring(1), response: response);
       return response;
@@ -314,7 +305,9 @@ Future<http.Response> httpGet({
             toastDuration: Duration(seconds: 2),
             gravity: ToastGravity.BOTTOM);
         Navigator.pushAndRemoveUntil(
-            context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
+            context,
+            MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
+            (r) => false);
       } else if (error['error'] == 'user_not_member') {
         memberNotInGroup(context);
       }
@@ -323,8 +316,8 @@ Future<http.Response> httpGet({
   } on FormatException {
     throw 'format_exception';
   } on SocketException {
-    http.Response response =
-        await fromCache(uri: uri.substring(1), overwriteCache: false, alwaysReturnCache: true);
+    http.Response? response = await fromCache(
+        uri: uri!.substring(1), overwriteCache: false, alwaysReturnCache: true);
     if (response != null) {
       return response;
     }
@@ -335,22 +328,26 @@ Future<http.Response> httpGet({
 }
 
 Future<http.Response> httpPost({
-  @required BuildContext context,
-  @required String uri,
-  Map<String, dynamic> body,
+  required BuildContext context,
+  required String uri,
+  Map<String, dynamic>? body,
 }) async {
   try {
     Map<String, String> header = {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + (apiToken == null ? '' : apiToken)
+      "Authorization": "Bearer " + (apiToken == null ? '' : apiToken!)
     };
     http.Response response;
     if (body != null) {
       String bodyEncoded = json.encode(body);
-      response = await http.post(Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
-          headers: header, body: bodyEncoded);
+      response = await http.post(
+          Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
+          headers: header,
+          body: bodyEncoded);
     } else {
-      response = await http.post(Uri.parse((useTest ? TEST_URL : APP_URL) + uri), headers: header);
+      response = await http.post(
+          Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
+          headers: header);
     }
 
     if (response.statusCode < 300 && response.statusCode >= 200) {
@@ -367,7 +364,9 @@ Future<http.Response> httpPost({
             toastDuration: Duration(seconds: 2),
             gravity: ToastGravity.BOTTOM);
         Navigator.pushAndRemoveUntil(
-            context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
+            context,
+            MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
+            (r) => false);
       } else if (error['error'] == 'user_not_member') {
         memberNotInGroup(context);
       }
@@ -383,14 +382,14 @@ Future<http.Response> httpPost({
 }
 
 Future<http.Response> httpPut({
-  @required BuildContext context,
-  @required String uri,
-  Map<String, dynamic> body,
+  required BuildContext context,
+  required String uri,
+  Map<String, dynamic>? body,
 }) async {
   try {
     Map<String, String> header = {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + (apiToken == null ? '' : apiToken)
+      "Authorization": "Bearer " + (apiToken == null ? '' : apiToken!)
     };
     http.Response response;
     if (body != null) {
@@ -398,7 +397,8 @@ Future<http.Response> httpPut({
       response = await http.put(Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
           headers: header, body: bodyEncoded);
     } else {
-      response = await http.put(Uri.parse((useTest ? TEST_URL : APP_URL) + uri), headers: header);
+      response = await http.put(Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
+          headers: header);
     }
 
     if (response.statusCode < 300 && response.statusCode >= 200) {
@@ -415,7 +415,9 @@ Future<http.Response> httpPut({
             toastDuration: Duration(seconds: 2),
             gravity: ToastGravity.BOTTOM);
         Navigator.pushAndRemoveUntil(
-            context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
+            context,
+            MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
+            (r) => false);
       } else if (error['error'] == 'user_not_member') {
         memberNotInGroup(context);
       }
@@ -430,14 +432,16 @@ Future<http.Response> httpPut({
   }
 }
 
-Future<http.Response> httpDelete({@required BuildContext context, @required String uri}) async {
+Future<http.Response> httpDelete(
+    {required BuildContext context, required String uri}) async {
   try {
     Map<String, String> header = {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + (apiToken == null ? '' : apiToken)
+      "Authorization": "Bearer " + (apiToken == null ? '' : apiToken!)
     };
-    http.Response response =
-        await http.delete(Uri.parse((useTest ? TEST_URL : APP_URL) + uri), headers: header);
+    http.Response response = await http.delete(
+        Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
+        headers: header);
 
     if (response.statusCode < 300 && response.statusCode >= 200) {
       return response;
@@ -452,7 +456,9 @@ Future<http.Response> httpDelete({@required BuildContext context, @required Stri
             toastDuration: Duration(seconds: 2),
             gravity: ToastGravity.BOTTOM);
         Navigator.pushAndRemoveUntil(
-            context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
+            context,
+            MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
+            (r) => false);
       } else if (error['error'] == 'user_not_member') {
         memberNotInGroup(context);
       }

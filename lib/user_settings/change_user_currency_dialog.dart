@@ -15,9 +15,9 @@ class ChangeUserCurrencyDialog extends StatefulWidget {
 }
 
 class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
-  String _currencyCode = currentUserCurrency;
+  String? _currencyCode = currentUserCurrency;
 
-  Future<bool> _updateGroupCurrency(String code) async {
+  Future<bool> _updateGroupCurrency(String? code) async {
     try {
       Map<String, dynamic> body = {"default_currency": code};
 
@@ -50,7 +50,7 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
               'change_group_currency'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleLarge
+                  .titleLarge!
                   .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),

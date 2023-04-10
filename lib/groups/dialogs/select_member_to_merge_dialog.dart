@@ -16,20 +16,25 @@ import 'package:http/http.dart' as http;
 import '../main_group_page.dart';
 
 class MergeGuestDialog extends StatefulWidget {
-  final int guestId;
-  MergeGuestDialog({@required this.guestId});
+  final int? guestId;
+  MergeGuestDialog({required this.guestId});
   @override
   _MergeGuestDialogState createState() => _MergeGuestDialogState();
 }
 
 class _MergeGuestDialogState extends State<MergeGuestDialog> {
-  Future<List<Member>> _allMembers;
-  Member _selectedMember;
+  Future<List<Member>>? _allMembers;
+  Member? _selectedMember;
 
   Future<bool> _mergeGuest() async {
-    Map<String, dynamic> body = {'member_id': _selectedMember.memberId, 'guest_id': widget.guestId};
+    Map<String, dynamic> body = {
+      'member_id': _selectedMember!.memberId,
+      'guest_id': widget.guestId
+    };
     await httpPost(
-        context: context, uri: '/groups/' + currentGroupId.toString() + '/merge_guest', body: body);
+        context: context,
+        uri: '/groups/' + currentGroupId.toString() + '/merge_guest',
+        body: body);
     Future.delayed(delayTime()).then((value) => _onMergeGuest());
     return true;
   }
@@ -37,14 +42,16 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
   void _onMergeGuest() {
     clearGroupCache();
     deleteCache(uri: generateUri(GetUriKeys.userBalanceSum));
-    Navigator.pushAndRemoveUntil(
-        context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
   }
 
   Future<List<Member>> _getAllMembers() async {
     try {
       http.Response response = await httpGet(
-          uri: generateUri(GetUriKeys.groupCurrent), context: context, useCache: false);
+          uri: generateUri(GetUriKeys.groupCurrent),
+          context: context,
+          useCache: false);
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = [];
       print(decoded['data']['members']);
@@ -82,7 +89,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
                 'merge_guest'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleLarge
+                    .titleLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurface),
               ),
             ),
@@ -107,12 +114,16 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
                         ),
                         Center(
                           child: MemberChips(
-                            allowMultiple: false,
-                            allMembers: snapshot.data.where((element) => !element.isGuest).toList(),
-                            membersChanged: (newMembers) {
+                            allowMultipleSelected: false,
+                            allMembers: snapshot.data!
+                                .where((element) => !element.isGuest!)
+                                .toList(),
+                            chosenMembersChanged: (newMembers) {
                               _selectedMember = newMembers[0];
                             },
-                            membersChosen: _selectedMember != null ? [_selectedMember] : [],
+                            chosenMembers: _selectedMember == null
+                                ? []
+                                : [_selectedMember!],
                           ),
                         ),
                       ],
@@ -123,7 +134,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
                       _allMembers = null;
                       _allMembers = _getAllMembers();
                     },
-                    error: snapshot.error,
+                    error: snapshot.error as String?,
                     errorLocation: 'merge_guest',
                   );
                 }
@@ -170,7 +181,8 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
                     } else {
                       FToast ft = FToast();
                       ft.init(context);
-                      ft.showToast(child: errorToast('needs_member'.tr(), context));
+                      ft.showToast(
+                          child: errorToast('needs_member'.tr(), context));
                     }
                   },
                 )

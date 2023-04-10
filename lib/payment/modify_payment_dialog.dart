@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class ModifyPaymentDialog extends StatefulWidget {
-  final Payment savedPayment;
-  ModifyPaymentDialog({@required this.savedPayment});
+  final Payment? savedPayment;
+  ModifyPaymentDialog({required this.savedPayment});
   @override
   _ModifyPaymentDialogState createState() => _ModifyPaymentDialogState();
 }
@@ -19,7 +19,7 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog> with AddModif
 
   int _index = 0;
 
-  Future<bool> _updatePayment(double amount, String note, Member toMember, int paymentId) async {
+  Future<bool> _updatePayment(double amount, String note, Member toMember, int? paymentId) async {
     try {
       Map<String, dynamic> body = generateBody(note, amount, toMember);
 
@@ -39,7 +39,7 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog> with AddModif
   @override
   void initState() {
     super.initState();
-    print(widget.savedPayment.originalCurrency);
+    print(widget.savedPayment!.originalCurrency);
     initAddModifyPayment(context, setState,
         paymentType: PaymentType.modifyPayment, savedPayment: widget.savedPayment);
   }
@@ -59,7 +59,7 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog> with AddModif
                 'modify_payment'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleLarge
+                    .titleLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               )),
@@ -71,7 +71,7 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog> with AddModif
                 'modify_payment_explanation'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleSmall
+                    .titleSmall!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               )),
@@ -125,14 +125,14 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog> with AddModif
                   GradientButton(
                     onPressed: () {
                       if (_index != 3) {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           FocusScope.of(context).unfocus();
                           setState(() {
                             _index++;
                           });
                         }
                       } else {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           FocusScope.of(context).unfocus();
                           if (selectedMember == null) {
                             FToast ft = FToast();
@@ -147,8 +147,8 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog> with AddModif
                           String note = noteController.text;
                           showDialog(
                               builder: (context) => FutureSuccessDialog(
-                                    future: _updatePayment(amount, note, selectedMember,
-                                        widget.savedPayment.paymentId),
+                                    future: _updatePayment(amount, note, selectedMember!,
+                                        widget.savedPayment!.paymentId),
                                   ),
                               context: context);
                         }

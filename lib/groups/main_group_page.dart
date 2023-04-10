@@ -6,14 +6,11 @@ import 'dart:math';
 import 'package:connectivity_widget/connectivity_widget.dart';
 import 'package:csocsort_szamla/auth/login_or_register_page.dart';
 import 'package:csocsort_szamla/essentials/save_preferences.dart';
-import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/groups/create_group.dart';
-import 'package:csocsort_szamla/groups/dialogs/download_export_dialog.dart';
 import 'package:csocsort_szamla/groups/group_settings_page.dart';
 import 'package:csocsort_szamla/groups/join_group.dart';
 import 'package:csocsort_szamla/history/history.dart';
 import 'package:csocsort_szamla/main/in_app_purchase_page.dart';
-import 'package:csocsort_szamla/main/statistics_page.dart';
 import 'package:csocsort_szamla/main/trial_ended_dialog.dart';
 import 'package:csocsort_szamla/shopping/shopping_list.dart';
 import 'package:csocsort_szamla/user_settings/user_settings_page.dart';
@@ -41,7 +38,7 @@ import '../main/trial_version_dialog.dart';
 class MainPage extends StatefulWidget {
   final int selectedHistoryIndex;
   final int selectedIndex;
-  final String scrollTo;
+  final String? scrollTo;
 
   MainPage(
       {this.selectedHistoryIndex = 0, this.selectedIndex = 0, this.scrollTo});
@@ -51,16 +48,16 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
-  SharedPreferences prefs;
-  Future<List<Group>> _groups;
+  SharedPreferences? prefs;
+  Future<List<Group>>? _groups;
 
-  TabController _tabController;
+  TabController? _tabController;
   int _selectedIndex = 0;
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   GlobalKey<State> _isGuestBannerKey = GlobalKey<State>();
 
-  String scrollTo;
+  String? scrollTo;
 
   Future<SharedPreferences> getPrefs() async {
     return await SharedPreferences.getInstance();
@@ -78,8 +75,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         groupCurrency: group['currency'],
       ));
     }
-    usersGroups = groups.map<String>((group) => group.groupName).toList();
-    usersGroupIds = groups.map<int>((group) => group.groupId).toList();
+    usersGroups = groups.map<String>((group) => group.groupName!).toList();
+    usersGroupIds = groups.map<int>((group) => group.groupId!).toList();
     saveUsersGroups();
     saveUsersGroupIds();
     //The group ID cannot change, but the group name and currency can change
@@ -92,7 +89,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     return groups;
   }
 
-  Future<String> _getCurrentGroup() async {
+  Future<String?> _getCurrentGroup() async {
     http.Response response = await httpGet(
       context: context,
       uri: generateUri(GetUriKeys.groupCurrent,
@@ -146,11 +143,11 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               borderRadius: BorderRadius.all(Radius.circular(28)),
             ),
             title: Text(
-              group.groupName,
+              group.groupName!,
               style: (group.groupName == currentGroupName)
-                  ? Theme.of(context).textTheme.labelLarge.copyWith(
+                  ? Theme.of(context).textTheme.labelLarge!.copyWith(
                       color: Theme.of(context).colorScheme.onSecondaryContainer)
-                  : Theme.of(context).textTheme.labelLarge.copyWith(
+                  : Theme.of(context).textTheme.labelLarge!.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             onTap: () async {
@@ -159,7 +156,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               saveGroupCurrency(group.groupCurrency);
               setState(() {
                 _selectedIndex = 0;
-                _tabController.animateTo(_selectedIndex);
+                _tabController!.animateTo(_selectedIndex);
               });
             },
           ),
@@ -184,9 +181,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   void _handleDrawer(bool bigScreen) {
     if (!bigScreen) {
-      _scaffoldKey.currentState.openEndDrawer();
+      _scaffoldKey.currentState!.openEndDrawer();
     } else {
-      _scaffoldKey.currentState.openDrawer();
+      _scaffoldKey.currentState!.openDrawer();
     }
     _groups = null;
     _groups = _getGroups();
@@ -201,7 +198,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       _groups = _getGroups();
     });
 
-    if (!kIsWeb && !ratedApp && !trialVersion) {
+    if (!kIsWeb && !ratedApp! && !trialVersion) {
       double r = Random().nextDouble();
       print(r);
       if (r < 0.15) {
@@ -226,7 +223,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     bool bigScreen = width > tabletViewWidth;
     if (bigScreen && _selectedIndex > 1) {
       _selectedIndex = 0;
-      _tabController.animateTo(_selectedIndex);
+      _tabController!.animateTo(_selectedIndex);
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
     }
     return Scaffold(
@@ -244,11 +241,11 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         centerTitle: true,
         title: FutureBuilder(
           future: _getCurrentGroup(),
-          builder: (context, snapshot) {
+          builder: (context, AsyncSnapshot<String?> snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
                 return Text(
-                  snapshot.data,
+                  snapshot.data!,
                   style: TextStyle(letterSpacing: 0.25, fontSize: 24),
                 );
               }
@@ -267,7 +264,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 if (_index != 3) {
                   setState(() {
                     _selectedIndex = _index;
-                    _tabController.animateTo(_index);
+                    _tabController!.animateTo(_index);
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
                   });
                 } else {
@@ -337,7 +334,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   // print(_selectedIndex);
                   setState(() {
                     _selectedIndex = _index;
-                    _tabController.animateTo(_index);
+                    _tabController!.animateTo(_index);
                     ScaffoldMessenger.of(context).removeCurrentSnackBar();
                   });
                 },
@@ -446,7 +443,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                         child: ColorFiltered(
                           colorFilter: ColorFilter.mode(
                               Theme.of(context).colorScheme.primary,
-                              currentThemeName.toLowerCase().contains('dodo') &&
+                              currentThemeName!
+                                          .toLowerCase()
+                                          .contains('dodo') &&
                                       !kIsWeb
                                   ? BlendMode.dst
                                   : BlendMode.srcIn),
@@ -459,15 +458,15 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                         'title'.tr().toUpperCase(),
                         style: Theme.of(context)
                             .textTheme
-                            .headlineSmall
+                            .headlineSmall!
                             .copyWith(
                                 color: Theme.of(context)
                                     .colorScheme
                                     .onSurfaceVariant),
                       ),
                       Text(
-                        'hi'.tr() + ' ' + currentUsername + '!',
-                        style: Theme.of(context).textTheme.bodyLarge.copyWith(
+                        'hi'.tr() + ' ' + currentUsername! + '!',
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                             color: Theme.of(context).colorScheme.primary),
                       ),
                     ],
@@ -475,7 +474,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 ),
                 FutureBuilder(
                   future: _groups,
-                  builder: (context, snapshot) {
+                  builder: (context, AsyncSnapshot<List<Group>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
                         return Theme(
@@ -497,7 +496,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                               title: Text('groups'.tr(),
                                   style: Theme.of(context)
                                       .textTheme
-                                      .labelLarge
+                                      .labelLarge!
                                       .copyWith(
                                           color: Theme.of(context)
                                               .colorScheme
@@ -506,7 +505,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                                   color: Theme.of(context)
                                       .colorScheme
                                       .onSurfaceVariant),
-                              children: _generateListTiles(snapshot.data),
+                              children: _generateListTiles(snapshot.data!),
                             ),
                           ),
                         );
@@ -540,7 +539,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     ),
                     title: Text(
                       'join_group'.tr(),
-                      style: Theme.of(context).textTheme.labelLarge.copyWith(
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
                           color:
                               Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
@@ -562,7 +561,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     ),
                     title: Text(
                       'create_group'.tr(),
-                      style: Theme.of(context).textTheme.labelLarge.copyWith(
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
                           color:
                               Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
@@ -581,14 +580,14 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           ),
           FutureBuilder(
             future: _getSumBalance(),
-            builder: (context, snapshot) {
+            builder: (context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData) {
-                  String currency = snapshot.data['currency'];
-                  double balance = snapshot.data['balance'] * 1.0;
+                  String? currency = snapshot.data!['currency'];
+                  double? balance = snapshot.data!['balance'] * 1.0;
                   return Text(
                       'Σ: ' + balance.toMoneyString(currency, withSymbol: true),
-                      style: Theme.of(context).textTheme.bodyMedium.copyWith(
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                           color: Theme.of(context).colorScheme.secondary));
                 }
               }
@@ -596,7 +595,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 'Σ: ...',
                 style: Theme.of(context)
                     .textTheme
-                    .bodyMedium
+                    .bodyMedium!
                     .copyWith(color: Theme.of(context).colorScheme.secondary),
               );
             },
@@ -637,18 +636,18 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               subtitle: trialVersion
                   ? Text(
                       'trial_version'.tr().toUpperCase(),
-                      style: Theme.of(context).textTheme.labelSmall.copyWith(
+                      style: Theme.of(context).textTheme.labelSmall!.copyWith(
                           color: Theme.of(context).colorScheme.secondary),
                     )
                   : Text(
                       'in_app_purchase_description'.tr(),
-                      style: Theme.of(context).textTheme.labelLarge.copyWith(
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
                           color:
                               Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
               title: Text(
                 'in_app_purchase'.tr(),
-                style: Theme.of(context).textTheme.labelLarge.copyWith(
+                style: Theme.of(context).textTheme.labelLarge!.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
@@ -668,7 +667,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 dense: true,
                 title: Text(
                   'rate_app'.tr(),
-                  style: Theme.of(context).textTheme.labelLarge.copyWith(
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
                 onTap: () {
@@ -710,7 +709,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               ),
               title: Text(
                 'settings'.tr(),
-                style: Theme.of(context).textTheme.labelLarge.copyWith(
+                style: Theme.of(context).textTheme.labelLarge!.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               onTap: () {
@@ -719,29 +718,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               },
             ),
           ),
-          // Padding(//TODO: report bug
-          //   padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          //   child: ListTile(
-          //     shape: RoundedRectangleBorder(
-          //       borderRadius: BorderRadius.all(Radius.circular(28)),
-          //     ),
-          //     leading: Icon(
-          //       Icons.bug_report,
-          //       color: Theme.of(context).colorScheme.error,
-          //     ),
-          //     dense: true,
-          //     title: Text(
-          //       'report_a_bug'.tr(),
-          //       style: Theme.of(context)
-          //           .textTheme
-          //           .labelLarge
-          //           .copyWith(color: Theme.of(context).colorScheme.error),
-          //     ),
-          //     onTap: () {
-          //       Navigator.push(context, MaterialPageRoute(builder: (context) => ReportABugPage()));
-          //     },
-          //   ),
-          // ),
           Divider(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -756,7 +732,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               dense: true,
               title: Text(
                 'logout'.tr(),
-                style: Theme.of(context).textTheme.labelLarge.copyWith(
+                style: Theme.of(context).textTheme.labelLarge!.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               onTap: () async {

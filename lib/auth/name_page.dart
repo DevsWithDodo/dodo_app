@@ -15,7 +15,7 @@ import '../essentials/validation_rules.dart';
 import '../essentials/widgets/gradient_button.dart';
 
 class NamePage extends StatefulWidget {
-  final String inviteUrl;
+  final String? inviteUrl;
   final bool isLogin;
   NamePage({this.inviteUrl, this.isLogin = false});
   @override
@@ -35,7 +35,7 @@ class _NamePageState extends State<NamePage> {
   void initState() {
     super.initState();
     if (widget.isLogin && currentUsername != null) {
-      _usernameController.text = currentUsername;
+      _usernameController.text = currentUsername!;
     }
   }
 
@@ -117,7 +117,7 @@ class _NamePageState extends State<NamePage> {
                                       'forgot_password'.tr(),
                                       style: Theme.of(context)
                                           .textTheme
-                                          .labelLarge
+                                          .labelLarge!
                                           .copyWith(color: Theme.of(context).colorScheme.onSurface),
                                       textAlign: TextAlign.center,
                                     ),
@@ -141,7 +141,7 @@ class _NamePageState extends State<NamePage> {
                                     padding: EdgeInsets.only(left: 8, right: 8),
                                     child: Text(
                                       'username_explanation'.tr(),
-                                      style: Theme.of(context).textTheme.bodySmall.copyWith(
+                                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
                                           color: Theme.of(context).colorScheme.onSurfaceVariant),
                                       textAlign: TextAlign.center,
                                     ),
@@ -157,7 +157,7 @@ class _NamePageState extends State<NamePage> {
                                         },
                                         child: Text(
                                           'accept_privacy_policy'.tr() + '*',
-                                          style: Theme.of(context).textTheme.labelLarge.copyWith(
+                                          style: Theme.of(context).textTheme.labelLarge!.copyWith(
                                               decoration: TextDecoration.underline,
                                               color: Theme.of(context).colorScheme.onSurface),
                                           textAlign: TextAlign.center,
@@ -184,7 +184,7 @@ class _NamePageState extends State<NamePage> {
                                     padding: const EdgeInsets.only(left: 16),
                                     child: Text(
                                       'must_accept_privacy_policy'.tr(),
-                                      style: Theme.of(context).textTheme.bodySmall.copyWith(
+                                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
                                             color: Theme.of(context).colorScheme.error,
                                           ),
                                     ),
@@ -222,7 +222,7 @@ class _NamePageState extends State<NamePage> {
   void _buttonPush() async {
     _usernameController.text = _usernameController.text.toLowerCase();
     if (widget.isLogin) {
-      if (_formKey.currentState.validate()) {
+      if (_formKey.currentState!.validate()) {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -236,7 +236,7 @@ class _NamePageState extends State<NamePage> {
     } else {
       _usernameTaken = false;
       _showPrivacyPolicyValidation = false;
-      if (_formKey.currentState.validate() && _privacyPolicy) {
+      if (_formKey.currentState!.validate() && _privacyPolicy) {
         showDialog(
           context: context,
           builder: (context) => FutureSuccessDialog(
@@ -264,7 +264,7 @@ class _NamePageState extends State<NamePage> {
       return true;
     } else {
       _usernameTaken = true;
-      _formKey.currentState.validate();
+      _formKey.currentState!.validate();
       return false;
     }
   }

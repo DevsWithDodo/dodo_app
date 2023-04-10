@@ -16,18 +16,18 @@ import 'invitation.dart';
 
 class GroupSettings extends StatefulWidget {
   final bool bigScreen;
-  final double height;
-  final double width;
-  final GlobalKey<State> bannerKey;
-  final String scrollTo;
+  final double? height;
+  final double? width;
+  final GlobalKey<State>? bannerKey;
+  final String? scrollTo;
   GroupSettings({this.bannerKey, this.scrollTo, this.bigScreen = false, this.height, this.width});
   @override
   _GroupSettingState createState() => _GroupSettingState();
 }
 
 class _GroupSettingState extends State<GroupSettings> {
-  Future<bool> _isUserAdmin;
-  Future<bool> _hasGuests;
+  Future<bool>? _isUserAdmin;
+  Future<bool>? _hasGuests;
   var guestsKey = GlobalKey();
 
   Future<bool> _getHasGuests() async {
@@ -61,11 +61,11 @@ class _GroupSettingState extends State<GroupSettings> {
     _hasGuests = null;
     _hasGuests = _getHasGuests();
     WidgetsFlutterBinding.ensureInitialized();
-    _hasGuests.whenComplete(() {
+    _hasGuests!.whenComplete(() {
       Future.delayed(Duration(milliseconds: 1000)).then((value) {
         if (widget.scrollTo == 'guests') {
           // print(guestsKey.currentContext);
-          Scrollable.ensureVisible(guestsKey.currentContext);
+          Scrollable.ensureVisible(guestsKey.currentContext!);
         }
       });
     });
@@ -161,7 +161,7 @@ class _GroupSettingState extends State<GroupSettings> {
   List<Widget> _columnWidgets(AsyncSnapshot<bool> snapshot) {
     return [
       Visibility(
-        visible: snapshot.data,
+        visible: snapshot.data!,
         child: Card(
           child: Padding(
             padding: const EdgeInsets.all(15),
@@ -172,7 +172,7 @@ class _GroupSettingState extends State<GroupSettings> {
                     'rename_group'.tr(),
                     style: Theme.of(context)
                         .textTheme
-                        .titleLarge
+                        .titleLarge!
                         .copyWith(color: Theme.of(context).colorScheme.onSurface),
                     textAlign: TextAlign.center,
                   ),
@@ -185,7 +185,7 @@ class _GroupSettingState extends State<GroupSettings> {
                   'rename_group_explanation'.tr(),
                   style: Theme.of(context)
                       .textTheme
-                      .titleSmall
+                      .titleSmall!
                       .copyWith(color: Theme.of(context).colorScheme.onSurface),
                   textAlign: TextAlign.center,
                 )),
@@ -215,7 +215,7 @@ class _GroupSettingState extends State<GroupSettings> {
       Invitation(isAdmin: snapshot.data),
       BoostGroup(),
       Visibility(
-        visible: false && snapshot.data,
+        visible: false && snapshot.data!,
         child: Card(
           child: Padding(
             padding: const EdgeInsets.all(15),
@@ -226,7 +226,7 @@ class _GroupSettingState extends State<GroupSettings> {
                     'change_group_currency'.tr(),
                     style: Theme.of(context)
                         .textTheme
-                        .titleLarge
+                        .titleLarge!
                         .copyWith(color: Theme.of(context).colorScheme.onSurface),
                     textAlign: TextAlign.center,
                   ),
@@ -239,7 +239,7 @@ class _GroupSettingState extends State<GroupSettings> {
                   'change_group_currency_explanation'.tr(),
                   style: Theme.of(context)
                       .textTheme
-                      .titleSmall
+                      .titleSmall!
                       .copyWith(color: Theme.of(context).colorScheme.onSurface),
                   textAlign: TextAlign.center,
                 )),

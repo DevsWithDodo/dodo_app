@@ -27,10 +27,8 @@ class _LanguagePickerState extends State<LanguagePicker> {
             Center(
                 child: Text(
               'change_language'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
             )),
             SizedBox(height: 10),
             Center(
@@ -47,7 +45,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
 }
 
 class LanguageElement extends StatefulWidget {
-  final String localeName;
+  final String? localeName;
 
   const LanguageElement({this.localeName});
 
@@ -56,7 +54,7 @@ class LanguageElement extends StatefulWidget {
 }
 
 class _LanguageElementState extends State<LanguageElement> {
-  Future<bool> _changeLanguage(String localeCode) {
+  Future<bool> _changeLanguage(String? localeCode) {
     Map<String, dynamic> body = {'language': localeCode};
     httpPut(context: context, uri: '/user', body: body);
     return Future.value(true);
@@ -67,7 +65,7 @@ class _LanguageElementState extends State<LanguageElement> {
     return InkWell(
       borderRadius: BorderRadius.circular(15),
       onTap: () {
-        context.locale = Locale(widget.localeName);
+        context.setLocale(Locale(widget.localeName!));
         _changeLanguage(widget.localeName);
       },
       child: Ink(
@@ -79,11 +77,12 @@ class _LanguageElementState extends State<LanguageElement> {
             //     : LinearGradient(colors: [Colors.white, Colors.white]),
             color: (widget.localeName == context.locale.languageCode)
                 ? Theme.of(context).colorScheme.secondary
-                : ElevationOverlay.applyOverlay(context, Theme.of(context).colorScheme.surface, 10),
+                : ElevationOverlay.applyOverlay(
+                    context, Theme.of(context).colorScheme.surface, 10),
             borderRadius: BorderRadius.circular(15)),
         child: Center(
-            child: Text(widget.localeName.toUpperCase(),
-                style: Theme.of(context).textTheme.labelLarge.copyWith(
+            child: Text(widget.localeName!.toUpperCase(),
+                style: Theme.of(context).textTheme.labelLarge!.copyWith(
                       color: (widget.localeName == context.locale.languageCode)
                           ? Theme.of(context).colorScheme.onSecondary
                           : Theme.of(context).colorScheme.onSurfaceVariant,

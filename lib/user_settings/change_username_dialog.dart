@@ -54,7 +54,7 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
                 'change_username'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleLarge
+                    .titleLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
@@ -88,7 +88,7 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
                 children: [
                   GradientButton(
                     onPressed: () {
-                      if (_usernameFormKey.currentState.validate()) {
+                      if (_usernameFormKey.currentState!.validate()) {
                         FocusScope.of(context).unfocus();
                         String username = _usernameController.text;
                         showDialog(

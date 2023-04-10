@@ -1,6 +1,6 @@
+import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/shopping/edit_request_dialog.dart';
-import 'package:csocsort_szamla/shopping/shopping_list_entry.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -12,16 +12,16 @@ import 'package:csocsort_szamla/essentials/http_handler.dart';
 import '../purchase/add_modify_purchase.dart';
 
 class ShoppingAllInfo extends StatefulWidget {
-  final ShoppingRequestData data;
+  final ShoppingRequest shoppingRequest;
 
-  ShoppingAllInfo(this.data);
+  ShoppingAllInfo(this.shoppingRequest);
 
   @override
   _ShoppingAllInfoState createState() => _ShoppingAllInfoState();
 }
 
 class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
-  Future<bool> _fulfillShoppingRequest(int id) async {
+  Future<bool> _fulfillShoppingRequest(int? id) async {
     try {
       await httpDelete(uri: '/requests/' + id.toString(), context: context);
       Future.delayed(delayTime()).then((value) => _onFulfillShoppingRequest());
@@ -36,7 +36,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
     Navigator.pop(context, 'deleted');
   }
 
-  Future<bool> _deleteShoppingRequest(int id) async {
+  Future<bool> _deleteShoppingRequest(int? id) async {
     try {
       await httpDelete(uri: '/requests/' + id.toString(), context: context);
       Future.delayed(delayTime()).then((value) => _onDeleteShoppingRequest());
@@ -60,13 +60,14 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
         children: <Widget>[
           Row(
             children: <Widget>[
-              Icon(Icons.account_circle, color: Theme.of(context).colorScheme.secondary),
+              Icon(Icons.account_circle,
+                  color: Theme.of(context).colorScheme.secondary),
               Flexible(
                 child: Text(
-                  ' - ' + widget.data.requesterNickname,
+                  ' - ' + widget.shoppingRequest.requesterNickname!,
                   style: Theme.of(context)
                       .textTheme
-                      .bodyLarge
+                      .bodyLarge!
                       .copyWith(color: Theme.of(context).colorScheme.onSurface),
                 ),
               ),
@@ -78,13 +79,14 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Icon(Icons.receipt_long, color: Theme.of(context).colorScheme.secondary),
+              Icon(Icons.receipt_long,
+                  color: Theme.of(context).colorScheme.secondary),
               Flexible(
                 child: Text(
-                  ' - ' + widget.data.name,
+                  ' - ' + widget.shoppingRequest.name!,
                   style: Theme.of(context)
                       .textTheme
-                      .bodyLarge
+                      .bodyLarge!
                       .copyWith(color: Theme.of(context).colorScheme.onSurface),
                 ),
               ),
@@ -101,10 +103,12 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
               ),
               Flexible(
                 child: Text(
-                  ' - ' + DateFormat('yyyy/MM/dd - HH:mm').format(widget.data.updatedAt),
+                  ' - ' +
+                      DateFormat('yyyy/MM/dd - HH:mm')
+                          .format(widget.shoppingRequest.updatedAt!),
                   style: Theme.of(context)
                       .textTheme
-                      .bodyLarge
+                      .bodyLarge!
                       .copyWith(color: Theme.of(context).colorScheme.onSurface),
                 ),
               ),
@@ -114,7 +118,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
             height: 10,
           ),
           Visibility(
-            visible: widget.data.requesterId == currentUserId,
+            visible: widget.shoppingRequest.requesterId == currentUserId,
             child: Center(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -126,8 +130,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                         onPressed: () {
                           showDialog(
                             builder: (context) => EditRequestDialog(
-                              requestId: widget.data.requestId,
-                              textBefore: widget.data.name,
+                              requestId: widget.shoppingRequest.requestId,
+                              textBefore: widget.shoppingRequest.name,
                             ),
                             context: context,
                           ).then((value) {
@@ -138,7 +142,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                         },
                         child: Row(
                           children: [
-                            Icon(Icons.edit, color: Theme.of(context).colorScheme.onPrimary),
+                            Icon(Icons.edit,
+                                color: Theme.of(context).colorScheme.onPrimary),
                             SizedBox(
                               width: 5,
                             ),
@@ -146,8 +151,11 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                               'modify'.tr(),
                               style: Theme.of(context)
                                   .textTheme
-                                  .labelLarge
-                                  .copyWith(color: Theme.of(context).colorScheme.onPrimary),
+                                  .labelLarge!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary),
                             ),
                           ],
                         ),
@@ -164,7 +172,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                         onPressed: () {
                           showDialog(
                               builder: (context) => FutureSuccessDialog(
-                                    future: _deleteShoppingRequest(widget.data.requestId),
+                                    future: _deleteShoppingRequest(
+                                        widget.shoppingRequest.requestId),
                                     dataTrueText: 'delete_scf',
                                     onDataTrue: () {
                                       _onDeleteShoppingRequest();
@@ -175,7 +184,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                         },
                         child: Row(
                           children: [
-                            Icon(Icons.delete, color: Theme.of(context).colorScheme.onPrimary),
+                            Icon(Icons.delete,
+                                color: Theme.of(context).colorScheme.onPrimary),
                             SizedBox(
                               width: 5,
                             ),
@@ -183,8 +193,11 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                               'delete'.tr(),
                               style: Theme.of(context)
                                   .textTheme
-                                  .labelLarge
-                                  .copyWith(color: Theme.of(context).colorScheme.onPrimary),
+                                  .labelLarge!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary),
                             ),
                           ],
                         ),
@@ -196,7 +209,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
             ),
           ),
           Visibility(
-            visible: widget.data.requesterId != currentUserId,
+            visible: widget.shoppingRequest.requesterId != currentUserId,
             child: Center(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -208,7 +221,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                         onPressed: () {
                           showDialog(
                               builder: (context) => FutureSuccessDialog(
-                                    future: _fulfillShoppingRequest(widget.data.requestId),
+                                    future: _fulfillShoppingRequest(
+                                        widget.shoppingRequest.requestId),
                                     dataTrueText: 'fulfill_scf',
                                     onDataTrue: () {
                                       _onFulfillShoppingRequest();
@@ -219,7 +233,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                         },
                         child: Row(
                           children: [
-                            Icon(Icons.check, color: Theme.of(context).colorScheme.onPrimary),
+                            Icon(Icons.check,
+                                color: Theme.of(context).colorScheme.onPrimary),
                             SizedBox(
                               width: 5,
                             ),
@@ -227,8 +242,11 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                               'remove_from_list'.tr(),
                               style: Theme.of(context)
                                   .textTheme
-                                  .labelLarge
-                                  .copyWith(color: Theme.of(context).colorScheme.onPrimary),
+                                  .labelLarge!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary),
                             ),
                           ],
                         ),
@@ -245,7 +263,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                         onPressed: () {
                           showDialog(
                                   builder: (context) => FutureSuccessDialog(
-                                        future: _fulfillShoppingRequest(widget.data.requestId),
+                                        future: _fulfillShoppingRequest(
+                                            widget.shoppingRequest.requestId),
                                         dataTrueText: 'fulfill_scf',
                                         onDataTrue: () {
                                           _onFulfillShoppingRequest();
@@ -260,7 +279,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                                 MaterialPageRoute(
                                   builder: (context) => AddPurchaseRoute(
                                     type: PurchaseType.fromShopping,
-                                    shoppingData: widget.data,
+                                    shoppingData: widget.shoppingRequest,
                                   ),
                                 ),
                               );
@@ -278,8 +297,11 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                               'add_as_expense'.tr(),
                               style: Theme.of(context)
                                   .textTheme
-                                  .labelLarge
-                                  .copyWith(color: Theme.of(context).colorScheme.onPrimary),
+                                  .labelLarge!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary),
                             ),
                           ],
                         ),

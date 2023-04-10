@@ -47,7 +47,7 @@ class _PersonalisedAdsState extends State<PersonalisedAds> {
             Center(
                 child: Text(
               'use_personalised_ads'.tr(),
-              style: Theme.of(context).textTheme.titleLarge.copyWith(
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant),
             )),
             SizedBox(
@@ -56,7 +56,7 @@ class _PersonalisedAdsState extends State<PersonalisedAds> {
             Center(
               child: Text(
                 'use_personalised_ads_explanation'.tr(),
-                style: Theme.of(context).textTheme.titleSmall.copyWith(
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
@@ -100,7 +100,7 @@ class _PersonalisedAdsState extends State<PersonalisedAds> {
               },
               title: Text(
                 'use_personalised_ads'.tr(),
-                style: Theme.of(context).textTheme.titleSmall.copyWith(
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               dense: true,

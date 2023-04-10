@@ -20,13 +20,14 @@ class BoostGroup extends StatefulWidget {
 }
 
 class _BoostGroupState extends State<BoostGroup> {
-  Future<Map<String, dynamic>> _boostNumber;
+  Future<Map<String, dynamic>>? _boostNumber;
 
   Future<Map<String, dynamic>> _getBoostNumber() async {
     try {
       http.Response response = await httpGet(
           context: context,
-          uri: generateUri(GetUriKeys.groupBoost, args: [currentGroupId.toString()]),
+          uri: generateUri(GetUriKeys.groupBoost,
+              args: [currentGroupId.toString()]),
           useCache: false);
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data'];
@@ -37,7 +38,9 @@ class _BoostGroupState extends State<BoostGroup> {
 
   Future<bool> _postBoost() async {
     try {
-      await httpPost(context: context, uri: '/groups/' + currentGroupId.toString() + '/boost');
+      await httpPost(
+          context: context,
+          uri: '/groups/' + currentGroupId.toString() + '/boost');
       Future.delayed(delayTime()).then((value) => _onPostBoost());
       return true;
     } catch (_) {
@@ -47,8 +50,8 @@ class _BoostGroupState extends State<BoostGroup> {
 
   Future<void> _onPostBoost() async {
     await clearGroupCache();
-    Navigator.pushAndRemoveUntil(
-        context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
   }
 
   @override
@@ -62,7 +65,7 @@ class _BoostGroupState extends State<BoostGroup> {
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: _boostNumber,
-        builder: (context, snapshot) {
+        builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               return Card(
@@ -73,65 +76,72 @@ class _BoostGroupState extends State<BoostGroup> {
                     children: [
                       Text(
                         'boost_group'.tr(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface),
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 10),
                       Text(
-                        snapshot.data['is_boosted'] == 0
+                        snapshot.data!['is_boosted'] == 0
                             ? 'boost_group_explanation'.tr()
                             : 'boost_group_boosted_explanation'.tr(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleSmall
-                            .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface),
                         textAlign: TextAlign.center,
                       ),
                       Visibility(
-                        visible: snapshot.data['is_boosted'] == 0,
+                        visible: snapshot.data!['is_boosted'] == 0,
                         child: Column(
                           children: [
                             SizedBox(height: 20),
                             Text(
-                              'available'.tr(args: [snapshot.data['available_boosts'].toString()]),
+                              'available'.tr(args: [
+                                snapshot.data!['available_boosts'].toString()
+                              ]),
                               style: Theme.of(context)
                                   .textTheme
-                                  .titleSmall
-                                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                                  .titleSmall!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface),
                             ),
                             SizedBox(height: 10),
                             GradientButton(
                               useSecondary: true,
                               child: Icon(Icons.insights,
-                                  color: Theme.of(context).colorScheme.onSecondary),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSecondary),
                               onPressed: () {
-                                if (snapshot.data['available_boosts'] == 0) {
+                                if (snapshot.data!['available_boosts'] == 0) {
                                   if (isIAPPlatformEnabled) {
                                     Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => InAppPurchasePage()))
+                                                builder: (context) =>
+                                                    InAppPurchasePage()))
                                         .then((value) {
                                       setState(() {});
                                     });
                                   } else {
                                     showDialog(
                                         context: context,
-                                        builder: (context) => IAPPNotSupportedDialog());
+                                        builder: (context) =>
+                                            IAPPNotSupportedDialog());
                                   }
                                 } else {
                                   showDialog(
-                                          builder: (context) => ConfirmChoiceDialog(
+                                          builder: (context) =>
+                                              ConfirmChoiceDialog(
                                                 choice: 'sure_boost',
                                               ),
                                           context: context)
                                       .then((value) {
                                     if (value ?? false) {
                                       showDialog(
-                                          builder: (context) => FutureSuccessDialog(
+                                          builder: (context) =>
+                                              FutureSuccessDialog(
                                                 future: _postBoost(),
                                                 dataTrueText: 'boost_scf',
                                                 onDataTrue: () {

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/widgets/category_picker_icon_button.dart';
-import 'package:csocsort_szamla/shopping/shopping_list_entry.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -24,32 +23,34 @@ enum PurchaseType { fromShopping, newPurchase, modifyPurchase }
 class AddModifyPurchase {
   TextEditingController amountController = TextEditingController();
   TextEditingController noteController = TextEditingController();
-  Future<List<Member>> members;
+  Future<List<Member>>? members;
   Map<Member, bool> membersMap = Map<Member, bool>();
   Map<Member, double> customAmountMap = Map<Member, double>();
-  String selectedCurrency = currentGroupCurrency;
+  String? selectedCurrency = currentGroupCurrency;
   FocusNode focusNode = FocusNode();
-  Function(BuildContext context) buttonPush;
-  void Function(void Function()) _setState;
-  PurchaseType purchaseType;
-  ShoppingRequestData shoppingRequest;
-  Purchase savedPurchase;
+  late Function(BuildContext context) buttonPush;
+  late void Function(void Function()) _setState;
+  PurchaseType? purchaseType;
+  ShoppingRequest? shoppingRequest;
+  Purchase? savedPurchase;
   bool alreadyInitializedSave = false;
-  ThemeData theme = AppTheme.themes[currentThemeName];
+  ThemeData? theme = AppTheme.themes[currentThemeName];
   CrossFadeState purchaserSelector = CrossFadeState.showFirst;
-  int purchaserId;
-  Category selectedCategory;
+  int? purchaserId;
+  Category? selectedCategory;
 
   void initAddModifyPurchase(
     BuildContext context,
     void Function(void Function()) setState, {
-    void Function(BuildContext context) buttonPush,
-    PurchaseType purchaseType,
-    ShoppingRequestData shoppingRequest,
-    Purchase savedPurchase,
+    void Function(BuildContext context)? buttonPush,
+    PurchaseType? purchaseType,
+    ShoppingRequest? shoppingRequest,
+    Purchase? savedPurchase,
   }) {
-    assert((purchaseType == PurchaseType.fromShopping && shoppingRequest != null) ||
-        (purchaseType == PurchaseType.modifyPurchase && savedPurchase != null) ||
+    assert((purchaseType == PurchaseType.fromShopping &&
+            shoppingRequest != null) ||
+        (purchaseType == PurchaseType.modifyPurchase &&
+            savedPurchase != null) ||
         (purchaseType == PurchaseType.newPurchase));
     this.purchaseType = purchaseType;
     this.shoppingRequest = shoppingRequest;
@@ -57,12 +58,12 @@ class AddModifyPurchase {
     this.buttonPush = buttonPush ?? (context) {};
     this._setState = setState;
     if (purchaseType == PurchaseType.fromShopping) {
-      noteController.text = shoppingRequest.name;
+      noteController.text = shoppingRequest!.name!;
     } else if (purchaseType == PurchaseType.modifyPurchase) {
-      selectedCurrency = savedPurchase.originalCurrency;
-      noteController.text = savedPurchase.name;
-      amountController.text =
-          savedPurchase.totalAmountOriginalCurrency.toMoneyString(savedPurchase.originalCurrency);
+      selectedCurrency = savedPurchase!.originalCurrency;
+      noteController.text = savedPurchase.name!;
+      amountController.text = savedPurchase.totalAmountOriginalCurrency
+          .toMoneyString(savedPurchase.originalCurrency);
       purchaserId = savedPurchase.buyerId;
       //Note: the receivers are set after the list of members is received from the server.
     }
@@ -73,24 +74,28 @@ class AddModifyPurchase {
     purchaserId = purchaserId ?? currentUserId;
   }
 
-  Map<String, dynamic> generateBody(String name, double amount, List<Member> members) {
+  Map<String, dynamic> generateBody(
+      String name, double amount, List<Member> members) {
     return {
       "name": name,
       "group": currentGroupId,
       "amount": amount,
       "currency": selectedCurrency,
-      "category": selectedCategory != null ? selectedCategory.text : null,
+      "category": selectedCategory != null ? selectedCategory!.text : null,
       "buyer_id": purchaserId,
       "receivers": members
           .map((member) => {
                 "user_id": member.memberId,
-                "amount": customAmountMap.containsKey(member) ? customAmountMap[member] : null,
+                "amount": customAmountMap.containsKey(member)
+                    ? customAmountMap[member]
+                    : null,
               })
           .toList()
     };
   }
 
-  Future<List<Member>> getMembers(BuildContext context, {bool overwriteCache = false}) async {
+  Future<List<Member>> getMembers(BuildContext context,
+      {bool overwriteCache = false}) async {
     try {
       http.Response response = await httpGet(
         uri: generateUri(GetUriKeys.groupCurrent),
@@ -135,7 +140,7 @@ class AddModifyPurchase {
           hintText: 'note'.tr(),
           prefixIcon: Icon(
             Icons.note,
-            color: theme.colorScheme.onSurfaceVariant,
+            color: theme!.colorScheme.onSurfaceVariant,
           ),
           suffixIcon: GestureDetector(
             onDoubleTap: () {
@@ -160,7 +165,7 @@ class AddModifyPurchase {
   TextFormField amountTextField(BuildContext context) => TextFormField(
         validator: (value) => validateTextField([
           isEmpty(value),
-          notValidNumber(value.replaceAll(',', '.')),
+          notValidNumber(value!.replaceAll(',', '.')),
         ]),
         focusNode: focusNode,
         decoration: InputDecoration(
@@ -192,7 +197,8 @@ class AddModifyPurchase {
                       onCalculationReady: (String fromCalc) {
                         _setState(() {
                           amountController.text =
-                              (double.tryParse(fromCalc) ?? 0.0).toMoneyString(selectedCurrency);
+                              (double.tryParse(fromCalc) ?? 0.0)
+                                  .toMoneyString(selectedCurrency);
                         });
                       },
                     ),
@@ -202,13 +208,15 @@ class AddModifyPurchase {
             },
             icon: Icon(
               Icons.calculate,
-              color: theme.colorScheme.primary,
+              color: theme!.colorScheme.primary,
             ),
           ),
         ),
         controller: amountController,
         keyboardType: TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))],
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))
+        ],
         onFieldSubmitted: (value) => buttonPush(context),
       );
 
@@ -240,30 +248,38 @@ class AddModifyPurchase {
                           reverseDuration: Duration(seconds: 0),
                           crossFadeState: purchaserSelector,
                           firstChild: Visibility(
-                            visible: purchaserSelector == CrossFadeState.showFirst,
+                            visible:
+                                purchaserSelector == CrossFadeState.showFirst,
                             child: CustomChoiceChip(
                               enabled: false,
                               selected: true,
                               showCheck: false,
-                              noAnimation: true,
-                              selectedColor: Theme.of(context).colorScheme.secondaryContainer,
-                              selectedFontColor: Theme.of(context).colorScheme.onSecondaryContainer,
-                              notSelectedColor: Theme.of(context).colorScheme.surface,
-                              notSelectedFontColor: Theme.of(context).colorScheme.onSurface,
+                              showAnimation: true,
+                              selectedColor: Theme.of(context)
+                                  .colorScheme
+                                  .secondaryContainer,
+                              selectedFontColor: Theme.of(context)
+                                  .colorScheme
+                                  .onSecondaryContainer,
+                              notSelectedColor:
+                                  Theme.of(context).colorScheme.surface,
+                              notSelectedFontColor:
+                                  Theme.of(context).colorScheme.onSurface,
                               fillRatio: 1,
-                              member: snapshot.data
-                                  .firstWhere((element) => element.memberId == purchaserId),
-                              onMemberChosen: (chosen) {},
+                              member: snapshot.data!.firstWhere(
+                                  (element) => element.memberId == purchaserId),
+                              onChipClicked: (chosen) {},
                             ),
                           ),
                           secondChild: MemberChips(
-                            allMembers: snapshot.data,
-                            allowMultiple: false,
-                            noAnimation: true,
-                            membersChosen: snapshot.data
-                                .where((element) => element.memberId == purchaserId)
+                            allMembers: snapshot.data!,
+                            allowMultipleSelected: false,
+                            showAnimation: false,
+                            chosenMembers: snapshot.data!
+                                .where((element) =>
+                                    element.memberId == purchaserId)
                                 .toList(),
-                            membersChanged: (newMembers) {
+                            chosenMembersChanged: (newMembers) {
                               _setState(() {
                                 purchaserSelector = CrossFadeState.showFirst;
                                 if (newMembers.isNotEmpty) {
@@ -318,35 +334,38 @@ class AddModifyPurchase {
           builder: (context, AsyncSnapshot<List<Member>> snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
-                for (Member member in snapshot.data) {
+                for (Member member in snapshot.data!) {
                   if (!membersMap.containsKey(member)) {
                     membersMap[member] = false;
                   }
                 }
                 if (purchaseType == PurchaseType.fromShopping) {
-                  membersMap[snapshot.data
-                          .firstWhere((member) => member.memberId == shoppingRequest.requesterId)] =
-                      true;
-                } else if (purchaseType == PurchaseType.modifyPurchase && !alreadyInitializedSave) {
-                  for (Member member in savedPurchase.receivers) {
-                    Member memberInMap = membersMap.keys
-                        .firstWhere((element) => element.memberId == member.memberId);
+                  membersMap[snapshot.data!.firstWhere((member) =>
+                      member.memberId == shoppingRequest!.requesterId)] = true;
+                } else if (purchaseType == PurchaseType.modifyPurchase &&
+                    !alreadyInitializedSave) {
+                  for (Member member in savedPurchase!.receivers!) {
+                    Member memberInMap = membersMap.keys.firstWhere(
+                        (element) => element.memberId == member.memberId);
                     membersMap[memberInMap] = true;
-                    if (member.isCustomAmount) {
-                      customAmountMap[memberInMap] = member.balanceOriginalCurrency;
+                    if (member.isCustomAmount ?? false) {
+                      customAmountMap[memberInMap] =
+                          member.balanceOriginalCurrency!;
                     }
                   }
                   alreadyInitializedSave = true;
                 }
                 return MemberChips(
                   selectedCurrency: selectedCurrency,
-                  allowMultiple: true,
-                  allMembers: snapshot.data,
-                  membersChosen: snapshot.data.where((member) => membersMap[member]).toList(),
+                  allowMultipleSelected: true,
+                  allMembers: snapshot.data!,
+                  chosenMembers: snapshot.data!
+                      .where((member) => membersMap[member]!)
+                      .toList(),
                   customAmounts: customAmountMap,
-                  membersChanged: (members) {
+                  chosenMembersChanged: (members) {
                     _setState(() {
-                      for (Member member in snapshot.data) {
+                      for (Member member in snapshot.data!) {
                         membersMap[member] = members.contains(member);
                       }
                     });
@@ -356,8 +375,9 @@ class AddModifyPurchase {
                       customAmountMap = amounts;
                     });
                   },
-                  showDivisionDialog: true,
-                  getMaxAmount: () => double.tryParse(amountController.text) ?? 0.0,
+                  allowCustomAmounts: true,
+                  getMaxAmount: () =>
+                      double.tryParse(amountController.text) ?? 0.0,
                 );
               } else {
                 return ErrorMessage(

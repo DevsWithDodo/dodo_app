@@ -16,7 +16,7 @@ class ReportBug extends StatelessWidget {
                 'report_bug'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleLarge
+                    .titleLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
@@ -29,7 +29,7 @@ class ReportBug extends StatelessWidget {
                   'report_bug_explanation'.tr(),
                   style: Theme.of(context)
                       .textTheme
-                      .titleSmall
+                      .titleSmall!
                       .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   textAlign: TextAlign.center,
                 )),

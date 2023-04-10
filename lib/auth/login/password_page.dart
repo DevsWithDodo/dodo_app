@@ -10,8 +10,8 @@ import '../../essentials/validation_rules.dart';
 import '../../essentials/widgets/gradient_button.dart';
 
 class PasswordPage extends StatefulWidget {
-  final String inviteUrl;
-  final String username;
+  final String? inviteUrl;
+  final String? username;
   PasswordPage({this.inviteUrl, this.username});
 
   @override
@@ -42,7 +42,7 @@ class _PasswordPageState extends State<PasswordPage> {
                     'password_login_deprecated'.tr(),
                     style: Theme.of(context)
                         .textTheme
-                        .titleMedium
+                        .titleMedium!
                         .copyWith(color: Theme.of(context).colorScheme.error),
                     textAlign: TextAlign.center,
                   ),

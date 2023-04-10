@@ -1,5 +1,6 @@
 import 'dart:io' show Platform;
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/app_theme.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
@@ -13,125 +14,136 @@ import 'package:flutter/material.dart';
 
 class PurchaseEntry extends StatefulWidget {
   final Purchase purchase;
-  final Function({bool purchase, bool payment}) callback;
+  final Function({bool purchase, bool payment}) onDelete;
   final int selectedMemberId;
-  const PurchaseEntry({this.purchase, this.selectedMemberId, this.callback});
+  const PurchaseEntry({
+    required this.purchase,
+    required this.onDelete,
+    required this.selectedMemberId,
+  });
 
   @override
   _PurchaseEntryState createState() => _PurchaseEntryState();
 }
 
 class _PurchaseEntryState extends State<PurchaseEntry> {
-  Icon leadingIcon;
-  TextStyle mainTextStyle;
-  TextStyle subTextStyle;
-  BoxDecoration boxDecoration;
-  String note;
-  String names;
-  String amountOriginal = '';
-  String amountToSelfOriginal = '';
+  late Icon leadingIcon;
+  TextStyle? mainTextStyle;
+  TextStyle? subTextStyle;
+  BoxDecoration? boxDecoration;
+  late String note;
+  String? names;
+  String? amountOriginal = '';
+  String? amountToSelfOriginal = '';
 
-  void callbackForReaction(String reaction) {
-    Reaction oldReaction = widget.purchase.reactions
-        .firstWhere((element) => element.userId == currentUserId, orElse: () => null);
+  void handleSendReaction(String reaction) {
+    Reaction? oldReaction = widget.purchase.reactions!
+        .firstWhereOrNull((element) => element.userId == currentUserId);
     bool alreadyReacted = oldReaction != null;
-    bool sameReaction = alreadyReacted ? oldReaction.reaction == reaction : false;
+    bool sameReaction =
+        alreadyReacted ? oldReaction.reaction == reaction : false;
     if (sameReaction) {
-      widget.purchase.reactions.remove(oldReaction);
+      widget.purchase.reactions!.remove(oldReaction);
       setState(() {});
     } else if (!alreadyReacted) {
-      widget.purchase.reactions.add(Reaction(
-        nickname: currentUsername,
+      widget.purchase.reactions!.add(Reaction(
+        nickname: currentUsername!,
         reaction: reaction,
-        userId: currentUserId,
+        userId: currentUserId!,
       ));
       setState(() {});
     } else {
-      widget.purchase.reactions
-          .add(Reaction(nickname: oldReaction.nickname, reaction: reaction, userId: currentUserId));
-      widget.purchase.reactions.remove(oldReaction);
+      widget.purchase.reactions!.add(Reaction(
+        nickname: oldReaction.nickname,
+        reaction: reaction,
+        userId: currentUserId!,
+      ));
+      widget.purchase.reactions!.remove(oldReaction);
       setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    int selectedMemberId = widget.selectedMemberId ?? currentUserId;
+    int? selectedMemberId = widget.selectedMemberId;
     note = (widget.purchase.name == '')
         ? 'no_note'.tr()
-        : widget.purchase.name[0].toUpperCase() + widget.purchase.name.substring(1);
+        : widget.purchase.name![0].toUpperCase() +
+            widget.purchase.name!.substring(1);
     bool bought = widget.purchase.buyerId == selectedMemberId;
-    bool received = widget.purchase.receivers
+    bool received = widget.purchase.receivers!
         .where((element) => element.memberId == selectedMemberId)
         .isNotEmpty;
     /* Set icon, amount and names */
     if (bought && received) {
       leadingIcon = Icon(Icons.swap_horiz,
-          color: currentThemeName.contains('Gradient')
+          color: currentThemeName!.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onSecondaryContainer);
       amountOriginal = widget.purchase.totalAmountOriginalCurrency
           .toMoneyString(widget.purchase.originalCurrency, withSymbol: true);
-      amountToSelfOriginal = (-widget.purchase.receivers
+      amountToSelfOriginal = (-widget.purchase.receivers!
               .firstWhere((element) => element.memberId == selectedMemberId)
-              .balanceOriginalCurrency)
+              .balanceOriginalCurrency!)
           .toMoneyString(widget.purchase.originalCurrency, withSymbol: true);
-      if (widget.purchase.receivers.length > 1) {
-        names = widget.purchase.receivers.join(', ');
+      if (widget.purchase.receivers!.length > 1) {
+        names = widget.purchase.receivers!.join(', ');
       } else {
-        names = widget.purchase.receivers[0].nickname;
+        names = widget.purchase.receivers![0].nickname;
       }
-      mainTextStyle = Theme.of(context).textTheme.bodyLarge.copyWith(
-          color: currentThemeName.contains('Gradient')
+      mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
+          color: currentThemeName!.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onSecondaryContainer);
-      subTextStyle = Theme.of(context).textTheme.bodySmall.copyWith(
-          color: currentThemeName.contains('Gradient')
+      subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
+          color: currentThemeName!.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onSecondaryContainer);
       boxDecoration = BoxDecoration(
-        gradient: AppTheme.gradientFromTheme(currentThemeName, useSecondaryContainer: true),
+        gradient: AppTheme.gradientFromTheme(currentThemeName,
+            useSecondaryContainer: true),
         borderRadius: BorderRadius.circular(15),
       );
     } else if (bought) {
       leadingIcon = Icon(Icons.call_made,
-          color: currentThemeName.contains('Gradient')
+          color: currentThemeName!.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
       amountOriginal = widget.purchase.totalAmountOriginalCurrency
           .toMoneyString(widget.purchase.originalCurrency, withSymbol: true);
-      if (widget.purchase.receivers.length > 1) {
-        names = widget.purchase.receivers.join(', ');
+      if (widget.purchase.receivers!.length > 1) {
+        names = widget.purchase.receivers!.join(', ');
       } else {
-        names = widget.purchase.receivers[0].nickname;
+        names = widget.purchase.receivers![0].nickname;
       }
-      mainTextStyle = Theme.of(context).textTheme.bodyLarge.copyWith(
-          color: currentThemeName.contains('Gradient')
+      mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
+          color: currentThemeName!.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
-      subTextStyle = Theme.of(context).textTheme.bodySmall.copyWith(
-          color: currentThemeName.contains('Gradient')
+      subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
+          color: currentThemeName!.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
       boxDecoration = BoxDecoration(
-        gradient: AppTheme.gradientFromTheme(currentThemeName, usePrimaryContainer: true),
+        gradient: AppTheme.gradientFromTheme(currentThemeName,
+            usePrimaryContainer: true),
         borderRadius: BorderRadius.circular(15),
       );
     } else if (received) {
-      leadingIcon =
-          Icon(Icons.call_received, color: Theme.of(context).colorScheme.onSurfaceVariant);
+      leadingIcon = Icon(Icons.call_received,
+          color: Theme.of(context).colorScheme.onSurfaceVariant);
       names = widget.purchase.buyerNickname;
-      amountOriginal = (-widget.purchase.receivers
+      amountOriginal = (-widget.purchase.receivers!
               .firstWhere((element) => element.memberId == selectedMemberId)
-              .balanceOriginalCurrency)
+              .balanceOriginalCurrency!)
           .toMoneyString(widget.purchase.originalCurrency, withSymbol: true);
       subTextStyle = Theme.of(context)
           .textTheme
-          .bodySmall
+          .bodySmall!
           .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
       mainTextStyle = Theme.of(context)
           .textTheme
-          .bodyLarge
+          .bodyLarge!
           .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
       boxDecoration = BoxDecoration();
     }
@@ -142,7 +154,10 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
           width: MediaQuery.of(context).size.width,
           decoration: boxDecoration,
           margin: EdgeInsets.only(
-              top: widget.purchase.reactions.length == 0 ? 0 : 14, bottom: 4, left: 4, right: 4),
+              top: widget.purchase.reactions!.length == 0 ? 0 : 14,
+              bottom: 4,
+              left: 4,
+              right: 4),
           child: Material(
             type: MaterialType.transparency,
             child: InkWell(
@@ -152,21 +167,23 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                       showDialog(
                           builder: (context) => AddReactionDialog(
                                 type: 'purchases',
-                                reactions: widget.purchase.reactions,
-                                reactToId: widget.purchase.purchaseId,
-                                callback: this.callbackForReaction,
+                                reactions: widget.purchase.reactions!,
+                                reactToId: widget.purchase.purchaseId!,
+                                onSend: this.handleSendReaction,
                               ),
                           context: context);
                     },
               onTap: () async {
-                showModalBottomSheet(
+                showModalBottomSheet<String>(
                   isScrollControlled: true,
                   context: context,
                   backgroundColor: Theme.of(context).cardTheme.color,
                   builder: (context) => SingleChildScrollView(
-                      child: PurchaseAllInfo(widget.purchase, widget.selectedMemberId)),
+                      child: PurchaseAllInfo(
+                          widget.purchase, widget.selectedMemberId)),
                 ).then((val) {
-                  if (val == 'deleted') widget.callback(purchase: true, payment: false);
+                  if (val == 'deleted')
+                    widget.onDelete(purchase: true, payment: false);
                 });
               },
               borderRadius: BorderRadius.circular(15),
@@ -196,7 +213,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                                 ),
                                 Flexible(
                                   child: Text(
-                                    names,
+                                    names!,
                                     style: subTextStyle,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -215,13 +232,13 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: <Widget>[
                             Text(
-                              amountOriginal,
+                              amountOriginal!,
                               style: mainTextStyle,
                             ),
                             Visibility(
                               visible: received && bought,
                               child: Text(
-                                amountToSelfOriginal,
+                                amountToSelfOriginal!,
                                 style: mainTextStyle,
                               ),
                             ),
@@ -233,10 +250,10 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                             padding: const EdgeInsets.only(left: 8.0),
                             child: Icon(
                               widget.purchase.category != null
-                                  ? widget.purchase.category.icon
+                                  ? widget.purchase.category!.icon
                                   : Icons.not_interested,
                               color: widget.purchase.category != null
-                                  ? mainTextStyle.color
+                                  ? mainTextStyle!.color
                                   : Colors.transparent,
                             ),
                           ),
@@ -252,11 +269,11 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
         Visibility(
           visible: selectedMemberId == currentUserId,
           child: PastReactionContainer(
-            reactions: widget.purchase.reactions,
-            reactedToId: widget.purchase.purchaseId,
+            reactions: widget.purchase.reactions!,
+            reactedToId: widget.purchase.purchaseId!,
             isSecondaryColor: bought,
             type: 'purchases',
-            callback: this.callbackForReaction,
+            onSendReaction: this.handleSendReaction,
           ),
         ),
       ],

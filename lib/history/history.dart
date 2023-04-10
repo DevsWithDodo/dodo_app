@@ -16,8 +16,8 @@ import '../essentials/widgets/error_message.dart';
 import '../essentials/widgets/gradient_button.dart';
 
 class History extends StatefulWidget {
-  final Function callback;
-  final int selectedIndex;
+  final Function? callback;
+  final int? selectedIndex;
   History({this.callback, this.selectedIndex});
 
   @override
@@ -25,9 +25,9 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
-  Future<List<Payment>> _payments;
-  Future<List<Purchase>> _purchases;
-  int _selectedIndex;
+  Future<List<Payment>>? _payments;
+  Future<List<Purchase>>? _purchases;
+  int? _selectedIndex;
   Future<List<Purchase>> _getPurchases({bool overwriteCache = false}) async {
     try {
       http.Response response = await httpGet(
@@ -65,8 +65,8 @@ class _HistoryState extends State<History> {
     }
   }
 
-  void callback({bool purchase = false, bool payment = false}) {
-    widget.callback();
+  void handleDelete({bool purchase = false, bool payment = false}) {
+    widget.callback!();
     setState(() {
       if (payment) {
         _payments = null;
@@ -111,7 +111,7 @@ class _HistoryState extends State<History> {
                   'history'.tr(),
                   style: Theme.of(context)
                       .textTheme
-                      .titleLarge
+                      .titleLarge!
                       .copyWith(color: Theme.of(context).colorScheme.onSurface),
                 ),
                 SizedBox(
@@ -121,7 +121,7 @@ class _HistoryState extends State<History> {
                   'history_explanation'.tr(),
                   style: Theme.of(context)
                       .textTheme
-                      .titleSmall
+                      .titleSmall!
                       .copyWith(color: Theme.of(context).colorScheme.onSurface),
                   textAlign: TextAlign.center,
                 ),
@@ -145,29 +145,43 @@ class _HistoryState extends State<History> {
                                 ? AppTheme.gradientFromTheme(currentThemeName)
                                 : LinearGradient(colors: [
                                     ElevationOverlay.applyOverlay(
-                                        context, Theme.of(context).colorScheme.surface, 10),
+                                        context,
+                                        Theme.of(context).colorScheme.surface,
+                                        10),
                                     ElevationOverlay.applyOverlay(
-                                        context, Theme.of(context).colorScheme.surface, 10)
+                                        context,
+                                        Theme.of(context).colorScheme.surface,
+                                        10)
                                   ]),
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.shopping_cart,
                                   color: _selectedIndex == 0
                                       ? Theme.of(context).colorScheme.onPrimary
-                                      : Theme.of(context).colorScheme.onSurfaceVariant),
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant),
                               SizedBox(
                                 width: 3,
                               ),
                               Flexible(
                                 child: Text(
                                   'purchases'.tr(),
-                                  style: Theme.of(context).textTheme.labelLarge.copyWith(
-                                      color: _selectedIndex == 0
-                                          ? Theme.of(context).colorScheme.onPrimary
-                                          : Theme.of(context).colorScheme.onSurfaceVariant),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge!
+                                      .copyWith(
+                                          color: _selectedIndex == 0
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurfaceVariant),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
@@ -192,29 +206,43 @@ class _HistoryState extends State<History> {
                                 ? AppTheme.gradientFromTheme(currentThemeName)
                                 : LinearGradient(colors: [
                                     ElevationOverlay.applyOverlay(
-                                        context, Theme.of(context).colorScheme.surface, 10),
+                                        context,
+                                        Theme.of(context).colorScheme.surface,
+                                        10),
                                     ElevationOverlay.applyOverlay(
-                                        context, Theme.of(context).colorScheme.surface, 10)
+                                        context,
+                                        Theme.of(context).colorScheme.surface,
+                                        10)
                                   ]),
                           ),
-                          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.attach_money,
                                   color: _selectedIndex == 1
                                       ? Theme.of(context).colorScheme.onPrimary
-                                      : Theme.of(context).colorScheme.onSurfaceVariant),
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant),
                               SizedBox(
                                 width: 3,
                               ),
                               Flexible(
                                 child: Text(
                                   'payments'.tr(),
-                                  style: Theme.of(context).textTheme.labelLarge.copyWith(
-                                      color: _selectedIndex == 1
-                                          ? Theme.of(context).colorScheme.onPrimary
-                                          : Theme.of(context).colorScheme.onSurfaceVariant),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge!
+                                      .copyWith(
+                                          color: _selectedIndex == 1
+                                              ? Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurfaceVariant),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
@@ -226,20 +254,21 @@ class _HistoryState extends State<History> {
                   ],
                 ),
                 AnimatedCrossFade(
-                  crossFadeState:
-                      _selectedIndex == 0 ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                  crossFadeState: _selectedIndex == 0
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond,
                   duration: Duration(milliseconds: 100),
                   firstChild: FutureBuilder(
                     future: _purchases,
-                    builder: (context, snapshot) {
+                    builder: (context, AsyncSnapshot<List<Purchase>> snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (snapshot.hasData) {
-                          if (snapshot.data.length == 0) {
+                          if (snapshot.data!.length == 0) {
                             return Padding(
                               padding: EdgeInsets.all(25),
                               child: Text(
                                 'nothing_to_show'.tr(),
-                                style: Theme.of(context).textTheme.bodyText1,
+                                style: Theme.of(context).textTheme.bodyLarge,
                                 textAlign: TextAlign.center,
                               ),
                             );
@@ -252,11 +281,11 @@ class _HistoryState extends State<History> {
                               Container(
                                 // height: 490,
                                 child: Column(
-                                  children: _generatePurchases(snapshot.data),
+                                  children: _generatePurchases(snapshot.data!),
                                 ),
                               ),
                               Visibility(
-                                  visible: (snapshot.data as List).length > 5,
+                                  visible: snapshot.data!.length > 5,
                                   child: Padding(
                                     padding: const EdgeInsets.only(top: 10),
                                     child: GradientButton(
@@ -266,7 +295,9 @@ class _HistoryState extends State<History> {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                AllHistoryRoute(startingIndex: _selectedIndex),
+                                                AllHistoryRoute(
+                                                    startingIndex:
+                                                        _selectedIndex),
                                           ),
                                         );
                                       },
@@ -275,15 +306,22 @@ class _HistoryState extends State<History> {
                                           Icon(
                                             Icons.more_horiz,
                                             size: 18,
-                                            color: Theme.of(context).colorScheme.onSecondary,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSecondary,
                                           ),
                                           SizedBox(
                                             width: 8,
                                           ),
                                           Text(
                                             'more'.tr(),
-                                            style: Theme.of(context).textTheme.button.copyWith(
-                                                color: Theme.of(context).colorScheme.onSecondary),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelLarge!
+                                                .copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSecondary),
                                           ),
                                           SizedBox(
                                             width: 8,
@@ -315,10 +353,10 @@ class _HistoryState extends State<History> {
                   ),
                   secondChild: FutureBuilder(
                     future: _payments,
-                    builder: (context, snapshot) {
+                    builder: (context, AsyncSnapshot<List<Payment>> snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (snapshot.hasData) {
-                          if (snapshot.data.length == 0) {
+                          if (snapshot.data!.length == 0) {
                             return Padding(
                               padding: EdgeInsets.all(25),
                               child: Text(
@@ -335,7 +373,9 @@ class _HistoryState extends State<History> {
                               ),
                               Container(
                                 // height: 490,
-                                child: Column(children: _generatePayments(snapshot.data)),
+                                child: Column(
+                                    children:
+                                        _generatePayments(snapshot.data!)),
                               ),
                               Visibility(
                                 //TODO: merge two buttons
@@ -358,15 +398,22 @@ class _HistoryState extends State<History> {
                                       children: [
                                         Icon(
                                           Icons.more_horiz,
-                                          color: Theme.of(context).colorScheme.onSecondary,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSecondary,
                                         ),
                                         SizedBox(
                                           width: 4,
                                         ),
                                         Text(
                                           'more'.tr(),
-                                          style: Theme.of(context).textTheme.labelLarge.copyWith(
-                                              color: Theme.of(context).colorScheme.onSecondary),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelLarge!
+                                              .copyWith(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onSecondary),
                                         ),
                                       ],
                                     ),
@@ -414,12 +461,11 @@ class _HistoryState extends State<History> {
     if (data.length > 5) {
       data = data.take(5).toList();
     }
-    Function callback = this.callback;
     return data.map((element) {
       return PaymentEntry(
-        data: element,
-        callback: callback,
-        selectedMemberId: currentUserId,
+        payment: element,
+        onDelete: handleDelete,
+        selectedMemberId: currentUserId!,
       );
     }).toList();
   }
@@ -428,12 +474,11 @@ class _HistoryState extends State<History> {
     if (data.length > 5) {
       data = data.take(5).toList();
     }
-    Function callback = this.callback;
     return data.map((element) {
       return PurchaseEntry(
         purchase: element,
-        callback: callback,
-        selectedMemberId: currentUserId,
+        onDelete: handleDelete,
+        selectedMemberId: currentUserId!,
       );
     }).toList();
   }

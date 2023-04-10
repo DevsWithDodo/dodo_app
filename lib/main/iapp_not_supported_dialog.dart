@@ -14,7 +14,7 @@ class IAPPNotSupportedDialog extends StatelessWidget {
           children: <Widget>[
             Text(
               'iapp_not_supported'.tr(),
-              style: Theme.of(context).textTheme.titleLarge.copyWith(
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -23,7 +23,7 @@ class IAPPNotSupportedDialog extends StatelessWidget {
             ),
             Text(
               'iapp_not_supported_explanation'.tr(),
-              style: Theme.of(context).textTheme.titleSmall.copyWith(
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),

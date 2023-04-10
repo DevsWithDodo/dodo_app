@@ -5,36 +5,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class PinNumberButton extends StatefulWidget {
-  final String number;
+  final String? number;
   final bool isPinInput;
-  final String pin, pinConfirm;
+  final String? pin, pinConfirm;
   final ValueChanged<String> onPinChanged;
-  final ValueChanged<String> onPinConfirmChanged;
-  final ValueChanged<bool> onIsPinInputChanged;
-  final ValueChanged<String> onValidationTextChanged;
+  final ValueChanged<String>? onPinConfirmChanged;
+  final ValueChanged<String?> onValidationTextChanged;
   final Color backgroundColor;
   final Color textColor;
   const PinNumberButton({
     this.number,
-    this.isPinInput,
+    required this.isPinInput,
     this.pin,
     this.pinConfirm,
-    this.onPinChanged,
+    required this.onPinChanged,
     this.onPinConfirmChanged,
-    this.onIsPinInputChanged,
-    this.onValidationTextChanged,
-    this.textColor,
-    this.backgroundColor,
+    required this.onValidationTextChanged,
+    required this.textColor,
+    required this.backgroundColor,
   });
 
   @override
   State<PinNumberButton> createState() => _PinNumberButtonState();
 }
 
-class _PinNumberButtonState extends State<PinNumberButton> with SingleTickerProviderStateMixin {
+class _PinNumberButtonState extends State<PinNumberButton>
+    with SingleTickerProviderStateMixin {
   bool isTapped = false;
-  AnimationController _controller;
-  Animation<Color> _animation;
+  late AnimationController _controller;
+  late Animation<Color?> _animation;
   @override
   void initState() {
     super.initState();
@@ -45,7 +44,8 @@ class _PinNumberButtonState extends State<PinNumberButton> with SingleTickerProv
     );
     _animation = ColorTween(
       end: widget.backgroundColor,
-    ).animate(new CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic))
+    ).animate(
+        new CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic))
       ..addListener(() {
         setState(() {});
       });
@@ -64,7 +64,8 @@ class _PinNumberButtonState extends State<PinNumberButton> with SingleTickerProv
       child: Ink(
         decoration: BoxDecoration(
           color: _animation.value,
-          borderRadius: BorderRadius.circular(20 + (1 - _controller.value) * 50),
+          borderRadius:
+              BorderRadius.circular(20 + (1 - _controller.value) * 50),
         ),
         child: AspectRatio(
           aspectRatio: 1,
@@ -84,8 +85,12 @@ class _PinNumberButtonState extends State<PinNumberButton> with SingleTickerProv
             // hoverColor: Colors.transparent,
             overlayColor: MaterialStateProperty.all(Colors.transparent),
             onTap: widget.number == '' ||
-                    (widget.isPinInput && widget.number == 'C' && widget.pin == '') ||
-                    (!widget.isPinInput && widget.number == 'C' && widget.pinConfirm == '')
+                    (widget.isPinInput &&
+                        widget.number == 'C' &&
+                        widget.pin == '') ||
+                    (!widget.isPinInput &&
+                        widget.number == 'C' &&
+                        widget.pinConfirm == '')
                 ? null
                 : () {
                     if (!kIsWeb && Platform.isAndroid) {
@@ -97,17 +102,19 @@ class _PinNumberButtonState extends State<PinNumberButton> with SingleTickerProv
                       setState(() {
                         if (widget.isPinInput) {
                           if (widget.pin?.length == 3) {
-                            widget.onPinChanged(widget.pin + widget.number);
+                            widget.onPinChanged(widget.pin! + widget.number!);
                             widget.onValidationTextChanged(null);
-                          } else if (widget.pin.length < 4) {
-                            widget.onPinChanged(widget.pin + widget.number);
+                          } else if (widget.pin!.length < 4) {
+                            widget.onPinChanged(widget.pin! + widget.number!);
                           }
                         } else {
                           if (widget.pinConfirm?.length == 3) {
-                            widget.onPinConfirmChanged(widget.pinConfirm + widget.number);
+                            widget.onPinConfirmChanged!(
+                                widget.pinConfirm! + widget.number!);
                             widget.onValidationTextChanged(null);
-                          } else if (widget.pinConfirm.length < 4) {
-                            widget.onPinConfirmChanged(widget.pinConfirm + widget.number);
+                          } else if ((widget.pinConfirm?.length ?? 4) < 4) {
+                            widget.onPinConfirmChanged!(
+                                widget.pinConfirm! + widget.number!);
                           }
                         }
                       });
@@ -116,7 +123,7 @@ class _PinNumberButtonState extends State<PinNumberButton> with SingleTickerProv
                         if (widget.isPinInput) {
                           widget.onPinChanged('');
                         } else {
-                          widget.onPinConfirmChanged('');
+                          widget.onPinConfirmChanged!('');
                         }
                       });
                     }
@@ -137,8 +144,8 @@ class _PinNumberButtonState extends State<PinNumberButton> with SingleTickerProv
                   return Container();
                 }
                 return Text(
-                  widget.number,
-                  style: Theme.of(context).textTheme.titleLarge.copyWith(
+                  widget.number!,
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
                       color: _controller.value > 0.5
                           ? widget.textColor
                           : Theme.of(context).colorScheme.primary),

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/app_theme.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
@@ -10,89 +11,103 @@ import 'package:flutter/material.dart';
 
 class PaymentEntry extends StatefulWidget {
   final bool isTappable;
-  final Payment data;
-  final Function({bool purchase, bool payment}) callback;
-  final int selectedMemberId;
-  const PaymentEntry({this.data, this.selectedMemberId, this.callback, this.isTappable = true});
+  final Payment payment;
+  final Function({bool purchase, bool payment})? onDelete;
+  final int? selectedMemberId;
+  const PaymentEntry({
+    required this.payment,
+    this.selectedMemberId,
+    this.onDelete,
+    this.isTappable = true,
+  });
 
   @override
   _PaymentEntryState createState() => _PaymentEntryState();
 }
 
 class _PaymentEntryState extends State<PaymentEntry> {
-  Icon icon;
-  TextStyle mainTextStyle;
-  TextStyle subTextStyle;
-  BoxDecoration boxDecoration;
-  String date;
-  String note;
-  String takerName;
-  String amount;
+  late Icon icon;
+  TextStyle? mainTextStyle;
+  TextStyle? subTextStyle;
+  BoxDecoration? boxDecoration;
+  String? date;
+  late String note;
+  String? takerName;
+  String? amount;
 
-  void callbackForReaction(String reaction) {
-    Reaction oldReaction = widget.data.reactions
-        .firstWhere((element) => element.userId == currentUserId, orElse: () => null);
+  void handleSendReaction(String reaction) {
+    Reaction? oldReaction = widget.payment.reactions!
+        .firstWhereOrNull((element) => element.userId == currentUserId);
     bool alreadyReacted = oldReaction != null;
-    bool sameReaction = alreadyReacted ? oldReaction.reaction == reaction : false;
+    bool sameReaction =
+        alreadyReacted ? oldReaction.reaction == reaction : false;
     if (sameReaction) {
-      widget.data.reactions.remove(oldReaction);
+      widget.payment.reactions!.remove(oldReaction);
       setState(() {});
     } else if (!alreadyReacted) {
-      widget.data.reactions.add(Reaction(
-        nickname: currentUsername,
+      widget.payment.reactions!.add(Reaction(
+        nickname: currentUsername!,
         reaction: reaction,
-        userId: currentUserId,
+        userId: currentUserId!,
       ));
       setState(() {});
     } else {
-      widget.data.reactions
-          .add(Reaction(nickname: oldReaction.nickname, reaction: reaction, userId: currentUserId));
-      widget.data.reactions.remove(oldReaction);
+      widget.payment.reactions!.add(
+        Reaction(
+          nickname: oldReaction.nickname,
+          reaction: reaction,
+          userId: currentUserId!,
+        ),
+      );
+      widget.payment.reactions!.remove(oldReaction);
       setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    int selectedMemberId = widget.selectedMemberId ?? currentUserId;
-    date = DateFormat('yyyy/MM/dd - HH:mm').format(widget.data.updatedAt);
-    note = (widget.data.note == '' || widget.data.note == null)
+    int? selectedMemberId = widget.selectedMemberId;
+    date = DateFormat('yyyy/MM/dd - HH:mm').format(widget.payment.updatedAt!);
+    note = (widget.payment.note == '' || widget.payment.note == null)
         ? 'no_note'.tr()
-        : widget.data.note[0].toUpperCase() + widget.data.note.substring(1);
-    if (widget.data.payerId == selectedMemberId) {
-      takerName = widget.data.takerNickname;
-      amount = widget.data.amountOriginalCurrency
-          .toMoneyString(widget.data.originalCurrency, withSymbol: true);
+        : widget.payment.note![0].toUpperCase() +
+            widget.payment.note!.substring(1);
+    if (widget.payment.payerId == selectedMemberId) {
+      takerName = widget.payment.takerNickname;
+      amount = widget.payment.amountOriginalCurrency
+          .toMoneyString(widget.payment.originalCurrency, withSymbol: true);
       icon = Icon(Icons.call_made,
-          color: currentThemeName.contains('Gradient')
+          color: currentThemeName!.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
       boxDecoration = BoxDecoration(
-        gradient: AppTheme.gradientFromTheme(currentThemeName, usePrimaryContainer: true),
+        gradient: AppTheme.gradientFromTheme(currentThemeName,
+            usePrimaryContainer: true),
         borderRadius: BorderRadius.circular(15),
       );
-      mainTextStyle = Theme.of(context).textTheme.bodyLarge.copyWith(
-          color: currentThemeName.contains('Gradient')
+      mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
+          color: currentThemeName!.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
-      subTextStyle = Theme.of(context).textTheme.bodySmall.copyWith(
-          color: currentThemeName.contains('Gradient')
+      subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
+          color: currentThemeName!.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
     } else {
-      icon = Icon(Icons.call_received, color: Theme.of(context).colorScheme.onSurfaceVariant);
+      icon = Icon(Icons.call_received,
+          color: Theme.of(context).colorScheme.onSurfaceVariant);
 
       mainTextStyle = Theme.of(context)
           .textTheme
-          .bodyLarge
+          .bodyLarge!
           .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
       subTextStyle = Theme.of(context)
           .textTheme
-          .bodySmall
+          .bodySmall!
           .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
-      takerName = widget.data.payerNickname;
-      amount = (-widget.data.amountOriginalCurrency)
-          .toMoneyString(widget.data.originalCurrency, withSymbol: true);
+      takerName = widget.payment.payerNickname;
+      amount = (-widget.payment.amountOriginalCurrency!)
+          .toMoneyString(widget.payment.originalCurrency, withSymbol: true);
       boxDecoration = BoxDecoration();
     }
     return Stack(
@@ -102,7 +117,10 @@ class _PaymentEntryState extends State<PaymentEntry> {
           width: MediaQuery.of(context).size.width,
           decoration: boxDecoration,
           margin: EdgeInsets.only(
-              top: widget.data.reactions.length == 0 ? 0 : 14, bottom: 4, left: 4, right: 4),
+              top: widget.payment.reactions!.length == 0 ? 0 : 14,
+              bottom: 4,
+              left: 4,
+              right: 4),
           child: Material(
             type: MaterialType.transparency,
             child: InkWell(
@@ -114,23 +132,25 @@ class _PaymentEntryState extends State<PaymentEntry> {
                           showDialog(
                               builder: (context) => AddReactionDialog(
                                     type: 'payments',
-                                    reactions: widget.data.reactions,
-                                    reactToId: widget.data.paymentId,
-                                    callback: this.callbackForReaction,
+                                    reactions: widget.payment.reactions!,
+                                    reactToId: widget.payment.paymentId!,
+                                    onSend: this.handleSendReaction,
                                   ),
                               context: context);
                         },
               onTap: !widget.isTappable
                   ? null
                   : () async {
-                      showModalBottomSheet(
+                      showModalBottomSheet<String>(
                               context: context,
                               isScrollControlled: true,
-                              builder: (context) =>
-                                  SingleChildScrollView(child: PaymentAllInfo(widget.data)))
+                              builder: (context) => SingleChildScrollView(
+                                  child: PaymentAllInfo(widget.payment)))
                           .then((returnValue) {
-                        if (returnValue == 'deleted')
-                          widget.callback(purchase: false, payment: true);
+                        if (returnValue == 'deleted' &&
+                            widget.onDelete != null) {
+                          widget.onDelete!(purchase: false, payment: true);
+                        }
                       });
                     },
               borderRadius: BorderRadius.circular(15),
@@ -152,7 +172,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
                                 Text(
-                                  takerName,
+                                  takerName!,
                                   style: mainTextStyle,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -168,7 +188,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
                       ),
                     ),
                     Text(
-                      amount,
+                      amount!,
                       style: mainTextStyle,
                     ),
                   ],
@@ -180,10 +200,10 @@ class _PaymentEntryState extends State<PaymentEntry> {
         Visibility(
           visible: selectedMemberId == currentUserId,
           child: PastReactionContainer(
-            reactedToId: widget.data.paymentId,
-            reactions: widget.data.reactions,
-            callback: this.callbackForReaction,
-            isSecondaryColor: widget.data.payerId == currentUserId,
+            reactedToId: widget.payment.paymentId!,
+            reactions: widget.payment.reactions!,
+            onSendReaction: this.handleSendReaction,
+            isSecondaryColor: widget.payment.payerId == currentUserId,
             type: 'payments',
           ),
         )

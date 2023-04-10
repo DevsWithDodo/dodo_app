@@ -10,13 +10,13 @@ import '../essentials/models.dart';
 
 class MergeOnJoinPage extends StatefulWidget {
   final List<Member> guests;
-  MergeOnJoinPage({@required this.guests});
+  MergeOnJoinPage({required this.guests});
   @override
   State<MergeOnJoinPage> createState() => _MergeOnJoinPageState();
 }
 
 class _MergeOnJoinPageState extends State<MergeOnJoinPage> {
-  Member _selectedMember;
+  Member? _selectedMember;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,20 +38,21 @@ class _MergeOnJoinPageState extends State<MergeOnJoinPage> {
               'guests_in_group'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .labelLarge
+                  .labelLarge!
                   .copyWith(color: Theme.of(context).colorScheme.primary),
             ),
             SizedBox(height: 10),
             MemberChips(
-              noAnimation: true,
-              allowMultiple: false,
+              showAnimation: false,
+              allowMultipleSelected: false,
               allMembers: widget.guests,
-              membersChanged: (newMembers) {
+              chosenMembersChanged: (newMembers) {
                 setState(() {
-                  _selectedMember = newMembers.isEmpty ? null : newMembers.first;
+                  _selectedMember =
+                      newMembers.isEmpty ? null : newMembers.first;
                 });
               },
-              membersChosen: [_selectedMember],
+              chosenMembers: _selectedMember == null ? [] : [_selectedMember!],
             ),
             SizedBox(height: 35),
             Row(
@@ -63,10 +64,8 @@ class _MergeOnJoinPageState extends State<MergeOnJoinPage> {
                   },
                   child: Text(
                     'skip'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelLarge
-                        .copyWith(color: Theme.of(context).colorScheme.onPrimary),
+                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onPrimary),
                   ),
                 ),
                 GradientButton(
@@ -81,7 +80,7 @@ class _MergeOnJoinPageState extends State<MergeOnJoinPage> {
                   },
                   child: Text(
                     'merge'.tr(),
-                    style: Theme.of(context).textTheme.labelLarge.copyWith(
+                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
                         color: _selectedMember == null
                             ? Colors.white
                             : Theme.of(context).colorScheme.onPrimary),
@@ -99,7 +98,7 @@ class _MergeOnJoinPageState extends State<MergeOnJoinPage> {
     try {
       Map<String, dynamic> body = {
         'member_id': currentUserId,
-        'guest_id': _selectedMember.memberId
+        'guest_id': _selectedMember!.memberId
       };
       await httpPost(
           context: context,

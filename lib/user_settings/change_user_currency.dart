@@ -20,7 +20,7 @@ class ChangeUserCurrency extends StatelessWidget {
                 'change_user_currency'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleLarge
+                    .titleLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
@@ -33,7 +33,7 @@ class ChangeUserCurrency extends StatelessWidget {
               'change_user_currency_explanation'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleSmall
+                  .titleSmall!
                   .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             )),

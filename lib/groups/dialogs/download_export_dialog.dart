@@ -58,7 +58,7 @@ class _DownloadExportDialogState extends State<DownloadExportDialog> {
               'download_export'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleLarge
+                  .titleLarge!
                   .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -66,7 +66,7 @@ class _DownloadExportDialogState extends State<DownloadExportDialog> {
             Text('download_export_explanation'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleSmall
+                    .titleSmall!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center),
             Divider(),
@@ -75,7 +75,7 @@ class _DownloadExportDialogState extends State<DownloadExportDialog> {
               'download_xls'.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleLarge
+                  .titleLarge!
                   .copyWith(fontSize: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -83,7 +83,7 @@ class _DownloadExportDialogState extends State<DownloadExportDialog> {
             Text('download_xls_explanation'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleSmall
+                    .titleSmall!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center),
             SizedBox(height: 10),
@@ -105,7 +105,7 @@ class _DownloadExportDialogState extends State<DownloadExportDialog> {
               children: [
                 Text(
                   'download_pdf'.tr(),
-                  style: Theme.of(context).textTheme.titleLarge.copyWith(
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
                       fontSize: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   textAlign: TextAlign.center,
                 ),
@@ -113,7 +113,7 @@ class _DownloadExportDialogState extends State<DownloadExportDialog> {
                 Text('download_pdf_explanation'.tr(),
                     style: Theme.of(context)
                         .textTheme
-                        .titleSmall
+                        .titleSmall!
                         .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center),
                 SizedBox(height: 10),

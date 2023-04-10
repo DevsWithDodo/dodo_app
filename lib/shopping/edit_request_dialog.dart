@@ -8,8 +8,8 @@ import 'package:flutter/services.dart';
 import '../essentials/validation_rules.dart';
 
 class EditRequestDialog extends StatefulWidget {
-  final String textBefore;
-  final int requestId;
+  final String? textBefore;
+  final int? requestId;
   EditRequestDialog({this.textBefore, this.requestId});
 
   @override
@@ -44,7 +44,7 @@ class _EditRequestDialogState extends State<EditRequestDialog> {
 
   @override
   Widget build(BuildContext context) {
-    _requestController.text = widget.textBefore;
+    _requestController.text = widget.textBefore!;
     return Dialog(
       child: Container(
         padding: EdgeInsets.all(15),
@@ -93,7 +93,7 @@ class _EditRequestDialogState extends State<EditRequestDialog> {
               children: [
                 GradientButton(
                     onPressed: () {
-                      if (_requestFormKey.currentState.validate()) {
+                      if (_requestFormKey.currentState!.validate()) {
                         FocusScope.of(context).unfocus();
                         String newRequest = _requestController.text;
                         showDialog(

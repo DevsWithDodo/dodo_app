@@ -11,8 +11,8 @@ import 'package:csocsort_szamla/essentials/http_handler.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 
 class PurchaseAllInfo extends StatefulWidget {
-  final Purchase purchase;
-  final int selectedMemberId;
+  final Purchase? purchase;
+  final int? selectedMemberId;
 
   PurchaseAllInfo(this.purchase, this.selectedMemberId);
 
@@ -21,7 +21,7 @@ class PurchaseAllInfo extends StatefulWidget {
 }
 
 class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
-  Future<bool> _deleteElement(int id) async {
+  Future<bool> _deleteElement(int? id) async {
     try {
       await httpDelete(uri: '/purchases/' + id.toString(), context: context);
       Future.delayed(delayTime()).then((value) => _onDeleteElement());
@@ -39,10 +39,11 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
   @override
   Widget build(BuildContext context) {
     String note = '';
-    if (widget.purchase.name == '') {
+    if (widget.purchase!.name == '') {
       note = 'no_note'.tr();
     } else {
-      note = widget.purchase.name[0].toUpperCase() + widget.purchase.name.substring(1);
+      note = widget.purchase!.name![0].toUpperCase() +
+          widget.purchase!.name!.substring(1);
     }
     return Padding(
       padding: const EdgeInsets.all(15),
@@ -57,7 +58,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                 ' - ' + note,
                 style: Theme.of(context)
                     .textTheme
-                    .bodyLarge
+                    .bodyLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurface),
               )),
             ],
@@ -67,13 +68,14 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
           ),
           Row(
             children: <Widget>[
-              Icon(Icons.account_circle, color: Theme.of(context).colorScheme.secondary),
+              Icon(Icons.account_circle,
+                  color: Theme.of(context).colorScheme.secondary),
               Flexible(
                   child: Text(
-                ' - ' + widget.purchase.buyerNickname,
+                ' - ' + widget.purchase!.buyerNickname!,
                 style: Theme.of(context)
                     .textTheme
-                    .bodyLarge
+                    .bodyLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurface),
               )),
             ],
@@ -84,13 +86,14 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Icon(Icons.people, color: Theme.of(context).colorScheme.secondary),
+              Icon(Icons.people,
+                  color: Theme.of(context).colorScheme.secondary),
               Flexible(
                   child: Text(
-                ' - ' + widget.purchase.receivers.join(', '),
+                ' - ' + widget.purchase!.receivers!.join(', '),
                 style: Theme.of(context)
                     .textTheme
-                    .bodyLarge
+                    .bodyLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurface),
               )),
             ],
@@ -100,38 +103,34 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
           ),
           Row(
             children: <Widget>[
-              Icon(Icons.attach_money, color: Theme.of(context).colorScheme.secondary),
+              Icon(Icons.attach_money,
+                  color: Theme.of(context).colorScheme.secondary),
               Flexible(
                   child: Text(
                       ' - ' +
-                          (widget.purchase.buyerId == widget.selectedMemberId
-                              ? (widget.purchase.totalAmount
-                                      .toMoneyString(currentGroupCurrency, withSymbol: true) +
-                                  (widget.purchase.originalCurrency != currentGroupCurrency
+                          (widget.purchase!.buyerId == widget.selectedMemberId
+                              ? (widget.purchase!.totalAmount.toMoneyString(
+                                      currentGroupCurrency,
+                                      withSymbol: true) +
+                                  (widget.purchase!.originalCurrency != currentGroupCurrency
                                       ? (' (' +
-                                          widget.purchase.totalAmountOriginalCurrency.toMoneyString(
-                                              widget.purchase.originalCurrency,
+                                          widget.purchase!.totalAmountOriginalCurrency.toMoneyString(
+                                              widget.purchase!.originalCurrency,
                                               withSymbol: true) +
                                           ')')
                                       : ''))
-                              : (widget.purchase.receivers
-                                      .firstWhere((element) => element.memberId == currentUserId)
-                                      .balance
-                                      .toMoneyString(currentGroupCurrency, withSymbol: true) +
-                                  (widget.purchase.originalCurrency != currentGroupCurrency
+                              : (widget.purchase!.receivers!.firstWhere((element) => element.memberId == currentUserId).balance.toMoneyString(
+                                      currentGroupCurrency,
+                                      withSymbol: true) +
+                                  (widget.purchase!.originalCurrency != currentGroupCurrency
                                       ? (' (' +
-                                          widget.purchase.receivers
-                                              .firstWhere(
-                                                  (element) => element.memberId == currentUserId)
+                                          widget.purchase!.receivers!
+                                              .firstWhere((element) => element.memberId == currentUserId)
                                               .balanceOriginalCurrency
-                                              .toMoneyString(widget.purchase.originalCurrency,
-                                                  withSymbol: true) +
+                                              .toMoneyString(widget.purchase!.originalCurrency, withSymbol: true) +
                                           ')')
                                       : ''))),
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
-                          .copyWith(color: Theme.of(context).colorScheme.onSurface))),
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface))),
             ],
           ),
           SizedBox(
@@ -145,11 +144,11 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
               ),
               Flexible(
                   child: Text(
-                      ' - ' + DateFormat('yyyy/MM/dd - HH:mm').format(widget.purchase.updatedAt),
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
-                          .copyWith(color: Theme.of(context).colorScheme.onSurface))),
+                      ' - ' +
+                          DateFormat('yyyy/MM/dd - HH:mm')
+                              .format(widget.purchase!.updatedAt!),
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface))),
             ],
           ),
           SizedBox(
@@ -173,16 +172,15 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                 },
                 child: Row(
                   children: [
-                    Icon(Icons.edit, color: Theme.of(context).colorScheme.onPrimary),
+                    Icon(Icons.edit,
+                        color: Theme.of(context).colorScheme.onPrimary),
                     SizedBox(
                       width: 3,
                     ),
                     Text(
                       'modify'.tr(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .button
-                          .copyWith(color: Theme.of(context).colorScheme.onPrimary),
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                          color: Theme.of(context).colorScheme.onPrimary),
                     ),
                   ],
                 ),
@@ -198,7 +196,8 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                     if (value != null && value) {
                       showDialog(
                           builder: (context) => FutureSuccessDialog(
-                                future: _deleteElement(widget.purchase.purchaseId),
+                                future:
+                                    _deleteElement(widget.purchase!.purchaseId),
                                 dataTrueText: 'delete_scf',
                                 onDataTrue: () {
                                   _onDeleteElement();
@@ -211,16 +210,15 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                 },
                 child: Row(
                   children: [
-                    Icon(Icons.delete, color: Theme.of(context).colorScheme.onPrimary),
+                    Icon(Icons.delete,
+                        color: Theme.of(context).colorScheme.onPrimary),
                     SizedBox(
                       width: 3,
                     ),
                     Text(
                       'revoke'.tr(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .button
-                          .copyWith(color: Theme.of(context).colorScheme.onPrimary),
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                          color: Theme.of(context).colorScheme.onPrimary),
                     ),
                   ],
                 ),

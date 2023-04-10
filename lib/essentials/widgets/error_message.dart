@@ -3,16 +3,16 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../main/report_a_bug_page.dart';
 
 class ErrorMessage extends StatelessWidget {
-  final String error;
+  final String? error;
   final Function onTap;
-  final String errorLocation;
+  final String? errorLocation;
 
   ///Displays an error message with the given [error].
   ///When tapped on, the [onTap] method is called.
   ///If the error isn't 'no internet', the user can decide to report the error.
   ///Then the 'report a bug' is navigated to with the given [errorLocation] as the location.
   ErrorMessage(
-      {@required this.error, @required this.onTap, this.errorLocation});
+      {required this.error, required this.onTap, this.errorLocation});
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -20,11 +20,11 @@ class ErrorMessage extends StatelessWidget {
           padding: const EdgeInsets.all(15),
           child: Column(
             children: [
-              Text(error.tr(),
+              Text(error!.tr(),
                   textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
-                      .titleLarge
+                      .titleLarge!
                       .copyWith(color: Theme.of(context).colorScheme.error)),
               Visibility(
                 visible: error != 'cannot_connect',
@@ -32,7 +32,7 @@ class ErrorMessage extends StatelessWidget {
                   children: [
                     Divider(),
                     Text('if_not_working'.tr(),
-                        style: Theme.of(context).textTheme.bodyMedium.copyWith(
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                             color: Theme.of(context).colorScheme.onSurface)),
                     SizedBox(
                       height: 5,
@@ -52,7 +52,7 @@ class ErrorMessage extends StatelessWidget {
                       child: Text('report_this_error'.tr(),
                           style: Theme.of(context)
                               .textTheme
-                              .labelLarge
+                              .labelLarge!
                               .copyWith(
                                   color:
                                       Theme.of(context).colorScheme.primary)),

@@ -5,19 +5,19 @@ class AppTheme {
 
   static final Map<String, ThemeData> themes = {
     'pinkLightTheme': generateThemeData(
-      Colors.purple[300],
+      Colors.purple[300]!,
       Brightness.light,
     ),
     'pinkDarkTheme': generateThemeData(
-      Colors.pink[300],
+      Colors.pink[300]!,
       Brightness.dark,
     ),
     'seaBlueLightTheme': generateThemeData(
-      Colors.blue[700],
+      Colors.blue[700]!,
       Brightness.light,
     ),
     'seaBlueDarkTheme': generateThemeData(
-      Colors.blue[400],
+      Colors.blue[400]!,
       Brightness.dark,
     ),
     'greenLightTheme': generateThemeData(
@@ -29,11 +29,11 @@ class AppTheme {
       Brightness.dark,
     ),
     'amberLightTheme': generateThemeData(
-      Colors.amber[700],
+      Colors.amber[700]!,
       Brightness.light,
     ),
     'amberDarkTheme': generateThemeData(
-      Colors.amber[600],
+      Colors.amber[600]!,
       Brightness.dark,
     ),
     'orangeLightTheme': generateThemeData(
@@ -280,48 +280,48 @@ class AppTheme {
   };
 
   static Gradient gradientFromTheme(
-    String themeName, {
+    String? themeName, {
     bool useSecondary = false,
     bool useTertiaryContainer = false,
     bool usePrimaryContainer = false,
     bool useSecondaryContainer = false,
   }) {
     return gradientColors.keys.contains(themeName)
-        ? themeName.contains('rainbow')
+        ? themeName!.contains('rainbow')
             ? LinearGradient(colors: [
-                AppTheme.gradientColors[themeName][0],
-                AppTheme.gradientColors[themeName][1],
-                AppTheme.gradientColors[themeName][2],
-                AppTheme.gradientColors[themeName][3],
-                AppTheme.gradientColors[themeName][4],
+                AppTheme.gradientColors[themeName]![0],
+                AppTheme.gradientColors[themeName]![1],
+                AppTheme.gradientColors[themeName]![2],
+                AppTheme.gradientColors[themeName]![3],
+                AppTheme.gradientColors[themeName]![4],
               ])
             : LinearGradient(colors: [
-                AppTheme.gradientColors[themeName][0],
-                AppTheme.gradientColors[themeName][1]
+                AppTheme.gradientColors[themeName]![0],
+                AppTheme.gradientColors[themeName]![1]
               ])
         : useSecondary
             ? LinearGradient(colors: [
-                AppTheme.themes[themeName].colorScheme.secondary,
-                AppTheme.themes[themeName].colorScheme.secondary
+                AppTheme.themes[themeName]!.colorScheme.secondary,
+                AppTheme.themes[themeName]!.colorScheme.secondary
               ])
             : usePrimaryContainer
                 ? LinearGradient(colors: [
-                    AppTheme.themes[themeName].colorScheme.primaryContainer,
-                    AppTheme.themes[themeName].colorScheme.primaryContainer
+                    AppTheme.themes[themeName]!.colorScheme.primaryContainer,
+                    AppTheme.themes[themeName]!.colorScheme.primaryContainer
                   ])
                 : useSecondaryContainer
                     ? LinearGradient(colors: [
-                        AppTheme.themes[themeName].colorScheme.secondaryContainer,
-                        AppTheme.themes[themeName].colorScheme.secondaryContainer
+                        AppTheme.themes[themeName]!.colorScheme.secondaryContainer,
+                        AppTheme.themes[themeName]!.colorScheme.secondaryContainer
                       ])
                     : useTertiaryContainer
                         ? LinearGradient(colors: [
-                            AppTheme.themes[themeName].colorScheme.tertiaryContainer,
-                            AppTheme.themes[themeName].colorScheme.tertiaryContainer
+                            AppTheme.themes[themeName]!.colorScheme.tertiaryContainer,
+                            AppTheme.themes[themeName]!.colorScheme.tertiaryContainer
                           ])
                         : LinearGradient(colors: [
-                            AppTheme.themes[themeName].colorScheme.primary,
-                            AppTheme.themes[themeName].colorScheme.primary
+                            AppTheme.themes[themeName]!.colorScheme.primary,
+                            AppTheme.themes[themeName]!.colorScheme.primary
                           ]);
   }
 
@@ -332,7 +332,7 @@ class AppTheme {
       brightness: brightness,
     );
     if (themeName != '') {
-      ColorScheme newColorScheme;
+      ColorScheme? newColorScheme;
       switch (themeName) {
         case 'plumGradientDarkTheme':
           newColorScheme = colorScheme.copyWith(onPrimary: Color.fromARGB(255, 40, 1, 92));

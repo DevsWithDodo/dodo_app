@@ -50,7 +50,7 @@ class _AddGuestDialogState extends State<AddGuestDialog> {
                 'add_guest'.tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleLarge
+                    .titleLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurface),
               ),
             ),
@@ -104,7 +104,7 @@ class _AddGuestDialogState extends State<AddGuestDialog> {
   }
 
   void _buttonPush() {
-    if (_nicknameFormKey.currentState.validate()) {
+    if (_nicknameFormKey.currentState!.validate()) {
       FocusScope.of(context).requestFocus(FocusNode());
       showDialog(
           builder: (context) => FutureSuccessDialog(

@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:csocsort_szamla/auth/name_page.dart';
 
 class LoginOrRegisterPage extends StatefulWidget {
-  final String inviteURL;
+  final String? inviteURL;
   LoginOrRegisterPage({this.inviteURL});
 
   @override
@@ -35,7 +35,7 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
             'Test Mode',
             style: Theme.of(context)
                 .textTheme
-                .labelLarge
+                .labelLarge!
                 .copyWith(color: Theme.of(context).colorScheme.onSecondary),
           ),
           action: SnackBarAction(
@@ -97,7 +97,7 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                               'Test Mode',
                               style: Theme.of(context)
                                   .textTheme
-                                  .labelLarge
+                                  .labelLarge!
                                   .copyWith(color: Theme.of(context).colorScheme.onSecondary),
                             ),
                             action: SnackBarAction(
@@ -125,7 +125,7 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
                         Theme.of(context).colorScheme.primary,
-                        currentThemeName.toLowerCase().contains('dodo') && !kIsWeb
+                        currentThemeName!.toLowerCase().contains('dodo') && !kIsWeb
                             ? BlendMode.dst
                             : BlendMode.srcIn),
                     child: Image(
@@ -177,7 +177,7 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                   'login'.tr(),
                   style: Theme.of(context)
                       .textTheme
-                      .labelLarge
+                      .labelLarge!
                       .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                   textAlign: TextAlign.center,
                 ),
@@ -197,7 +197,7 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                 child: Text('register'.tr(),
                     style: Theme.of(context)
                         .textTheme
-                        .labelLarge
+                        .labelLarge!
                         .copyWith(color: Theme.of(context).colorScheme.onPrimary)),
               ),
             ],

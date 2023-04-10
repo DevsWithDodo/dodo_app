@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:csocsort_szamla/balance/select_balance_currency.dart';
 import 'package:csocsort_szamla/essentials/payments_needed.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
@@ -17,21 +18,20 @@ import '../essentials/currencies.dart';
 import '../essentials/models.dart';
 import '../essentials/http_handler.dart';
 import '../essentials/widgets/gradient_button.dart';
-import '../groups/main_group_page.dart';
 
 class Balances extends StatefulWidget {
-  final Function callback;
-  final bool bigScreen;
+  final Function? callback;
+  final bool? bigScreen;
   Balances({this.callback, this.bigScreen});
   @override
   _BalancesState createState() => _BalancesState();
 }
 
 class _BalancesState extends State<Balances> {
-  Future<List<Member>> _members;
-  String _selectedCurrency = currentGroupCurrency;
+  Future<List<Member>>? _members;
+  String? _selectedCurrency = currentGroupCurrency;
 
-  Future<bool> _postPayment(double amount, String note, int takerId) async {
+  Future<bool> _postPayment(double amount, String note, int? takerId) async {
     try {
       Map<String, dynamic> body = {
         'group': currentGroupId,
@@ -49,7 +49,8 @@ class _BalancesState extends State<Balances> {
 
   Future<bool> _postPayments(List<Payment> payments) async {
     for (Payment payment in payments) {
-      if (await _postPayment(payment.amount * 1.0, '\$\$auto_payment\$\$'.tr(), payment.takerId)) {
+      if (await _postPayment(payment.amount! * 1.0, '\$\$auto_payment\$\$'.tr(),
+          payment.takerId)) {
         continue;
       }
     }
@@ -60,13 +61,14 @@ class _BalancesState extends State<Balances> {
   void _onPostPayments() {
     Navigator.pop(context);
     Navigator.pop(context);
-    widget.callback();
+    widget.callback!();
   }
 
   Future<List<Member>> _getMembers() async {
     try {
       http.Response response = await httpGet(
-        uri: generateUri(GetUriKeys.groupCurrent, args: [currentGroupId.toString()]),
+        uri: generateUri(GetUriKeys.groupCurrent,
+            args: [currentGroupId.toString()]),
         context: context,
       );
 
@@ -79,7 +81,8 @@ class _BalancesState extends State<Balances> {
             username: member['username'],
             memberId: member['user_id']));
       }
-      members.sort((member1, member2) => member2.balance.compareTo(member1.balance));
+      members.sort(
+          (member1, member2) => member2.balance!.compareTo(member1.balance!));
       return members;
     } catch (_) {
       throw _;
@@ -115,10 +118,8 @@ class _BalancesState extends State<Balances> {
                 Center(
                   child: Text(
                     'balances'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
                 SizedBox(height: 40),
@@ -127,23 +128,25 @@ class _BalancesState extends State<Balances> {
                   builder: (context, AsyncSnapshot<List<Member>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
-                        Member currentMember = snapshot.data.firstWhere(
-                            (element) => element.memberId == currentUserId,
-                            orElse: () => null);
+                        Member? currentMember = snapshot.data!.firstWhereOrNull(
+                            (element) => element.memberId == currentUserId);
                         print(currentGroupCurrency);
-                        double currencyThreshold = threshold(currentGroupCurrency);
+                        double currencyThreshold =
+                            threshold(currentGroupCurrency);
                         return Column(
                           children: [
                             // SizedBox(
                             //   height: 10,
                             // ),
-                            Column(children: _generateBalances(snapshot.data)),
+                            Column(children: _generateBalances(snapshot.data!)),
                             Visibility(
-                                visible: snapshot.data.length < 2, child: _oneMemberWidget()),
+                                visible: snapshot.data!.length < 2,
+                                child: _oneMemberWidget()),
                             Visibility(
                               visible: currentMember == null
                                   ? false
-                                  : (currentMember.balance < -currencyThreshold),
+                                  : (currentMember.balance! <
+                                      -currencyThreshold),
                               child: Column(
                                 children: [
                                   SizedBox(
@@ -151,8 +154,10 @@ class _BalancesState extends State<Balances> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      List<Payment> payments = paymentsNeeded(snapshot.data)
-                                          .where((payment) => payment.payerId == currentUserId)
+                                      List<Payment> payments = paymentsNeeded(
+                                              snapshot.data!)
+                                          .where((payment) =>
+                                              payment.payerId == currentUserId)
                                           .toList();
                                       showDialog(
                                           context: context,
@@ -160,45 +165,57 @@ class _BalancesState extends State<Balances> {
                                           builder: (BuildContext context) {
                                             return Dialog(
                                               shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(15)),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15)),
                                               child: Padding(
-                                                padding: const EdgeInsets.all(16),
+                                                padding:
+                                                    const EdgeInsets.all(16),
                                                 child: Column(
-                                                  mainAxisSize: MainAxisSize.min,
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
                                                   children: [
                                                     Text(
                                                       'payments_needed'.tr(),
                                                       style: Theme.of(context)
                                                           .textTheme
-                                                          .titleLarge
+                                                          .titleLarge!
                                                           .copyWith(
-                                                              color: Theme.of(context)
+                                                              color: Theme.of(
+                                                                      context)
                                                                   .colorScheme
                                                                   .onSurface),
                                                     ),
                                                     SizedBox(
                                                       height: 10,
                                                     ),
-                                                    _generatePaymentsNeeded(payments),
+                                                    _generatePaymentsNeeded(
+                                                        payments),
                                                     SizedBox(
                                                       height: 10,
                                                     ),
                                                     Row(
-                                                      mainAxisAlignment: payments.length > 0
-                                                          ? MainAxisAlignment.spaceAround
-                                                          : MainAxisAlignment.center,
+                                                      mainAxisAlignment:
+                                                          payments.length > 0
+                                                              ? MainAxisAlignment
+                                                                  .spaceAround
+                                                              : MainAxisAlignment
+                                                                  .center,
                                                       children: [
                                                         GradientButton(
                                                           onPressed: () {
-                                                            Navigator.pop(context);
+                                                            Navigator.pop(
+                                                                context);
                                                           },
                                                           child: Text(
                                                             'back'.tr(),
-                                                            style: Theme.of(context)
+                                                            style: Theme.of(
+                                                                    context)
                                                                 .textTheme
-                                                                .button
+                                                                .labelLarge!
                                                                 .copyWith(
-                                                                    color: Theme.of(context)
+                                                                    color: Theme.of(
+                                                                            context)
                                                                         .colorScheme
                                                                         .onPrimary),
                                                           ),
@@ -206,22 +223,33 @@ class _BalancesState extends State<Balances> {
                                                         Visibility(
                                                           maintainSize: false,
                                                           maintainState: false,
-                                                          maintainAnimation: false,
-                                                          maintainSemantics: false,
+                                                          maintainAnimation:
+                                                              false,
+                                                          maintainSemantics:
+                                                              false,
                                                           replacement: SizedBox(
                                                             height: 0,
                                                           ),
-                                                          visible: payments.length > 0,
+                                                          visible:
+                                                              payments.length >
+                                                                  0,
                                                           child: GradientButton(
-                                                            onPressed: () async {
+                                                            onPressed:
+                                                                () async {
                                                               showDialog(
-                                                                context: context,
-                                                                barrierDismissible: true,
-                                                                builder: (context) {
+                                                                context:
+                                                                    context,
+                                                                barrierDismissible:
+                                                                    true,
+                                                                builder:
+                                                                    (context) {
                                                                   return FutureSuccessDialog(
-                                                                    future: _postPayments(payments),
-                                                                    dataTrueText: 'payment_scf',
-                                                                    onDataTrue: () {
+                                                                    future: _postPayments(
+                                                                        payments),
+                                                                    dataTrueText:
+                                                                        'payment_scf',
+                                                                    onDataTrue:
+                                                                        () {
                                                                       _onPostPayments();
                                                                     },
                                                                   );
@@ -230,11 +258,13 @@ class _BalancesState extends State<Balances> {
                                                             },
                                                             child: Text(
                                                               'pay'.tr(),
-                                                              style: Theme.of(context)
+                                                              style: Theme.of(
+                                                                      context)
                                                                   .textTheme
-                                                                  .button
+                                                                  .labelLarge!
                                                                   .copyWith(
-                                                                      color: Theme.of(context)
+                                                                      color: Theme.of(
+                                                                              context)
                                                                           .colorScheme
                                                                           .onPrimary),
                                                             ),
@@ -254,8 +284,11 @@ class _BalancesState extends State<Balances> {
                                         'who_to_pay'.tr(),
                                         style: Theme.of(context)
                                             .textTheme
-                                            .labelLarge
-                                            .copyWith(color: Theme.of(context).colorScheme.primary),
+                                            .labelLarge!
+                                            .copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary),
                                       ),
                                     ),
                                   ),
@@ -301,7 +334,7 @@ class _BalancesState extends State<Balances> {
       shrinkWrap: true,
       children: payments.map<Widget>((Payment payment) {
         return PaymentEntry(
-          data: payment,
+          payment: payment,
           isTappable: false,
         );
       }).toList(),
@@ -311,7 +344,8 @@ class _BalancesState extends State<Balances> {
   Future<String> _getInvitation() async {
     try {
       http.Response response = await httpGet(
-        uri: generateUri(GetUriKeys.groupCurrent, args: [currentGroupId.toString()]),
+        uri: generateUri(GetUriKeys.groupCurrent,
+            args: [currentGroupId.toString()]),
         context: context,
       );
       Map<String, dynamic> decoded = jsonDecode(response.body);
@@ -323,9 +357,9 @@ class _BalancesState extends State<Balances> {
 
   List<Widget> _generateBalances(List<Member> members) {
     return members.map<Widget>((Member member) {
-      TextStyle textStyle = Theme.of(context).textTheme.bodyLarge.copyWith(
+      TextStyle textStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
           color: member.memberId == currentUserId
-              ? currentThemeName.contains('Gradient')
+              ? currentThemeName!.contains('Gradient')
                   ? Theme.of(context).colorScheme.onPrimary
                   : Theme.of(context).colorScheme.onSecondary
               : Theme.of(context).colorScheme.onSurface);
@@ -333,7 +367,8 @@ class _BalancesState extends State<Balances> {
           padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
           decoration: member.memberId == currentUserId
               ? BoxDecoration(
-                  gradient: AppTheme.gradientFromTheme(currentThemeName, useSecondary: true),
+                  gradient: AppTheme.gradientFromTheme(currentThemeName,
+                      useSecondary: true),
                   borderRadius: BorderRadius.circular(15),
                 )
               : null,
@@ -341,7 +376,7 @@ class _BalancesState extends State<Balances> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                member.nickname,
+                member.nickname!,
                 style: textStyle,
               ),
               AnimatedCrossFade(
@@ -368,19 +403,19 @@ class _BalancesState extends State<Balances> {
           'you_seem_lonely'.tr(),
           style: Theme.of(context)
               .textTheme
-              .titleLarge
+              .titleLarge!
               .copyWith(color: Theme.of(context).colorScheme.onSurface),
         ),
         SizedBox(height: 10),
         Text('invite_friends'.tr(),
             style: Theme.of(context)
                 .textTheme
-                .titleSmall
+                .titleSmall!
                 .copyWith(color: Theme.of(context).colorScheme.onSurface)),
         SizedBox(height: 5),
         FutureBuilder(
           future: _getInvitation(),
-          builder: (context, snapshot) {
+          builder: (context, AsyncSnapshot<String> snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
                 return Center(
@@ -392,7 +427,8 @@ class _BalancesState extends State<Balances> {
                           showDialog(
                               context: context,
                               builder: (context) {
-                                return ShareGroupDialog(inviteCode: snapshot.data);
+                                return ShareGroupDialog(
+                                    inviteCode: snapshot.data!);
                               });
                         },
                         child: Icon(
@@ -420,7 +456,7 @@ class _BalancesState extends State<Balances> {
         Text('add_guests_offline'.tr(),
             style: Theme.of(context)
                 .textTheme
-                .titleSmall
+                .titleSmall!
                 .copyWith(color: Theme.of(context).colorScheme.onSurface)),
         SizedBox(height: 5),
         Row(
@@ -446,7 +482,7 @@ class _BalancesState extends State<Balances> {
           'you_seem_lonely_explanation'.tr(),
           style: Theme.of(context)
               .textTheme
-              .titleSmall
+              .titleSmall!
               .copyWith(color: Theme.of(context).colorScheme.onSurface),
           textAlign: TextAlign.center,
         )

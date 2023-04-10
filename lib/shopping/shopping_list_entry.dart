@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/http_handler.dart';
@@ -11,106 +12,78 @@ import 'package:flutter/material.dart';
 import '../purchase/add_modify_purchase.dart';
 import 'edit_request_dialog.dart';
 
-class ShoppingRequestData {
-  int requestId;
-  String name;
-  String requesterUsername, requesterNickname;
-  int requesterId;
-  DateTime updatedAt;
-  List<Reaction> reactions;
-
-  ShoppingRequestData(
-      {this.updatedAt,
-      this.requesterId,
-      this.requesterUsername,
-      this.name,
-      this.requestId,
-      this.requesterNickname,
-      this.reactions});
-
-  factory ShoppingRequestData.fromJson(Map<String, dynamic> json) {
-    return ShoppingRequestData(
-        requestId: json['request_id'],
-        requesterId: json['requester_id'],
-        requesterUsername: json['requester_username'],
-        requesterNickname: json['requester_nickname'],
-        name: json['name'],
-        updatedAt: DateTime.parse(json['updated_at']).toLocal(),
-        reactions:
-            json['reactions'].map<Reaction>((reaction) => Reaction.fromJson(reaction)).toList());
-  }
-
-  @override
-  String toString() {
-    return name + '; ' + updatedAt.toString() + '; ' + reactions.join(', ');
-  }
-}
-
 class ShoppingListEntry extends StatefulWidget {
-  final ShoppingRequestData data;
-  final Function callback;
+  final ShoppingRequest shoppingRequest;
+  final Function onEditDeleteRequest;
 
-  const ShoppingListEntry({this.data, this.callback});
+  const ShoppingListEntry({
+    required this.shoppingRequest,
+    required this.onEditDeleteRequest,
+  });
 
   @override
   _ShoppingListEntryState createState() => _ShoppingListEntryState();
 }
 
 class _ShoppingListEntryState extends State<ShoppingListEntry> {
-  Icon icon;
-  TextStyle mainTextStyle;
-  TextStyle subTextStyle;
-  BoxDecoration boxDecoration;
+  late Icon icon;
+  late TextStyle mainTextStyle;
+  late TextStyle subTextStyle;
+  late BoxDecoration boxDecoration;
 
-  String name;
-  String user;
+  String? name;
+  String? user;
 
-  void callbackForReaction(String reaction) {
-    //TODO: currentNickname
-    Reaction oldReaction = widget.data.reactions
-        .firstWhere((element) => element.userId == currentUserId, orElse: () => null);
+  void handleSendReaction(String reaction) {
+    Reaction? oldReaction = widget.shoppingRequest.reactions!
+        .firstWhereOrNull((element) => element.userId == currentUserId);
     bool alreadyReacted = oldReaction != null;
-    bool sameReaction = alreadyReacted ? oldReaction.reaction == reaction : false;
+    bool sameReaction =
+        alreadyReacted ? oldReaction.reaction == reaction : false;
     if (sameReaction) {
-      widget.data.reactions.remove(oldReaction);
+      widget.shoppingRequest.reactions!.remove(oldReaction);
       setState(() {});
     } else if (!alreadyReacted) {
-      widget.data.reactions.add(Reaction(
-        nickname: currentUsername,
+      widget.shoppingRequest.reactions!.add(Reaction(
+        nickname: currentUsername!,
         reaction: reaction,
-        userId: currentUserId,
+        userId: currentUserId!,
       ));
       setState(() {});
     } else {
-      widget.data.reactions
-          .add(Reaction(nickname: oldReaction.nickname, reaction: reaction, userId: currentUserId));
-      widget.data.reactions.remove(oldReaction);
+      widget.shoppingRequest.reactions!.add(Reaction(
+        nickname: oldReaction.nickname,
+        reaction: reaction,
+        userId: currentUserId!,
+      ));
+      widget.shoppingRequest.reactions!.remove(oldReaction);
       setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    name = widget.data.name;
-    user = widget.data.requesterUsername;
+    name = widget.shoppingRequest.name;
+    user = widget.shoppingRequest.requesterUsername;
     mainTextStyle = Theme.of(context)
         .textTheme
-        .bodyLarge
+        .bodyLarge!
         .copyWith(color: Theme.of(context).colorScheme.onSurface);
     subTextStyle = Theme.of(context)
         .textTheme
-        .bodySmall
+        .bodySmall!
         .copyWith(color: Theme.of(context).colorScheme.onSurface);
     boxDecoration = BoxDecoration(
       borderRadius: BorderRadius.circular(20),
     );
-    if (widget.data.requesterId == currentUserId) {
+    if (widget.shoppingRequest.requesterId == currentUserId) {
       icon = Icon(
         Icons.shopping_cart_outlined,
         color: Theme.of(context).colorScheme.primary,
       );
     } else {
-      icon = Icon(Icons.card_giftcard, color: Theme.of(context).colorScheme.secondary);
+      icon = Icon(Icons.card_giftcard,
+          color: Theme.of(context).colorScheme.secondary);
     }
     return Dismissible(
       key: UniqueKey(),
@@ -118,24 +91,32 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
         child: Align(
             alignment: Alignment.centerRight,
             child: Icon(
-              widget.data.requesterId != currentUserId ? Icons.done : Icons.delete,
+              widget.shoppingRequest.requesterId != currentUserId
+                  ? Icons.done
+                  : Icons.delete,
               size: 30,
-              color: Theme.of(context).textTheme.bodyText1.color,
+              color: Theme.of(context).textTheme.bodyLarge!.color,
             )),
       ),
-      dismissThresholds: {DismissDirection.startToEnd: 0.6, DismissDirection.endToStart: 0.6},
+      dismissThresholds: {
+        DismissDirection.startToEnd: 0.6,
+        DismissDirection.endToStart: 0.6
+      },
       background: Align(
           alignment: Alignment.centerLeft,
           child: Icon(
-            widget.data.requesterId != currentUserId ? Icons.attach_money : Icons.edit,
+            widget.shoppingRequest.requesterId != currentUserId
+                ? Icons.attach_money
+                : Icons.edit,
             size: 30,
-            color: Theme.of(context).textTheme.bodyText1.color,
+            color: Theme.of(context).textTheme.bodyLarge!.color,
           )),
       onDismissed: (direction) {
-        if (widget.data.requesterId != currentUserId) {
+        if (widget.shoppingRequest.requesterId != currentUserId) {
           showDialog(
                   builder: (context) => FutureSuccessDialog(
-                        future: _deleteFulfillShoppingRequest(widget.data.requestId, context),
+                        future: _deleteFulfillShoppingRequest(
+                            widget.shoppingRequest.requestId, context),
                         dataTrueText: 'fulfill_scf',
                         onDataTrue: () {
                           _onDeleteFulfillShoppingRequest();
@@ -144,14 +125,15 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                   barrierDismissible: false,
                   context: context)
               .then((value) {
-            widget.callback(restoreId: widget.data.requestId);
+            widget.onEditDeleteRequest(
+                restoreId: widget.shoppingRequest.requestId);
             if (direction == DismissDirection.startToEnd && value == true) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => AddPurchaseRoute(
                     type: PurchaseType.fromShopping,
-                    shoppingData: widget.data,
+                    shoppingData: widget.shoppingRequest,
                   ),
                 ),
               );
@@ -161,7 +143,8 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
           if (direction == DismissDirection.endToStart) {
             showDialog(
                     builder: (context) => FutureSuccessDialog(
-                          future: _deleteFulfillShoppingRequest(widget.data.requestId, context),
+                          future: _deleteFulfillShoppingRequest(
+                              widget.shoppingRequest.requestId, context),
                           dataTrueText: 'delete_scf',
                           onDataTrue: () {
                             _onDeleteFulfillShoppingRequest();
@@ -170,18 +153,20 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                     barrierDismissible: false,
                     context: context)
                 .then((value) {
-              if (value ?? false) widget.callback(restoreId: widget.data.requestId);
+              if (value ?? false)
+                widget.onEditDeleteRequest(
+                    restoreId: widget.shoppingRequest.requestId);
             });
           } else if (direction == DismissDirection.startToEnd) {
             showDialog(
               builder: (context) => EditRequestDialog(
-                textBefore: widget.data.name,
-                requestId: widget.data.requestId,
+                textBefore: widget.shoppingRequest.name,
+                requestId: widget.shoppingRequest.requestId,
               ),
               context: context,
             ).then((value) {
               if (value ?? false) {
-                widget.callback();
+                widget.onEditDeleteRequest();
               }
             });
           }
@@ -194,7 +179,10 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
             width: MediaQuery.of(context).size.width,
             decoration: boxDecoration,
             margin: EdgeInsets.only(
-                top: widget.data.reactions.length == 0 ? 5 : 10, bottom: 8, left: 5, right: 5),
+                top: widget.shoppingRequest.reactions!.length == 0 ? 5 : 10,
+                bottom: 8,
+                left: 5,
+                right: 5),
             child: Material(
               type: MaterialType.transparency,
               child: InkWell(
@@ -202,20 +190,23 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                   showDialog(
                       builder: (context) => AddReactionDialog(
                             type: 'requests',
-                            reactions: widget.data.reactions,
-                            reactToId: widget.data.requestId,
-                            callback: this.callbackForReaction,
+                            reactions: widget.shoppingRequest.reactions!,
+                            reactToId: widget.shoppingRequest.requestId!,
+                            onSend: this.handleSendReaction,
                           ),
                       context: context);
                 },
                 onTap: () async {
                   showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (context) =>
-                          SingleChildScrollView(child: ShoppingAllInfo(widget.data))).then((val) {
-                    if (val == 'deleted') widget.callback(restoreId: widget.data.requestId);
-                    if (val == 'edited') widget.callback();
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (context) => SingleChildScrollView(
+                              child: ShoppingAllInfo(widget.shoppingRequest)))
+                      .then((val) {
+                    if (val == 'deleted')
+                      widget.onEditDeleteRequest(
+                          restoreId: widget.shoppingRequest.requestId);
+                    if (val == 'edited') widget.onEditDeleteRequest();
                   });
                 },
                 borderRadius: BorderRadius.circular(15),
@@ -240,19 +231,22 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                                   ),
                                   Flexible(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: <Widget>[
                                         Flexible(
                                           child: Text(
-                                            name,
+                                            name!,
                                             style: mainTextStyle,
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         Flexible(
                                           child: Text(
-                                            widget.data.requesterNickname,
+                                            widget.shoppingRequest
+                                                .requesterNickname!,
                                             style: subTextStyle,
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -273,21 +267,23 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
             ),
           ),
           PastReactionContainer(
-            reactions: widget.data.reactions,
-            reactedToId: widget.data.requestId,
-            isSecondaryColor: widget.data.requesterId == currentUserId,
+            reactions: widget.shoppingRequest.reactions!,
+            reactedToId: widget.shoppingRequest.requestId!,
+            isSecondaryColor:
+                widget.shoppingRequest.requesterId == currentUserId,
             type: 'requests',
-            callback: this.callbackForReaction,
+            onSendReaction: this.handleSendReaction,
           ),
         ],
       ),
     );
   }
 
-  Future<bool> _deleteFulfillShoppingRequest(int id, var buildContext) async {
+  Future<bool> _deleteFulfillShoppingRequest(int? id, var buildContext) async {
     try {
       await httpDelete(uri: '/requests/' + id.toString(), context: context);
-      Future.delayed(delayTime()).then((value) => _onDeleteFulfillShoppingRequest());
+      Future.delayed(delayTime())
+          .then((value) => _onDeleteFulfillShoppingRequest());
       return true;
     } catch (_) {
       throw _;

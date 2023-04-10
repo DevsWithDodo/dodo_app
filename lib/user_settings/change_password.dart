@@ -21,10 +21,10 @@ class _ChangePasswordState extends State<ChangePassword> {
           children: <Widget>[
             Center(
               child: Text(
-                (usesPassword ? 'change_password' : 'change_pin').tr(),
+                (usesPassword! ? 'change_password' : 'change_pin').tr(),
                 style: Theme.of(context)
                     .textTheme
-                    .titleLarge
+                    .titleLarge!
                     .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
@@ -34,10 +34,10 @@ class _ChangePasswordState extends State<ChangePassword> {
             ),
             Center(
                 child: Text(
-              (usesPassword ? 'change_password_explanation' : 'change_pin_explanation').tr(),
+              (usesPassword! ? 'change_password_explanation' : 'change_pin_explanation').tr(),
               style: Theme.of(context)
                   .textTheme
-                  .titleSmall
+                  .titleSmall!
                   .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             )),
