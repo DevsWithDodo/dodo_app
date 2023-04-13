@@ -15,9 +15,8 @@ import '../essentials/widgets/error_message.dart';
 import 'shopping_list_entry.dart';
 
 class ShoppingList extends StatefulWidget {
-  final bool? bigScreen;
-  final bool? isOnline;
-  ShoppingList({this.isOnline, this.bigScreen});
+  final bool isOnline;
+  ShoppingList({required this.isOnline});
   @override
   _ShoppingListState createState() => _ShoppingListState();
 }
@@ -35,7 +34,10 @@ class _ShoppingListState extends State<ShoppingList> {
       {bool overwriteCache = false}) async {
     try {
       http.Response response = await httpGet(
-        uri: generateUri(GetUriKeys.requests),
+        uri: generateUri(
+          GetUriKeys.requests,
+          queryParams: {'group': currentGroupId.toString()},
+        ),
         context: context,
         overwriteCache: overwriteCache,
       );
@@ -52,40 +54,124 @@ class _ShoppingListState extends State<ShoppingList> {
     }
   }
 
-  _onPostShoppingRequest() {
+  Future<bool> _postShoppingRequest(String name) async {
+    try {
+      Map<String, dynamic> body = {'group': currentGroupId, 'name': name};
+      http.Response response =
+          await httpPost(uri: '/requests', context: context, body: body);
+      Future.delayed(delayTime()).then((value) => _onPostShoppingRequest(
+          ShoppingRequest.fromJson(jsonDecode(response.body)['data'])));
+      return true;
+    } catch (_) {
+      throw _;
+    }
+  }
+
+  _onPostShoppingRequest(ShoppingRequest request) async {
+    if (_shoppingList != null) {
+      await (_shoppingList!.then<List<ShoppingRequest>>((value) {
+        value.add(request);
+        return value;
+      }));
+    }
     Navigator.pop(context);
     setState(() {
-      _shoppingList = null;
-      _shoppingList = _getShoppingList(overwriteCache: true);
       _addRequestController.text = '';
     });
   }
 
-  Future<bool> _postShoppingRequest(String name) async {
-    try {
-      Map<String, dynamic> body = {'group': currentGroupId, 'name': name};
-      await httpPost(uri: '/requests', context: context, body: body);
-      Future.delayed(delayTime()).then((value) => _onPostShoppingRequest());
-      return true;
-    } catch (_) {
-      throw _;
-    }
-  }
-
   Future<bool> _undoDeleteRequest(int id) async {
     try {
-      await httpPost(
+      http.Response response = await httpPost(
           context: context, uri: '/requests/restore/' + id.toString());
-      Future.delayed(delayTime()).then((value) => _onUndoDeleteRequest());
+      Future.delayed(delayTime()).then((value) => _onUndoDeleteRequest(
+          ShoppingRequest.fromJson(jsonDecode(response.body)['data'])));
       return true;
     } catch (_) {
       throw _;
     }
   }
 
-  void _onUndoDeleteRequest() {
+  void _onUndoDeleteRequest(ShoppingRequest request) async {
+    if (_shoppingList != null) {
+      await (_shoppingList!.then((list) {
+        list.add(request);
+        return list;
+      }));
+    }
+    setState(() {});
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    Navigator.pop(context, true);
+    Navigator.pop(context);
+  }
+
+  void handleEditShoppingRequest(ShoppingRequest request) async {
+    if (_shoppingList != null) {
+      await (_shoppingList!.then((list) {
+        list.removeWhere((element) => element.requestId == request.requestId);
+        list.add(request);
+        return list;
+      }));
+      setState(() {});
+    }
+  }
+
+  void handleDeletShoppingRequest(int requestId) async {
+    if (_shoppingList != null) {
+      await (_shoppingList!.then((list) {
+        list.removeWhere((element) => element.requestId == requestId);
+        return list;
+      }));
+      setState(() {});
+    }
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+      duration: Duration(seconds: 3),
+      backgroundColor: Theme.of(context).colorScheme.secondary,
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'request_deleted'.tr(),
+            style: Theme.of(context)
+                .textTheme
+                .labelLarge!
+                .copyWith(color: Theme.of(context).colorScheme.onSecondary),
+          ),
+          InkWell(
+            onTap: () {
+              showDialog(
+                      builder: (context) => FutureSuccessDialog(
+                            future: _undoDeleteRequest(requestId),
+                          ),
+                      context: context,
+                      barrierDismissible: false)
+                  .then((value) {
+                if (value ?? false) handleDeleteEditShoppingRequest();
+              });
+            },
+            child: Container(
+              padding: EdgeInsets.all(3),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.undo,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
+                  SizedBox(width: 3),
+                  Text(
+                    'undo'.tr(),
+                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSecondary),
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    ));
   }
 
   void handleDeleteEditShoppingRequest({int? restoreId}) {
@@ -93,61 +179,6 @@ class _ShoppingListState extends State<ShoppingList> {
       _shoppingList = null;
       _shoppingList = _getShoppingList(overwriteCache: true);
     });
-    if (restoreId != null) {
-      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
-        duration: Duration(seconds: 3),
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'request_deleted'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSecondary),
-            ),
-            InkWell(
-              onTap: () {
-                showDialog(
-                        builder: (context) => FutureSuccessDialog(
-                              future: _undoDeleteRequest(restoreId),
-                              dataTrueText: 'undo_scf',
-                              onDataTrue: () {
-                                _onUndoDeleteRequest();
-                              },
-                            ),
-                        context: context,
-                        barrierDismissible: false)
-                    .then((value) {
-                  if (value ?? false) handleDeleteEditShoppingRequest();
-                });
-              },
-              child: Container(
-                padding: EdgeInsets.all(3),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.undo,
-                      color: Theme.of(context).colorScheme.onSecondary,
-                    ),
-                    SizedBox(width: 3),
-                    Text(
-                      'undo'.tr(),
-                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onSecondary),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
-      ));
-    }
   }
 
   void _buttonPush() {
@@ -155,19 +186,16 @@ class _ShoppingListState extends State<ShoppingList> {
     if (_formKey.currentState!.validate()) {
       String name = _addRequestController.text;
       showDialog(
-          builder: (context) => FutureSuccessDialog(
-                future: _postShoppingRequest(name),
-                dataTrueText: 'add_scf',
-                onDataTrue: () {
-                  _onPostShoppingRequest();
-                },
-                onDataFalse: () {
-                  Navigator.pop(context);
-                  setState(() {});
-                },
-              ),
-          barrierDismissible: false,
-          context: context);
+        builder: (context) => FutureSuccessDialog(
+          future: _postShoppingRequest(name),
+          onDataFalse: () {
+            Navigator.pop(context);
+            setState(() {});
+          },
+        ),
+        barrierDismissible: false,
+        context: context,
+      );
     }
   }
 
@@ -189,7 +217,7 @@ class _ShoppingListState extends State<ShoppingList> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
-        if (widget.isOnline!) await deleteCache(uri: '/groups');
+        if (widget.isOnline) await deleteCache(uri: '/groups');
         setState(() {
           _shoppingList = null;
           _shoppingList = _getShoppingList(overwriteCache: true);
@@ -356,7 +384,8 @@ class _ShoppingListState extends State<ShoppingList> {
     return data.map((element) {
       return ShoppingListEntry(
         shoppingRequest: element,
-        onEditDeleteRequest: this.handleDeleteEditShoppingRequest,
+        onDeleteRequest: this.handleDeletShoppingRequest,
+        onEditRequest: this.handleEditShoppingRequest,
       );
     }).toList();
   }

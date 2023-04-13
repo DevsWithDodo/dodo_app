@@ -31,7 +31,13 @@ class _HistoryState extends State<History> {
   Future<List<Purchase>> _getPurchases({bool overwriteCache = false}) async {
     try {
       http.Response response = await httpGet(
-        uri: generateUri(GetUriKeys.purchases, queryParams: {'limit': '6'}),
+        uri: generateUri(
+          GetUriKeys.purchases,
+          queryParams: {
+            'limit': '6',
+            'group': currentGroupId.toString(),
+          },
+        ),
         context: context,
         overwriteCache: overwriteCache,
       );
@@ -50,7 +56,13 @@ class _HistoryState extends State<History> {
   Future<List<Payment>> _getPayments({bool overwriteCache = false}) async {
     try {
       http.Response response = await httpGet(
-        uri: generateUri(GetUriKeys.payments, queryParams: {'limit': '6'}),
+        uri: generateUri(
+          GetUriKeys.payments,
+          queryParams: {
+            'limit': '6',
+            'group': currentGroupId.toString(),
+          },
+        ),
         context: context,
         overwriteCache: overwriteCache,
       );

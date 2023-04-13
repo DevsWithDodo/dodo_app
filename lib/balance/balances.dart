@@ -68,7 +68,7 @@ class _BalancesState extends State<Balances> {
     try {
       http.Response response = await httpGet(
         uri: generateUri(GetUriKeys.groupCurrent,
-            args: [currentGroupId.toString()]),
+            params: [currentGroupId.toString()]),
         context: context,
       );
 
@@ -345,7 +345,7 @@ class _BalancesState extends State<Balances> {
     try {
       http.Response response = await httpGet(
         uri: generateUri(GetUriKeys.groupCurrent,
-            args: [currentGroupId.toString()]),
+            params: [currentGroupId.toString()]),
         context: context,
       );
       Map<String, dynamic> decoded = jsonDecode(response.body);

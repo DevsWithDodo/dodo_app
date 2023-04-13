@@ -1,9 +1,14 @@
+import 'dart:convert';
+
+import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
 import '../essentials/validation_rules.dart';
 
@@ -24,22 +29,41 @@ class _EditRequestDialogState extends State<EditRequestDialog> {
   Future<bool> _updateRequest(String newRequest) async {
     try {
       Map<String, dynamic> body = {'name': newRequest};
-      await httpPut(
+      http.Response response = await httpPut(
         uri: '/requests/' + widget.requestId.toString(),
         context: context,
         body: body,
       );
-      Future.delayed(delayTime()).then((value) => _onUpdateRequest());
+      Future.delayed(delayTime()).then((value) => _onUpdateRequest(
+          ShoppingRequest.fromJson(jsonDecode(response.body)['data'])));
       return true;
     } catch (_) {
       throw _;
     }
   }
 
-  void _onUpdateRequest() {
-    deleteCache(uri: generateUri(GetUriKeys.requests));
+  void _onUpdateRequest(ShoppingRequest request) {
+    deleteCache(
+        uri: generateUri(
+      GetUriKeys.requests,
+      queryParams: {'group': currentGroupId.toString()},
+    ));
     Navigator.pop(context);
-    Navigator.pop(context, true);
+    Navigator.pop(context, request);
+  }
+
+  void _buttonPressed() {
+    if (_requestFormKey.currentState!.validate()) {
+      FocusScope.of(context).unfocus();
+      String newRequest = _requestController.text;
+      showDialog(
+        builder: (context) => FutureSuccessDialog(
+          future: _updateRequest(newRequest),
+        ),
+        barrierDismissible: false,
+        context: context,
+      );
+    }
   }
 
   @override
@@ -72,6 +96,7 @@ class _EditRequestDialogState extends State<EditRequestDialog> {
                     minimalLength(value, 2),
                   ]),
                   controller: _requestController,
+                  onFieldSubmitted: (value) => _buttonPressed(),
                   decoration: InputDecoration(
                     hintText: 'edited_request'.tr(),
                     prefixIcon: Icon(
@@ -85,29 +110,12 @@ class _EditRequestDialogState extends State<EditRequestDialog> {
                 ),
               ),
             ),
-            SizedBox(
-              height: 15,
-            ),
+            SizedBox(height: 15),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GradientButton(
-                    onPressed: () {
-                      if (_requestFormKey.currentState!.validate()) {
-                        FocusScope.of(context).unfocus();
-                        String newRequest = _requestController.text;
-                        showDialog(
-                            builder: (context) => FutureSuccessDialog(
-                                  future: _updateRequest(newRequest),
-                                  onDataTrue: () {
-                                    _onUpdateRequest();
-                                  },
-                                  dataTrueText: 'request_edit_scf',
-                                ),
-                            barrierDismissible: false,
-                            context: context);
-                      }
-                    },
+                    onPressed: _buttonPressed,
                     child: Icon(
                       Icons.check,
                       color: Theme.of(context).colorScheme.onPrimary,

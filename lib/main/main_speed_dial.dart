@@ -23,7 +23,9 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
       backgroundColor: Theme.of(context).colorScheme.tertiary,
       foregroundColor: Theme.of(context).colorScheme.onTertiary,
       child: Icon(Icons.add),
-      overlayColor: (Theme.of(context).brightness == Brightness.dark) ? Colors.black : Colors.white,
+      overlayColor: (Theme.of(context).brightness == Brightness.dark)
+          ? Colors.black
+          : Colors.white,
       curve: Curves.bounceIn,
       children: [
         SpeedDialChild(
@@ -48,7 +50,9 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
                   ),
                   child: Text('payment'.tr(),
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: Theme.of(context).colorScheme.onTertiaryContainer, fontSize: 18)),
+                          color:
+                              Theme.of(context).colorScheme.onTertiaryContainer,
+                          fontSize: 18)),
                 ),
                 SizedBox(
                   height: 5,
@@ -62,7 +66,8 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
           ),
           child: Icon(Icons.payments),
           onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => AddPaymentRoute()))
+            Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => AddPaymentRoute()))
                 .then((value) => widget.onReturn!());
           },
         ),
@@ -79,7 +84,8 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
                     height: 20,
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 5.0),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 3.0, horizontal: 5.0),
                     decoration: BoxDecoration(
                       // gradient: AppTheme.gradientFromTheme(Theme.of(context)),
                       color: Theme.of(context).colorScheme.tertiaryContainer,
@@ -87,7 +93,9 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
                     ),
                     child: Text('purchase'.tr(),
                         style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            color: Theme.of(context).colorScheme.onTertiaryContainer,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onTertiaryContainer,
                             fontSize: 18)),
                   ),
                   SizedBox(
@@ -107,7 +115,7 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddPurchaseRoute(
+                  builder: (context) => AddPurchasePage(
                     type: PurchaseType.newPurchase,
                   ),
                 ),

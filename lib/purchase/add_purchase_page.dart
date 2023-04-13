@@ -9,19 +9,19 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class AddPurchaseRoute extends StatefulWidget {
+class AddPurchasePage extends StatefulWidget {
   final PurchaseType type;
   final ShoppingRequest? shoppingData;
 
-  AddPurchaseRoute({required this.type, this.shoppingData});
+  AddPurchasePage({required this.type, this.shoppingData});
 
   @override
-  _AddPurchaseRouteState createState() => _AddPurchaseRouteState();
+  _AddPurchasePageState createState() => _AddPurchasePageState();
 }
 
-class _AddPurchaseRouteState extends State<AddPurchaseRoute>
+class _AddPurchasePageState extends State<AddPurchasePage>
     with AddModifyPurchase {
-  _AddPurchaseRouteState() : super();
+  _AddPurchasePageState() : super();
 
   var _formKey = GlobalKey<FormState>();
   ExpandableController _expandableController = ExpandableController();

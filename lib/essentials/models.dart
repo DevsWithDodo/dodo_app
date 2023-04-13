@@ -248,6 +248,7 @@ class ShoppingRequest {
       this.reactions});
 
   factory ShoppingRequest.fromJson(Map<String, dynamic> json) {
+    // print(json);
     return ShoppingRequest(
         requestId: json['request_id'],
         requesterId: json['requester_id'],
@@ -255,7 +256,7 @@ class ShoppingRequest {
         requesterNickname: json['requester_nickname'],
         name: json['name'],
         updatedAt: DateTime.parse(json['updated_at']).toLocal(),
-        reactions: json['reactions']
+        reactions: (json['reactions'] ?? [])
             .map<Reaction>((reaction) => Reaction.fromJson(reaction))
             .toList());
   }

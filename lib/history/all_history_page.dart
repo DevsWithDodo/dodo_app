@@ -42,16 +42,20 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     try {
       http.Response response;
       response = await httpGet(
-        uri: generateUri(GetUriKeys.purchases, queryParams: {
-          'from_date': _startDate == null
-              ? null
-              : DateFormat('yyyy-MM-dd').format(_startDate!),
-          'until_date': _endDate == null
-              ? null
-              : DateFormat('yyyy-MM-dd').format(_endDate!),
-          'user_id': _selectedMemberId.toString(),
-          ...(_category == null ? {} : {'category': _category!.text})
-        }),
+        uri: generateUri(
+          GetUriKeys.purchases,
+          queryParams: {
+            'group': currentGroupId.toString(),
+            'from_date': _startDate == null
+                ? null
+                : DateFormat('yyyy-MM-dd').format(_startDate!),
+            'until_date': _endDate == null
+                ? null
+                : DateFormat('yyyy-MM-dd').format(_endDate!),
+            'user_id': _selectedMemberId.toString(),
+            ...(_category == null ? {} : {'category': _category!.text})
+          },
+        ),
         context: context,
         overwriteCache: overwriteCache,
       );
@@ -70,16 +74,20 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     try {
       http.Response response;
       response = await httpGet(
-        uri: generateUri(GetUriKeys.payments, queryParams: {
-          'from_date': _startDate == null
-              ? null
-              : DateFormat('yyyy-MM-dd').format(_startDate!),
-          'until_date': _endDate == null
-              ? null
-              : DateFormat('yyyy-MM-dd').format(_endDate!),
-          'user_id': _selectedMemberId.toString(),
-          ...(_category == null ? {} : {'category': _category!.text})
-        }),
+        uri: generateUri(
+          GetUriKeys.payments,
+          queryParams: {
+            'group': currentGroupId.toString(),
+            'from_date': _startDate == null
+                ? null
+                : DateFormat('yyyy-MM-dd').format(_startDate!),
+            'until_date': _endDate == null
+                ? null
+                : DateFormat('yyyy-MM-dd').format(_endDate!),
+            'user_id': _selectedMemberId.toString(),
+            ...(_category == null ? {} : {'category': _category!.text}),
+          },
+        ),
         context: context,
         overwriteCache: overwriteCache,
       );
@@ -108,7 +116,12 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     }
     setState(() {
       if (payment) {
-        deleteCache(uri: generateUri(GetUriKeys.payments));
+        deleteCache(
+          uri: generateUri(
+            GetUriKeys.payments,
+            queryParams: {'group': currentGroupId.toString()},
+          ),
+        );
         deleteCache(
             uri: 'payments?group=$currentGroupId&from_date',
             multipleArgs: true); //payments date
@@ -116,7 +129,11 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
         _payments = _getPayments(overwriteCache: true);
       }
       if (purchase) {
-        deleteCache(uri: generateUri(GetUriKeys.purchases));
+        deleteCache(
+            uri: generateUri(
+          GetUriKeys.purchases,
+          queryParams: {'group': currentGroupId.toString()},
+        ));
         deleteCache(
             uri: 'purchases?group=$currentGroupId&from_date',
             multipleArgs: true); //purchases date

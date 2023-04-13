@@ -24,7 +24,7 @@ class _GroupMembersState extends State<GroupMembers> {
     try {
       http.Response response = await httpGet(
           uri: generateUri(GetUriKeys.groupCurrent,
-              args: [currentGroupId.toString()]),
+              params: [currentGroupId.toString()]),
           context: context,
           useCache: false);
       Map<String, dynamic> decoded = jsonDecode(response.body);

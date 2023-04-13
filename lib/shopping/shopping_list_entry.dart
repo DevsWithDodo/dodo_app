@@ -14,11 +14,13 @@ import 'edit_request_dialog.dart';
 
 class ShoppingListEntry extends StatefulWidget {
   final ShoppingRequest shoppingRequest;
-  final Function onEditDeleteRequest;
+  final Function(int) onDeleteRequest;
+  final Function(ShoppingRequest) onEditRequest;
 
   const ShoppingListEntry({
     required this.shoppingRequest,
-    required this.onEditDeleteRequest,
+    required this.onDeleteRequest,
+    required this.onEditRequest,
   });
 
   @override
@@ -112,26 +114,23 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
             color: Theme.of(context).textTheme.bodyLarge!.color,
           )),
       onDismissed: (direction) {
+        // If requester is not the current user, the request has to be deleted either way
         if (widget.shoppingRequest.requesterId != currentUserId) {
           showDialog(
                   builder: (context) => FutureSuccessDialog(
                         future: _deleteFulfillShoppingRequest(
                             widget.shoppingRequest.requestId, context),
-                        dataTrueText: 'fulfill_scf',
-                        onDataTrue: () {
-                          _onDeleteFulfillShoppingRequest();
-                        },
                       ),
                   barrierDismissible: false,
                   context: context)
               .then((value) {
-            widget.onEditDeleteRequest(
-                restoreId: widget.shoppingRequest.requestId);
+            widget.onDeleteRequest(widget.shoppingRequest.requestId!);
+            // But if the direction is startToEnd, the AddPurchase site has to be called
             if (direction == DismissDirection.startToEnd && value == true) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddPurchaseRoute(
+                  builder: (context) => AddPurchasePage(
                     type: PurchaseType.fromShopping,
                     shoppingData: widget.shoppingRequest,
                   ),
@@ -140,33 +139,30 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
             }
           });
         } else {
+          // If the requester is the current user, then on one swipe the request is deleted, on the other it is edited
           if (direction == DismissDirection.endToStart) {
             showDialog(
                     builder: (context) => FutureSuccessDialog(
                           future: _deleteFulfillShoppingRequest(
                               widget.shoppingRequest.requestId, context),
-                          dataTrueText: 'delete_scf',
-                          onDataTrue: () {
-                            _onDeleteFulfillShoppingRequest();
-                          },
                         ),
                     barrierDismissible: false,
                     context: context)
                 .then((value) {
               if (value ?? false)
-                widget.onEditDeleteRequest(
-                    restoreId: widget.shoppingRequest.requestId);
+                widget.onDeleteRequest(widget.shoppingRequest.requestId!);
             });
           } else if (direction == DismissDirection.startToEnd) {
-            showDialog(
+            showDialog<ShoppingRequest>(
               builder: (context) => EditRequestDialog(
                 textBefore: widget.shoppingRequest.name,
                 requestId: widget.shoppingRequest.requestId,
               ),
               context: context,
             ).then((value) {
-              if (value ?? false) {
-                widget.onEditDeleteRequest();
+              print(value);
+              if (value != null) {
+                widget.onEditRequest(value);
               }
             });
           }
@@ -197,16 +193,20 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                       context: context);
                 },
                 onTap: () async {
-                  showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) => SingleChildScrollView(
-                              child: ShoppingAllInfo(widget.shoppingRequest)))
-                      .then((val) {
-                    if (val == 'deleted')
-                      widget.onEditDeleteRequest(
-                          restoreId: widget.shoppingRequest.requestId);
-                    if (val == 'edited') widget.onEditDeleteRequest();
+                  showModalBottomSheet<Map<String, dynamic>>(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (context) => SingleChildScrollView(
+                        child: ShoppingAllInfo(widget.shoppingRequest)),
+                  ).then((value) {
+                    if (value != null) {
+                      if (value['type'] == 'deleted') {
+                        widget
+                            .onDeleteRequest(widget.shoppingRequest.requestId!);
+                      } else {
+                        widget.onEditRequest(value['request']);
+                      }
+                    }
                   });
                 },
                 borderRadius: BorderRadius.circular(15),

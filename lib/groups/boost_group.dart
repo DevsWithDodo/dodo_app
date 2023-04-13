@@ -27,7 +27,7 @@ class _BoostGroupState extends State<BoostGroup> {
       http.Response response = await httpGet(
           context: context,
           uri: generateUri(GetUriKeys.groupBoost,
-              args: [currentGroupId.toString()]),
+              params: [currentGroupId.toString()]),
           useCache: false);
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data'];

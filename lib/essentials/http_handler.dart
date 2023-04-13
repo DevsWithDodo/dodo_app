@@ -20,18 +20,18 @@ enum GetUriKeys {
   groupMember("/groups/{}/member"),
   groups("/groups"),
   userBalanceSum("/balance"),
-  passwordReminder("/password_reminder?username={}"),
+  passwordReminder("/password_reminder"),
   groupBoost("/groups/{}/boost"),
   groupGuests("/groups/{}/guests"),
   groupUnapprovedMembers("/groups/{}/members/unapproved"),
   groupExportXls("/groups/{}/export/get_link_xls"),
   groupExportPdf("/groups/{}/export/get_link_pdf"),
-  purchases("/purchases?group={}"),
-  payments("/payments?group={}"),
+  purchases("/purchases"),
+  payments("/payments"),
   statisticsPayments("/groups/{}/statistics/payments"),
   statisticsPurchases("/groups/{}/statistics/purchases"),
   statisticsAll("/groups/{}/statistics/all"),
-  requests("/requests?group={}");
+  requests("/requests");
 
   const GetUriKeys(this.uri);
   final String uri;
@@ -39,19 +39,20 @@ enum GetUriKeys {
 
 enum HttpType { get, post, put, delete }
 
-///Generates URI-s from enum values. The default value of [args] is [currentGroupId].
-String? generateUri(GetUriKeys key,
-    {HttpType type = HttpType.get,
-    List<String>? args,
-    Map<String, String?>? queryParams}) {
-  //TODO: query paramms normalisan
+///Generates URI-s from enum values. The default value of [params] is [currentGroupId].
+String? generateUri(
+  GetUriKeys key, {
+  HttpType type = HttpType.get,
+  List<String>? params,
+  Map<String, String?>? queryParams,
+}) {
   if (type == HttpType.get) {
-    if (args == null) {
-      args = [currentGroupId.toString()];
+    if (params == null) {
+      params = [currentGroupId.toString()];
     }
     String uri = key.uri;
 
-    for (String arg in args) {
+    for (String arg in params) {
       if (uri.contains('{}')) {
         uri = uri.replaceFirst('{}', arg);
       } else {
@@ -61,12 +62,10 @@ String? generateUri(GetUriKeys key,
 
     if (queryParams != null) {
       if (queryParams.values.any((element) => element != null)) {
-        uri += !uri.contains('?') ? '?' : '&';
+        uri += '?';
       }
       for (String name in queryParams.keys) {
-        if (queryParams[name] != null) {
-          uri += name + '=' + queryParams[name]! + '&';
-        }
+        uri += name + '=' + (queryParams[name] ?? '') + '&';
       }
     }
     return uri;

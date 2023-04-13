@@ -93,7 +93,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     http.Response response = await httpGet(
       context: context,
       uri: generateUri(GetUriKeys.groupCurrent,
-          args: [currentGroupId.toString()]),
+          params: [currentGroupId.toString()]),
     );
     Map<String, dynamic> decoded = jsonDecode(response.body);
     saveGroupName(decoded['data']['group_name']);
@@ -410,7 +410,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       ),
       ShoppingList(
         isOnline: isOnline,
-        bigScreen: bigScreen,
       ),
       GroupSettings(
         bannerKey: _isGuestBannerKey,

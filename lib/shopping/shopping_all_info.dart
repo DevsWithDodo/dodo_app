@@ -21,7 +21,7 @@ class ShoppingAllInfo extends StatefulWidget {
 }
 
 class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
-  Future<bool> _fulfillShoppingRequest(int? id) async {
+  Future<bool> _fulfillShoppingRequest(int id) async {
     try {
       await httpDelete(uri: '/requests/' + id.toString(), context: context);
       Future.delayed(delayTime()).then((value) => _onFulfillShoppingRequest());
@@ -33,10 +33,10 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
 
   void _onFulfillShoppingRequest() {
     Navigator.pop(context, true);
-    Navigator.pop(context, 'deleted');
+    Navigator.pop(context, {'type': 'deleted'});
   }
 
-  Future<bool> _deleteShoppingRequest(int? id) async {
+  Future<bool> _deleteShoppingRequest(int id) async {
     try {
       await httpDelete(uri: '/requests/' + id.toString(), context: context);
       Future.delayed(delayTime()).then((value) => _onDeleteShoppingRequest());
@@ -48,7 +48,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
 
   void _onDeleteShoppingRequest() {
     Navigator.pop(context);
-    Navigator.pop(context, 'deleted');
+    Navigator.pop(context, {'type': 'deleted'});
   }
 
   @override
@@ -128,15 +128,18 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                     children: [
                       GradientButton(
                         onPressed: () {
-                          showDialog(
+                          showDialog<ShoppingRequest>(
                             builder: (context) => EditRequestDialog(
                               requestId: widget.shoppingRequest.requestId,
                               textBefore: widget.shoppingRequest.name,
                             ),
                             context: context,
                           ).then((value) {
-                            if (value ?? false) {
-                              Navigator.pop(context, 'edited');
+                            if (value != null) {
+                              Navigator.pop(context, {
+                                'type': 'modified',
+                                'request': value,
+                              });
                             }
                           });
                         },
@@ -171,33 +174,30 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                       GradientButton(
                         onPressed: () {
                           showDialog(
-                              builder: (context) => FutureSuccessDialog(
-                                    future: _deleteShoppingRequest(
-                                        widget.shoppingRequest.requestId),
-                                    dataTrueText: 'delete_scf',
-                                    onDataTrue: () {
-                                      _onDeleteShoppingRequest();
-                                    },
-                                  ),
-                              barrierDismissible: false,
-                              context: context);
+                            builder: (context) => FutureSuccessDialog(
+                              future: _deleteShoppingRequest(
+                                  widget.shoppingRequest.requestId!),
+                            ),
+                            barrierDismissible: false,
+                            context: context,
+                          );
                         },
                         child: Row(
                           children: [
-                            Icon(Icons.delete,
-                                color: Theme.of(context).colorScheme.onPrimary),
-                            SizedBox(
-                              width: 5,
+                            Icon(
+                              Icons.delete,
+                              color: Theme.of(context).colorScheme.onPrimary,
                             ),
+                            SizedBox(width: 5),
                             Text(
                               'delete'.tr(),
                               style: Theme.of(context)
                                   .textTheme
                                   .labelLarge!
                                   .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary),
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                  ),
                             ),
                           ],
                         ),
@@ -220,21 +220,21 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                       GradientButton(
                         onPressed: () {
                           showDialog(
-                              builder: (context) => FutureSuccessDialog(
-                                    future: _fulfillShoppingRequest(
-                                        widget.shoppingRequest.requestId),
-                                    dataTrueText: 'fulfill_scf',
-                                    onDataTrue: () {
-                                      _onFulfillShoppingRequest();
-                                    },
-                                  ),
-                              barrierDismissible: false,
-                              context: context);
+                            builder: (context) => FutureSuccessDialog(
+                              future: _fulfillShoppingRequest(
+                                widget.shoppingRequest.requestId!,
+                              ),
+                            ),
+                            barrierDismissible: false,
+                            context: context,
+                          );
                         },
                         child: Row(
                           children: [
-                            Icon(Icons.check,
-                                color: Theme.of(context).colorScheme.onPrimary),
+                            Icon(
+                              Icons.check,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ),
                             SizedBox(
                               width: 5,
                             ),
@@ -244,9 +244,9 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                                   .textTheme
                                   .labelLarge!
                                   .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary),
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                  ),
                             ),
                           ],
                         ),
@@ -261,23 +261,19 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                     children: [
                       GradientButton(
                         onPressed: () {
-                          showDialog(
-                                  builder: (context) => FutureSuccessDialog(
-                                        future: _fulfillShoppingRequest(
-                                            widget.shoppingRequest.requestId),
-                                        dataTrueText: 'fulfill_scf',
-                                        onDataTrue: () {
-                                          _onFulfillShoppingRequest();
-                                        },
-                                      ),
-                                  barrierDismissible: false,
-                                  context: context)
-                              .then((value) {
+                          showDialog<bool>(
+                            builder: (context) => FutureSuccessDialog(
+                              future: _fulfillShoppingRequest(
+                                  widget.shoppingRequest.requestId!),
+                            ),
+                            barrierDismissible: false,
+                            context: context,
+                          ).then((value) {
                             if (value == true) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => AddPurchaseRoute(
+                                  builder: (context) => AddPurchasePage(
                                     type: PurchaseType.fromShopping,
                                     shoppingData: widget.shoppingRequest,
                                   ),
@@ -299,9 +295,9 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                                   .textTheme
                                   .labelLarge!
                                   .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary),
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                  ),
                             ),
                           ],
                         ),
