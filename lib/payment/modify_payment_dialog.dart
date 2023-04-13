@@ -14,16 +14,21 @@ class ModifyPaymentDialog extends StatefulWidget {
   _ModifyPaymentDialogState createState() => _ModifyPaymentDialogState();
 }
 
-class _ModifyPaymentDialogState extends State<ModifyPaymentDialog> with AddModifyPayment {
+class _ModifyPaymentDialogState extends State<ModifyPaymentDialog>
+    with AddModifyPayment {
   var _formKey = GlobalKey<FormState>();
 
   int _index = 0;
 
-  Future<bool> _updatePayment(double amount, String note, Member toMember, int? paymentId) async {
+  Future<bool> _updatePayment(
+      double amount, String note, Member toMember, int? paymentId) async {
     try {
       Map<String, dynamic> body = generateBody(note, amount, toMember);
 
-      await httpPut(uri: '/payments/' + paymentId.toString(), body: body, context: context);
+      await httpPut(
+          uri: '/payments/' + paymentId.toString(),
+          body: body,
+          context: context);
       Future.delayed(delayTime()).then((value) => _onUpdatePayment());
       return true;
     } catch (_) {
@@ -41,7 +46,8 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog> with AddModif
     super.initState();
     print(widget.savedPayment!.originalCurrency);
     initAddModifyPayment(context, setState,
-        paymentType: PaymentType.modifyPayment, savedPayment: widget.savedPayment);
+        paymentType: PaymentType.modifyPayment,
+        savedPayment: widget.savedPayment);
   }
 
   @override
@@ -57,10 +63,8 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog> with AddModif
               Center(
                   child: Text(
                 'modify_payment'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               )),
               SizedBox(
@@ -69,10 +73,8 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog> with AddModif
               Center(
                   child: Text(
                 'modify_payment_explanation'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               )),
               SizedBox(
@@ -143,12 +145,16 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog> with AddModif
                                 gravity: ToastGravity.BOTTOM);
                             return;
                           }
-                          double amount = double.parse(amountController.text.replaceAll(',', '.'));
+                          double amount = double.parse(
+                              amountController.text.replaceAll(',', '.'));
                           String note = noteController.text;
                           showDialog(
                               builder: (context) => FutureSuccessDialog(
-                                    future: _updatePayment(amount, note, selectedMember!,
-                                        widget.savedPayment!.paymentId),
+                                    future: _updatePayment(
+                                        amount,
+                                        note,
+                                        selectedMember!,
+                                        widget.savedPayment!.id),
                                   ),
                               context: context);
                         }

@@ -42,8 +42,8 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
     if (widget.purchase!.name == '') {
       note = 'no_note'.tr();
     } else {
-      note = widget.purchase!.name![0].toUpperCase() +
-          widget.purchase!.name!.substring(1);
+      note = widget.purchase!.name[0].toUpperCase() +
+          widget.purchase!.name.substring(1);
     }
     return Padding(
       padding: const EdgeInsets.all(15),
@@ -72,7 +72,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                   color: Theme.of(context).colorScheme.secondary),
               Flexible(
                   child: Text(
-                ' - ' + widget.purchase!.buyerNickname!,
+                ' - ' + widget.purchase!.buyerNickname,
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge!
@@ -90,7 +90,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                   color: Theme.of(context).colorScheme.secondary),
               Flexible(
                   child: Text(
-                ' - ' + widget.purchase!.receivers!.join(', '),
+                ' - ' + widget.purchase!.receivers.join(', '),
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge!
@@ -110,7 +110,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                       ' - ' +
                           (widget.purchase!.buyerId == widget.selectedMemberId
                               ? (widget.purchase!.totalAmount.toMoneyString(
-                                      currentGroupCurrency,
+                                      currentGroupCurrency!,
                                       withSymbol: true) +
                                   (widget.purchase!.originalCurrency != currentGroupCurrency
                                       ? (' (' +
@@ -119,13 +119,13 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                                               withSymbol: true) +
                                           ')')
                                       : ''))
-                              : (widget.purchase!.receivers!.firstWhere((element) => element.memberId == currentUserId).balance.toMoneyString(
-                                      currentGroupCurrency,
+                              : (widget.purchase!.receivers.firstWhere((element) => element.id == currentUserId).balance.toMoneyString(
+                                      currentGroupCurrency!,
                                       withSymbol: true) +
                                   (widget.purchase!.originalCurrency != currentGroupCurrency
                                       ? (' (' +
-                                          widget.purchase!.receivers!
-                                              .firstWhere((element) => element.memberId == currentUserId)
+                                          widget.purchase!.receivers
+                                              .firstWhere((element) => element.id == currentUserId)
                                               .balanceOriginalCurrency
                                               .toMoneyString(widget.purchase!.originalCurrency, withSymbol: true) +
                                           ')')
@@ -146,7 +146,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                   child: Text(
                       ' - ' +
                           DateFormat('yyyy/MM/dd - HH:mm')
-                              .format(widget.purchase!.updatedAt!),
+                              .format(widget.purchase!.updatedAt),
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: Theme.of(context).colorScheme.onSurface))),
             ],
@@ -196,8 +196,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                     if (value != null && value) {
                       showDialog(
                           builder: (context) => FutureSuccessDialog(
-                                future:
-                                    _deleteElement(widget.purchase!.purchaseId),
+                                future: _deleteElement(widget.purchase!.id),
                                 dataTrueText: 'delete_scf',
                                 onDataTrue: () {
                                   _onDeleteElement();

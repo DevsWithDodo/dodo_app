@@ -70,21 +70,20 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     List<Group> groups = [];
     for (var group in decoded['data']) {
       groups.add(Group(
-        groupName: group['group_name'],
-        groupId: group['group_id'],
-        groupCurrency: group['currency'],
+        name: group['group_name'],
+        id: group['group_id'],
+        currency: group['currency'],
       ));
     }
-    usersGroups = groups.map<String>((group) => group.groupName!).toList();
-    usersGroupIds = groups.map<int>((group) => group.groupId!).toList();
+    usersGroups = groups.map<String>((group) => group.name).toList();
+    usersGroupIds = groups.map<int>((group) => group.id).toList();
     saveUsersGroups();
     saveUsersGroupIds();
     //The group ID cannot change, but the group name and currency can change
-    if (groups.any((element) => element.groupId == currentGroupId)) {
-      var group =
-          groups.firstWhere((element) => element.groupId == currentGroupId);
-      saveGroupName(group.groupName);
-      saveGroupCurrency(group.groupCurrency);
+    if (groups.any((element) => element.id == currentGroupId)) {
+      var group = groups.firstWhere((element) => element.id == currentGroupId);
+      saveGroupName(group.name);
+      saveGroupCurrency(group.currency);
     }
     return groups;
   }
@@ -136,24 +135,24 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         child: Material(
           type: MaterialType.transparency,
           child: ListTile(
-            tileColor: (group.groupName == currentGroupName)
+            tileColor: (group.name == currentGroupName)
                 ? Theme.of(context).colorScheme.secondaryContainer
                 : Colors.transparent,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(28)),
             ),
             title: Text(
-              group.groupName!,
-              style: (group.groupName == currentGroupName)
+              group.name,
+              style: (group.name == currentGroupName)
                   ? Theme.of(context).textTheme.labelLarge!.copyWith(
                       color: Theme.of(context).colorScheme.onSecondaryContainer)
                   : Theme.of(context).textTheme.labelLarge!.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             onTap: () async {
-              saveGroupName(group.groupName);
-              saveGroupId(group.groupId);
-              saveGroupCurrency(group.groupCurrency);
+              saveGroupName(group.name);
+              saveGroupId(group.id);
+              saveGroupCurrency(group.currency);
               setState(() {
                 _selectedIndex = 0;
                 _tabController!.animateTo(_selectedIndex);
@@ -396,7 +395,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           shrinkWrap: true,
           children: [
             Balances(
-              callback: callback,
+              onPaymentsPosted: callback,
               bigScreen: bigScreen,
             ),
             History(
@@ -582,8 +581,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
             builder: (context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData) {
-                  String? currency = snapshot.data!['currency'];
-                  double? balance = snapshot.data!['balance'] * 1.0;
+                  String currency = snapshot.data!['currency'];
+                  double balance = snapshot.data!['balance'] * 1.0;
                   return Text(
                       'Σ: ' + balance.toMoneyString(currency, withSymbol: true),
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(

@@ -8,10 +8,12 @@ class CurrencyPickerIconButton extends StatefulWidget {
   final String? selectedCurrency;
   final Function(String?)? onCurrencyChanged;
 
-  const CurrencyPickerIconButton({this.selectedCurrency, this.onCurrencyChanged});
+  const CurrencyPickerIconButton(
+      {this.selectedCurrency, this.onCurrencyChanged});
 
   @override
-  State<CurrencyPickerIconButton> createState() => _CurrencyPickerIconButtonState();
+  State<CurrencyPickerIconButton> createState() =>
+      _CurrencyPickerIconButtonState();
 }
 
 class _CurrencyPickerIconButtonState extends State<CurrencyPickerIconButton> {
@@ -40,7 +42,7 @@ class _CurrencyPickerIconButtonState extends State<CurrencyPickerIconButton> {
         child: FittedBox(
           fit: BoxFit.fitWidth,
           child: Text(
-            getSymbol(widget.selectedCurrency)!,
+            getSymbol(widget.selectedCurrency!)!,
             style: Theme.of(context).textTheme.labelLarge!.copyWith(
                 color: widget.selectedCurrency == currentGroupCurrency
                     ? Theme.of(context).colorScheme.primary

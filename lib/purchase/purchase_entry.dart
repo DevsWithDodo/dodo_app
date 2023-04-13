@@ -68,11 +68,11 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
     int? selectedMemberId = widget.selectedMemberId;
     note = (widget.purchase.name == '')
         ? 'no_note'.tr()
-        : widget.purchase.name![0].toUpperCase() +
-            widget.purchase.name!.substring(1);
+        : widget.purchase.name[0].toUpperCase() +
+            widget.purchase.name.substring(1);
     bool bought = widget.purchase.buyerId == selectedMemberId;
-    bool received = widget.purchase.receivers!
-        .where((element) => element.memberId == selectedMemberId)
+    bool received = widget.purchase.receivers
+        .where((element) => element.id == selectedMemberId)
         .isNotEmpty;
     /* Set icon, amount and names */
     if (bought && received) {
@@ -82,14 +82,14 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
               : Theme.of(context).colorScheme.onSecondaryContainer);
       amountOriginal = widget.purchase.totalAmountOriginalCurrency
           .toMoneyString(widget.purchase.originalCurrency, withSymbol: true);
-      amountToSelfOriginal = (-widget.purchase.receivers!
-              .firstWhere((element) => element.memberId == selectedMemberId)
-              .balanceOriginalCurrency!)
+      amountToSelfOriginal = (-widget.purchase.receivers
+              .firstWhere((element) => element.id == selectedMemberId)
+              .balanceOriginalCurrency)
           .toMoneyString(widget.purchase.originalCurrency, withSymbol: true);
-      if (widget.purchase.receivers!.length > 1) {
-        names = widget.purchase.receivers!.join(', ');
+      if (widget.purchase.receivers.length > 1) {
+        names = widget.purchase.receivers.join(', ');
       } else {
-        names = widget.purchase.receivers![0].nickname;
+        names = widget.purchase.receivers[0].nickname;
       }
       mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
           color: currentThemeName!.contains('Gradient')
@@ -111,10 +111,10 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
               : Theme.of(context).colorScheme.onPrimaryContainer);
       amountOriginal = widget.purchase.totalAmountOriginalCurrency
           .toMoneyString(widget.purchase.originalCurrency, withSymbol: true);
-      if (widget.purchase.receivers!.length > 1) {
-        names = widget.purchase.receivers!.join(', ');
+      if (widget.purchase.receivers.length > 1) {
+        names = widget.purchase.receivers.join(', ');
       } else {
-        names = widget.purchase.receivers![0].nickname;
+        names = widget.purchase.receivers[0].nickname;
       }
       mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
           color: currentThemeName!.contains('Gradient')
@@ -133,9 +133,9 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
       leadingIcon = Icon(Icons.call_received,
           color: Theme.of(context).colorScheme.onSurfaceVariant);
       names = widget.purchase.buyerNickname;
-      amountOriginal = (-widget.purchase.receivers!
-              .firstWhere((element) => element.memberId == selectedMemberId)
-              .balanceOriginalCurrency!)
+      amountOriginal = (-widget.purchase.receivers
+              .firstWhere((element) => element.id == selectedMemberId)
+              .balanceOriginalCurrency)
           .toMoneyString(widget.purchase.originalCurrency, withSymbol: true);
       subTextStyle = Theme.of(context)
           .textTheme
@@ -168,7 +168,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                           builder: (context) => AddReactionDialog(
                                 type: 'purchases',
                                 reactions: widget.purchase.reactions!,
-                                reactToId: widget.purchase.purchaseId!,
+                                reactToId: widget.purchase.id,
                                 onSend: this.handleSendReaction,
                               ),
                           context: context);
@@ -270,7 +270,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
           visible: selectedMemberId == currentUserId,
           child: PastReactionContainer(
             reactions: widget.purchase.reactions!,
-            reactedToId: widget.purchase.purchaseId!,
+            reactedToId: widget.purchase.id,
             isSecondaryColor: bought,
             type: 'purchases',
             onSendReaction: this.handleSendReaction,

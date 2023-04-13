@@ -67,11 +67,11 @@ class _PaymentEntryState extends State<PaymentEntry> {
   @override
   Widget build(BuildContext context) {
     int? selectedMemberId = widget.selectedMemberId;
-    date = DateFormat('yyyy/MM/dd - HH:mm').format(widget.payment.updatedAt!);
-    note = (widget.payment.note == '' || widget.payment.note == null)
+    date = DateFormat('yyyy/MM/dd - HH:mm').format(widget.payment.updatedAt);
+    note = (widget.payment.note == '')
         ? 'no_note'.tr()
-        : widget.payment.note![0].toUpperCase() +
-            widget.payment.note!.substring(1);
+        : widget.payment.note[0].toUpperCase() +
+            widget.payment.note.substring(1);
     if (widget.payment.payerId == selectedMemberId) {
       takerName = widget.payment.takerNickname;
       amount = widget.payment.amountOriginalCurrency
@@ -106,7 +106,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
           .bodySmall!
           .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
       takerName = widget.payment.payerNickname;
-      amount = (-widget.payment.amountOriginalCurrency!)
+      amount = (-widget.payment.amountOriginalCurrency)
           .toMoneyString(widget.payment.originalCurrency, withSymbol: true);
       boxDecoration = BoxDecoration();
     }
@@ -133,7 +133,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
                               builder: (context) => AddReactionDialog(
                                     type: 'payments',
                                     reactions: widget.payment.reactions!,
-                                    reactToId: widget.payment.paymentId!,
+                                    reactToId: widget.payment.id,
                                     onSend: this.handleSendReaction,
                                   ),
                               context: context);
@@ -200,7 +200,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
         Visibility(
           visible: selectedMemberId == currentUserId,
           child: PastReactionContainer(
-            reactedToId: widget.payment.paymentId!,
+            reactedToId: widget.payment.id,
             reactions: widget.payment.reactions!,
             onSendReaction: this.handleSendReaction,
             isSecondaryColor: widget.payment.payerId == currentUserId,

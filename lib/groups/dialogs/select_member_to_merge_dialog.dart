@@ -28,7 +28,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
 
   Future<bool> _mergeGuest() async {
     Map<String, dynamic> body = {
-      'member_id': _selectedMember!.memberId,
+      'member_id': _selectedMember!.id,
       'guest_id': widget.guestId
     };
     await httpPost(
@@ -54,14 +54,8 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
           useCache: false);
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = [];
-      print(decoded['data']['members']);
-      for (var member in decoded['data']['members']) {
-        members.add(Member(
-          apiToken: member['api_token'],
-          nickname: member['nickname'],
-          memberId: member['user_id'],
-          isGuest: member['is_guest'] == 1,
-        ));
+      for (var memberJson in decoded['data']['members']) {
+        members.add(Member.fromJson(memberJson));
       }
       return members;
     } catch (_) {

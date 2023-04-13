@@ -24,32 +24,32 @@ class LoginMethods {
       List<Group> groups = [];
       for (var group in decoded['data']) {
         groups.add(Group(
-            groupName: group['group_name'],
-            groupId: group['group_id'],
-            groupCurrency: group['currency']));
+            name: group['group_name'],
+            id: group['group_id'],
+            currency: group['currency']));
       }
       if (groups.length > 0) {
-        usersGroups = groups.map<String>((group) => group.groupName!).toList();
-        usersGroupIds = groups.map<int>((group) => group.groupId!).toList();
+        usersGroups = groups.map<String>((group) => group.name).toList();
+        usersGroupIds = groups.map<int>((group) => group.id).toList();
         saveUsersGroups();
         saveUsersGroupIds();
         if (groups
-                .where((group) => group.groupId == lastActiveGroup)
+                .where((group) => group.id == lastActiveGroup)
                 .toList()
                 .length !=
             0) {
           Group currentGroup =
-              groups.firstWhere((group) => group.groupId == lastActiveGroup);
-          saveGroupName(currentGroup.groupName);
+              groups.firstWhere((group) => group.id == lastActiveGroup);
+          saveGroupName(currentGroup.name);
           saveGroupId(lastActiveGroup);
-          saveGroupCurrency(currentGroup.groupCurrency);
+          saveGroupCurrency(currentGroup.currency);
           Future.delayed(delayTime())
               .then((value) => _onSelectGroupTrue(context, inviteUrl));
           return true;
         }
-        saveGroupName(groups[0].groupName);
-        saveGroupId(groups[0].groupId);
-        saveGroupCurrency(groups[0].groupCurrency);
+        saveGroupName(groups[0].name);
+        saveGroupId(groups[0].id);
+        saveGroupCurrency(groups[0].currency);
         Future.delayed(delayTime())
             .then((value) => _onSelectGroupTrue(context, inviteUrl));
         return true;

@@ -432,7 +432,7 @@ class _InvitationState extends State<Invitation> {
                             children: <Widget>[
                               Flexible(
                                   child: Text(
-                                member.username!,
+                                member.username,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyLarge!
@@ -444,7 +444,7 @@ class _InvitationState extends State<Invitation> {
                               )),
                               Flexible(
                                   child: Text(
-                                member.nickname ?? member.username!,
+                                member.nickname,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall!
@@ -513,7 +513,7 @@ class _ApproveMemberState extends State<ApproveMember> {
               Text(' - '),
               Flexible(
                   child: Text(
-                widget.member!.username!,
+                widget.member!.username,
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge!
@@ -531,7 +531,7 @@ class _ApproveMemberState extends State<ApproveMember> {
               Text(' - '),
               Flexible(
                   child: Text(
-                widget.member!.username!,
+                widget.member!.username,
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge!
@@ -546,8 +546,7 @@ class _ApproveMemberState extends State<ApproveMember> {
             onPressed: () {
               showDialog(
                   builder: (context) => FutureSuccessDialog(
-                        future:
-                            _postApproveMember(widget.member!.memberId, true),
+                        future: _postApproveMember(widget.member!.id, true),
                       ),
                   context: context);
             },
@@ -575,8 +574,7 @@ class _ApproveMemberState extends State<ApproveMember> {
             onPressed: () {
               showDialog(
                   builder: (context) => FutureSuccessDialog(
-                        future:
-                            _postApproveMember(widget.member!.memberId, false),
+                        future: _postApproveMember(widget.member!.id, false),
                       ),
                   context: context);
             },

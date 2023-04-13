@@ -14,13 +14,14 @@ class ModifyPurchaseDialog extends StatefulWidget {
   _ModifyPurchaseDialogState createState() => _ModifyPurchaseDialogState();
 }
 
-class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog> with AddModifyPurchase {
+class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog>
+    with AddModifyPurchase {
   var _formKey = GlobalKey<FormState>();
 
   int _index = 0;
 
-  Future<bool> _updatePurchase(List<Member> members, double amount, String name, int? purchaseId,
-      BuildContext context) async {
+  Future<bool> _updatePurchase(List<Member> members, double amount, String name,
+      int? purchaseId, BuildContext context) async {
     try {
       Map<String, dynamic> body = generateBody(name, amount, members);
 
@@ -65,10 +66,8 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog> with AddMod
               Center(
                   child: Text(
                 'modify_purchase'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               )),
               SizedBox(
@@ -77,10 +76,8 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog> with AddMod
               Center(
                   child: Text(
                 'modify_purchase_explanation'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               )),
               SizedBox(
@@ -151,7 +148,8 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog> with AddMod
                                 gravity: ToastGravity.BOTTOM);
                             return;
                           }
-                          double amount = double.parse(amountController.text.replaceAll(',', '.'));
+                          double amount = double.parse(
+                              amountController.text.replaceAll(',', '.'));
                           String name = noteController.text;
                           List<Member> members = <Member>[];
                           membersMap.forEach((Member key, bool value) {
@@ -159,8 +157,12 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog> with AddMod
                           });
                           showDialog(
                               builder: (context) => FutureSuccessDialog(
-                                    future: _updatePurchase(members, amount, name,
-                                        widget.savedPurchase!.purchaseId, context),
+                                    future: _updatePurchase(
+                                        members,
+                                        amount,
+                                        name,
+                                        widget.savedPurchase!.id,
+                                        context),
                                   ),
                               context: context);
                         }

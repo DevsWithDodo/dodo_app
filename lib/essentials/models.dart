@@ -3,34 +3,38 @@ import 'package:flutter/material.dart';
 import '../config.dart';
 
 class Member {
-  double? balance;
-  String? nickname;
-  String? username;
+  int id;
+  String username;
+  late String nickname;
+  double balance;
   String? apiToken;
-  int? memberId;
   bool? isAdmin;
-  double? balanceOriginalCurrency;
+  late double balanceOriginalCurrency;
   bool? isCustomAmount;
   bool? isGuest;
   Member({
-    this.username,
-    this.nickname,
-    this.balance,
+    required this.id,
+    required this.username,
+    String? nickname,
+    required this.balance,
     this.isAdmin,
-    this.memberId,
     this.apiToken,
-    this.balanceOriginalCurrency,
+    double? balanceOriginalCurrency,
     this.isCustomAmount,
     this.isGuest,
-  });
+  }) {
+    this.balanceOriginalCurrency = balanceOriginalCurrency ?? balance;
+    this.nickname = nickname ?? username;
+  }
   factory Member.fromJson(Map<String, dynamic> json) {
     return Member(
       username: json['username'],
-      memberId: json['user_id'],
+      id: json['user_id'],
       nickname: json['nickname'],
       balance: json['balance'] * 1.0,
       isAdmin: json['is_admin'] == 1,
-      balanceOriginalCurrency: (json['original_balance'] ?? 0) * 1.0,
+      balanceOriginalCurrency:
+          (json['original_balance'] ?? json['balance']) * 1.0,
       isCustomAmount: json['custom_amount'] ?? false,
       isGuest: json['is_guest'] == 1,
     );
@@ -38,25 +42,26 @@ class Member {
 
   @override
   String toString() {
-    return nickname!;
+    return nickname;
   }
 
   Map toJson() {
-    return {'user_id': memberId};
+    return {'user_id': id};
   }
 }
 
 class Group {
-  String? groupCurrency;
-  String? groupName;
-  int? groupId;
-  Group({this.groupName, this.groupId, this.groupCurrency});
+  String currency;
+  String name;
+  int id;
+  Group({
+    required this.name,
+    required this.id,
+    required this.currency,
+  });
 }
 
 class Reaction {
-  String reaction;
-  String nickname;
-  int userId;
   static const List<String> possibleReactions = [
     '👍',
     '❤',
@@ -65,8 +70,14 @@ class Reaction {
     '❗',
     '❓'
   ];
-  Reaction(
-      {required this.reaction, required this.nickname, required this.userId});
+  String reaction;
+  String nickname;
+  int userId;
+  Reaction({
+    required this.reaction,
+    required this.nickname,
+    required this.userId,
+  });
   factory Reaction.fromJson(Map<String, dynamic> reaction) {
     return Reaction(
         reaction: reaction['reaction'],
@@ -80,45 +91,53 @@ class Reaction {
 }
 
 class Purchase {
-  DateTime? updatedAt;
-  String? buyerUsername, buyerNickname;
-  int? buyerId;
-  List<Member>? receivers;
-  double? totalAmount, totalAmountOriginalCurrency;
-  int? purchaseId;
-  String? name;
-  List<Reaction>? reactions;
-  String? originalCurrency;
+  int id;
+  String buyerUsername;
+  late String buyerNickname;
+  int buyerId;
+  List<Member> receivers;
+  double totalAmount;
+  late double totalAmountOriginalCurrency;
+  String name;
+  late String originalCurrency;
+  DateTime updatedAt;
   Category? category;
+  List<Reaction>? reactions;
 
   Purchase({
-    this.updatedAt,
-    this.buyerUsername,
-    this.buyerNickname,
-    this.buyerId,
-    this.receivers,
-    this.totalAmount,
-    this.totalAmountOriginalCurrency,
-    this.purchaseId,
-    this.name,
+    required this.id,
+    required this.name,
+    required this.buyerId,
+    required this.buyerUsername,
+    String? buyerNickname,
+    required this.receivers,
+    required this.totalAmount,
+    double? totalAmountOriginalCurrency,
+    originalCurrency,
+    required this.updatedAt,
     this.reactions,
-    this.originalCurrency,
     this.category,
-  });
+  }) {
+    this.buyerNickname = buyerNickname ?? buyerUsername;
+    this.totalAmountOriginalCurrency =
+        totalAmountOriginalCurrency ?? totalAmount;
+    this.originalCurrency = originalCurrency ?? currentGroupCurrency!;
+  }
 
   factory Purchase.fromJson(Map<String, dynamic> json) {
     return Purchase(
-      purchaseId: json['purchase_id'],
+      id: json['purchase_id'],
       name: json['name'],
       updatedAt: json['updated_at'] == null
           ? DateTime.now()
           : DateTime.parse(json['updated_at']).toLocal(),
-      originalCurrency: json['original_currency'] ?? currentGroupCurrency,
+      originalCurrency: json['original_currency'] ?? currentGroupCurrency!,
       buyerUsername: json['buyer_username'],
       buyerId: json['buyer_id'],
       buyerNickname: json['buyer_nickname'],
       totalAmount: (json['total_amount'] * 1.0),
-      totalAmountOriginalCurrency: (json['original_total_amount'] ?? 0) * 1.0,
+      totalAmountOriginalCurrency:
+          (json['original_total_amount'] ?? json['original_currency']) * 1.0,
       receivers: json['receivers']
           .map<Member>((element) => Member.fromJson(element))
           .toList(),
@@ -131,33 +150,36 @@ class Purchase {
 }
 
 class Payment {
-  int? paymentId;
-  double? amount, amountOriginalCurrency;
-  DateTime? updatedAt;
-  String? payerUsername, payerNickname, takerUsername, takerNickname, note;
-  int? payerId, takerId;
+  int id;
+  double amount;
+  late double amountOriginalCurrency;
+  DateTime updatedAt;
+  String payerUsername, payerNickname, takerUsername, takerNickname, note;
+  int payerId, takerId;
   List<Reaction>? reactions;
-  String? originalCurrency;
+  String originalCurrency;
 
   Payment({
-    this.paymentId,
-    this.amount,
-    this.amountOriginalCurrency,
-    this.updatedAt,
-    this.payerUsername,
-    this.payerId,
-    this.payerNickname,
-    this.takerUsername,
-    this.takerId,
-    this.takerNickname,
-    this.note,
+    required this.id,
+    required this.amount,
+    double? amountOriginalCurrency,
+    required this.payerUsername,
+    required this.payerId,
+    required this.payerNickname,
+    required this.takerUsername,
+    required this.takerId,
+    required this.takerNickname,
+    required this.note,
+    required this.originalCurrency,
+    required this.updatedAt,
     this.reactions,
-    this.originalCurrency,
-  });
+  }) {
+    this.amountOriginalCurrency = amountOriginalCurrency ?? this.amount;
+  }
 
   factory Payment.fromJson(Map<String, dynamic> json) {
     return Payment(
-      paymentId: json['payment_id'],
+      id: json['payment_id'],
       amount: (json['amount'] * 1.0),
       updatedAt: json['updated_at'] == null
           ? DateTime.now()
@@ -231,26 +253,26 @@ class Category {
 }
 
 class ShoppingRequest {
-  int? requestId;
-  String? name;
-  String? requesterUsername, requesterNickname;
-  int? requesterId;
-  DateTime? updatedAt;
+  int id;
+  String name;
+  String requesterUsername, requesterNickname;
+  int requesterId;
+  DateTime updatedAt;
   List<Reaction>? reactions;
 
-  ShoppingRequest(
-      {this.updatedAt,
-      this.requesterId,
-      this.requesterUsername,
-      this.name,
-      this.requestId,
-      this.requesterNickname,
-      this.reactions});
+  ShoppingRequest({
+    required this.id,
+    required this.name,
+    required this.requesterId,
+    required this.requesterUsername,
+    required this.requesterNickname,
+    required this.updatedAt,
+    this.reactions,
+  });
 
   factory ShoppingRequest.fromJson(Map<String, dynamic> json) {
-    // print(json);
     return ShoppingRequest(
-        requestId: json['request_id'],
+        id: json['request_id'],
         requesterId: json['requester_id'],
         requesterUsername: json['requester_username'],
         requesterNickname: json['requester_nickname'],
@@ -263,6 +285,6 @@ class ShoppingRequest {
 
   @override
   String toString() {
-    return name! + '; ' + updatedAt.toString() + '; ' + reactions!.join(', ');
+    return name + '; ' + updatedAt.toString() + '; ' + reactions!.join(', ');
   }
 }

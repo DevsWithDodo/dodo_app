@@ -246,7 +246,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       (lineBarSpot.barIndex == 0
                           ? keywords[0].tr() + ' '
                           : keywords[1].tr() + ' ') +
-                      lineBarSpot.y.toMoneyString(currentGroupCurrency,
+                      lineBarSpot.y.toMoneyString(currentGroupCurrency!,
                           withSymbol: true),
                   Theme.of(context).textTheme.bodySmall!.copyWith(
                       height: lineBarSpot.barIndex == 0 ? 1.5 : 1,
@@ -330,7 +330,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               return Padding(
                 padding: const EdgeInsets.all(0),
                 child: Text(
-                  value.toMoneyString(currentGroupCurrency),
+                  value.toMoneyString(currentGroupCurrency!),
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
@@ -399,7 +399,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         ),
         Flexible(
             child: Text(
-          amount.toMoneyString(currentGroupCurrency, withSymbol: true),
+          amount.toMoneyString(currentGroupCurrency!, withSymbol: true),
           style: Theme.of(context)
               .textTheme
               .bodyLarge!

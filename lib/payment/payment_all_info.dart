@@ -39,11 +39,11 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
   @override
   Widget build(BuildContext context) {
     String note = '';
-    if (widget.data!.note == '' || widget.data!.note == null) {
+    if (widget.data!.note == '') {
       note = 'no_note'.tr();
     } else {
       note =
-          widget.data!.note![0].toUpperCase() + widget.data!.note!.substring(1);
+          widget.data!.note[0].toUpperCase() + widget.data!.note.substring(1);
     }
     return Padding(
       padding: const EdgeInsets.all(15),
@@ -72,7 +72,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                   color: Theme.of(context).colorScheme.secondary),
               Flexible(
                   child: Text(
-                ' - ' + widget.data!.payerNickname!,
+                ' - ' + widget.data!.payerNickname,
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge!
@@ -90,7 +90,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                   color: Theme.of(context).colorScheme.secondary),
               Flexible(
                   child: Text(
-                ' - ' + widget.data!.takerNickname!,
+                ' - ' + widget.data!.takerNickname,
                 style: Theme.of(context)
                     .textTheme
                     .bodyLarge!
@@ -109,7 +109,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                   child: Text(
                       ' - ' +
                           widget.data!.amount.toMoneyString(
-                              currentGroupCurrency,
+                              currentGroupCurrency!,
                               withSymbol: true) +
                           (widget.data!.originalCurrency != currentGroupCurrency
                               ? (' (' +
@@ -136,7 +136,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                   child: Text(
                       ' - ' +
                           DateFormat('yyyy/MM/dd - HH:mm')
-                              .format(widget.data!.updatedAt!),
+                              .format(widget.data!.updatedAt),
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color: Theme.of(context).colorScheme.onSurface))),
             ],
@@ -193,7 +193,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                     if (value != null && value) {
                       showDialog(
                           builder: (context) => FutureSuccessDialog(
-                                future: _deletePayment(widget.data!.paymentId),
+                                future: _deletePayment(widget.data!.id),
                                 dataTrueText: 'delete_scf',
                                 onDataTrue: () {
                                   _onDeletePayment();

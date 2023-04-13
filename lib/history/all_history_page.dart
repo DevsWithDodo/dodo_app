@@ -226,7 +226,7 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
                       DateTime? newEndDate,
                       Category? newCategory) {
                     setState(() {
-                      _selectedMemberId = newMemberChosen.memberId!;
+                      _selectedMemberId = newMemberChosen.id;
                       _startDate = newStartDate;
                       _endDate = newEndDate;
                       _category = newCategory;
@@ -382,8 +382,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     //Initial
     DateTime now = DateTime(nowNow.year, nowNow.month, nowNow.day);
     Widget initial;
-    if (now.difference(data[0].updatedAt!).inDays > 7) {
-      int toSubtract = (now.difference(data[0].updatedAt!).inDays / 7).floor();
+    if (now.difference(data[0].updatedAt).inDays > 7) {
+      int toSubtract = (now.difference(data[0].updatedAt).inDays / 7).floor();
       now = now.subtract(Duration(days: toSubtract * 7));
       initial = Column(
         children: [
@@ -419,8 +419,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     List<Widget> allEntries = [initial];
     List<PaymentEntry> weekEntries = [];
     for (Payment data in data) {
-      if (now.difference(data.updatedAt!).inDays > 7) {
-        int toSubtract = (now.difference(data.updatedAt!).inDays / 7).floor();
+      if (now.difference(data.updatedAt).inDays > 7) {
+        int toSubtract = (now.difference(data.updatedAt).inDays / 7).floor();
         now = now.subtract(Duration(days: toSubtract * 7));
         allEntries.add(Padding(
           padding: const EdgeInsets.all(8.0),
@@ -487,8 +487,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     DateTime nowNow = DateTime.now();
     DateTime now = DateTime(nowNow.year, nowNow.month, nowNow.day);
     Widget initial;
-    if (now.difference(data[0].updatedAt!).inDays > 7) {
-      int toSubtract = (now.difference(data[0].updatedAt!).inDays / 7).floor();
+    if (now.difference(data[0].updatedAt).inDays > 7) {
+      int toSubtract = (now.difference(data[0].updatedAt).inDays / 7).floor();
       now = now.subtract(Duration(days: toSubtract * 7));
       initial = Column(
         children: [
@@ -526,8 +526,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     List<Widget> allEntries = [initial];
     List<PurchaseEntry> weekEntries = [];
     for (Purchase data in data) {
-      if (now.difference(data.updatedAt!).inDays > 7) {
-        int toSubtract = (now.difference(data.updatedAt!).inDays / 7).floor();
+      if (now.difference(data.updatedAt).inDays > 7) {
+        int toSubtract = (now.difference(data.updatedAt).inDays / 7).floor();
         now = now.subtract(Duration(days: toSubtract * 7));
         allEntries.add(Padding(
           padding: const EdgeInsets.all(8.0),

@@ -33,9 +33,9 @@ class _GroupMembersState extends State<GroupMembers> {
         members.add(Member.fromJson(member));
       }
       members.sort(
-          (member1, member2) => member1.nickname!.compareTo(member2.nickname!));
+          (member1, member2) => member1.nickname.compareTo(member2.nickname));
       currentMember =
-          members.firstWhere((member) => member.memberId == currentUserId);
+          members.firstWhere((member) => member.id == currentUserId);
       members.remove(currentMember);
       members.insert(0, currentMember!);
       return members;
@@ -177,10 +177,14 @@ class _GroupMembersState extends State<GroupMembers> {
 
 class MemberEntry extends StatefulWidget {
   final Function? callback;
-  final Member? member;
+  final Member member;
   final bool? isCurrentUserAdmin;
 
-  MemberEntry({this.member, this.isCurrentUserAdmin, this.callback});
+  MemberEntry({
+    required this.member,
+    this.isCurrentUserAdmin,
+    this.callback,
+  });
 
   @override
   _MemberEntryState createState() => _MemberEntryState();
@@ -194,7 +198,7 @@ class _MemberEntryState extends State<MemberEntry> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.member!.memberId == currentUserId) {
+    if (widget.member.id == currentUserId) {
       mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
           color: currentThemeName!.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
@@ -272,13 +276,13 @@ class _MemberEntryState extends State<MemberEntry> {
                                 children: <Widget>[
                                   Flexible(
                                       child: Text(
-                                    widget.member!.username!,
+                                    widget.member.username,
                                     style: mainTextStyle,
                                     overflow: TextOverflow.ellipsis,
                                   )),
                                   Flexible(
                                       child: Text(
-                                    widget.member!.nickname!,
+                                    widget.member.nickname,
                                     style: subTextStyle,
                                     overflow: TextOverflow.ellipsis,
                                   ))
@@ -290,7 +294,7 @@ class _MemberEntryState extends State<MemberEntry> {
                       ),
                       Center(
                         child: Visibility(
-                          visible: widget.member!.isAdmin!,
+                          visible: widget.member.isAdmin!,
                           child: Text(
                             '👑  ', //itt van egy korona emoji lol
                             style: mainTextStyle,
@@ -299,7 +303,7 @@ class _MemberEntryState extends State<MemberEntry> {
                       ),
                       Center(
                         child: Visibility(
-                          visible: widget.member!.isGuest!,
+                          visible: widget.member.isGuest!,
                           child: Text(
                             'guest'.tr(),
                             style: mainTextStyle,

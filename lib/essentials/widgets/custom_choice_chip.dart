@@ -123,7 +123,7 @@ class _CustomChoiceChipState extends State<CustomChoiceChip>
                     ? CrossFadeState.showSecond
                     : CrossFadeState.showFirst,
               ),
-              Text(widget.member.nickname!,
+              Text(widget.member.nickname,
                   style: Theme.of(context).textTheme.labelLarge!.copyWith(
                       color: widget.selected
                           ? widget.selectedFontColor

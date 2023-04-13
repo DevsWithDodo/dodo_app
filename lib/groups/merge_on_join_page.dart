@@ -98,7 +98,7 @@ class _MergeOnJoinPageState extends State<MergeOnJoinPage> {
     try {
       Map<String, dynamic> body = {
         'member_id': currentUserId,
-        'guest_id': _selectedMember!.memberId
+        'guest_id': _selectedMember!.id
       };
       await httpPost(
           context: context,

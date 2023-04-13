@@ -64,7 +64,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                   color: Theme.of(context).colorScheme.secondary),
               Flexible(
                 child: Text(
-                  ' - ' + widget.shoppingRequest.requesterNickname!,
+                  ' - ' + widget.shoppingRequest.requesterNickname,
                   style: Theme.of(context)
                       .textTheme
                       .bodyLarge!
@@ -83,7 +83,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                   color: Theme.of(context).colorScheme.secondary),
               Flexible(
                 child: Text(
-                  ' - ' + widget.shoppingRequest.name!,
+                  ' - ' + widget.shoppingRequest.name,
                   style: Theme.of(context)
                       .textTheme
                       .bodyLarge!
@@ -105,7 +105,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                 child: Text(
                   ' - ' +
                       DateFormat('yyyy/MM/dd - HH:mm')
-                          .format(widget.shoppingRequest.updatedAt!),
+                          .format(widget.shoppingRequest.updatedAt),
                   style: Theme.of(context)
                       .textTheme
                       .bodyLarge!
@@ -130,7 +130,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                         onPressed: () {
                           showDialog<ShoppingRequest>(
                             builder: (context) => EditRequestDialog(
-                              requestId: widget.shoppingRequest.requestId,
+                              requestId: widget.shoppingRequest.id,
                               textBefore: widget.shoppingRequest.name,
                             ),
                             context: context,
@@ -176,7 +176,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                           showDialog(
                             builder: (context) => FutureSuccessDialog(
                               future: _deleteShoppingRequest(
-                                  widget.shoppingRequest.requestId!),
+                                  widget.shoppingRequest.id),
                             ),
                             barrierDismissible: false,
                             context: context,
@@ -222,7 +222,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                           showDialog(
                             builder: (context) => FutureSuccessDialog(
                               future: _fulfillShoppingRequest(
-                                widget.shoppingRequest.requestId!,
+                                widget.shoppingRequest.id,
                               ),
                             ),
                             barrierDismissible: false,
@@ -264,7 +264,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                           showDialog<bool>(
                             builder: (context) => FutureSuccessDialog(
                               future: _fulfillShoppingRequest(
-                                  widget.shoppingRequest.requestId!),
+                                  widget.shoppingRequest.id),
                             ),
                             barrierDismissible: false,
                             context: context,

@@ -37,14 +37,14 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
     sliderValue = widget.initialValue;
     magnet = 0.5;
     currency = widget.currency ?? currentGroupCurrency;
-    customAmountController.text = sliderValue.toMoneyString(currency);
+    customAmountController.text = sliderValue.toMoneyString(currency!);
   }
 
   void setSliderValue(newValue, {bool setController = true}) {
     setState(() {
       sliderValue = newValue;
       if (setController) {
-        customAmountController.text = sliderValue.toMoneyString(currency);
+        customAmountController.text = sliderValue.toMoneyString(currency!);
       }
     });
   }
@@ -108,7 +108,7 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
               children: [
                 TapOrHoldButton(
                   onUpdate: () {
-                    double value = hasSubunit(currency) ? 0.01 : 1;
+                    double value = hasSubunit(currency!) ? 0.01 : 1;
                     if (sliderValue! - value >= widget.minValue) {
                       setSliderValue(sliderValue! - value);
                     }
@@ -130,7 +130,7 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
                 ),
                 TapOrHoldButton(
                   onUpdate: () {
-                    double value = hasSubunit(currency) ? 0.01 : 1;
+                    double value = hasSubunit(currency!) ? 0.01 : 1;
                     if (sliderValue! + value <= widget.maxValue!) {
                       setSliderValue(sliderValue! + value);
                     }

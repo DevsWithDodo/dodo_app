@@ -48,7 +48,7 @@ class AddModifyPayment {
     if (_paymentType == PaymentType.modifyPayment) {
       this._savedPayment = savedPayment;
       selectedCurrency = savedPayment!.originalCurrency;
-      noteController.text = savedPayment.note!;
+      noteController.text = savedPayment.note;
       amountController.text = savedPayment.amountOriginalCurrency
           .toMoneyString(savedPayment.originalCurrency);
     }
@@ -68,10 +68,7 @@ class AddModifyPayment {
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = [];
       for (var member in decoded['data']['members']) {
-        members.add(Member(
-            nickname: member['nickname'],
-            balance: (member['balance'] * 1.0),
-            memberId: member['user_id']));
+        members.add(Member.fromJson(member));
       }
       return members;
     } catch (_) {
@@ -86,7 +83,7 @@ class AddModifyPayment {
       'currency': selectedCurrency,
       'amount': amount,
       'note': note,
-      'taker_id': toMember.memberId,
+      'taker_id': toMember.id,
       'payer_id': payerId,
     };
   }
@@ -206,7 +203,7 @@ class AddModifyPayment {
                                   Theme.of(context).colorScheme.onSurface,
                               fillRatio: 1,
                               member: snapshot.data!.firstWhere(
-                                  (element) => element.memberId == payerId),
+                                  (element) => element.id == payerId),
                               onChipClicked: (chosen) {},
                             ),
                           ),
@@ -215,15 +212,15 @@ class AddModifyPayment {
                             allowMultipleSelected: false,
                             showAnimation: false,
                             chosenMembers: snapshot.data!
-                                .where((element) => element.memberId == payerId)
+                                .where((element) => element.id == payerId)
                                 .toList(),
                             chosenMembersChanged: (newMembers) {
                               _setState(() {
                                 purchaserSelector = CrossFadeState.showFirst;
                                 if (newMembers.isNotEmpty) {
-                                  payerId = newMembers.first.memberId;
+                                  payerId = newMembers.first.id;
                                   if (selectedMember != null &&
-                                      selectedMember!.memberId == payerId) {
+                                      selectedMember!.id == payerId) {
                                     selectedMember = null;
                                   }
                                 }
@@ -278,7 +275,7 @@ class AddModifyPayment {
               if (snapshot.hasData) {
                 if (_savedPayment != null && !_alreadyInitializedSave) {
                   Member? selectedMember = snapshot.data!.firstWhereOrNull(
-                      (element) => element.memberId == _savedPayment!.takerId);
+                      (element) => element.id == _savedPayment!.takerId);
                   if (selectedMember != null)
                     this.selectedMember = selectedMember;
                   _alreadyInitializedSave = true;
@@ -286,7 +283,7 @@ class AddModifyPayment {
                 return MemberChips(
                   allowMultipleSelected: false,
                   allMembers: snapshot.data!
-                      .where((element) => element.memberId != payerId)
+                      .where((element) => element.id != payerId)
                       .toList(),
                   chosenMembersChanged: (members) {
                     _setState(() {
@@ -317,7 +314,7 @@ class AddModifyPayment {
 
   AnimatedCrossFade warningText() {
     bool isVisible =
-        (selectedMember != null && selectedMember!.memberId != currentUserId) &&
+        (selectedMember != null && selectedMember!.id != currentUserId) &&
             payerId != currentUserId;
     CrossFadeState state =
         isVisible ? CrossFadeState.showSecond : CrossFadeState.showFirst;

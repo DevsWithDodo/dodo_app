@@ -107,7 +107,7 @@ class _ShoppingListState extends State<ShoppingList> {
   void handleEditShoppingRequest(ShoppingRequest request) async {
     if (_shoppingList != null) {
       await (_shoppingList!.then((list) {
-        list.removeWhere((element) => element.requestId == request.requestId);
+        list.removeWhere((element) => element.id == request.id);
         list.add(request);
         return list;
       }));
@@ -118,7 +118,7 @@ class _ShoppingListState extends State<ShoppingList> {
   void handleDeletShoppingRequest(int requestId) async {
     if (_shoppingList != null) {
       await (_shoppingList!.then((list) {
-        list.removeWhere((element) => element.requestId == requestId);
+        list.removeWhere((element) => element.id == requestId);
         return list;
       }));
       setState(() {});
@@ -378,7 +378,7 @@ class _ShoppingListState extends State<ShoppingList> {
           .length;
       if (e2Length > e1Length) return 1;
       if (e2Length < e1Length) return -1;
-      if (requestData1.updatedAt!.isAfter(requestData2.updatedAt!)) return -1;
+      if (requestData1.updatedAt.isAfter(requestData2.updatedAt)) return -1;
       return 1;
     });
     return data.map((element) {

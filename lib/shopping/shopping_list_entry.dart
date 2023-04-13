@@ -119,12 +119,12 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
           showDialog(
                   builder: (context) => FutureSuccessDialog(
                         future: _deleteFulfillShoppingRequest(
-                            widget.shoppingRequest.requestId, context),
+                            widget.shoppingRequest.id, context),
                       ),
                   barrierDismissible: false,
                   context: context)
               .then((value) {
-            widget.onDeleteRequest(widget.shoppingRequest.requestId!);
+            widget.onDeleteRequest(widget.shoppingRequest.id);
             // But if the direction is startToEnd, the AddPurchase site has to be called
             if (direction == DismissDirection.startToEnd && value == true) {
               Navigator.push(
@@ -144,19 +144,19 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
             showDialog(
                     builder: (context) => FutureSuccessDialog(
                           future: _deleteFulfillShoppingRequest(
-                              widget.shoppingRequest.requestId, context),
+                              widget.shoppingRequest.id, context),
                         ),
                     barrierDismissible: false,
                     context: context)
                 .then((value) {
               if (value ?? false)
-                widget.onDeleteRequest(widget.shoppingRequest.requestId!);
+                widget.onDeleteRequest(widget.shoppingRequest.id);
             });
           } else if (direction == DismissDirection.startToEnd) {
             showDialog<ShoppingRequest>(
               builder: (context) => EditRequestDialog(
                 textBefore: widget.shoppingRequest.name,
-                requestId: widget.shoppingRequest.requestId,
+                requestId: widget.shoppingRequest.id,
               ),
               context: context,
             ).then((value) {
@@ -187,7 +187,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                       builder: (context) => AddReactionDialog(
                             type: 'requests',
                             reactions: widget.shoppingRequest.reactions!,
-                            reactToId: widget.shoppingRequest.requestId!,
+                            reactToId: widget.shoppingRequest.id,
                             onSend: this.handleSendReaction,
                           ),
                       context: context);
@@ -201,8 +201,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                   ).then((value) {
                     if (value != null) {
                       if (value['type'] == 'deleted') {
-                        widget
-                            .onDeleteRequest(widget.shoppingRequest.requestId!);
+                        widget.onDeleteRequest(widget.shoppingRequest.id);
                       } else {
                         widget.onEditRequest(value['request']);
                       }
@@ -246,7 +245,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                                         Flexible(
                                           child: Text(
                                             widget.shoppingRequest
-                                                .requesterNickname!,
+                                                .requesterNickname,
                                             style: subTextStyle,
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -268,7 +267,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
           ),
           PastReactionContainer(
             reactions: widget.shoppingRequest.reactions!,
-            reactedToId: widget.shoppingRequest.requestId!,
+            reactedToId: widget.shoppingRequest.id,
             isSecondaryColor:
                 widget.shoppingRequest.requesterId == currentUserId,
             type: 'requests',

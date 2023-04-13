@@ -26,7 +26,7 @@ class AddModifyPurchase {
   Future<List<Member>>? members;
   Map<Member, bool> membersMap = Map<Member, bool>();
   Map<Member, double> customAmountMap = Map<Member, double>();
-  String? selectedCurrency = currentGroupCurrency;
+  String selectedCurrency = currentGroupCurrency!;
   FocusNode focusNode = FocusNode();
   late Function(BuildContext context) buttonPush;
   late void Function(void Function()) _setState;
@@ -58,10 +58,10 @@ class AddModifyPurchase {
     this.buttonPush = buttonPush ?? (context) {};
     this._setState = setState;
     if (purchaseType == PurchaseType.fromShopping) {
-      noteController.text = shoppingRequest!.name!;
+      noteController.text = shoppingRequest!.name;
     } else if (purchaseType == PurchaseType.modifyPurchase) {
       selectedCurrency = savedPurchase!.originalCurrency;
-      noteController.text = savedPurchase.name!;
+      noteController.text = savedPurchase.name;
       amountController.text = savedPurchase.totalAmountOriginalCurrency
           .toMoneyString(savedPurchase.originalCurrency);
       purchaserId = savedPurchase.buyerId;
@@ -85,7 +85,7 @@ class AddModifyPurchase {
       "buyer_id": purchaserId,
       "receivers": members
           .map((member) => {
-                "user_id": member.memberId,
+                "user_id": member.id,
                 "amount": customAmountMap.containsKey(member)
                     ? customAmountMap[member]
                     : null,
@@ -110,7 +110,7 @@ class AddModifyPurchase {
             nickname: member['nickname'],
             balance: (member['balance'] * 1.0),
             username: member['username'],
-            memberId: member['user_id']));
+            id: member['user_id']));
       }
       return members;
     } catch (_) {
@@ -173,7 +173,7 @@ class AddModifyPurchase {
           prefixIcon: GestureDetector(
             onDoubleTap: () {
               _setState(() {
-                selectedCurrency = currentGroupCurrency;
+                selectedCurrency = currentGroupCurrency!;
               });
             },
             child: CurrencyPickerIconButton(
@@ -267,7 +267,7 @@ class AddModifyPurchase {
                                   Theme.of(context).colorScheme.onSurface,
                               fillRatio: 1,
                               member: snapshot.data!.firstWhere(
-                                  (element) => element.memberId == purchaserId),
+                                  (element) => element.id == purchaserId),
                               onChipClicked: (chosen) {},
                             ),
                           ),
@@ -276,14 +276,13 @@ class AddModifyPurchase {
                             allowMultipleSelected: false,
                             showAnimation: false,
                             chosenMembers: snapshot.data!
-                                .where((element) =>
-                                    element.memberId == purchaserId)
+                                .where((element) => element.id == purchaserId)
                                 .toList(),
                             chosenMembersChanged: (newMembers) {
                               _setState(() {
                                 purchaserSelector = CrossFadeState.showFirst;
                                 if (newMembers.isNotEmpty) {
-                                  purchaserId = newMembers.first.memberId;
+                                  purchaserId = newMembers.first.id;
                                 }
                               });
                             },
@@ -341,16 +340,16 @@ class AddModifyPurchase {
                 }
                 if (purchaseType == PurchaseType.fromShopping) {
                   membersMap[snapshot.data!.firstWhere((member) =>
-                      member.memberId == shoppingRequest!.requesterId)] = true;
+                      member.id == shoppingRequest!.requesterId)] = true;
                 } else if (purchaseType == PurchaseType.modifyPurchase &&
                     !alreadyInitializedSave) {
-                  for (Member member in savedPurchase!.receivers!) {
-                    Member memberInMap = membersMap.keys.firstWhere(
-                        (element) => element.memberId == member.memberId);
+                  for (Member member in savedPurchase!.receivers) {
+                    Member memberInMap = membersMap.keys
+                        .firstWhere((element) => element.id == member.id);
                     membersMap[memberInMap] = true;
                     if (member.isCustomAmount ?? false) {
                       customAmountMap[memberInMap] =
-                          member.balanceOriginalCurrency!;
+                          member.balanceOriginalCurrency;
                     }
                   }
                   alreadyInitializedSave = true;

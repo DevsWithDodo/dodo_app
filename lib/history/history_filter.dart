@@ -49,7 +49,7 @@ class _HistoryFilterState extends State<HistoryFilter> {
             nickname: member['nickname'],
             balance: (member['balance'] * 1.0),
             username: member['username'],
-            memberId: member['user_id']));
+            id: member['user_id']));
       }
       return members;
     } catch (_) {
@@ -162,13 +162,13 @@ class _HistoryFilterState extends State<HistoryFilter> {
                 if (_membersChosen == null) {
                   _membersChosen = [];
                   if (widget.selectedMember != null) {
-                    _membersChosen!.add(snapshot.data!.firstWhere((element) =>
-                        element.memberId == widget.selectedMember));
+                    _membersChosen!.add(snapshot.data!.firstWhere(
+                        (element) => element.id == widget.selectedMember));
                   }
                   if (_membersChosen!.isEmpty) {
                     _membersChosen = [
-                      snapshot.data!.firstWhere(
-                          (element) => element.memberId == currentUserId)
+                      snapshot.data!
+                          .firstWhere((element) => element.id == currentUserId)
                     ];
                   }
                 }
@@ -180,7 +180,7 @@ class _HistoryFilterState extends State<HistoryFilter> {
                       if (newMembersChosen.isEmpty) {
                         _membersChosen = [
                           snapshot.data!.firstWhere(
-                              (element) => element.memberId == currentUserId)
+                              (element) => element.id == currentUserId)
                         ];
                       } else {
                         _membersChosen = newMembersChosen;

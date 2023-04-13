@@ -220,7 +220,7 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                                         ...(customAmountMap.keys
                                             .map<Widget>((member) {
                                           return Text(
-                                            member.nickname! +
+                                            member.nickname +
                                                 ': ' +
                                                 customAmountMap[member]
                                                     .toMoneyString(
