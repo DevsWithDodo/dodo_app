@@ -35,7 +35,7 @@ class _HistoryFilterState extends State<HistoryFilter> {
   DateTime? _endDate;
   Category? _selectedCategory;
   Future<List<Member>>? _members;
-  late List<Member>? _membersChosen;
+  List<Member>? _membersChosen;
 
   Future<List<Member>> _getMembers() async {
     try {
@@ -45,11 +45,7 @@ class _HistoryFilterState extends State<HistoryFilter> {
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = [];
       for (var member in decoded['data']['members']) {
-        members.add(Member(
-            nickname: member['nickname'],
-            balance: (member['balance'] * 1.0),
-            username: member['username'],
-            id: member['user_id']));
+        members.add(Member.fromJson(member));
       }
       return members;
     } catch (_) {
@@ -70,7 +66,6 @@ class _HistoryFilterState extends State<HistoryFilter> {
     _startDate =
         widget.startDate ?? DateTime.now().subtract(Duration(days: 30));
     _endDate = widget.endDate ?? DateTime.now();
-    print(_membersChosen);
   }
 
   @override
@@ -159,6 +154,7 @@ class _HistoryFilterState extends State<HistoryFilter> {
                     errorLocation: 'history_filter',
                   );
                 }
+                print(_membersChosen);
                 if (_membersChosen == null) {
                   _membersChosen = [];
                   if (widget.selectedMember != null) {
@@ -172,6 +168,7 @@ class _HistoryFilterState extends State<HistoryFilter> {
                     ];
                   }
                 }
+                print(_membersChosen);
                 return MemberChips(
                   allMembers: snapshot.data!,
                   chosenMembers: _membersChosen!,

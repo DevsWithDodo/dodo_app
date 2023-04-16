@@ -441,5 +441,7 @@
     "report_bug": "Segnala un bug",
     "report_bug_explanation": "Segnalaci se hai trovato qualcosa che non funziona come previsto.",
 
-    "bills": "Bollette"
+    "bills": "Bollette",
+
+    "category": "Categoria"
 }

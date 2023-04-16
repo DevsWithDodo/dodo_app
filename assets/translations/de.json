@@ -445,5 +445,7 @@
     "report_bug": "Einen Fehler melden",
     "report_bug_explanation": "Sag uns, wenn du etwas gefunden hast, das nicht so funktioniert wie geplant.",
 
-    "bills": "Rechnungen"
+    "bills": "Rechnungen",
+
+    "category": "Kategorie"
 }

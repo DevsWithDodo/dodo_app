@@ -34,7 +34,6 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
   late BoxDecoration boxDecoration;
 
   String? name;
-  String? user;
 
   void handleSendReaction(String reaction) {
     Reaction? oldReaction = widget.shoppingRequest.reactions!
@@ -66,7 +65,6 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
   @override
   Widget build(BuildContext context) {
     name = widget.shoppingRequest.name;
-    user = widget.shoppingRequest.requesterUsername;
     mainTextStyle = Theme.of(context)
         .textTheme
         .bodyLarge!

@@ -444,5 +444,7 @@
     "report_bug": "Report a bug",
     "report_bug_explanation": "Tell us if you found something not working as intended.",
 
-    "bills": "Bills"
+    "bills": "Bills",
+
+    "category": "Category"
 }

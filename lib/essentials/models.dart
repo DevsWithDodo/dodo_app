@@ -7,11 +7,11 @@ class Member {
   String username;
   late String nickname;
   double balance;
-  String? apiToken;
-  bool? isAdmin;
   late double balanceOriginalCurrency;
   bool? isCustomAmount;
   bool? isGuest;
+  String? apiToken;
+  bool? isAdmin;
   Member({
     required this.id,
     required this.username,
@@ -28,7 +28,7 @@ class Member {
   }
   factory Member.fromJson(Map<String, dynamic> json) {
     return Member(
-      username: json['username'],
+      username: json['username'] ?? json['nickname'],
       id: json['user_id'],
       nickname: json['nickname'],
       balance: json['balance'] * 1.0,
@@ -132,7 +132,7 @@ class Purchase {
           ? DateTime.now()
           : DateTime.parse(json['updated_at']).toLocal(),
       originalCurrency: json['original_currency'] ?? currentGroupCurrency!,
-      buyerUsername: json['buyer_username'],
+      buyerUsername: json['buyer_username'] ?? json['buyer_nickname'],
       buyerId: json['buyer_id'],
       buyerNickname: json['buyer_nickname'],
       totalAmount: (json['total_amount'] * 1.0),
@@ -185,10 +185,10 @@ class Payment {
           ? DateTime.now()
           : DateTime.parse(json['updated_at']).toLocal(),
       payerId: json['payer_id'],
-      payerUsername: json['payer_username'],
+      payerUsername: json['payer_username'] ?? json['payer_nickname'],
       payerNickname: json['payer_nickname'],
       takerId: json['taker_id'],
-      takerUsername: json['taker_username'],
+      takerUsername: json['taker_username'] ?? json['taker_nickname'],
       takerNickname: json['taker_nickname'],
       note: json['note'],
       originalCurrency: json['original_currency'] ?? currentGroupCurrency,
@@ -255,7 +255,7 @@ class Category {
 class ShoppingRequest {
   int id;
   String name;
-  String requesterUsername, requesterNickname;
+  String requesterNickname;
   int requesterId;
   DateTime updatedAt;
   List<Reaction>? reactions;
@@ -264,7 +264,6 @@ class ShoppingRequest {
     required this.id,
     required this.name,
     required this.requesterId,
-    required this.requesterUsername,
     required this.requesterNickname,
     required this.updatedAt,
     this.reactions,
@@ -272,15 +271,15 @@ class ShoppingRequest {
 
   factory ShoppingRequest.fromJson(Map<String, dynamic> json) {
     return ShoppingRequest(
-        id: json['request_id'],
-        requesterId: json['requester_id'],
-        requesterUsername: json['requester_username'],
-        requesterNickname: json['requester_nickname'],
-        name: json['name'],
-        updatedAt: DateTime.parse(json['updated_at']).toLocal(),
-        reactions: (json['reactions'] ?? [])
-            .map<Reaction>((reaction) => Reaction.fromJson(reaction))
-            .toList());
+      id: json['request_id'],
+      requesterId: json['requester_id'],
+      requesterNickname: json['requester_nickname'] ?? 'asda',
+      name: json['name'],
+      updatedAt: DateTime.parse(json['updated_at']).toLocal(),
+      reactions: (json['reactions'] ?? [])
+          .map<Reaction>((reaction) => Reaction.fromJson(reaction))
+          .toList(),
+    );
   }
 
   @override
