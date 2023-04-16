@@ -143,11 +143,7 @@ class _InvitationState extends State<Invitation> {
                                         );
                                       });
                                 },
-                                child: Icon(
-                                  Icons.share,
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary,
-                                ),
+                                child: Icon(Icons.share),
                               ),
                               Visibility(
                                 visible: widget.isAdmin!,
@@ -176,12 +172,7 @@ class _InvitationState extends State<Invitation> {
                                               AddGuestDialog(),
                                         );
                                       },
-                                      child: Icon(
-                                        Icons.person_add,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary,
-                                      ),
+                                      child: Icon(Icons.person_add),
                                     ),
                                   ],
                                 ),
@@ -542,7 +533,7 @@ class _ApproveMemberState extends State<ApproveMember> {
           SizedBox(
             height: 5,
           ),
-          GradientButton(
+          GradientButton.icon(
             onPressed: () {
               showDialog(
                   builder: (context) => FutureSuccessDialog(
@@ -550,27 +541,11 @@ class _ApproveMemberState extends State<ApproveMember> {
                       ),
                   context: context);
             },
-            child: Row(
-              children: [
-                Icon(
-                  Icons.check,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-                SizedBox(
-                  width: 3,
-                ),
-                Text(
-                  'approve'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(color: Theme.of(context).colorScheme.onPrimary),
-                ),
-              ],
-            ),
+            icon: Icon(Icons.check),
+            label: Text('approve'.tr()),
           ),
           SizedBox(height: 10),
-          GradientButton(
+          GradientButton.icon(
             onPressed: () {
               showDialog(
                   builder: (context) => FutureSuccessDialog(
@@ -578,24 +553,8 @@ class _ApproveMemberState extends State<ApproveMember> {
                       ),
                   context: context);
             },
-            child: Row(
-              children: [
-                Icon(
-                  Icons.clear,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-                SizedBox(
-                  width: 3,
-                ),
-                Text(
-                  'disapprove'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(color: Theme.of(context).colorScheme.onPrimary),
-                ),
-              ],
-            ),
+            icon: Icon(Icons.clear),
+            label: Text('disapprove'.tr()),
           )
         ],
       ),

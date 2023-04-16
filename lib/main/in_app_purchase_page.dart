@@ -77,11 +77,7 @@ class _InAppPurchasePageState extends State<InAppPurchasePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GradientButton(
-                    child: Text(
-                      'buy'.tr(),
-                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onPrimary),
-                    ),
+                    child: Text('buy'.tr()),
                     onPressed: () {
                       PurchaseParam purchaseParam =
                           PurchaseParam(productDetails: e);

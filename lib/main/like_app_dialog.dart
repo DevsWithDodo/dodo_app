@@ -18,22 +18,15 @@ class LikeTheAppDialog extends StatelessWidget {
         children: [
           GradientButton(
             useSecondary: true,
-            child: Text('no'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSecondary)),
+            child: Text('no'.tr()),
             onPressed: () => Navigator.pop(context),
           ),
           GradientButton(
-            child: Text('yes'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onPrimary)),
+            child: Text('yes'.tr()),
             onPressed: () {
               Navigator.pop(context);
-              showDialog(context: context, builder: (context) => RateAppDialog());
+              showDialog(
+                  context: context, builder: (context) => RateAppDialog());
             },
           ),
         ],

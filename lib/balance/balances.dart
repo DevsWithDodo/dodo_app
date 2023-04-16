@@ -269,10 +269,7 @@ class _BalancesState extends State<Balances> {
                                     inviteCode: snapshot.data!);
                               });
                         },
-                        child: Icon(
-                          Icons.share,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
+                        child: Icon(Icons.share),
                       ),
                     ],
                   ),
@@ -301,10 +298,7 @@ class _BalancesState extends State<Balances> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             GradientButton(
-              child: Icon(
-                Icons.person_add,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
+              child: Icon(Icons.person_add),
               onPressed: () {
                 showDialog(
                     context: context,

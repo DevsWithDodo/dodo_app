@@ -155,8 +155,7 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GradientButton(
-                  child: Icon(Icons.check,
-                      color: Theme.of(context).colorScheme.onPrimary),
+                  child: Icon(Icons.check),
                   onPressed: () {
                     Navigator.pop(context, sliderValue);
                   },

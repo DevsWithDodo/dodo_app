@@ -44,17 +44,13 @@ class _ConfirmChoiceDialogState extends State<ConfirmChoiceDialog> {
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
-                  child: Text('yes'.tr(),
-                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onPrimary)),
+                  child: Text('yes'.tr()),
                 ),
                 GradientButton(
                   onPressed: () {
                     Navigator.pop(context, false);
                   },
-                  child: Text('no'.tr(),
-                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onPrimary)),
+                  child: Text('no'.tr()),
                 )
               ],
             )

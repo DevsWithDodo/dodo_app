@@ -56,10 +56,7 @@ class _ShareGroupDialogState extends State<ShareGroupDialog> {
                   subject: 'invitation_to_lender'.tr(),
                 );
               },
-              child: Icon(
-                Icons.share,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
+              child: Icon(Icons.share),
             ),
           ],
         ),

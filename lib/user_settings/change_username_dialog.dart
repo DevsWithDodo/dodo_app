@@ -32,8 +32,8 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
   }
 
   void _onUpdateUsername() {
-    Navigator.pushAndRemoveUntil(
-        context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
     _usernameController.text = '';
     // clearAllCache();
   }
@@ -52,10 +52,8 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
             children: <Widget>[
               Text(
                 'change_username'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
               SizedBox(
@@ -103,10 +101,7 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
                             context: context);
                       }
                     },
-                    child: Icon(
-                      Icons.check,
-                      color: Theme.of(context).colorScheme.onSecondary,
-                    ),
+                    child: Icon(Icons.check),
                   ),
                 ],
               ),

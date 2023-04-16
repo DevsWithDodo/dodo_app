@@ -37,10 +37,7 @@ class IAPPNotSupportedDialog extends StatelessWidget {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Icon(
-                    Icons.check,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
+                  child: Icon(Icons.check),
                 ),
               ],
             ),

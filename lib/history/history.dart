@@ -297,51 +297,25 @@ class _HistoryState extends State<History> {
                                 ),
                               ),
                               Visibility(
-                                  visible: snapshot.data!.length > 5,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(top: 10),
-                                    child: GradientButton(
-                                      useSecondary: true,
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                AllHistoryRoute(
-                                                    startingIndex:
-                                                        _selectedIndex),
-                                          ),
-                                        );
-                                      },
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.more_horiz,
-                                            size: 18,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSecondary,
-                                          ),
-                                          SizedBox(
-                                            width: 8,
-                                          ),
-                                          Text(
-                                            'more'.tr(),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelLarge!
-                                                .copyWith(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onSecondary),
-                                          ),
-                                          SizedBox(
-                                            width: 8,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ))
+                                visible: snapshot.data!.length > 5,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: GradientButton.icon(
+                                    useSecondary: true,
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => AllHistoryRoute(
+                                              startingIndex: _selectedIndex),
+                                        ),
+                                      );
+                                    },
+                                    icon: Icon(Icons.more_horiz),
+                                    label: Text('more'.tr()),
+                                  ),
+                                ),
+                              )
                             ],
                           );
                         } else {
@@ -390,11 +364,10 @@ class _HistoryState extends State<History> {
                                         _generatePayments(snapshot.data!)),
                               ),
                               Visibility(
-                                //TODO: merge two buttons
                                 visible: (snapshot.data as List).length > 5,
                                 child: Padding(
                                   padding: const EdgeInsets.all(10),
-                                  child: GradientButton(
+                                  child: GradientButton.icon(
                                     useSecondary: true,
                                     onPressed: () {
                                       Navigator.push(
@@ -406,29 +379,8 @@ class _HistoryState extends State<History> {
                                         ),
                                       );
                                     },
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.more_horiz,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSecondary,
-                                        ),
-                                        SizedBox(
-                                          width: 4,
-                                        ),
-                                        Text(
-                                          'more'.tr(),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelLarge!
-                                              .copyWith(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onSecondary),
-                                        ),
-                                      ],
-                                    ),
+                                    icon: Icon(Icons.more_horiz),
+                                    label: Text('more'.tr()),
                                   ),
                                 ),
                               )

@@ -147,42 +147,23 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              GradientButton(
-                  onPressed: () {
-                    showDialog(
-                            builder: (context) => ModifyPaymentDialog(
-                                  savedPayment: widget.data,
-                                ),
-                            context: context)
-                        .then((value) {
-                      if (value ?? false) {
-                        Navigator.pop(context, 'deleted');
-                      }
-                    });
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.edit,
-                          color: Theme.of(context).colorScheme.onPrimary),
-                      SizedBox(
-                        width: 3,
-                      ),
-                      Flexible(
-                        child: Text(
-                          'modify'.tr(),
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge!
-                              .copyWith(
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary),
-                          overflow: TextOverflow.clip,
-                        ),
-                      ),
-                    ],
-                  )),
-              GradientButton(
+              GradientButton.icon(
+                onPressed: () {
+                  showDialog(
+                          builder: (context) => ModifyPaymentDialog(
+                                savedPayment: widget.data,
+                              ),
+                          context: context)
+                      .then((value) {
+                    if (value ?? false) {
+                      Navigator.pop(context, 'deleted');
+                    }
+                  });
+                },
+                icon: Icon(Icons.edit),
+                label: Text('modify'.tr()),
+              ),
+              GradientButton.icon(
                 onPressed: () {
                   showDialog(
                     builder: (context) => ConfirmChoiceDialog(
@@ -194,30 +175,14 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                       showDialog(
                           builder: (context) => FutureSuccessDialog(
                                 future: _deletePayment(widget.data!.id),
-                                dataTrueText: 'delete_scf',
-                                onDataTrue: () {
-                                  _onDeletePayment();
-                                },
                               ),
                           barrierDismissible: false,
                           context: context);
                     }
                   });
                 },
-                child: Row(
-                  children: [
-                    Icon(Icons.delete,
-                        color: Theme.of(context).colorScheme.onPrimary),
-                    SizedBox(
-                      width: 3,
-                    ),
-                    Text(
-                      'revoke'.tr(),
-                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onPrimary),
-                    ),
-                  ],
-                ),
+                icon: Icon(Icons.delete),
+                label: Text('delete'.tr()),
               )
             ],
           ),

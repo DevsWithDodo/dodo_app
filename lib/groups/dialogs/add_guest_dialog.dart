@@ -21,9 +21,14 @@ class _AddGuestDialogState extends State<AddGuestDialog> {
   var _nicknameFormKey = GlobalKey<FormState>();
   Future<bool> _addGuest(String username) async {
     try {
-      Map<String, dynamic> body = {"language": context.locale.languageCode, "username": username};
+      Map<String, dynamic> body = {
+        "language": context.locale.languageCode,
+        "username": username
+      };
       await httpPost(
-          uri: '/groups/' + currentGroupId.toString() + '/add_guest', context: context, body: body);
+          uri: '/groups/' + currentGroupId.toString() + '/add_guest',
+          context: context,
+          body: body);
       Future.delayed(delayTime()).then((value) => _onAddGuest());
       return true;
     } catch (_) {
@@ -33,8 +38,8 @@ class _AddGuestDialogState extends State<AddGuestDialog> {
 
   Future<void> _onAddGuest() async {
     await clearGroupCache();
-    Navigator.pushAndRemoveUntil(
-        context, MaterialPageRoute(builder: (context) => MainPage()), (route) => false);
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => MainPage()), (route) => false);
   }
 
   @override
@@ -90,10 +95,7 @@ class _AddGuestDialogState extends State<AddGuestDialog> {
               children: [
                 GradientButton(
                   onPressed: _buttonPush,
-                  child: Icon(
-                    Icons.check,
-                    color: Theme.of(context).colorScheme.onSecondary,
-                  ),
+                  child: Icon(Icons.check),
                 ),
               ],
             ),

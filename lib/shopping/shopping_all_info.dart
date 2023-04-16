@@ -126,7 +126,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      GradientButton(
+                      GradientButton.icon(
                         onPressed: () {
                           showDialog<ShoppingRequest>(
                             builder: (context) => EditRequestDialog(
@@ -143,25 +143,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                             }
                           });
                         },
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit,
-                                color: Theme.of(context).colorScheme.onPrimary),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'modify'.tr(),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimary),
-                            ),
-                          ],
-                        ),
+                        icon: Icon(Icons.edit),
+                        label: Text('modify'.tr()),
                       ),
                     ],
                   ),
@@ -171,7 +154,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      GradientButton(
+                      GradientButton.icon(
                         onPressed: () {
                           showDialog(
                             builder: (context) => FutureSuccessDialog(
@@ -182,25 +165,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                             context: context,
                           );
                         },
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.delete,
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
-                            SizedBox(width: 5),
-                            Text(
-                              'delete'.tr(),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimary,
-                                  ),
-                            ),
-                          ],
-                        ),
+                        icon: Icon(Icons.delete),
+                        label: Text('delete'.tr()),
                       ),
                     ],
                   ),
@@ -217,7 +183,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      GradientButton(
+                      GradientButton.icon(
                         onPressed: () {
                           showDialog(
                             builder: (context) => FutureSuccessDialog(
@@ -229,27 +195,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                             context: context,
                           );
                         },
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.check,
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'remove_from_list'.tr(),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimary,
-                                  ),
-                            ),
-                          ],
-                        ),
+                        icon: Icon(Icons.check),
+                        label: Text('remove_from_list'.tr()),
                       ),
                     ],
                   ),
@@ -259,7 +206,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      GradientButton(
+                      GradientButton.icon(
                         onPressed: () {
                           showDialog<bool>(
                             builder: (context) => FutureSuccessDialog(
@@ -282,25 +229,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                             }
                           });
                         },
-                        child: Row(
-                          children: [
-                            Icon(Icons.attach_money,
-                                color: Theme.of(context).colorScheme.onPrimary),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'add_as_expense'.tr(),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimary,
-                                  ),
-                            ),
-                          ],
-                        ),
+                        icon: Icon(Icons.attach_money),
+                        label: Text('add_as_expense'.tr()),
                       ),
                     ],
                   ),

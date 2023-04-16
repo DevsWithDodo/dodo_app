@@ -277,12 +277,7 @@ class _JoinGroupState extends State<JoinGroup> {
                                           MainAxisAlignment.center,
                                       children: [
                                         GradientButton(
-                                          child: Icon(
-                                            Icons.qr_code_scanner,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onPrimary,
-                                          ),
+                                          child: Icon(Icons.qr_code_scanner),
                                           onPressed: () async {
                                             if (await Permission.camera
                                                 .request()
@@ -375,14 +370,7 @@ class _JoinGroupState extends State<JoinGroup> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   GradientButton(
-                                    child: Text('join_group'.tr(),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelLarge!
-                                            .copyWith(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onPrimary)),
+                                    child: Text('join_group'.tr()),
                                     onPressed: () {
                                       if (_formKey.currentState!.validate()) {
                                         String token = _tokenController.text;
@@ -392,55 +380,43 @@ class _JoinGroupState extends State<JoinGroup> {
                                             _nicknameController.text
                                                 .substring(1);
                                         showDialog(
-                                            builder: (context) =>
-                                                FutureSuccessDialog(
-                                                  future: _joinGroup(
-                                                      token, nickname),
-                                                  dataTrueText: 'join_scf',
-                                                  dataFalse: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Flexible(
-                                                          child: Text(
-                                                        'approve_still_needed'
-                                                            .tr(),
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyLarge!
-                                                            .copyWith(
-                                                                color: Colors
-                                                                    .white),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                      )),
-                                                      SizedBox(
-                                                        height: 15,
-                                                      ),
-                                                      Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          GradientButton(
-                                                            child: Icon(
-                                                                Icons.check,
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .onPrimary),
-                                                            onPressed: () {
-                                                              Navigator.pop(
-                                                                  context);
-                                                            },
-                                                          ),
-                                                        ],
-                                                      )
-                                                    ],
-                                                  ),
+                                          builder: (context) =>
+                                              FutureSuccessDialog(
+                                            future: _joinGroup(token, nickname),
+                                            dataFalse: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Flexible(
+                                                    child: Text(
+                                                  'approve_still_needed'.tr(),
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyLarge!
+                                                      .copyWith(
+                                                          color: Colors.white),
+                                                  textAlign: TextAlign.center,
+                                                )),
+                                                SizedBox(
+                                                  height: 15,
                                                 ),
-                                            barrierDismissible: false,
-                                            context: context);
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    GradientButton(
+                                                      child: Icon(Icons.check),
+                                                      onPressed: () {
+                                                        Navigator.pop(context);
+                                                      },
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                          barrierDismissible: false,
+                                          context: context,
+                                        );
                                       }
                                     },
                                     // color: Theme.of(context).colorScheme.secondary,
@@ -486,14 +462,7 @@ class _JoinGroupState extends State<JoinGroup> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 GradientButton(
-                                  child: Text('create_group'.tr(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelLarge!
-                                          .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimary)),
+                                  child: Text('create_group'.tr()),
                                   onPressed: () {
                                     Navigator.push(
                                         context,

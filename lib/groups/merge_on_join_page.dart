@@ -62,11 +62,7 @@ class _MergeOnJoinPageState extends State<MergeOnJoinPage> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text(
-                    'skip'.tr(),
-                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimary),
-                  ),
+                  child: Text('skip'.tr()),
                 ),
                 GradientButton(
                   disabled: _selectedMember == null,
@@ -78,13 +74,7 @@ class _MergeOnJoinPageState extends State<MergeOnJoinPage> {
                       },
                     );
                   },
-                  child: Text(
-                    'merge'.tr(),
-                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                        color: _selectedMember == null
-                            ? Colors.white
-                            : Theme.of(context).colorScheme.onPrimary),
-                  ),
+                  child: Text('merge'.tr()),
                 ),
               ],
             )

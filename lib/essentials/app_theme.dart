@@ -154,10 +154,12 @@ class AppTheme {
     ),
     'whiteGradientDarkTheme':
         generateThemeData(Color.fromARGB(255, 253, 251, 251), Brightness.dark),
-    'rainbowGradientLightTheme':
-        generateThemeData(Colors.purple, Brightness.light, themeName: 'rainbowGradientLightTheme'),
-    'rainbowGradientDarkTheme':
-        generateThemeData(Colors.purple, Brightness.dark, themeName: 'rainbowGradientDarkTheme'),
+    'rainbowGradientLightTheme': generateThemeData(
+        Colors.purple, Brightness.light,
+        themeName: 'rainbowGradientLightTheme'),
+    'rainbowGradientDarkTheme': generateThemeData(
+        Colors.purple, Brightness.dark,
+        themeName: 'rainbowGradientDarkTheme'),
   };
 
   static List<String> simpleColorThemes = [
@@ -279,6 +281,27 @@ class AppTheme {
     ],
   };
 
+  static Color textColorOnGradient(
+    String themeName, {
+    bool useSecondary = false,
+    bool useTertiaryContainer = false,
+    bool usePrimaryContainer = false,
+    bool useSecondaryContainer = false,
+  }) {
+    return gradientColors.keys.contains(themeName)
+        ? AppTheme.themes[themeName]!.colorScheme.onPrimary
+        : useSecondary
+            ? AppTheme.themes[themeName]!.colorScheme.onSecondary
+            : useTertiaryContainer
+                ? AppTheme.themes[themeName]!.colorScheme.onTertiaryContainer
+                : usePrimaryContainer
+                    ? AppTheme.themes[themeName]!.colorScheme.onPrimaryContainer
+                    : useSecondaryContainer
+                        ? AppTheme
+                            .themes[themeName]!.colorScheme.onSecondaryContainer
+                        : AppTheme.themes[themeName]!.colorScheme.onPrimary;
+  }
+
   static Gradient gradientFromTheme(
     String? themeName, {
     bool useSecondary = false,
@@ -311,13 +334,17 @@ class AppTheme {
                   ])
                 : useSecondaryContainer
                     ? LinearGradient(colors: [
-                        AppTheme.themes[themeName]!.colorScheme.secondaryContainer,
-                        AppTheme.themes[themeName]!.colorScheme.secondaryContainer
+                        AppTheme
+                            .themes[themeName]!.colorScheme.secondaryContainer,
+                        AppTheme
+                            .themes[themeName]!.colorScheme.secondaryContainer
                       ])
                     : useTertiaryContainer
                         ? LinearGradient(colors: [
-                            AppTheme.themes[themeName]!.colorScheme.tertiaryContainer,
-                            AppTheme.themes[themeName]!.colorScheme.tertiaryContainer
+                            AppTheme.themes[themeName]!.colorScheme
+                                .tertiaryContainer,
+                            AppTheme.themes[themeName]!.colorScheme
+                                .tertiaryContainer
                           ])
                         : LinearGradient(colors: [
                             AppTheme.themes[themeName]!.colorScheme.primary,
@@ -335,7 +362,8 @@ class AppTheme {
       ColorScheme? newColorScheme;
       switch (themeName) {
         case 'plumGradientDarkTheme':
-          newColorScheme = colorScheme.copyWith(onPrimary: Color.fromARGB(255, 40, 1, 92));
+          newColorScheme =
+              colorScheme.copyWith(onPrimary: Color.fromARGB(255, 40, 1, 92));
           break;
         case 'endlessGradientDarkTheme':
           newColorScheme = colorScheme.copyWith(onPrimary: Color(0xff00241A));
@@ -458,7 +486,8 @@ class AppTheme {
           )
           .copyWith(colorScheme: newColorScheme);
     }
-    return ThemeData.from(colorScheme: colorScheme, useMaterial3: true).copyWith(
+    return ThemeData.from(colorScheme: colorScheme, useMaterial3: true)
+        .copyWith(
       cardTheme: CardTheme(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
@@ -480,7 +509,8 @@ class AppTheme {
     );
   }
 
-  static void addDynamicThemes(ColorScheme lightScheme, ColorScheme darkScheme) {
+  static void addDynamicThemes(
+      ColorScheme lightScheme, ColorScheme darkScheme) {
     try {
       AppTheme.themes['lightDynamic'] = ThemeData.from(
         colorScheme: lightScheme,

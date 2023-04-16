@@ -134,8 +134,7 @@ class _StatisticsDataExportState extends State<StatisticsDataExport> {
                           ),
                           SizedBox(height: 10),
                           GradientButton(
-                            child: Icon(Icons.show_chart,
-                                color: Theme.of(context).colorScheme.onPrimary),
+                            child: Icon(Icons.show_chart),
                             onPressed: () {
                               if (statisticsEnabled) {
                                 Navigator.push(
@@ -162,8 +161,7 @@ class _StatisticsDataExportState extends State<StatisticsDataExport> {
                           ),
                           SizedBox(height: 10),
                           GradientButton(
-                            child: Icon(Icons.download,
-                                color: Theme.of(context).colorScheme.onPrimary),
+                            child: Icon(Icons.download),
                             onPressed: () {
                               showDialog(
                                 context: context,

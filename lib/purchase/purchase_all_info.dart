@@ -157,7 +157,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              GradientButton(
+              GradientButton.icon(
                 onPressed: () {
                   showDialog(
                     builder: (context) => ModifyPurchaseDialog(
@@ -170,22 +170,10 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                     }
                   });
                 },
-                child: Row(
-                  children: [
-                    Icon(Icons.edit,
-                        color: Theme.of(context).colorScheme.onPrimary),
-                    SizedBox(
-                      width: 3,
-                    ),
-                    Text(
-                      'modify'.tr(),
-                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onPrimary),
-                    ),
-                  ],
-                ),
+                icon: Icon(Icons.edit),
+                label: Text('modify'.tr()),
               ),
-              GradientButton(
+              GradientButton.icon(
                 onPressed: () {
                   showDialog(
                           builder: (context) => ConfirmChoiceDialog(
@@ -207,20 +195,8 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                     }
                   });
                 },
-                child: Row(
-                  children: [
-                    Icon(Icons.delete,
-                        color: Theme.of(context).colorScheme.onPrimary),
-                    SizedBox(
-                      width: 3,
-                    ),
-                    Text(
-                      'revoke'.tr(),
-                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onPrimary),
-                    ),
-                  ],
-                ),
+                icon: Icon(Icons.delete),
+                label: Text('delete'.tr()),
               ),
             ],
           )

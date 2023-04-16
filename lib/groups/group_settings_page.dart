@@ -207,10 +207,7 @@ class _GroupSettingState extends State<GroupSettings> {
                   children: [
                     GradientButton(
                       useSecondary: true,
-                      child: Icon(
-                        Icons.edit,
-                        color: Theme.of(context).colorScheme.onSecondary,
-                      ),
+                      child: Icon(Icons.edit),
                       onPressed: () {
                         showDialog(
                             builder: (context) => RenameGroupDialog(),
@@ -261,10 +258,7 @@ class _GroupSettingState extends State<GroupSettings> {
                   children: [
                     GradientButton(
                       useSecondary: true,
-                      child: Icon(
-                        Icons.monetization_on,
-                        color: Theme.of(context).colorScheme.onSecondary,
-                      ),
+                      child: Icon(Icons.monetization_on),
                       onPressed: () {
                         showDialog(
                             builder: (context) => ChangeGroupCurrencyDialog(),

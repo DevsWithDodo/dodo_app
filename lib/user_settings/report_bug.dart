@@ -14,10 +14,8 @@ class ReportBug extends StatelessWidget {
             Center(
               child: Text(
                 'report_bug'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -26,23 +24,19 @@ class ReportBug extends StatelessWidget {
             ),
             Center(
                 child: Text(
-                  'report_bug_explanation'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleSmall!
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                  textAlign: TextAlign.center,
-                )),
+              'report_bug_explanation'.tr(),
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+              textAlign: TextAlign.center,
+            )),
             SizedBox(
               height: 20,
             ),
             GradientButton(
-              child: Icon(
-                Icons.bug_report,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
+              child: Icon(Icons.bug_report),
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ReportABugPage()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ReportABugPage()));
               },
             )
           ],

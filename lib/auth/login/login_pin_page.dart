@@ -80,19 +80,13 @@ class _LoginPinPageState extends State<LoginPinPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GradientButton(
-                        child: Icon(
-                          Icons.arrow_left,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
+                        child: Icon(Icons.arrow_left),
                         onPressed: () {
                           Navigator.pop(context);
                         },
                       ),
                       GradientButton(
-                        child: Icon(
-                          Icons.send,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
+                        child: Icon(Icons.send),
                         onPressed: () {
                           if (_pin.length == 4) {
                             _pushedButton();

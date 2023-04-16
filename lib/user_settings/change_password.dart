@@ -22,10 +22,8 @@ class _ChangePasswordState extends State<ChangePassword> {
             Center(
               child: Text(
                 (usesPassword! ? 'change_password' : 'change_pin').tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -34,11 +32,12 @@ class _ChangePasswordState extends State<ChangePassword> {
             ),
             Center(
                 child: Text(
-              (usesPassword! ? 'change_password_explanation' : 'change_pin_explanation').tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              (usesPassword!
+                      ? 'change_password_explanation'
+                      : 'change_pin_explanation')
+                  .tr(),
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             )),
             SizedBox(
@@ -48,12 +47,11 @@ class _ChangePasswordState extends State<ChangePassword> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GradientButton(
-                  child: Icon(
-                    Icons.edit,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
+                  child: Icon(Icons.edit),
                   onPressed: () {
-                    showDialog(builder: (context) => ChangePasswordDialog(), context: context);
+                    showDialog(
+                        builder: (context) => ChangePasswordDialog(),
+                        context: context);
                   },
                 ),
               ],

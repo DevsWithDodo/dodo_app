@@ -21,24 +21,20 @@ class RateAppDialog extends StatelessWidget {
       },
       actions: Center(
         child: GradientButton(
-          child: Text(
-            'to_store'.tr(),
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge!
-                .copyWith(color: Theme.of(context).colorScheme.onPrimary),
-          ),
+          child: Text('to_store'.tr()),
           onPressed: () {
             String url = "";
             switch (Platform.operatingSystem) {
               case "android":
-                url = "market://details?id=csocsort.hu.machiato32.csocsort_szamla";
+                url =
+                    "market://details?id=csocsort.hu.machiato32.csocsort_szamla";
                 break;
               case "windows":
                 url = "ms-windows-store://pdp/?productid=9NVB4CZJDSQ7";
                 break;
               case "ios":
-                url = "itms-apps://itunes.apple.com/app/id1558223634?action=write-review";
+                url =
+                    "itms-apps://itunes.apple.com/app/id1558223634?action=write-review";
                 break;
               default:
                 url =

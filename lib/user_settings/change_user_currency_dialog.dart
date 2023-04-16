@@ -11,7 +11,8 @@ import '../groups/main_group_page.dart';
 
 class ChangeUserCurrencyDialog extends StatefulWidget {
   @override
-  _ChangeUserCurrencyDialogState createState() => _ChangeUserCurrencyDialogState();
+  _ChangeUserCurrencyDialogState createState() =>
+      _ChangeUserCurrencyDialogState();
 }
 
 class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
@@ -34,8 +35,8 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
     await clearGroupCache();
     await deleteCache(uri: generateUri(GetUriKeys.groups));
     await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum));
-    Navigator.pushAndRemoveUntil(
-        context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
   }
 
   @override
@@ -48,10 +49,8 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
           children: <Widget>[
             Text(
               'change_group_currency'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -85,10 +84,7 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
                         barrierDismissible: false,
                         context: context);
                   },
-                  child: Icon(
-                    Icons.check,
-                    color: Theme.of(context).colorScheme.onSecondary,
-                  ),
+                  child: Icon(Icons.check),
                 ),
               ],
             ),

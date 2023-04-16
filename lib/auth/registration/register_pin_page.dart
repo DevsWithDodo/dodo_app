@@ -63,10 +63,7 @@ class _RegisterPinPageState extends State<RegisterPinPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GradientButton(
-                        child: Icon(
-                          Icons.arrow_left,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
+                        child: Icon(Icons.arrow_left),
                         onPressed: () {
                           if (_isPinInput) {
                             Navigator.pop(context);
@@ -78,10 +75,7 @@ class _RegisterPinPageState extends State<RegisterPinPage> {
                         },
                       ),
                       GradientButton(
-                        child: Icon(
-                          Icons.arrow_right,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
+                        child: Icon(Icons.arrow_right),
                         onPressed: () {
                           if (_isPinInput) {
                             if (_pin.length == 4) {

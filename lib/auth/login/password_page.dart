@@ -66,14 +66,17 @@ class _PasswordPageState extends State<PasswordPage> {
                           controller: _passwordController,
                           decoration: InputDecoration(
                             hintText: 'password'.tr(),
-                            helperText: _passwordController.text != '' ? 'password'.tr() : null,
+                            helperText: _passwordController.text != ''
+                                ? 'password'.tr()
+                                : null,
                             prefixIcon: Icon(
                               Icons.password,
                             ),
                           ),
                           obscureText: true,
                           inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp('[A-Za-z0-9]')),
+                            FilteringTextInputFormatter.allow(
+                                RegExp('[A-Za-z0-9]')),
                           ],
                           onChanged: (value) => setState(() {}),
                           onFieldSubmitted: (value) => _pushButton(),
@@ -107,19 +110,13 @@ class _PasswordPageState extends State<PasswordPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GradientButton(
-                        child: Icon(
-                          Icons.arrow_left,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
+                        child: Icon(Icons.arrow_left),
                         onPressed: () {
                           Navigator.pop(context);
                         },
                       ),
                       GradientButton(
-                        child: Icon(
-                          Icons.send,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
+                        child: Icon(Icons.send),
                         onPressed: _pushButton,
                       ),
                     ],

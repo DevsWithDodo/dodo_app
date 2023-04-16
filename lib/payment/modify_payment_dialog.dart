@@ -120,8 +120,7 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog>
                           _index--;
                         });
                       },
-                      child: Icon(Icons.navigate_before,
-                          color: Theme.of(context).colorScheme.onPrimary),
+                      child: Icon(Icons.navigate_before),
                     ),
                   ),
                   GradientButton(
@@ -160,8 +159,8 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog>
                         }
                       }
                     },
-                    child: Icon(_index == 3 ? Icons.check : Icons.navigate_next,
-                        color: Theme.of(context).colorScheme.onPrimary),
+                    child:
+                        Icon(_index == 3 ? Icons.check : Icons.navigate_next),
                   ),
                 ],
               ),

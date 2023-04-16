@@ -18,7 +18,8 @@ class PersonalisedAdsPage extends StatefulWidget {
   final String? pin;
   final String? defaultCurrency;
 
-  PersonalisedAdsPage({this.inviteUrl, this.username, this.pin, this.defaultCurrency});
+  PersonalisedAdsPage(
+      {this.inviteUrl, this.username, this.pin, this.defaultCurrency});
 
   @override
   State<PersonalisedAdsPage> createState() => _PersonalisedAdsPageState();
@@ -60,11 +61,14 @@ class _PersonalisedAdsPageState extends State<PersonalisedAdsPage> {
                           children: [
                             Flexible(
                               child: TextButton(
-                                onPressed: () =>
-                                    launchUrlString('https://policies.google.com/privacy'),
+                                onPressed: () => launchUrlString(
+                                    'https://policies.google.com/privacy'),
                                 child: Text(
                                   'personalised_ads'.tr(),
-                                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge!
+                                      .copyWith(
                                         decoration: TextDecoration.underline,
                                       ),
                                   textAlign: TextAlign.center,
@@ -72,7 +76,8 @@ class _PersonalisedAdsPageState extends State<PersonalisedAdsPage> {
                               ),
                             ),
                             Switch(
-                              onChanged: (newValue) => setState(() => _personalisedAds = newValue),
+                              onChanged: (newValue) =>
+                                  setState(() => _personalisedAds = newValue),
                               value: _personalisedAds,
                             )
                           ],
@@ -87,25 +92,19 @@ class _PersonalisedAdsPageState extends State<PersonalisedAdsPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GradientButton(
-                        child: Icon(
-                          Icons.arrow_left,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
+                        child: Icon(Icons.arrow_left),
                         onPressed: () {
                           Navigator.pop(context);
                         },
                       ),
                       GradientButton(
-                        child: Icon(
-                          Icons.send,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
+                        child: Icon(Icons.send),
                         onPressed: () {
                           showDialog(
                             context: context,
                             builder: (context) => FutureSuccessDialog(
-                              future:
-                                  _register(widget.username, widget.pin, widget.defaultCurrency),
+                              future: _register(widget.username, widget.pin,
+                                  widget.defaultCurrency),
                             ),
                           );
                         },
@@ -132,7 +131,8 @@ class _PersonalisedAdsPageState extends State<PersonalisedAdsPage> {
         (r) => false);
   }
 
-  Future<bool> _register(String? username, String? password, String? currency) async {
+  Future<bool> _register(
+      String? username, String? password, String? currency) async {
     try {
       dynamic token;
       if (isFirebasePlatformEnabled) {

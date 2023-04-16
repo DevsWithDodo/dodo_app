@@ -25,10 +25,8 @@ class _ConfirmLeaveDialogState extends State<ConfirmLeaveDialog> {
           children: <Widget>[
             Text(
               widget.title.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -36,10 +34,8 @@ class _ConfirmLeaveDialogState extends State<ConfirmLeaveDialog> {
             ),
             Text(
               widget.choice.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -52,21 +48,13 @@ class _ConfirmLeaveDialogState extends State<ConfirmLeaveDialog> {
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
-                  child: Text('yes'.tr(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelLarge!
-                          .copyWith(color: Theme.of(context).colorScheme.onPrimary)),
+                  child: Text('yes'.tr()),
                 ),
                 GradientButton(
                   onPressed: () {
                     Navigator.pop(context, false);
                   },
-                  child: Text('no'.tr(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelLarge!
-                          .copyWith(color: Theme.of(context).colorScheme.onPrimary)),
+                  child: Text('no'.tr()),
                 )
               ],
             )

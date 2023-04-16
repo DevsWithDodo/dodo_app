@@ -145,10 +145,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GradientButton(
-                  child: Icon(
-                    Icons.done,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
+                  child: Icon(Icons.done),
                   onPressed: () {
                     if (_selectedMember != null) {
                       showDialog(

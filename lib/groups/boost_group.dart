@@ -109,10 +109,7 @@ class _BoostGroupState extends State<BoostGroup> {
                             SizedBox(height: 10),
                             GradientButton(
                               useSecondary: true,
-                              child: Icon(Icons.insights,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSecondary),
+                              child: Icon(Icons.insights),
                               onPressed: () {
                                 if (snapshot.data!['available_boosts'] == 0) {
                                   if (isIAPPlatformEnabled) {

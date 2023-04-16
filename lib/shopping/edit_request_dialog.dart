@@ -115,11 +115,9 @@ class _EditRequestDialogState extends State<EditRequestDialog> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GradientButton(
-                    onPressed: _buttonPressed,
-                    child: Icon(
-                      Icons.check,
-                      color: Theme.of(context).colorScheme.onPrimary,
-                    )),
+                  onPressed: _buttonPressed,
+                  child: Icon(Icons.check),
+                ),
               ],
             ),
           ],

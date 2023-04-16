@@ -123,8 +123,7 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog>
                           _index--;
                         });
                       },
-                      child: Icon(Icons.navigate_before,
-                          color: Theme.of(context).colorScheme.onPrimary),
+                      child: Icon(Icons.navigate_before),
                     ),
                   ),
                   GradientButton(
@@ -168,8 +167,8 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog>
                         }
                       }
                     },
-                    child: Icon(_index == 3 ? Icons.check : Icons.navigate_next,
-                        color: Theme.of(context).colorScheme.onPrimary),
+                    child:
+                        Icon(_index == 3 ? Icons.check : Icons.navigate_next),
                   ),
                 ],
               ),

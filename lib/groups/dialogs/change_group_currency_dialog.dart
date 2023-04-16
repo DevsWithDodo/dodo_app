@@ -11,7 +11,8 @@ import '../main_group_page.dart';
 
 class ChangeGroupCurrencyDialog extends StatefulWidget {
   @override
-  _ChangeGroupCurrencyDialogState createState() => _ChangeGroupCurrencyDialogState();
+  _ChangeGroupCurrencyDialogState createState() =>
+      _ChangeGroupCurrencyDialogState();
 }
 
 class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
@@ -21,7 +22,10 @@ class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
     try {
       Map<String, dynamic> body = {"currency": code};
 
-      await httpPut(uri: '/groups/' + currentGroupId.toString(), context: context, body: body);
+      await httpPut(
+          uri: '/groups/' + currentGroupId.toString(),
+          context: context,
+          body: body);
       saveGroupCurrency(code);
       Future.delayed(delayTime()).then((value) => _onUpdateGroupCurrency());
       return true;
@@ -34,8 +38,8 @@ class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
     await clearGroupCache();
     await deleteCache(uri: generateUri(GetUriKeys.groups));
     await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum));
-    Navigator.pushAndRemoveUntil(
-        context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
   }
 
   @override
@@ -48,10 +52,8 @@ class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
           children: <Widget>[
             Text(
               'change_group_currency'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -85,10 +87,7 @@ class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
                         barrierDismissible: false,
                         context: context);
                   },
-                  child: Icon(
-                    Icons.check,
-                    color: Theme.of(context).colorScheme.onSecondary,
-                  ),
+                  child: Icon(Icons.check),
                 ),
               ],
             ),

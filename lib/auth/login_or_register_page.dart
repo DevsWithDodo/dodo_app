@@ -91,18 +91,23 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                       setState(() {
                         if (!useTest) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            backgroundColor: Theme.of(context).colorScheme.secondary,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
                             duration: Duration(hours: 10),
                             content: Text(
                               'Test Mode',
                               style: Theme.of(context)
                                   .textTheme
                                   .labelLarge!
-                                  .copyWith(color: Theme.of(context).colorScheme.onSecondary),
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSecondary),
                             ),
                             action: SnackBarAction(
                               label: 'Back to Normal Mode',
-                              textColor: Theme.of(context).colorScheme.onSecondary,
+                              textColor:
+                                  Theme.of(context).colorScheme.onSecondary,
                               onPressed: () {
                                 setState(() {
                                   useTest = !useTest;
@@ -125,7 +130,8 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
                         Theme.of(context).colorScheme.primary,
-                        currentThemeName!.toLowerCase().contains('dodo') && !kIsWeb
+                        currentThemeName.toLowerCase().contains('dodo') &&
+                                !kIsWeb
                             ? BlendMode.dst
                             : BlendMode.srcIn),
                     child: Image(
@@ -175,10 +181,6 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                 },
                 child: Text(
                   'login'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(color: Theme.of(context).colorScheme.onPrimary),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -194,11 +196,9 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                     ),
                   );
                 },
-                child: Text('register'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelLarge!
-                        .copyWith(color: Theme.of(context).colorScheme.onPrimary)),
+                child: Text(
+                  'register'.tr(),
+                ),
               ),
             ],
           ),

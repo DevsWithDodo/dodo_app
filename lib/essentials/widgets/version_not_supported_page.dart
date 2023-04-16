@@ -35,13 +35,7 @@ class VersionNotSupportedPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GradientButton(
-                  child: Text(
-                    'download_new_version'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelLarge!
-                        .copyWith(color: Theme.of(context).colorScheme.onPrimary),
-                  ),
+                  child: Text('download_new_version'.tr()),
                   onPressed: () {
                     launchUrlString('https://dodoapp.net');
                   },

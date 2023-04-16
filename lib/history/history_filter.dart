@@ -191,8 +191,7 @@ class _HistoryFilterState extends State<HistoryFilter> {
           SizedBox(height: 15),
           GradientButton(
             useSecondary: true,
-            child: Icon(Icons.check,
-                color: Theme.of(context).colorScheme.onSecondary),
+            child: Icon(Icons.check),
             onPressed: () => widget.onValuesChanged!(
                 _membersChosen!.first, _startDate, _endDate, _selectedCategory),
           ),

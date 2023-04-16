@@ -49,7 +49,7 @@ List<Payment> paymentsNeeded(List<Member> members) {
       }
     } while (memberCopy.where((member) => member.balance > 0).length > 0 &&
         memberCopy.where((member) => member.balance < 0).length > 0);
-
+    print(payments.first.takerNickname);
     return payments;
   } else {
     return payments;

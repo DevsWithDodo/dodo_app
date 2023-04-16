@@ -95,11 +95,7 @@ class _PaymentsNeededDialogState extends State<PaymentsNeededDialog> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text(
-                    'back'.tr(),
-                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimary),
-                  ),
+                  child: Text('back'.tr()),
                 ),
                 Visibility(
                   maintainSize: false,
@@ -118,10 +114,6 @@ class _PaymentsNeededDialogState extends State<PaymentsNeededDialog> {
                         builder: (context) {
                           return FutureSuccessDialog(
                             future: _postPayments(widget.payments),
-                            dataTrueText: 'payment_scf',
-                            onDataTrue: () {
-                              _onPostPayments();
-                            },
                           );
                         },
                       );

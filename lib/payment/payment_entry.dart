@@ -13,13 +13,15 @@ class PaymentEntry extends StatefulWidget {
   final bool isTappable;
   final Payment payment;
   final Function({bool purchase, bool payment})? onDelete;
-  final int? selectedMemberId;
-  const PaymentEntry({
+  late final int selectedMemberId;
+  PaymentEntry({
     required this.payment,
-    this.selectedMemberId,
+    selectedMemberId,
     this.onDelete,
     this.isTappable = true,
-  });
+  }) {
+    this.selectedMemberId = selectedMemberId ?? currentUserId;
+  }
 
   @override
   _PaymentEntryState createState() => _PaymentEntryState();

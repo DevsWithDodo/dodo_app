@@ -25,7 +25,9 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
     try {
       Map<String, dynamic> body = {"member_id": memberId, "nickname": nickname};
       await httpPut(
-          uri: '/groups/' + currentGroupId.toString() + '/members', context: context, body: body);
+          uri: '/groups/' + currentGroupId.toString() + '/members',
+          context: context,
+          body: body);
       Future.delayed(delayTime()).then((value) => _onUpdateNickname());
       return true;
     } catch (_) {
@@ -51,10 +53,8 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
             Center(
               child: Text(
                 'edit_nickname'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
             SizedBox(
@@ -92,10 +92,7 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
               children: [
                 GradientButton(
                   onPressed: _buttonPushed,
-                  child: Icon(
-                    Icons.check,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
+                  child: Icon(Icons.check),
                 ),
               ],
             ),
@@ -108,8 +105,8 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
   void _buttonPushed() {
     if (_nicknameFormKey.currentState!.validate()) {
       FocusScope.of(context).requestFocus(FocusNode());
-      String nickname =
-          _nicknameController.text[0].toUpperCase() + _nicknameController.text.substring(1);
+      String nickname = _nicknameController.text[0].toUpperCase() +
+          _nicknameController.text.substring(1);
       showDialog(
           builder: (context) => FutureSuccessDialog(
                 future: _updateNickname(nickname, widget.memberId),

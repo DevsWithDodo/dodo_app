@@ -13,7 +13,7 @@ class AppStateNotifier extends ChangeNotifier {
     this.themeName = themeName;
   }
 
-  void updateTheme(String? themeName, {ColorScheme? dynamicScheme}) {
+  void updateTheme(String themeName, {ColorScheme? dynamicScheme}) {
     this.theme = AppTheme.themes[themeName];
     currentThemeName = themeName;
     this.themeName = themeName;

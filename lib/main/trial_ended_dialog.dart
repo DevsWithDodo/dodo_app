@@ -13,10 +13,8 @@ class TrialEndedDialog extends StatelessWidget {
           children: <Widget>[
             Text(
               'trial_ended'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -24,10 +22,8 @@ class TrialEndedDialog extends StatelessWidget {
             ),
             Text(
               'trial_ended_explanation'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -37,20 +33,15 @@ class TrialEndedDialog extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Icon(
-                Icons.check,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
+              child: Icon(Icons.check),
             ),
             SizedBox(
               height: 10,
             ),
             Text(
               'trial_ended_explanation_2'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -64,8 +55,9 @@ class TrialEndedDialog extends StatelessWidget {
                     Navigator.pop(context);
                   },
                   child: ColorFiltered(
-                    colorFilter:
-                        ColorFilter.mode(Theme.of(context).colorScheme.onPrimary, BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.onPrimary,
+                        BlendMode.srcIn),
                     child: Image.asset(
                       'assets/dodo.png',
                       width: 25,

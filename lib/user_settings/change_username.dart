@@ -45,8 +45,7 @@ class _ChangeUsernameState extends State<ChangeUsername> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GradientButton(
-                    child: Icon(Icons.edit,
-                        color: Theme.of(context).colorScheme.onPrimary),
+                    child: Icon(Icons.edit),
                     onPressed: () {
                       showDialog(
                           builder: (context) => ChangeUsernameDialog(),

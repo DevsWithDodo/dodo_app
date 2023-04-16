@@ -16,7 +16,9 @@ class ColorPicker extends StatefulWidget {
 
 class _ColorPickerState extends State<ColorPicker> {
   List<Widget> _getDynamicColors({bool? enabled}) {
-    return AppTheme.themes.entries.where((element) => element.key.contains('Dynamic')).map((entry) {
+    return AppTheme.themes.entries
+        .where((element) => element.key.contains('Dynamic'))
+        .map((entry) {
       return ColorElement(
         theme: entry.value,
         themeName: entry.key,
@@ -67,10 +69,8 @@ class _ColorPickerState extends State<ColorPicker> {
             Center(
                 child: Text(
               'change_theme'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
             )),
             SizedBox(height: 10),
             Center(
@@ -90,20 +90,17 @@ class _ColorPickerState extends State<ColorPicker> {
             ),
             Text(
               'dual_tone_themes'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 18),
               textAlign: TextAlign.center,
             ),
             Visibility(
               visible: !useGradients,
               child: Text(
                 'gradient_available_in_paid_version'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -120,10 +117,9 @@ class _ColorPickerState extends State<ColorPicker> {
             ),
             Text(
               'gradient_themes'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 18),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -151,7 +147,8 @@ class _ColorPickerState extends State<ColorPicker> {
                   Text(
                     'dynamic_themes'.tr(),
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontSize: 18),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
@@ -159,10 +156,8 @@ class _ColorPickerState extends State<ColorPicker> {
                   ),
                   Text(
                     'dynamic_themes_explanation'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall!
-                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(
@@ -188,10 +183,15 @@ class _ColorPickerState extends State<ColorPicker> {
 
 class ColorElement extends StatefulWidget {
   final ThemeData? theme;
-  final String? themeName;
+  final String themeName;
   final bool? enabled;
   final bool dualColor;
-  const ColorElement({this.theme, this.themeName, this.enabled = true, this.dualColor = false});
+  const ColorElement({
+    this.theme,
+    required this.themeName,
+    this.enabled = true,
+    this.dualColor = false,
+  });
 
   @override
   _ColorElementState createState() => _ColorElementState();
@@ -215,12 +215,16 @@ class _ColorElementState extends State<ColorElement> {
         gradient: (widget.themeName == currentThemeName)
             ? widget.dualColor
                 ? LinearGradient(
-                    colors: [widget.theme!.colorScheme.primary, widget.theme!.colorScheme.secondary],
+                    colors: [
+                      widget.theme!.colorScheme.primary,
+                      widget.theme!.colorScheme.secondary
+                    ],
                     stops: [0.5, 0.5],
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
                   )
-                : AppTheme.gradientFromTheme(widget.themeName, useSecondary: true)
+                : AppTheme.gradientFromTheme(widget.themeName,
+                    useSecondary: true)
             : LinearGradient(colors: [Colors.transparent, Colors.transparent]),
         borderRadius: BorderRadius.circular(18),
       ),
@@ -228,13 +232,15 @@ class _ColorElementState extends State<ColorElement> {
         borderRadius: BorderRadius.circular(18),
         onTap: () {
           if (widget.enabled!) {
-            Provider.of<AppStateNotifier>(context, listen: false).updateTheme(widget.themeName);
+            Provider.of<AppStateNotifier>(context, listen: false)
+                .updateTheme(widget.themeName);
             _getPrefs().then((_prefs) {
               _prefs.setString('theme', widget.themeName!);
             });
             _postColor(widget.themeName);
           } else if (isIAPPlatformEnabled) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => InAppPurchasePage()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => InAppPurchasePage()));
           } else {
             showDialog(
               context: context,
@@ -249,13 +255,17 @@ class _ColorElementState extends State<ColorElement> {
           decoration: BoxDecoration(
             gradient: widget.dualColor
                 ? LinearGradient(
-                    colors: [widget.theme!.colorScheme.primary, widget.theme!.colorScheme.secondary],
+                    colors: [
+                      widget.theme!.colorScheme.primary,
+                      widget.theme!.colorScheme.secondary
+                    ],
                     stops: [0.5, 0.5],
                     begin: Alignment.topRight,
                     end: Alignment.bottomLeft,
                   )
                 : AppTheme.gradientFromTheme(widget.themeName),
-            border: Border.all(color: widget.theme!.colorScheme.surface, width: 6),
+            border:
+                Border.all(color: widget.theme!.colorScheme.surface, width: 6),
             borderRadius: BorderRadius.circular(18),
           ),
           child: SizedBox(

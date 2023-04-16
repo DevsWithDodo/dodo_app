@@ -18,10 +18,8 @@ class ChangeUserCurrency extends StatelessWidget {
             Center(
               child: Text(
                 'change_user_currency'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -31,10 +29,8 @@ class ChangeUserCurrency extends StatelessWidget {
             Center(
                 child: Text(
               'change_user_currency_explanation'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             )),
             SizedBox(
@@ -44,12 +40,11 @@ class ChangeUserCurrency extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GradientButton(
-                  child: Icon(
-                    Icons.edit,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
+                  child: Icon(Icons.edit),
                   onPressed: () {
-                    showDialog(builder: (context) => ChangeUserCurrencyDialog(), context: context);
+                    showDialog(
+                        builder: (context) => ChangeUserCurrencyDialog(),
+                        context: context);
                   },
                 ),
               ],

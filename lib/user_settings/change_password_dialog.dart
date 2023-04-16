@@ -23,7 +23,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   int _index = 0;
   List<TextFormField> textFields = <TextFormField>[];
 
-  Future<bool> _updatePassword(String oldPassword, String newPassword, String reminder) async {
+  Future<bool> _updatePassword(
+      String oldPassword, String newPassword, String reminder) async {
     try {
       Map<String, dynamic> body = {
         'old_password': oldPassword,
@@ -41,8 +42,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   }
 
   void _onUpdatePassword() {
-    Navigator.pushAndRemoveUntil(
-        context, MaterialPageRoute(builder: (context) => MainPage()), (route) => false);
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => MainPage()), (route) => false);
   }
 
   void initTextFields() {
@@ -89,7 +90,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           minimalLength(value, 4),
         ]),
         decoration: InputDecoration(
-          hintText: (usesPassword! ? 'new_password_confirm' : 'new_pin_confirm').tr(),
+          hintText:
+              (usesPassword! ? 'new_password_confirm' : 'new_pin_confirm').tr(),
           prefixIcon: Icon(
             Icons.password,
           ),
@@ -134,10 +136,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             children: <Widget>[
               Text(
                 (usesPassword! ? 'change_password' : 'change_pin').tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
               SizedBox(
@@ -161,10 +161,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                           _index--;
                         });
                       },
-                      child: Icon(
-                        Icons.arrow_left,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
+                      child: Icon(Icons.arrow_left),
                     ),
                   ),
                   GradientButton(
@@ -182,8 +179,9 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                                         _oldPasswordController.text,
                                         _newPasswordController.text,
                                         _passwordReminderController.text),
-                                    dataTrueText:
-                                        usesPassword! ? 'change_password_scf' : 'change_pin_scf',
+                                    dataTrueText: usesPassword!
+                                        ? 'change_password_scf'
+                                        : 'change_pin_scf',
                                     onDataTrue: () {
                                       _onUpdatePassword();
                                     },
@@ -193,10 +191,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                         }
                       }
                     },
-                    child: Icon(
-                      _index == 3 ? Icons.check : Icons.arrow_right,
-                      color: Theme.of(context).colorScheme.onPrimary,
-                    ),
+                    child: Icon(_index == 3 ? Icons.check : Icons.arrow_right),
                   ),
                 ],
               ),

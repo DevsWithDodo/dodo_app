@@ -26,8 +26,10 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
     try {
       Map<String, dynamic> body = {"name": groupName};
 
-      http.Response response =
-          await httpPut(uri: '/groups/' + currentGroupId.toString(), context: context, body: body);
+      http.Response response = await httpPut(
+          uri: '/groups/' + currentGroupId.toString(),
+          context: context,
+          body: body);
 
       Map<String, dynamic> decoded = jsonDecode(response.body);
       saveGroupName(decoded['group_name']);
@@ -39,8 +41,8 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
   }
 
   void _onUpdateGroupName() {
-    Navigator.pushAndRemoveUntil(
-        context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
+    Navigator.pushAndRemoveUntil(context,
+        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
     _groupNameController.text = '';
     clearGroupCache();
     deleteCache(uri: generateUri(GetUriKeys.groups));
@@ -58,10 +60,8 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
             children: <Widget>[
               Text(
                 'rename_group'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               SizedBox(
                 height: 10,
@@ -94,10 +94,7 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
                 children: [
                   GradientButton(
                     onPressed: _buttonPush,
-                    child: Icon(
-                      Icons.check,
-                      color: Theme.of(context).colorScheme.onSecondary,
-                    ),
+                    child: Icon(Icons.check),
                   ),
                 ],
               ),

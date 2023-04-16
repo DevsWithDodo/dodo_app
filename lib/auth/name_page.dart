@@ -68,14 +68,17 @@ class _NamePageState extends State<NamePage> {
                               isEmpty(value),
                               minimalLength(value, 3),
                               allowedRegEx(value, RegExp(r'[^a-z0-9.]+')),
-                              ...(_usernameTaken ? [throwError('username_taken'.tr())] : []),
+                              ...(_usernameTaken
+                                  ? [throwError('username_taken'.tr())]
+                                  : []),
                             ]),
                             onChanged: (value) => setState(() {}),
                             onFieldSubmitted: (value) => _buttonPush(),
                             controller: _usernameController,
                             decoration: InputDecoration(
                               hintText: 'username'.tr(),
-                              helperText: widget.isLogin && _usernameController.text != ''
+                              helperText: widget.isLogin &&
+                                      _usernameController.text != ''
                                   ? 'username'.tr()
                                   : null,
                               prefixIcon: Icon(
@@ -86,13 +89,17 @@ class _NamePageState extends State<NamePage> {
                                   : IconButton(
                                       onPressed: () {
                                         setState(() {
-                                          _usernameExplanationController.expanded =
-                                              !_usernameExplanationController.expanded;
+                                          _usernameExplanationController
+                                                  .expanded =
+                                              !_usernameExplanationController
+                                                  .expanded;
                                         });
                                       },
                                       icon: Icon(
                                         Icons.info_outline,
-                                        color: Theme.of(context).colorScheme.primary,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                       ),
                                     ),
                             ),
@@ -111,14 +118,18 @@ class _NamePageState extends State<NamePage> {
                                     onPressed: () {
                                       showDialog(
                                           context: context,
-                                          builder: (context) => ForgotPasswordDialog());
+                                          builder: (context) =>
+                                              ForgotPasswordDialog());
                                     },
                                     child: Text(
                                       'forgot_password'.tr(),
                                       style: Theme.of(context)
                                           .textTheme
                                           .labelLarge!
-                                          .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                                          .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface),
                                       textAlign: TextAlign.center,
                                     ),
                                   ),
@@ -141,25 +152,38 @@ class _NamePageState extends State<NamePage> {
                                     padding: EdgeInsets.only(left: 8, right: 8),
                                     child: Text(
                                       'username_explanation'.tr(),
-                                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurfaceVariant),
                                       textAlign: TextAlign.center,
                                     ),
                                   ),
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Flexible(
                                       child: TextButton(
                                         onPressed: () {
-                                          launchUrlString('https://dodoapp.net/privacy-policy');
+                                          launchUrlString(
+                                              'https://dodoapp.net/privacy-policy');
                                         },
                                         child: Text(
                                           'accept_privacy_policy'.tr() + '*',
-                                          style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                                              decoration: TextDecoration.underline,
-                                              color: Theme.of(context).colorScheme.onSurface),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelLarge!
+                                              .copyWith(
+                                                  decoration:
+                                                      TextDecoration.underline,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onSurface),
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
@@ -184,8 +208,13 @@ class _NamePageState extends State<NamePage> {
                                     padding: const EdgeInsets.only(left: 16),
                                     child: Text(
                                       'must_accept_privacy_policy'.tr(),
-                                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                            color: Theme.of(context).colorScheme.error,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .error,
                                           ),
                                     ),
                                   ),
@@ -202,10 +231,7 @@ class _NamePageState extends State<NamePage> {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: GradientButton(
-                        child: Icon(
-                          Icons.arrow_right,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
+                        child: Icon(Icons.arrow_right),
                         onPressed: _buttonPush,
                       ),
                     ),

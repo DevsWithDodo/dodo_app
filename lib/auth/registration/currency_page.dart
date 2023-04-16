@@ -59,19 +59,13 @@ class _CurrencyPageState extends State<CurrencyPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GradientButton(
-                        child: Icon(
-                          Icons.arrow_left,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
+                        child: Icon(Icons.arrow_left),
                         onPressed: () {
                           Navigator.pop(context);
                         },
                       ),
                       GradientButton(
-                        child: Icon(
-                          Icons.arrow_right,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                        ),
+                        child: Icon(Icons.arrow_right),
                         onPressed: () {
                           Navigator.push(
                             context,

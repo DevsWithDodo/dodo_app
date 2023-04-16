@@ -146,7 +146,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
             child: Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Center(
-                child: GradientButton(
+                child: GradientButton.icon(
                   onPressed: () {
                     showDialog(
                             builder: (context) => ChangeNicknameDialog(
@@ -159,22 +159,8 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                         Navigator.pop(context, 'madeAdmin');
                     });
                   },
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.edit,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                      SizedBox(
-                        width: 3,
-                      ),
-                      Text(
-                        'edit_nickname'.tr(),
-                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimary),
-                      ),
-                    ],
-                  ),
+                  icon: Icon(Icons.edit),
+                  label: Text('edit_nickname'.tr()),
                 ),
               ),
             ),
@@ -185,7 +171,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
             child: Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Center(
-                child: GradientButton(
+                child: GradientButton.icon(
                   onPressed: () {
                     showDialog(
                             builder: (context) => ConfirmLeaveDialog(
@@ -208,22 +194,8 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                       }
                     });
                   },
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.person_outline,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                      SizedBox(
-                        width: 3,
-                      ),
-                      Text(
-                        'kick_member'.tr(),
-                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimary),
-                      ),
-                    ],
-                  ),
+                  icon: Icon(Icons.person_outline),
+                  label: Text('kick_member'.tr()),
                 ),
               ),
             ),
@@ -233,18 +205,9 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
             child: Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Center(
-                child: GradientButton(
-                  child: Row(
-                    children: [
-                      Icon(Icons.merge,
-                          color: Theme.of(context).colorScheme.onPrimary),
-                      Text(
-                        'merge_guest'.tr(),
-                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimary),
-                      ),
-                    ],
-                  ),
+                child: GradientButton.icon(
+                  icon: Icon(Icons.merge),
+                  label: Text('merge_guest'.tr()),
                   onPressed: () {
                     showDialog(
                       context: context,
@@ -262,7 +225,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
             child: Padding(
               padding: const EdgeInsets.only(top: 10),
               child: Center(
-                child: GradientButton(
+                child: GradientButton.icon(
                   onPressed: () {
                     double currencyThreshold = threshold(currentGroupCurrency!);
                     (currencies[currentGroupCurrency]!['subunit'] == 1
@@ -300,22 +263,8 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                       });
                     }
                   },
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.arrow_back,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                      SizedBox(
-                        width: 3,
-                      ),
-                      Text(
-                        'leave_group'.tr(),
-                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimary),
-                      ),
-                    ],
-                  ),
+                  icon: Icon(Icons.arrow_back),
+                  label: Text('leave_group'.tr()),
                 ),
               ),
             ),

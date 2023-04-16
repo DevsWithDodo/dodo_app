@@ -11,7 +11,8 @@ class ForgotPasswordDialog extends StatelessWidget {
   ForgotPasswordDialog();
 
   final GlobalKey<FormState> formState = GlobalKey<FormState>();
-  final TextEditingController controller = TextEditingController(text: currentUsername ?? '');
+  final TextEditingController controller =
+      TextEditingController(text: currentUsername ?? '');
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -50,7 +51,7 @@ class ForgotPasswordDialog extends StatelessWidget {
                 onPressed: () {
                   _buttonPush(context);
                 },
-                child: Icon(Icons.send, color: Theme.of(context).colorScheme.onPrimary),
+                child: Icon(Icons.send),
               ),
             ],
           )

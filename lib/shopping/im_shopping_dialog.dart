@@ -24,7 +24,9 @@ class _ImShoppingDialogState extends State<ImShoppingDialog> {
       await httpPost(
         context: context,
         body: body,
-        uri: '/groups/' + currentGroupId.toString() + '/send_shopping_notification',
+        uri: '/groups/' +
+            currentGroupId.toString() +
+            '/send_shopping_notification',
       );
       Future.delayed(delayTime()).then((value) => _onPostImShopping());
       return true;
@@ -109,10 +111,7 @@ class _ImShoppingDialogState extends State<ImShoppingDialog> {
                             barrierDismissible: false);
                       }
                     },
-                    child: Icon(
-                      Icons.send,
-                      color: Theme.of(context).colorScheme.onPrimary,
-                    ),
+                    child: Icon(Icons.send),
                   ),
                 ],
               )
