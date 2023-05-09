@@ -447,5 +447,10 @@
 
     "bills": "Rechnungen",
 
-    "category": "Kategorie"
+    "category": "Kategorie",
+
+    "pick_category": "Wähle die Kategorie",
+    "pick_currency": "Wähle die Währung",
+    "use_calculator": "Benutze den Taschenrechner",
+    "choose_custom_amount": "Drücke lange auf einen der Nutzer um einen individuellen Betrag zu wählen"
 }

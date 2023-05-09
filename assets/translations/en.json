@@ -446,5 +446,10 @@
 
     "bills": "Bills",
 
-    "category": "Category"
+    "category": "Category",
+
+    "pick_category": "Pick the category",
+    "pick_currency": "Pick the currency",
+    "use_calculator": "Use the calculator",
+    "choose_custom_amount": "Long press on user to choose custom amount"
 }

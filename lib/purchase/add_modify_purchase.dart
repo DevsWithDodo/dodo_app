@@ -169,7 +169,7 @@ class AddModifyPurchase {
                   showArrow: false,
                   targetBorderRadius: BorderRadius.circular(10),
                   targetPadding: EdgeInsets.all(0),
-                  description: "Pick the category",
+                  description: "pick_category".tr(),
                   child: _categoryPickerIconButton(),
                   scaleAnimationDuration: Duration(milliseconds: 200),
                 )
@@ -220,7 +220,7 @@ class AddModifyPurchase {
                     showArrow: false,
                     targetBorderRadius: BorderRadius.circular(10),
                     targetPadding: EdgeInsets.all(0),
-                    description: "Pick the currency",
+                    description: "pick_currency".tr(),
                     child: _currencyPickerIconButton(),
                     scaleAnimationDuration: Duration(milliseconds: 200),
                   )
@@ -253,7 +253,7 @@ class AddModifyPurchase {
                     showArrow: false,
                     targetBorderRadius: BorderRadius.circular(10),
                     targetPadding: EdgeInsets.all(10),
-                    description: "Use the calculator",
+                    description: "use_calculator".tr(),
                     child: _calculatorIcon(),
                     scaleAnimationDuration: Duration(milliseconds: 200),
                   )
@@ -434,7 +434,7 @@ class AddModifyPurchase {
                         targetPadding: EdgeInsets.all(10),
                         targetBorderRadius: BorderRadius.circular(10),
                         description:
-                            "Long press on user to choose custom amount",
+                            "choose_custom_amount".tr(),
                         showArrow: false,
                         child: memberChips,
                         scaleAnimationDuration: Duration(milliseconds: 200),

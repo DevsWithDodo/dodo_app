@@ -444,6 +444,11 @@
 
     "bills": "Számlák",
 
-    "category": "Kategória"
+    "category": "Kategória",
+
+    "pick_category": "Válaszd ki a kategóriát",
+    "pick_currency": "Válaszd ki a pénznemet",
+    "use_calculator": "Használd a számológépet",
+    "choose_custom_amount": "Nyomj hosszan egy tagra, hogy kiválaszd a hozzá tartozó összeget"
 
 }
