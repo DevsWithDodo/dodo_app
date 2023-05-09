@@ -154,7 +154,8 @@ class Payment {
   double amount;
   late double amountOriginalCurrency;
   DateTime updatedAt;
-  String payerUsername, payerNickname, takerUsername, takerNickname, note;
+  String payerUsername, payerNickname, takerUsername, takerNickname;
+  late String note;
   int payerId, takerId;
   List<Reaction>? reactions;
   String originalCurrency;
@@ -169,12 +170,13 @@ class Payment {
     required this.takerUsername,
     required this.takerId,
     required this.takerNickname,
-    required this.note,
+    String? note,
     required this.originalCurrency,
     required this.updatedAt,
     this.reactions,
   }) {
     this.amountOriginalCurrency = amountOriginalCurrency ?? this.amount;
+    this.note = note ?? '';
   }
 
   factory Payment.fromJson(Map<String, dynamic> json) {
@@ -191,7 +193,7 @@ class Payment {
       takerUsername: json['taker_username'] ?? json['taker_nickname'],
       takerNickname: json['taker_nickname'],
       note: json['note'],
-      originalCurrency: json['original_currency'] ?? currentGroupCurrency,
+      originalCurrency: json['original_currency'] ?? currentGroupCurrency!,
       amountOriginalCurrency: (json['original_amount'] ?? json['amount']) * 1.0,
       reactions: json['reactions']
           .map<Reaction>((reaction) => Reaction.fromJson(reaction))

@@ -1,13 +1,15 @@
 import 'package:csocsort_szamla/essentials/ad_management.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
-import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/purchase/add_modify_purchase.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 class AddPurchasePage extends StatefulWidget {
   final PurchaseType type;
@@ -25,6 +27,11 @@ class _AddPurchasePageState extends State<AddPurchasePage>
 
   var _formKey = GlobalKey<FormState>();
   ExpandableController _expandableController = ExpandableController();
+
+  GlobalKey _noteKey = GlobalKey();
+  GlobalKey _currencyKey = GlobalKey();
+  GlobalKey _calculatorKey = GlobalKey();
+  GlobalKey _receiversKey = GlobalKey();
 
   Future<bool> _postPurchase(List<Member> members, double amount, String name,
       BuildContext context) async {
@@ -54,6 +61,17 @@ class _AddPurchasePageState extends State<AddPurchasePage>
       purchaseType: widget.type,
       shoppingRequest: widget.shoppingData,
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      var prefs = await SharedPreferences.getInstance();
+      if (prefs.containsKey('showcase_add_purchase') &&
+          prefs.getBool('showcase_add_purchase')!) {
+        return;
+      }
+      ShowCaseWidget.of(context).startShowCase(
+          [_noteKey, _currencyKey, _calculatorKey, _receiversKey]);
+      prefs.setBool('showcase_add_purchase', true);
+    });
   }
 
   @override
@@ -88,22 +106,16 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              noteTextField(context),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              amountTextField(context),
-                              SizedBox(
-                                height: 20,
-                              ),
+                              noteTextField(context, showcaseKey: _noteKey),
+                              SizedBox(height: 20),
+                              amountTextField(context,
+                                  calculatorKey: _calculatorKey,
+                                  currencyKey: _currencyKey),
+                              SizedBox(height: 20),
                               purchaserChooser(context),
-                              SizedBox(
-                                height: 10,
-                              ),
+                              SizedBox(height: 10),
                               Divider(),
-                              SizedBox(
-                                height: 10,
-                              ),
+                              SizedBox(height: 10),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -133,9 +145,7 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                                   ),
                                 ],
                               ),
-                              SizedBox(
-                                height: 5,
-                              ),
+                              SizedBox(height: 5),
                               Expandable(
                                 controller: _expandableController,
                                 collapsed: Container(),
@@ -149,9 +159,10 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                                             .textTheme
                                             .bodySmall!
                                             .copyWith(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onSurface),
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
+                                            ),
                                       ),
                                       SizedBox(height: 10),
                                       Text(
@@ -161,21 +172,19 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                                             .textTheme
                                             .bodySmall!
                                             .copyWith(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onSurface),
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
+                                            ),
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              memberChooser(context),
-                              SizedBox(
-                                height: 20,
-                              ),
+                              SizedBox(height: 15),
+                              receiverChooser(context,
+                                  showcaseKey: _receiversKey),
+                              SizedBox(height: 20),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,

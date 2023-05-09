@@ -105,7 +105,7 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog>
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
                     SizedBox(width: 10),
-                    Expanded(child: memberChooser(context)),
+                    Expanded(child: receiverChooser(context)),
                   ],
                 ),
               ),

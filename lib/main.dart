@@ -26,6 +26,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import 'config.dart';
 import 'essentials/app_state_notifier.dart';
@@ -477,28 +478,34 @@ class _LenderAppState extends State<LenderApp> {
             appState.updateThemeNoNotify(widget.themeName);
             _first = false;
           }
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'Dodo',
-            theme: appState.theme,
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
-            navigatorKey: getIt.get<NavigationService>().navigatorKey,
-            home: currentUserId == null
-                ? LoginOrRegisterPage(
-                    inviteURL: _link,
-                  )
-                : (_link != null)
-                    ? JoinGroup(
-                        inviteURL: _link,
-                        fromAuth: (currentGroupId == null) ? true : false,
-                      )
-                    : (currentGroupId == null)
-                        ? JoinGroup(
-                            fromAuth: true,
-                          )
-                        : MainPage(),
+          return ShowCaseWidget(
+            builder: Builder(
+              builder: (context) {
+                return MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  title: 'Dodo',
+                  theme: appState.theme,
+                  localizationsDelegates: context.localizationDelegates,
+                  supportedLocales: context.supportedLocales,
+                  locale: context.locale,
+                  navigatorKey: getIt.get<NavigationService>().navigatorKey,
+                  home: currentUserId == null
+                      ? LoginOrRegisterPage(
+                          inviteURL: _link,
+                        )
+                      : (_link != null)
+                          ? JoinGroup(
+                              inviteURL: _link,
+                              fromAuth: (currentGroupId == null) ? true : false,
+                            )
+                          : (currentGroupId == null)
+                              ? JoinGroup(
+                                  fromAuth: true,
+                                )
+                              : MainPage(),
+                );
+              }
+            ),
           );
         });
       },

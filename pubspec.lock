@@ -497,10 +497,10 @@ packages:
     dependency: "direct dev"
     description:
       name: msix
-      sha256: "8cd0a6c6deafac9914cf36e8cd3db76b9e4d2ab7dcb6b71310c92a9a84d920f4"
+      sha256: "2b094025eb77940d2cea64ec2d1d918a6bf87ef4518eb9155def9a8855831bdc"
       url: "https://pub.dev"
     source: hosted
-    version: "3.9.2"
+    version: "3.11.1"
   nested:
     dependency: transitive
     description:
@@ -781,6 +781,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
+  showcaseview:
+    dependency: "direct main"
+    description:
+      name: showcaseview
+      sha256: dc62ce38820dead4a27ce39d9e6c98384be89c2f2b4da3255238a59b041c7ccd
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.3"
   sky_engine:
     dependency: transitive
     description: flutter

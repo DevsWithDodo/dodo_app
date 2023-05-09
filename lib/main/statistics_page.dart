@@ -507,7 +507,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
                             } else {
                               _category = category;
                             }
-                            print('asdasd');
                             setState(() {
                               _paymentStats = _getPaymentStats();
                               _purchaseStats = _getPurchaseStats();

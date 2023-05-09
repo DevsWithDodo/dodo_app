@@ -95,6 +95,7 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
       List<dynamic> decoded = jsonDecode(response.body)['data'];
       List<Payment> paymentData = [];
       for (var data in decoded) {
+        print(data);
         paymentData.add(Payment.fromJson(data));
       }
       return paymentData;
@@ -343,16 +344,17 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
                   shrinkWrap: true,
                   children: _generatePayments(snapshot.data!));
             } else {
-              return ErrorMessage(
-                error: snapshot.error.toString(),
-                errorLocation: 'payment_history_page',
-                onTap: () {
-                  setState(() {
-                    _payments = null;
-                    _payments = _getPayments();
-                  });
-                },
-              );
+              throw snapshot.error!;
+              // return ErrorMessage(
+              //   error: snapshot.error.toString(),
+              //   errorLocation: 'payment_history_page',
+              //   onTap: () {
+              //     setState(() {
+              //       _payments = null;
+              //       _payments = _getPayments();
+              //     });
+              //   },
+              // );
             }
           }
           return Center(

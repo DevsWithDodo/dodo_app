@@ -1,11 +1,12 @@
 import 'dart:convert';
+
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/widgets/category_picker_icon_button.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-
-import 'package:flutter/material.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import '../config.dart';
 import '../essentials/app_theme.dart';
@@ -38,6 +39,8 @@ class AddModifyPurchase {
   CrossFadeState purchaserSelector = CrossFadeState.showFirst;
   int? purchaserId;
   Category? selectedCategory;
+
+  GlobalKey _noteKey = GlobalKey();
 
   void initAddModifyPurchase(
     BuildContext context,
@@ -121,7 +124,9 @@ class AddModifyPurchase {
   double amountForNonCustom() {
     double sumCustom = 0;
     customAmountMap.values.forEach((element) => sumCustom += element);
-    double amount = (double.tryParse(amountController.text) ?? 0.0) - sumCustom;
+    double amount =
+        (double.tryParse(amountController.text.replaceAll(',', '.')) ?? 0.0) -
+            sumCustom;
     int membersChosen = 0;
     for (bool isChosen in membersMap.values) {
       if (isChosen) {
@@ -131,7 +136,23 @@ class AddModifyPurchase {
     return amount / (membersChosen - customAmountMap.length);
   }
 
-  TextFormField noteTextField(BuildContext context) => TextFormField(
+  CategoryPickerIconButton _categoryPickerIconButton() =>
+      CategoryPickerIconButton(
+        selectedCategory: selectedCategory,
+        onCategoryChanged: (newCategory) {
+          _setState(() {
+            if (selectedCategory?.type == newCategory?.type) {
+              selectedCategory = null;
+            } else {
+              selectedCategory = newCategory;
+            }
+          });
+        },
+      );
+
+  TextFormField noteTextField(BuildContext context, {GlobalKey? showcaseKey}) =>
+      TextFormField(
+        key: _noteKey,
         validator: (value) => validateTextField([
           isEmpty(value),
           minimalLength(value, 3),
@@ -142,27 +163,44 @@ class AddModifyPurchase {
             Icons.note,
             color: theme!.colorScheme.onSurfaceVariant,
           ),
-          suffixIcon: GestureDetector(
-            onDoubleTap: () {
-              _setState(() {
-                selectedCategory = null;
-              });
-            },
-            child: CategoryPickerIconButton(
-              selectedCategory: selectedCategory,
-              onCategoryChanged: (newCategory) {
-                _setState(() {
-                  selectedCategory = newCategory ?? selectedCategory;
-                });
-              },
-            ),
-          ),
+          suffixIcon: showcaseKey != null
+              ? Showcase(
+                  key: showcaseKey,
+                  showArrow: false,
+                  targetBorderRadius: BorderRadius.circular(10),
+                  targetPadding: EdgeInsets.all(0),
+                  description: "Pick the category",
+                  child: _categoryPickerIconButton(),
+                  scaleAnimationDuration: Duration(milliseconds: 200),
+                )
+              : _categoryPickerIconButton(),
         ),
         inputFormatters: [LengthLimitingTextInputFormatter(50)],
         controller: noteController,
         onFieldSubmitted: (value) => buttonPush(context),
       );
-  TextFormField amountTextField(BuildContext context) => TextFormField(
+
+  CurrencyPickerIconButton _currencyPickerIconButton() =>
+      CurrencyPickerIconButton(
+        selectedCurrency: selectedCurrency,
+        onCurrencyChanged: (newCurrency) {
+          _setState(() {
+            selectedCurrency = newCurrency ?? selectedCurrency;
+          });
+        },
+      );
+
+  Icon _calculatorIcon() => Icon(
+        Icons.calculate,
+        color: theme!.colorScheme.primary,
+      );
+
+  TextFormField amountTextField(
+    BuildContext context, {
+    GlobalKey? currencyKey = null,
+    GlobalKey? calculatorKey = null,
+  }) =>
+      TextFormField(
         validator: (value) => validateTextField([
           isEmpty(value),
           notValidNumber(value!.replaceAll(',', '.')),
@@ -176,14 +214,17 @@ class AddModifyPurchase {
                 selectedCurrency = currentGroupCurrency!;
               });
             },
-            child: CurrencyPickerIconButton(
-              selectedCurrency: selectedCurrency,
-              onCurrencyChanged: (newCurrency) {
-                _setState(() {
-                  selectedCurrency = newCurrency ?? selectedCurrency;
-                });
-              },
-            ),
+            child: currencyKey != null
+                ? Showcase(
+                    key: currencyKey,
+                    showArrow: false,
+                    targetBorderRadius: BorderRadius.circular(10),
+                    targetPadding: EdgeInsets.all(0),
+                    description: "Pick the currency",
+                    child: _currencyPickerIconButton(),
+                    scaleAnimationDuration: Duration(milliseconds: 200),
+                  )
+                : _currencyPickerIconButton(),
           ),
           suffixIcon: IconButton(
             onPressed: () {
@@ -206,10 +247,17 @@ class AddModifyPurchase {
                 },
               );
             },
-            icon: Icon(
-              Icons.calculate,
-              color: theme!.colorScheme.primary,
-            ),
+            icon: calculatorKey != null
+                ? Showcase(
+                    key: calculatorKey,
+                    showArrow: false,
+                    targetBorderRadius: BorderRadius.circular(10),
+                    targetPadding: EdgeInsets.all(10),
+                    description: "Use the calculator",
+                    child: _calculatorIcon(),
+                    scaleAnimationDuration: Duration(milliseconds: 200),
+                  )
+                : _calculatorIcon(),
           ),
         ),
         controller: amountController,
@@ -327,7 +375,9 @@ class AddModifyPurchase {
         ),
       );
 
-  Center memberChooser(BuildContext context) => Center(
+  Center receiverChooser(BuildContext context,
+          {GlobalKey? showcaseKey = null}) =>
+      Center(
         child: FutureBuilder(
           future: members,
           builder: (context, AsyncSnapshot<List<Member>> snapshot) {
@@ -354,7 +404,7 @@ class AddModifyPurchase {
                   }
                   alreadyInitializedSave = true;
                 }
-                return MemberChips(
+                Widget memberChips = MemberChips(
                   selectedCurrency: selectedCurrency,
                   allowMultipleSelected: true,
                   allMembers: snapshot.data!,
@@ -378,6 +428,18 @@ class AddModifyPurchase {
                   getMaxAmount: () =>
                       double.tryParse(amountController.text) ?? 0.0,
                 );
+                return showcaseKey != null
+                    ? Showcase(
+                        key: showcaseKey,
+                        targetPadding: EdgeInsets.all(10),
+                        targetBorderRadius: BorderRadius.circular(10),
+                        description:
+                            "Long press on user to choose custom amount",
+                        showArrow: false,
+                        child: memberChips,
+                        scaleAnimationDuration: Duration(milliseconds: 200),
+                      )
+                    : memberChips;
               } else {
                 return ErrorMessage(
                   error: snapshot.error.toString(),
