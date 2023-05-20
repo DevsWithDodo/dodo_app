@@ -33,50 +33,55 @@ class _StatisticsDataExportState extends State<StatisticsDataExport> {
 
   void showNoStatisticsDialog() {
     showDialog(
-        builder: (context) => Dialog(
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'statistics_not_available'.tr(),
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 10),
-                    Text('statistics_not_available_explanation'.tr(),
-                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface),
-                        textAlign: TextAlign.center),
-                    SizedBox(height: 15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        GradientButton(
-                          child: ColorFiltered(
-                              colorFilter: ColorFilter.mode(
-                                  Theme.of(context).colorScheme.onPrimary,
-                                  BlendMode.srcIn),
-                              child: Image.asset(
-                                'assets/dodo.png',
-                                width: 25,
-                              )),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => InAppPurchasePage()));
-                          },
-                        ),
-                      ],
-                    )
-                  ],
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'statistics_not_available'.tr(),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge!
+                      .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                  textAlign: TextAlign.center,
                 ),
-              ),
+                SizedBox(height: 10),
+                Text('statistics_not_available_explanation'.tr(),
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface),
+                    textAlign: TextAlign.center),
+                SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GradientButton(
+                      child: ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                              Theme.of(context).colorScheme.onPrimary,
+                              BlendMode.srcIn),
+                          child: Image.asset(
+                            'assets/dodo.png',
+                            width: 25,
+                          )),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => InAppPurchasePage()));
+                      },
+                    ),
+                  ],
+                )
+              ],
             ),
-        context: context);
+          ),
+        );
+      },
+    );
   }
 
   @override

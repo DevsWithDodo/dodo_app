@@ -7,10 +7,10 @@ import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import '../essentials/http_handler.dart';
 import '../essentials/widgets/member_chips.dart';
-import 'package:http/http.dart' as http;
 
 class HistoryFilter extends StatefulWidget {
   final DateTime? startDate;
@@ -64,7 +64,7 @@ class _HistoryFilterState extends State<HistoryFilter> {
     super.didChangeDependencies();
     _selectedCategory = widget.selectedCategory;
     _startDate =
-        widget.startDate ?? DateTime.now().subtract(Duration(days: 30));
+        widget.startDate ?? DateTime.parse("2020-01-26 03:14:00");
     _endDate = widget.endDate ?? DateTime.now();
   }
 
@@ -154,7 +154,6 @@ class _HistoryFilterState extends State<HistoryFilter> {
                     errorLocation: 'history_filter',
                   );
                 }
-                print(_membersChosen);
                 if (_membersChosen == null) {
                   _membersChosen = [];
                   if (widget.selectedMember != null) {
@@ -168,7 +167,6 @@ class _HistoryFilterState extends State<HistoryFilter> {
                     ];
                   }
                 }
-                print(_membersChosen);
                 return MemberChips(
                   allMembers: snapshot.data!,
                   chosenMembers: _membersChosen!,

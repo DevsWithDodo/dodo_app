@@ -28,8 +28,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
   DateTime? _startDate;
   DateTime? _endDate;
   Category? _category;
-  Future<List<Purchase>>? _purchases;
-  Future<List<Payment>>? _payments;
+  Future<Map<DateTime, List<Purchase>>>? _purchases;
+  Future<Map<DateTime, List<Payment>>>? _payments;
 
   ScrollController _purchaseScrollController = ScrollController();
   ScrollController _paymentScrollController = ScrollController();
@@ -38,10 +38,10 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
   bool _showFilter = false;
   int _selectedMemberId = currentUserId!;
 
-  Future<List<Purchase>> _getPurchases({bool overwriteCache = false}) async {
+  Future<Map<DateTime, List<Purchase>>> _getPurchases(
+      {bool overwriteCache = false}) async {
     try {
-      http.Response response;
-      response = await httpGet(
+      http.Response response = await httpGet(
         uri: generateUri(
           GetUriKeys.purchases,
           queryParams: {
@@ -60,17 +60,34 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
         overwriteCache: overwriteCache,
       );
       List<dynamic> decoded = jsonDecode(response.body)['data'];
-      List<Purchase> purchaseData = [];
-      for (var data in decoded) {
-        purchaseData.add(Purchase.fromJson(data));
+      List<Purchase> purchaseData =
+          decoded.map((data) => Purchase.fromJson(data)).toList();
+      // Group by week starting from now
+      Map<DateTime, List<Purchase>> grouped = {};
+      DateTime now = DateTime.now();
+      DateTime date = DateTime(now.year, now.month, now.day);
+      for (Purchase purchase in purchaseData) {
+        if (date.difference(purchase.updatedAt).inDays > 7) {
+          int toSubtract =
+              (date.difference(purchase.updatedAt).inDays / 7).floor();
+          date = date.subtract(Duration(days: toSubtract * 7));
+          grouped[date] = [];
+          grouped[date]!.add(purchase);
+        } else {
+          if (!grouped.containsKey(date)) {
+            grouped[date] = [purchase];
+          } else {
+            grouped[date]!.add(purchase);
+          }
+        }
       }
-      return purchaseData;
+      return grouped;
     } catch (_) {
       throw _;
     }
   }
 
-  Future<List<Payment>> _getPayments({bool overwriteCache = false}) async {
+  Future<Map<DateTime, List<Payment>>> _getPayments({bool overwriteCache = false}) async {
     try {
       http.Response response;
       response = await httpGet(
@@ -93,12 +110,29 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
       );
 
       List<dynamic> decoded = jsonDecode(response.body)['data'];
-      List<Payment> paymentData = [];
-      for (var data in decoded) {
-        print(data);
-        paymentData.add(Payment.fromJson(data));
+      List<Payment> paymentData = decoded.map((data) => Payment.fromJson(data)).toList();
+
+      // Group by week starting from now
+      Map<DateTime, List<Payment>> grouped = {};
+      DateTime now = DateTime.now();
+      DateTime date = DateTime(now.year, now.month, now.day);
+      for (Payment payment in paymentData) {
+        if (date.difference(payment.updatedAt).inDays > 7) {
+          int toSubtract =
+              (date.difference(payment.updatedAt).inDays / 7).floor();
+          date = date.subtract(Duration(days: toSubtract * 7));
+          grouped[date] = [];
+          grouped[date]!.add(payment);
+        } else {
+          if (!grouped.containsKey(date)) {
+            grouped[date] = [payment];
+          } else {
+            grouped[date]!.add(payment);
+          }
+        }
       }
-      return paymentData;
+      return grouped;
+      
     } catch (_) {
       throw _;
     }
@@ -306,14 +340,17 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     return [
       FutureBuilder(
         future: _purchases,
-        builder: (context, AsyncSnapshot<List<Purchase>> snapshot) {
+        builder:
+            (context, AsyncSnapshot<Map<DateTime, List<Purchase>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
-              return ListView(
-                  controller: _purchaseScrollController,
-                  key: PageStorageKey('purchaseList'),
-                  shrinkWrap: true,
-                  children: _generatePurchase(snapshot.data!));
+              return SingleChildScrollView(
+                controller: _purchaseScrollController,
+                key: PageStorageKey('purchaseList'),
+                child: Column(
+                  children: _generatePurchase(snapshot.data!),
+                ),
+              );
             } else {
               return ErrorMessage(
                 error: snapshot.error.toString(),
@@ -335,26 +372,27 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
       ),
       FutureBuilder(
         future: _payments,
-        builder: (context, AsyncSnapshot<List<Payment>> snapshot) {
+        builder: (context, AsyncSnapshot<Map<DateTime, List<Payment>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
-              return ListView(
-                  controller: _paymentScrollController,
-                  key: PageStorageKey('paymentList'),
-                  shrinkWrap: true,
-                  children: _generatePayments(snapshot.data!));
+              return SingleChildScrollView(
+                controller: _paymentScrollController,
+                key: PageStorageKey('paymentList'),
+                child: Column(
+                  children: _generatePayments(snapshot.data!),
+                ),
+              );
             } else {
-              throw snapshot.error!;
-              // return ErrorMessage(
-              //   error: snapshot.error.toString(),
-              //   errorLocation: 'payment_history_page',
-              //   onTap: () {
-              //     setState(() {
-              //       _payments = null;
-              //       _payments = _getPayments();
-              //     });
-              //   },
-              // );
+              return ErrorMessage(
+                error: snapshot.error.toString(),
+                errorLocation: 'payment_history_page',
+                onTap: () {
+                  setState(() {
+                    _payments = null;
+                    _payments = _getPayments();
+                  });
+                },
+              );
             }
           }
           return Center(
@@ -366,8 +404,41 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     ];
   }
 
-  List<Widget> _generatePayments(List<Payment> data) {
-    print(data.length);
+  Widget _generatePaymentWeekWidget(DateTime startDate, List<Payment> payments) {
+    return Column(
+      children: [
+        Center(
+          child: Container(
+            padding: EdgeInsets.all(8),
+            child: Text(
+              DateFormat('yyyy/MM/dd')
+                      .format(startDate.subtract(Duration(days: 7))) +
+                  ' - ' +
+                  DateFormat('yyyy/MM/dd')
+                      .format(startDate.subtract(Duration(days: 1))),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleSmall!
+                  .copyWith(color: Theme.of(context).colorScheme.onBackground),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+              children: payments
+                  .map((e) => PaymentEntry(
+                        payment: e,
+                        onDelete: onDeletePurchasePayment,
+                        selectedMemberId: _selectedMemberId,
+                      ))
+                  .toList()),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _generatePayments(Map<DateTime, List<Payment>> data) {
     if (data.length == 0) {
       return [
         Padding(
@@ -380,97 +451,46 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
         )
       ];
     }
-    DateTime nowNow = DateTime.now();
-    //Initial
-    DateTime now = DateTime(nowNow.year, nowNow.month, nowNow.day);
-    Widget initial;
-    if (now.difference(data[0].updatedAt).inDays > 7) {
-      int toSubtract = (now.difference(data[0].updatedAt).inDays / 7).floor();
-      now = now.subtract(Duration(days: toSubtract * 7));
-      initial = Column(
-        children: [
-          Container(
-              padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
-              child: Text(
-                DateFormat('yyyy/MM/dd')
-                        .format(now.subtract(Duration(days: 7))) +
-                    ' - ' +
-                    DateFormat('yyyy/MM/dd')
-                        .format(now.subtract(Duration(days: 1))),
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: Theme.of(context).colorScheme.onBackground),
-              )),
-        ],
-      );
-    } else {
-      initial = Center(
-        child: Container(
-            padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
-            child: Text(
-              DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 7))) +
-                  ' - ' +
-                  DateFormat('yyyy/MM/dd')
-                      .format(now.subtract(Duration(days: 1))),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onBackground),
-            )),
-      );
-    }
-    List<Widget> allEntries = [initial];
-    List<PaymentEntry> weekEntries = [];
-    for (Payment data in data) {
-      if (now.difference(data.updatedAt).inDays > 7) {
-        int toSubtract = (now.difference(data.updatedAt).inDays / 7).floor();
-        now = now.subtract(Duration(days: toSubtract * 7));
-        allEntries.add(Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: weekEntries,
-          ),
-        ));
-        weekEntries = [];
-        weekEntries.add(PaymentEntry(
-          payment: data,
-          onDelete: onDeletePurchasePayment,
-          selectedMemberId: _selectedMemberId,
-        ));
-        allEntries.add(Center(
+    return data.entries
+        .map((e) => _generatePaymentWeekWidget(e.key, e.value))
+        .toList();
+  }
+
+  Widget _generatePurchaseWeekWidget(DateTime startDate, List<Purchase> purchases) {
+    return Column(
+      children: [
+        Center(
           child: Container(
             padding: EdgeInsets.all(8),
             child: Text(
-              DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 7))) +
+              DateFormat('yyyy/MM/dd')
+                      .format(startDate.subtract(Duration(days: 7))) +
                   ' - ' +
                   DateFormat('yyyy/MM/dd')
-                      .format(now.subtract(Duration(days: 1))),
+                      .format(startDate.subtract(Duration(days: 1))),
               style: Theme.of(context)
                   .textTheme
                   .titleSmall!
                   .copyWith(color: Theme.of(context).colorScheme.onBackground),
             ),
           ),
-        ));
-      } else {
-        weekEntries.add(PaymentEntry(
-          payment: data,
-          onDelete: onDeletePurchasePayment,
-          selectedMemberId: _selectedMemberId,
-        ));
-      }
-    }
-    if (weekEntries.isNotEmpty) {
-      allEntries.add(Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: weekEntries,
         ),
-      ));
-    }
-    return allEntries;
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+              children: purchases
+                  .map((e) => PurchaseEntry(
+                        purchase: e,
+                        onDelete: onDeletePurchasePayment,
+                        selectedMemberId: _selectedMemberId,
+                      ))
+                  .toList()),
+        ),
+      ],
+    );
   }
 
-  List<Widget> _generatePurchase(List<Purchase> data) {
+  List<Widget> _generatePurchase(Map<DateTime, List<Purchase>> data) {
     if (data.length == 0) {
       return [
         Padding(
@@ -486,94 +506,9 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
         )
       ];
     }
-    DateTime nowNow = DateTime.now();
-    DateTime now = DateTime(nowNow.year, nowNow.month, nowNow.day);
-    Widget initial;
-    if (now.difference(data[0].updatedAt).inDays > 7) {
-      int toSubtract = (now.difference(data[0].updatedAt).inDays / 7).floor();
-      now = now.subtract(Duration(days: toSubtract * 7));
-      initial = Column(
-        children: [
-          Container(
-            padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
-            child: Text(
-              DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 7))) +
-                  ' - ' +
-                  DateFormat('yyyy/MM/dd')
-                      .format(now.subtract(Duration(days: 1))),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onBackground),
-            ),
-          ),
-        ],
-      );
-    } else {
-      initial = Center(
-        child: Container(
-            padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
-            child: Text(
-              DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 7))) +
-                  ' - ' +
-                  DateFormat('yyyy/MM/dd')
-                      .format(now.subtract(Duration(days: 1))),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onBackground),
-            )),
-      );
-    }
-    List<Widget> allEntries = [initial];
-    List<PurchaseEntry> weekEntries = [];
-    for (Purchase data in data) {
-      if (now.difference(data.updatedAt).inDays > 7) {
-        int toSubtract = (now.difference(data.updatedAt).inDays / 7).floor();
-        now = now.subtract(Duration(days: toSubtract * 7));
-        allEntries.add(Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: weekEntries,
-          ),
-        ));
-        weekEntries = [];
-        allEntries.add(Center(
-          child: Container(
-            padding: EdgeInsets.all(8),
-            child: Text(
-              DateFormat('yyyy/MM/dd').format(now.subtract(Duration(days: 7))) +
-                  ' - ' +
-                  DateFormat('yyyy/MM/dd')
-                      .format(now.subtract(Duration(days: 1))),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onBackground),
-            ),
-          ),
-        ));
-        weekEntries.add(PurchaseEntry(
-          purchase: data,
-          onDelete: onDeletePurchasePayment,
-          selectedMemberId: _selectedMemberId,
-        ));
-      } else {
-        weekEntries.add(PurchaseEntry(
-          purchase: data,
-          onDelete: onDeletePurchasePayment,
-          selectedMemberId: _selectedMemberId,
-        ));
-      }
-    }
-    if (weekEntries.isNotEmpty) {
-      allEntries.add(Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: weekEntries,
-        ),
-      ));
-    }
-    return allEntries;
+
+    return data.entries
+        .map((e) => _generatePurchaseWeekWidget(e.key, e.value))
+        .toList();
   }
 }

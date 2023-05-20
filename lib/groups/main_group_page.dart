@@ -11,10 +11,10 @@ import 'package:csocsort_szamla/groups/group_settings_page.dart';
 import 'package:csocsort_szamla/groups/join_group.dart';
 import 'package:csocsort_szamla/history/history.dart';
 import 'package:csocsort_szamla/main/in_app_purchase_page.dart';
+import 'package:csocsort_szamla/main/statistics_export_card.dart';
 import 'package:csocsort_szamla/main/trial_ended_dialog.dart';
 import 'package:csocsort_szamla/shopping/shopping_list.dart';
 import 'package:csocsort_szamla/user_settings/user_settings_page.dart';
-import 'package:csocsort_szamla/main/statistics_export_card.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -27,8 +27,8 @@ import '../balance/balances.dart';
 import '../config.dart';
 import '../essentials/ad_management.dart';
 import '../essentials/currencies.dart';
-import '../essentials/models.dart';
 import '../essentials/http_handler.dart';
+import '../essentials/models.dart';
 import '../essentials/widgets/error_message.dart';
 import '../main/iapp_not_supported_dialog.dart';
 import '../main/like_app_dialog.dart';
@@ -199,7 +199,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
     if (!kIsWeb && !ratedApp! && !trialVersion) {
       double r = Random().nextDouble();
-      print(r);
       if (r < 0.15) {
         showDialog(context: context, builder: (context) => LikeTheAppDialog());
         // Don't show the dialog multiple times in one session. Value is not saved in the memory
@@ -389,11 +388,13 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           if (isOnline) await callback();
           setState(() {});
         },
-        child: ListView(
+        child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
           controller: ScrollController(),
-          shrinkWrap: true,
-          children: [
+          // shrinkWrap: true,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
             Balances(
               onPaymentsPosted: callback,
               bigScreen: bigScreen,
@@ -405,6 +406,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
             StatisticsDataExport(),
             SizedBox(height: 70), // So the floating button doesn't block info
           ],
+          )
         ),
       ),
       ShoppingList(
@@ -441,7 +443,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                         child: ColorFiltered(
                           colorFilter: ColorFilter.mode(
                               Theme.of(context).colorScheme.primary,
-                              currentThemeName!
+                              currentThemeName
                                           .toLowerCase()
                                           .contains('dodo') &&
                                       !kIsWeb

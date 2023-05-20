@@ -98,11 +98,15 @@ class _AddPurchasePageState extends State<AddPurchasePage>
             child: Column(
               children: [
                 Expanded(
-                  child: ListView(
-                    children: <Widget>[
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(15),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: 500,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
@@ -113,9 +117,7 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                                   currencyKey: _currencyKey),
                               SizedBox(height: 20),
                               purchaserChooser(context),
-                              SizedBox(height: 10),
-                              Divider(),
-                              SizedBox(height: 10),
+                              SizedBox(height: 20),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -270,7 +272,7 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                           ),
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
                 Visibility(

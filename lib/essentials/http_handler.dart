@@ -277,6 +277,7 @@ Future<http.Response> httpGet({
           uri: uri!.substring(1), overwriteCache: overwriteCache);
       if (responseFromCache != null) {
         //print('de cache!');
+        await Future.delayed(Duration(milliseconds: 500));
         return responseFromCache;
       }
     }

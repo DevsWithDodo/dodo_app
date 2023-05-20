@@ -6,7 +6,6 @@ import 'package:csocsort_szamla/essentials/http_handler.dart';
 import 'package:csocsort_szamla/essentials/save_preferences.dart';
 import 'package:csocsort_szamla/essentials/widgets/currency_picker_dropdown.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
-import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -79,12 +78,15 @@ class _CreateGroupState extends State<CreateGroup> {
           child: Column(
             children: [
               Expanded(
-                child: ListView(
-                  padding: EdgeInsets.only(top: 5),
-                  children: <Widget>[
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: 500,
+                        ),
                         child: Column(
                           children: [
                             TextFormField(
@@ -158,43 +160,11 @@ class _CreateGroupState extends State<CreateGroup> {
                                 ),
                               ],
                             ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                GradientButton(
-                                  child: Text('create_group'.tr()),
-                                  onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      String token = _groupName.text;
-                                      String nickname =
-                                          _nicknameController.text;
-                                      showDialog(
-                                          builder: (context) =>
-                                              FutureSuccessDialog(
-                                                future: _createGroup(
-                                                    token,
-                                                    nickname,
-                                                    _defaultCurrencyValue),
-                                                onDataTrue: () {
-                                                  _onCreateGroup();
-                                                },
-                                                dataTrueText: 'creation_scf',
-                                              ),
-                                          barrierDismissible: false,
-                                          context: context);
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ),
               Visibility(
@@ -203,6 +173,30 @@ class _CreateGroupState extends State<CreateGroup> {
               ),
             ],
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+          child: Icon(
+            Icons.send,
+            color: Theme.of(context).colorScheme.onSecondaryContainer,
+          ),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              String token = _groupName.text;
+              String nickname = _nicknameController.text;
+              showDialog(
+                  builder: (context) => FutureSuccessDialog(
+                        future: _createGroup(
+                            token, nickname, _defaultCurrencyValue),
+                        onDataTrue: () {
+                          _onCreateGroup();
+                        },
+                        dataTrueText: 'creation_scf',
+                      ),
+                  barrierDismissible: false,
+                  context: context);
+            }
+          },
         ),
       ),
     );

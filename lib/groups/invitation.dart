@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
@@ -127,7 +127,6 @@ class _InvitationState extends State<Invitation> {
               builder: (context, AsyncSnapshot<String> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {
-                    print(snapshot.data);
                     return Column(
                       children: [
                         Center(
@@ -246,10 +245,11 @@ class _InvitationState extends State<Invitation> {
                                                         .onSurface),
                                           ),
                                           Switch(
+                                            trackOutlineColor: MaterialStateProperty.all<Color>(Colors.transparent),
                                             value: _needsApproval,
                                             activeColor: Theme.of(context)
                                                 .colorScheme
-                                                .primary,
+                                                .secondary,
                                             onChanged: (value) {
                                               setState(() {
                                                 _needsApproval = value;

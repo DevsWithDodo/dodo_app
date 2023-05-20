@@ -12,7 +12,7 @@ description: Csocsort
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 
-version: 3.0.7+86
+version: 3.0.8+87
 
 environment:
   sdk: '>=2.17.0 <3.0.0'
@@ -22,7 +22,7 @@ dependencies:
   firebase_analytics: ^10.2.0
   http: ^0.13.5
   shared_preferences: ^2.1.0
-  intl: ^0.17.0
+  intl: ^0.18.0
   fluttertoast: ^8.2.1
   provider: ^6.0.5
   flutter_speed_dial: ^6.2.0

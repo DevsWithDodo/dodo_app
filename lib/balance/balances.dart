@@ -14,8 +14,8 @@ import 'package:http/http.dart' as http;
 import '../config.dart';
 import '../essentials/app_theme.dart';
 import '../essentials/currencies.dart';
-import '../essentials/models.dart';
 import '../essentials/http_handler.dart';
+import '../essentials/models.dart';
 import '../essentials/widgets/gradient_button.dart';
 
 class Balances extends StatefulWidget {
@@ -197,7 +197,7 @@ class _BalancesState extends State<Balances> {
     return members.map<Widget>((Member member) {
       TextStyle textStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
           color: member.id == currentUserId
-              ? currentThemeName!.contains('Gradient')
+              ? currentThemeName.contains('Gradient')
                   ? Theme.of(context).colorScheme.onPrimary
                   : Theme.of(context).colorScheme.onSecondary
               : Theme.of(context).colorScheme.onSurface);

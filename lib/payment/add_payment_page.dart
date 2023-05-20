@@ -1,6 +1,6 @@
 import 'package:csocsort_szamla/essentials/ad_management.dart';
-import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/payment/add_modify_payment.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -65,12 +65,15 @@ class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment
             child: Column(
               children: [
                 Expanded(
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: <Widget>[
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(15),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: 500,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
@@ -85,11 +88,7 @@ class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment
                               ),
                               payerChooser(context),
                               SizedBox(
-                                height: 10,
-                              ),
-                              Divider(),
-                              SizedBox(
-                                height: 10,
+                                height: 20,
                               ),
                               Text(
                                 'to_who'.plural(1),
@@ -103,7 +102,7 @@ class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment
                           ),
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
                 Visibility(

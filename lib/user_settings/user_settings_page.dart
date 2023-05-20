@@ -1,4 +1,7 @@
+import 'package:csocsort_szamla/config.dart';
+import 'package:csocsort_szamla/essentials/ad_management.dart';
 import 'package:csocsort_szamla/user_settings/change_user_currency.dart';
+import 'package:csocsort_szamla/user_settings/delete_all_data.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
@@ -8,9 +11,6 @@ import 'change_password.dart';
 import 'change_username.dart';
 import 'color_picker.dart';
 import 'personalised_ads.dart';
-import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/ad_management.dart';
-import 'package:csocsort_szamla/user_settings/delete_all_data.dart';
 import 'report_bug.dart';
 
 class Settings extends StatefulWidget {
@@ -41,9 +41,10 @@ class _SettingsState extends State<Settings> {
           children: [
             width < tabletViewWidth
                 ? Expanded(
-                    child: ListView(
-                      shrinkWrap: true,
-                      children: _settings(),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: _settings(),
+                      ),
                     ),
                   )
                 : Expanded(

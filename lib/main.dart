@@ -25,8 +25,8 @@ import 'package:http/http.dart' as http;
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uni_links/uni_links.dart';
 import 'package:showcaseview/showcaseview.dart';
+import 'package:uni_links/uni_links.dart';
 
 import 'config.dart';
 import 'essentials/app_state_notifier.dart';

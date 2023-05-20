@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
+
 import 'package:csocsort_szamla/auth/login_or_register_page.dart';
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
@@ -19,9 +20,9 @@ import 'package:permission_handler/permission_handler.dart';
 import '../essentials/models.dart';
 import '../essentials/validation_rules.dart';
 import 'create_group.dart';
+import 'main_group_page.dart';
 import 'merge_on_join_page.dart';
 import 'qr_scanner_page.dart';
-import 'main_group_page.dart';
 
 class JoinGroup extends StatefulWidget {
   final bool fromAuth;
@@ -77,7 +78,6 @@ class _JoinGroupState extends State<JoinGroup> {
         usersGroups!.add(decoded['data']['group_name']);
         saveUsersGroupIds();
         saveUsersGroups();
-        print(decoded['data']['members']);
         List<Member> guests = (decoded['data']['members'] as List<dynamic>)
             .where((element) => element['is_guest'] == 1)
             .map((e) => Member.fromJson(e))
@@ -249,11 +249,13 @@ class _JoinGroupState extends State<JoinGroup> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Expanded(
-                  child: ListView(
-                    children: <Widget>[
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(15),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: 500),
                           child: Column(
                             children: [
                               Visibility(
@@ -298,7 +300,8 @@ class _JoinGroupState extends State<JoinGroup> {
                                               }
                                             } else {
                                               Fluttertoast.showToast(
-                                                  msg: 'no_camera_access'.tr(),
+                                                  msg:
+                                                      'no_camera_access'.tr(),
                                                   toastLength:
                                                       Toast.LENGTH_LONG);
                                             }
@@ -366,58 +369,30 @@ class _JoinGroupState extends State<JoinGroup> {
                               SizedBox(
                                 height: 10,
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                              Wrap(
+                                alignment: WrapAlignment.center,
+                                crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
-                                  GradientButton(
-                                    child: Text('join_group'.tr()),
+                                  Text(
+                                    'no_group_yet'.tr(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelLarge!
+                                        .copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant,
+                                        ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  TextButton(
+                                    child: Text('create_group'.tr()),
                                     onPressed: () {
-                                      if (_formKey.currentState!.validate()) {
-                                        String token = _tokenController.text;
-                                        String nickname = _nicknameController
-                                                .text[0]
-                                                .toUpperCase() +
-                                            _nicknameController.text
-                                                .substring(1);
-                                        showDialog(
-                                          builder: (context) =>
-                                              FutureSuccessDialog(
-                                            future: _joinGroup(token, nickname),
-                                            dataFalse: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Flexible(
-                                                    child: Text(
-                                                  'approve_still_needed'.tr(),
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyLarge!
-                                                      .copyWith(
-                                                          color: Colors.white),
-                                                  textAlign: TextAlign.center,
-                                                )),
-                                                SizedBox(
-                                                  height: 15,
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    GradientButton(
-                                                      child: Icon(Icons.check),
-                                                      onPressed: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                    ),
-                                                  ],
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                          barrierDismissible: false,
-                                          context: context,
-                                        );
-                                      }
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CreateGroup()));
                                     },
                                     // color: Theme.of(context).colorScheme.secondary,
                                   ),
@@ -427,62 +402,58 @@ class _JoinGroupState extends State<JoinGroup> {
                           ),
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
-
-//              SizedBox(height: 40,),
-//              Divider(),
-//              SizedBox(height: 40,),
-                Visibility(
-                  visible: MediaQuery.of(context).viewInsets.bottom == 0,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Center(
-                              child: Text(
-                                'no_group_yet'.tr(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                GradientButton(
-                                  child: Text('create_group'.tr()),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                CreateGroup()));
-                                  },
-                                  // color: Theme.of(context).colorScheme.secondary,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      AdUnitForSite(site: 'join_group'),
-                    ],
-                  ),
-                ),
+                AdUnitForSite(site: 'join_group'),
               ],
             ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+            child: Icon(Icons.send, color: Theme.of(context).colorScheme.onSecondaryContainer,),
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                String token = _tokenController.text;
+                String nickname = _nicknameController.text[0].toUpperCase() +
+                    _nicknameController.text.substring(1);
+                showDialog(
+                  builder: (context) => FutureSuccessDialog(
+                    future: _joinGroup(token, nickname),
+                    dataFalse: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                            child: Text(
+                          'approve_still_needed'.tr(),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .copyWith(color: Colors.white),
+                          textAlign: TextAlign.center,
+                        )),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GradientButton(
+                              child: Icon(Icons.check),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                  barrierDismissible: false,
+                  context: context,
+                );
+              }
+            },
           ),
         ),
       ),

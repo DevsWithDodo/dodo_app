@@ -39,9 +39,6 @@ class _QRScannerPageState extends State<QRScannerPage> {
                 MobileScanner(
                   controller: _controller,
                   onDetect: (barcodeCapture) {
-                    print(barcodeCapture.barcodes
-                        .map((e) => e.rawValue)
-                        .toList());
                     if (barcodeCapture.barcodes.isEmpty ||
                         barcodeCapture.barcodes
                             .every((element) => element.rawValue == null)) {
@@ -57,7 +54,6 @@ class _QRScannerPageState extends State<QRScannerPage> {
                         return;
                       }
                       code = code.replaceAll('dodo://', '');
-                      debugPrint('code: ' + code);
                       showDialog(
                           context: context,
                           builder: (context) {

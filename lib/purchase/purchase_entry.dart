@@ -77,7 +77,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
     /* Set icon, amount and names */
     if (bought && received) {
       leadingIcon = Icon(Icons.swap_horiz,
-          color: currentThemeName!.contains('Gradient')
+          color: currentThemeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onSecondaryContainer);
       amountOriginal = widget.purchase.totalAmountOriginalCurrency
@@ -92,11 +92,11 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
         names = widget.purchase.receivers[0].nickname;
       }
       mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          color: currentThemeName!.contains('Gradient')
+          color: currentThemeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onSecondaryContainer);
       subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
-          color: currentThemeName!.contains('Gradient')
+          color: currentThemeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onSecondaryContainer);
       boxDecoration = BoxDecoration(
@@ -106,7 +106,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
       );
     } else if (bought) {
       leadingIcon = Icon(Icons.call_made,
-          color: currentThemeName!.contains('Gradient')
+          color: currentThemeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
       amountOriginal = widget.purchase.totalAmountOriginalCurrency
@@ -117,11 +117,11 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
         names = widget.purchase.receivers[0].nickname;
       }
       mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          color: currentThemeName!.contains('Gradient')
+          color: currentThemeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
       subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
-          color: currentThemeName!.contains('Gradient')
+          color: currentThemeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
       boxDecoration = BoxDecoration(

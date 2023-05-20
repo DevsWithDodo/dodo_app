@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:math';
+
 import 'package:csocsort_szamla/config.dart';
+import 'package:csocsort_szamla/essentials/currencies.dart';
+import 'package:csocsort_szamla/essentials/http_handler.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/widgets/category_picker_icon_button.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
-import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
-import 'package:csocsort_szamla/essentials/http_handler.dart';
-import 'package:csocsort_szamla/essentials/currencies.dart';
 
 class StatisticsPage extends StatefulWidget {
   final DateTime? groupCreation;
@@ -79,14 +79,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
     try {
       String startDate = DateFormat('yyyy-MM-dd').format(_startDate!);
       String endDate = DateFormat('yyyy-MM-dd').format(_endDate);
-      print(generateUri(
-        GetUriKeys.statisticsPayments,
-        queryParams: {
-          'from_date': startDate,
-          'until_date': endDate,
-          ...(_category != null ? {'category': _category?.text} : {}),
-        },
-      ));
       http.Response response = await httpGet(
           useCache: false,
           overwriteCache: true,
@@ -100,7 +92,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
             },
           ));
       Map<String, dynamic> decoded = jsonDecode(response.body);
-      print(response.headers);
 
       Map<DateTime, double?> bought =
           (decoded['data']['bought'] as Map<String, dynamic>)
@@ -411,475 +402,496 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
+        56 - //appbar
+        adHeight(); //Height without status bar and appbar
     return Scaffold(
       appBar: AppBar(
         title: Text(
           'statistics'.tr(),
         ),
       ),
-      body: ListView(
-        children: [
-          Card(
-            child: Padding(
-              padding: EdgeInsets.all(15),
+      body: width < tabletViewWidth
+          ? SingleChildScrollView(
               child: Column(
-                children: [
-                  Text(
-                    'filter_statistics'.tr(),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    'filter_statistics_explanation'.tr(),
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        DateFormat.yMMMd().format(_startDate!) +
-                            ' - ' +
-                            DateFormat.yMMMd().format(_endDate),
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.date_range,
-                            color: Theme.of(context).colorScheme.primary),
-                        onPressed: () async {
-                          DateTimeRange? range = await showDateRangePicker(
-                              context: context,
-                              firstDate: widget.groupCreation!,
-                              lastDate: DateTime.now(),
-                              currentDate: DateTime.now(),
-                              initialDateRange: DateTimeRange(
-                                  start: _startDate!, end: _endDate),
-                              builder: (context, child) {
-                                return child!;
-                              });
-                          if (range != null) {
-                            _startDate = range.start;
-                            _endDate = range.end;
-                            setState(() {
-                              _paymentStats = null;
-                              _purchaseStats = null;
-                              _groupStats = null;
-                              _paymentStats = _getPaymentStats();
-                              _purchaseStats = _getPurchaseStats();
-                              _groupStats = _getGroupStats();
-                            });
-                          }
-                        },
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'category'.tr(),
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant),
-                        ),
-                        CategoryPickerIconButton(
-                          selectedCategory: _category,
-                          onCategoryChanged: (category) {
-                            if (_category?.type == category?.type) {
-                              _category = null;
-                            } else {
-                              _category = category;
-                            }
-                            setState(() {
-                              _paymentStats = _getPaymentStats();
-                              _purchaseStats = _getPurchaseStats();
-                              _groupStats = _getGroupStats();
-                            });
-                          },
-                        )
-                      ])
-                ],
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: _widgets(),
               ),
+            )
+          : Table(
+              columnWidths: {
+                0: FractionColumnWidth(0.5),
+                1: FractionColumnWidth(0.5)
+              },
+              children: [
+                TableRow(children: [
+                  AspectRatio(
+                    aspectRatio: width / 2 / height,
+                    child: ListView(
+                      controller: ScrollController(),
+                      children: _widgets().take(2).toList(),
+                    ),
+                  ),
+                  AspectRatio(
+                    aspectRatio: width / 2 / height,
+                    child: ListView(
+                      controller: ScrollController(),
+                      children: _widgets()
+                          .reversed
+                          .take(2)
+                          .toList()
+                          .reversed
+                          .toList(),
+                    ),
+                  )
+                ])
+              ],
             ),
-          ),
-          Card(
-            child: Padding(
-              padding: EdgeInsets.all(15),
-              child: Column(
-                children: [
-                  Text(
-                    'payments_stats'.tr(),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    'payments_stats_explanation'.tr(),
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  FutureBuilder(
-                    future: _paymentStats,
-                    builder: (context,
-                        AsyncSnapshot<List<Map<DateTime, double?>>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        if (snapshot.hasData) {
-                          return Column(
-                            children: [
-                              AspectRatio(
-                                aspectRatio: 21 / 9,
-                                child: LineChart(_generateLineChartData(
-                                    snapshot.data!, ['payed', 'taken'])),
-                              ),
-                              SizedBox(height: 5),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    'you_payed'.tr(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant),
-                                  )
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .tertiary,
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    'you_took'.tr(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant),
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              _sumOf(snapshot.data![2].values.first, 1),
-                              _sumOf(snapshot.data![3].values.first, 2),
-                            ],
-                          );
-                        }
-                        if (snapshot.hasError) {
-                          return ErrorMessage(
-                              error: snapshot.error.toString(),
-                              errorLocation: 'statistics',
-                              onTap: () {
-                                setState(() {
-                                  _paymentStats = _getPaymentStats();
-                                });
-                              });
-                        }
-                      }
-                      return CircularProgressIndicator();
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Card(
-            child: Padding(
-              padding: EdgeInsets.all(15),
-              child: Column(
-                children: [
-                  Text(
-                    'purchases_stats'.tr(),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    'purchases_stats_explanation'.tr(),
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  FutureBuilder(
-                    future: _purchaseStats,
-                    builder: (context,
-                        AsyncSnapshot<List<Map<DateTime, double?>>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        if (snapshot.hasData) {
-                          return Column(
-                            children: [
-                              AspectRatio(
-                                aspectRatio: 21 / 9,
-                                child: LineChart(_generateLineChartData(
-                                    snapshot.data!,
-                                    ['stat_bought', 'received'])),
-                              ),
-                              SizedBox(height: 5),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    'you_bought'.tr(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant),
-                                  )
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .tertiary,
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    'you_received'.tr(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant),
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              _sumOf(snapshot.data![2].values.first, 1),
-                              _sumOf(snapshot.data![3].values.first, 2),
-                            ],
-                          );
-                        }
-                        if (snapshot.hasError) {
-                          return ErrorMessage(
-                              error: snapshot.error.toString(),
-                              errorLocation: 'statistics',
-                              onTap: () {
-                                setState(() {
-                                  _purchaseStats = _getPurchaseStats();
-                                });
-                              });
-                        }
-                      }
-                      return CircularProgressIndicator();
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Card(
-            child: Padding(
-              padding: EdgeInsets.all(15),
-              child: Column(
-                children: [
-                  Text(
-                    'group_stats'.tr(),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    'group_stats_explanation'.tr(),
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  FutureBuilder(
-                    future: _groupStats,
-                    builder: (context,
-                        AsyncSnapshot<List<Map<DateTime, double?>>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        if (snapshot.hasData) {
-                          return Column(
-                            children: [
-                              AspectRatio(
-                                aspectRatio: 21 / 9,
-                                child: LineChart(_generateLineChartData(
-                                    snapshot.data!,
-                                    ['stats_purchases', 'stats_payments'])),
-                              ),
-                              SizedBox(height: 5),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    'purchases_stats'.tr(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant),
-                                  )
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .tertiary,
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    'payments_stats'.tr(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant),
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              _sumOf(snapshot.data![2].values.first, 1),
-                              _sumOf(snapshot.data![3].values.first, 2),
-                            ],
-                          );
-                        }
-                        if (snapshot.hasError) {
-                          return ErrorMessage(
-                              error: snapshot.error.toString(),
-                              errorLocation: 'statistics',
-                              onTap: () {
-                                setState(() {
-                                  _groupStats = _getGroupStats();
-                                });
-                              });
-                        }
-                      }
-                      return CircularProgressIndicator();
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
     );
+  }
+
+  List<Widget> _widgets() {
+    return [
+      Card(
+        child: Padding(
+          padding: EdgeInsets.all(15),
+          child: Column(
+            children: [
+              Text(
+                'filter_statistics'.tr(),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'filter_statistics_explanation'.tr(),
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    DateFormat.yMMMd().format(_startDate!) +
+                        ' - ' +
+                        DateFormat.yMMMd().format(_endDate),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.date_range,
+                        color: Theme.of(context).colorScheme.primary),
+                    onPressed: () async {
+                      DateTimeRange? range = await showDateRangePicker(
+                          context: context,
+                          firstDate: widget.groupCreation!,
+                          lastDate: DateTime.now(),
+                          currentDate: DateTime.now(),
+                          initialDateRange:
+                              DateTimeRange(start: _startDate!, end: _endDate),
+                          builder: (context, child) {
+                            return child!;
+                          });
+                      if (range != null) {
+                        _startDate = range.start;
+                        _endDate = range.end;
+                        setState(() {
+                          _paymentStats = null;
+                          _purchaseStats = null;
+                          _groupStats = null;
+                          _paymentStats = _getPaymentStats();
+                          _purchaseStats = _getPurchaseStats();
+                          _groupStats = _getGroupStats();
+                        });
+                      }
+                    },
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text(
+                  'category'.tr(),
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                ),
+                CategoryPickerIconButton(
+                  selectedCategory: _category,
+                  onCategoryChanged: (category) {
+                    if (_category?.type == category?.type) {
+                      _category = null;
+                    } else {
+                      _category = category;
+                    }
+                    setState(() {
+                      _paymentStats = _getPaymentStats();
+                      _purchaseStats = _getPurchaseStats();
+                      _groupStats = _getGroupStats();
+                    });
+                  },
+                )
+              ])
+            ],
+          ),
+        ),
+      ),
+      Card(
+        child: Padding(
+          padding: EdgeInsets.all(15),
+          child: Column(
+            children: [
+              Text(
+                'payments_stats'.tr(),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'payments_stats_explanation'.tr(),
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              FutureBuilder(
+                future: _paymentStats,
+                builder: (context,
+                    AsyncSnapshot<List<Map<DateTime, double?>>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      return Column(
+                        children: [
+                          AspectRatio(
+                            aspectRatio: 21 / 9,
+                            child: LineChart(_generateLineChartData(
+                                snapshot.data!, ['payed', 'taken'])),
+                          ),
+                          SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    borderRadius: BorderRadius.circular(15)),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                'you_payed'.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant),
+                              )
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
+                                    borderRadius: BorderRadius.circular(15)),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                'you_took'.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant),
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          _sumOf(snapshot.data![2].values.first, 1),
+                          _sumOf(snapshot.data![3].values.first, 2),
+                        ],
+                      );
+                    }
+                    if (snapshot.hasError) {
+                      return ErrorMessage(
+                          error: snapshot.error.toString(),
+                          errorLocation: 'statistics',
+                          onTap: () {
+                            setState(() {
+                              _paymentStats = _getPaymentStats();
+                            });
+                          });
+                    }
+                  }
+                  return CircularProgressIndicator();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      Card(
+        child: Padding(
+          padding: EdgeInsets.all(15),
+          child: Column(
+            children: [
+              Text(
+                'purchases_stats'.tr(),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'purchases_stats_explanation'.tr(),
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              FutureBuilder(
+                future: _purchaseStats,
+                builder: (context,
+                    AsyncSnapshot<List<Map<DateTime, double?>>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      return Column(
+                        children: [
+                          AspectRatio(
+                            aspectRatio: 21 / 9,
+                            child: LineChart(_generateLineChartData(
+                                snapshot.data!, ['stat_bought', 'received'])),
+                          ),
+                          SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    borderRadius: BorderRadius.circular(15)),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                'you_bought'.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant),
+                              )
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
+                                    borderRadius: BorderRadius.circular(15)),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                'you_received'.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant),
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          _sumOf(snapshot.data![2].values.first, 1),
+                          _sumOf(snapshot.data![3].values.first, 2),
+                        ],
+                      );
+                    }
+                    if (snapshot.hasError) {
+                      return ErrorMessage(
+                          error: snapshot.error.toString(),
+                          errorLocation: 'statistics',
+                          onTap: () {
+                            setState(() {
+                              _purchaseStats = _getPurchaseStats();
+                            });
+                          });
+                    }
+                  }
+                  return CircularProgressIndicator();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      Card(
+        child: Padding(
+          padding: EdgeInsets.all(15),
+          child: Column(
+            children: [
+              Text(
+                'group_stats'.tr(),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                'group_stats_explanation'.tr(),
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              FutureBuilder(
+                future: _groupStats,
+                builder: (context,
+                    AsyncSnapshot<List<Map<DateTime, double?>>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      return Column(
+                        children: [
+                          AspectRatio(
+                            aspectRatio: 21 / 9,
+                            child: LineChart(_generateLineChartData(
+                                snapshot.data!,
+                                ['stats_purchases', 'stats_payments'])),
+                          ),
+                          SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                    borderRadius: BorderRadius.circular(15)),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                'purchases_stats'.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant),
+                              )
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
+                                    borderRadius: BorderRadius.circular(15)),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                'payments_stats'.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant),
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          _sumOf(snapshot.data![2].values.first, 1),
+                          _sumOf(snapshot.data![3].values.first, 2),
+                        ],
+                      );
+                    }
+                    if (snapshot.hasError) {
+                      return ErrorMessage(
+                          error: snapshot.error.toString(),
+                          errorLocation: 'statistics',
+                          onTap: () {
+                            setState(() {
+                              _groupStats = _getGroupStats();
+                            });
+                          });
+                    }
+                  }
+                  return CircularProgressIndicator();
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    ];
   }
 }

@@ -1,5 +1,5 @@
-import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/payment/add_modify_payment.dart';
@@ -44,7 +44,6 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog>
   @override
   void initState() {
     super.initState();
-    print(widget.savedPayment!.originalCurrency);
     initAddModifyPayment(context, setState,
         paymentType: PaymentType.modifyPayment,
         savedPayment: widget.savedPayment);
