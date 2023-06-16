@@ -2,12 +2,14 @@ import 'package:csocsort_szamla/essentials/ad_management.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/http_handler.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/purchase/add_modify_purchase.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 
@@ -49,6 +51,9 @@ class _AddPurchasePageState extends State<AddPurchasePage>
   void _onPostPurchase(BuildContext context) {
     Navigator.pop(context);
     Navigator.pop(context);
+    final bus = context.read<EventBusProvider>().eventBus;
+    bus.fire(RefreshBalances());
+    bus.fire(RefreshPurchases());
   }
 
   @override

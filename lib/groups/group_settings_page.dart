@@ -18,10 +18,9 @@ class GroupSettings extends StatefulWidget {
   final bool bigScreen;
   final double? height;
   final double? width;
-  final GlobalKey<State>? bannerKey;
   final String? scrollTo;
   GroupSettings(
-      {this.bannerKey,
+      {
       this.scrollTo,
       this.bigScreen = false,
       this.height,

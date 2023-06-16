@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:connectivity_widget/connectivity_widget.dart';
 import 'package:csocsort_szamla/auth/login_or_register_page.dart';
+import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
 import 'package:csocsort_szamla/essentials/save_preferences.dart';
 import 'package:csocsort_szamla/groups/create_group.dart';
 import 'package:csocsort_szamla/groups/group_settings_page.dart';
@@ -22,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:provider/provider.dart';
 
 import '../balance/balances.dart';
 import '../config.dart';
@@ -34,6 +36,20 @@ import '../main/iapp_not_supported_dialog.dart';
 import '../main/like_app_dialog.dart';
 import '../main/main_speed_dial.dart';
 import '../main/trial_version_dialog.dart';
+
+class IsOnlineProvider extends ChangeNotifier {
+  late bool _isOnline;
+  IsOnlineProvider({required bool isOnline}) {
+    _isOnline = isOnline;
+  }
+
+  bool get isOnline => _isOnline;
+
+  void setIsOnline(bool isOnline) {
+    _isOnline = isOnline;
+    notifyListeners();
+  }
+}
 
 class MainPage extends StatefulWidget {
   final int selectedHistoryIndex;
@@ -50,12 +66,12 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   SharedPreferences? prefs;
   Future<List<Group>>? _groups;
+  Future<dynamic>? _sumBalance;
 
   TabController? _tabController;
   int _selectedIndex = 0;
 
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  GlobalKey<State> _isGuestBannerKey = GlobalKey<State>();
 
   String? scrollTo;
 
@@ -157,6 +173,11 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 _selectedIndex = 0;
                 _tabController!.animateTo(_selectedIndex);
               });
+              final bus = context.read<EventBusProvider>().eventBus;
+              bus.fire(RefreshBalances());
+              bus.fire(RefreshPayments());
+              bus.fire(RefreshPurchases());
+              bus.fire(RefreshShopping());
             },
           ),
         ),
@@ -170,8 +191,21 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     _selectedIndex = widget.selectedIndex;
     _tabController = TabController(
         length: 3, vsync: this, initialIndex: widget.selectedIndex);
-    _groups = null;
     _groups = _getGroups();
+    _sumBalance = _getSumBalance();
+    final bus = context.read<EventBusProvider>().eventBus;
+    bus.on<RefreshBalances>().listen((event) async {
+      if (mounted) {
+        _sumBalance = _getSumBalance();
+        setState(() {});
+      }
+    });
+    bus.on<RefreshGroups>().listen((event) async {
+      if (mounted) {
+        _groups = _getGroups();
+        setState(() {});
+      }
+    });
     scrollTo = widget.scrollTo;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       Future.delayed(Duration(seconds: 1)).then((value) => scrollTo = null);
@@ -188,14 +222,13 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     _groups = _getGroups();
   }
 
-  Future<void> callback() async {
+  Future<void> clearRelevantCache() async {
     await clearGroupCache();
     await deleteCache(uri: generateUri(GetUriKeys.groups));
     await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum));
-    setState(() {
-      _groups = null;
-      _groups = _getGroups();
-    });
+  }
+
+  Future<void> handleReturn() async {
 
     if (!kIsWeb && !ratedApp! && !trialVersion) {
       double r = Random().nextDouble();
@@ -285,7 +318,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       floatingActionButton: Visibility(
         visible: _selectedIndex == 0,
         child: MainPageSpeedDial(
-          onReturn: this.callback,
+          onReturn: this.handleReturn,
         ),
       ),
       body: kIsWeb
@@ -308,7 +341,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     ),
               builder: (context, isOnline) {
                 isOnline = isOnline || kIsWeb;
-                return _body(isOnline, bigScreen);
+                return ChangeNotifierProvider(
+                  create: (_) => IsOnlineProvider(isOnline: isOnline),
+                  child: _body(isOnline, bigScreen),
+                );
               },
             ),
     );
@@ -385,35 +421,37 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     return [
       RefreshIndicator(
         onRefresh: () async {
-          if (isOnline) await callback();
-          setState(() {});
+          final eventBus = context.read<EventBusProvider>().eventBus;
+          eventBus.fire(RefreshBalances());
+          eventBus.fire(RefreshPayments());
+          eventBus.fire(RefreshPurchases());
+          eventBus.fire(RefreshShopping());
+          eventBus.fire(RefreshStatistics());
+          if (isOnline) await clearRelevantCache();
+          setState(() {
+            _sumBalance = _getSumBalance();
+            _groups = _getGroups();
+          });
         },
         child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          controller: ScrollController(),
-          // shrinkWrap: true,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-            Balances(
-              onPaymentsPosted: callback,
-              bigScreen: bigScreen,
-            ),
-            History(
-              selectedIndex: widget.selectedHistoryIndex,
-              callback: callback,
-            ),
-            StatisticsDataExport(),
-            SizedBox(height: 70), // So the floating button doesn't block info
-          ],
-          )
-        ),
+            physics: AlwaysScrollableScrollPhysics(),
+            controller: ScrollController(),
+            // shrinkWrap: true,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Balances(),
+                History(
+                  selectedIndex: widget.selectedHistoryIndex,
+                ),
+                StatisticsDataExport(),
+                SizedBox(
+                    height: 70), // So the floating button doesn't block info
+              ],
+            )),
       ),
-      ShoppingList(
-        isOnline: isOnline,
-      ),
+      ShoppingList(),
       GroupSettings(
-        bannerKey: _isGuestBannerKey,
         scrollTo: scrollTo,
         bigScreen: bigScreen,
         height: height,
@@ -443,9 +481,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                         child: ColorFiltered(
                           colorFilter: ColorFilter.mode(
                               Theme.of(context).colorScheme.primary,
-                              currentThemeName
-                                          .toLowerCase()
-                                          .contains('dodo') &&
+                              currentThemeName.toLowerCase().contains('dodo') &&
                                       !kIsWeb
                                   ? BlendMode.dst
                                   : BlendMode.srcIn),
@@ -477,36 +513,28 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   builder: (context, AsyncSnapshot<List<Group>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
-                        return Theme(
-                          data: Theme.of(context).copyWith(
-                            dividerColor: Colors.transparent,
-                            cardTheme: CardTheme(
-                              elevation: 0,
-                              color: Colors.transparent,
-                              margin: EdgeInsets.symmetric(horizontal: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(28)),
-                              ),
-                            ),
+                        return Card(
+                          color: Colors.transparent,
+                          elevation: 0,
+                          margin: EdgeInsets.symmetric(horizontal: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(28)),
                           ),
-                          child: Card(
-                            clipBehavior: Clip.antiAlias,
-                            child: ExpansionTile(
-                              title: Text('groups'.tr(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge!
-                                      .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant)),
-                              leading: Icon(Icons.group,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant),
-                              children: _generateListTiles(snapshot.data!),
-                            ),
+                          clipBehavior: Clip.antiAlias,
+                          child: ExpansionTile(
+                            title: Text('groups'.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant)),
+                            leading: Icon(Icons.group,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant),
+                            children: _generateListTiles(snapshot.data!),
                           ),
                         );
                       } else {
@@ -579,7 +607,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
             ),
           ),
           FutureBuilder(
-            future: _getSumBalance(),
+            future: _sumBalance,
             builder: (context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasData) {

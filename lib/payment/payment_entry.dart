@@ -3,21 +3,21 @@ import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/app_theme.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
 import 'package:csocsort_szamla/essentials/widgets/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/past_reaction_container.dart';
 import 'package:csocsort_szamla/payment/payment_all_info.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PaymentEntry extends StatefulWidget {
   final bool isTappable;
   final Payment payment;
-  final Function({bool purchase, bool payment})? onDelete;
   late final int selectedMemberId;
   PaymentEntry({
     required this.payment,
     selectedMemberId,
-    this.onDelete,
     this.isTappable = true,
   }) {
     this.selectedMemberId = selectedMemberId ?? currentUserId;
@@ -79,7 +79,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
       amount = widget.payment.amountOriginalCurrency
           .toMoneyString(widget.payment.originalCurrency, withSymbol: true);
       icon = Icon(Icons.call_made,
-          color: currentThemeName!.contains('Gradient')
+          color: currentThemeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
       boxDecoration = BoxDecoration(
@@ -88,11 +88,11 @@ class _PaymentEntryState extends State<PaymentEntry> {
         borderRadius: BorderRadius.circular(15),
       );
       mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          color: currentThemeName!.contains('Gradient')
+          color: currentThemeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
       subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
-          color: currentThemeName!.contains('Gradient')
+          color: currentThemeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
     } else {
@@ -149,9 +149,10 @@ class _PaymentEntryState extends State<PaymentEntry> {
                               builder: (context) => SingleChildScrollView(
                                   child: PaymentAllInfo(widget.payment)))
                           .then((returnValue) {
-                        if (returnValue == 'deleted' &&
-                            widget.onDelete != null) {
-                          widget.onDelete!(purchase: false, payment: true);
+                        if (returnValue == 'deleted') {
+                          final bus = context.read<EventBusProvider>().eventBus;
+                          bus.fire(RefreshPayments());
+                          bus.fire(RefreshBalances());
                         }
                       });
                     },

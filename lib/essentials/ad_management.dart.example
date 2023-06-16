@@ -15,18 +15,18 @@ Map<String, String> appUnitIds = {
 
 class AdUnitForSite extends StatefulWidget {
   final String site;
-  AdUnitForSite({@required this.site}) {}
+  AdUnitForSite({required this.site});
 
   @override
   State<AdUnitForSite> createState() => _AdUnitForSiteState();
 }
 
 class _AdUnitForSiteState extends State<AdUnitForSite> {
-  BannerAd ad;
+  late BannerAd ad;
   @override
   void initState() {
     ad = BannerAd(
-      adUnitId: appUnitIds[widget.site],
+      adUnitId: appUnitIds[widget.site]!,
       size: AdSize.banner,
       request: AdRequest(),
       listener: BannerAdListener(),

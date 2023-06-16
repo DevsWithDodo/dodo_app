@@ -3,20 +3,22 @@ import 'dart:convert';
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/http_handler.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
+import 'package:csocsort_szamla/groups/main_group_page.dart';
 import 'package:csocsort_szamla/shopping/im_shopping_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import '../essentials/validation_rules.dart';
 import '../essentials/widgets/error_message.dart';
 import 'shopping_list_entry.dart';
 
 class ShoppingList extends StatefulWidget {
-  final bool isOnline;
-  ShoppingList({required this.isOnline});
+  ShoppingList();
   @override
   _ShoppingListState createState() => _ShoppingListState();
 }
@@ -204,20 +206,21 @@ class _ShoppingListState extends State<ShoppingList> {
     super.initState();
     _shoppingList = null;
     _shoppingList = _getShoppingList();
-  }
-
-  @override
-  void didUpdateWidget(ShoppingList oldWidget) {
-    _shoppingList = null;
-    _shoppingList = _getShoppingList();
-    super.didUpdateWidget(oldWidget);
+    context.read<EventBusProvider>().eventBus.on<RefreshShopping>().listen((_) {
+      if (mounted) {
+        setState(() {
+          _shoppingList = null;
+          _shoppingList = _getShoppingList(overwriteCache: true);
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
-        if (widget.isOnline) await deleteCache(uri: '/groups');
+        if (context.read<IsOnlineProvider>().isOnline) await deleteCache(uri: '/groups');
         setState(() {
           _shoppingList = null;
           _shoppingList = _getShoppingList(overwriteCache: true);

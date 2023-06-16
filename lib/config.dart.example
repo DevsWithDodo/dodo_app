@@ -1,48 +1,33 @@
 const String APP_URL =  'https://www.examp.le/api';
 const String TEST_URL = 'https://test.examp.le/api';
 int currentVersion=YOUR_CURRENT_VERSION;
-bool useTest=false;
-bool usesPassword;
-String apiToken;
-String currentUsername;
-int currentUserId;
-String currentGroupName;
-int currentGroupId;
-String currentGroupCurrency;
-String currentUserCurrency;
-List<String> usersGroups;
-List<int> usersGroupIds;
-String guestApiToken;
-int guestGroupId;
-String guestNickname;
-int guestUserId;
-bool showAds=false;
-bool useGradients=true;
-bool personalisedAds=false;
-bool trialVersion=false;
+bool useTest = false;
+String? apiToken;
+String? currentUsername;
+int? currentUserId;
+String? currentUserCurrency;
+bool? usesPassword;
+String? currentGroupName;
+int? currentGroupId;
+String? currentGroupCurrency;
+List<String>? usersGroups;
+List<int>? usersGroupIds;
+bool showAds = false;
+bool useGradients = true;
+bool personalisedAds = false;
+bool trialVersion = false;
 bool trialJustEnded = false;
-bool ratedApp=false;
-String currentThemeName = "greenLightTheme";
+bool? ratedApp = false;
+String currentThemeName = "dodoLightTheme";
 
-///The userId to use in the current situation. Used when guests could be
-///used as well.
-int idToUse() {
-  return currentUserId;
-  return (guestNickname != null && guestGroupId == currentGroupId)
-      ? guestUserId
-      : currentUserId;
-}
-
-/// Is in app purchase enabled on the platform. Set programmatically.
+/// Whether in app purchase enabled on the platform. Set programmatically.
 bool isIAPPlatformEnabled = false;
 
-/// Are ads enabled on the platform. Set programmatically.
+/// Whether ads are enabled on the platform. Set programmatically.
 bool isAdPlatformEnabled = false;
 
-/// Is Firebase enabled on the platform. Set programmatically.
+/// Whether Firebase are enabled on the platform. Set programmatically.
 bool isFirebasePlatformEnabled = false;
 
-double tabletViewWidth = 880;
-double adHeight() {
-  return (isAdPlatformEnabled && showAds) ? 50 : 0;
-}
+double tabletViewWidth = 850;
+double adHeight() => (isAdPlatformEnabled && showAds) ? 50 : 0;

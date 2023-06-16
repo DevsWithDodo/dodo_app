@@ -12,7 +12,7 @@ description: Csocsort
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 
-version: 3.0.8+87
+version: 3.0.9+88
 
 environment:
   sdk: '>=2.17.0 <3.0.0'
@@ -45,6 +45,7 @@ dependencies:
   dynamic_color: ^1.6.3
   mobile_scanner: ^3.2.0
   showcaseview: ^2.0.3
+  event_bus_plus: ^0.6.1
   flutter:
     sdk: flutter
   flutter_localizations:

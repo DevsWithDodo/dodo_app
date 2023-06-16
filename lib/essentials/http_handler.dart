@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:csocsort_szamla/essentials/save_preferences.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -40,7 +41,7 @@ enum GetUriKeys {
 enum HttpType { get, post, put, delete }
 
 ///Generates URI-s from enum values. The default value of [params] is [currentGroupId].
-String? generateUri(
+String generateUri(
   GetUriKeys key, {
   HttpType type = HttpType.get,
   List<String>? params,
@@ -185,19 +186,19 @@ Future toCache({required String uri, required http.Response response}) async {
 ///The [multipleArgs] bool is used for [uri]-s where not all of the [args]
 ///are known at the time of the removal. (See [generateUri] function)
 ///In this case the [uri] becomes a search word
-Future deleteCache({required String? uri, bool multipleArgs = false}) async {
+Future deleteCache({required String uri, bool multipleArgs = false}) async {
   if (!kIsWeb) {
-    uri = uri!.substring(1);
+    uri = uri.substring(1);
     String fileName =
         uri.replaceAll('/', '-').replaceAll('&', '-').replaceAll('?', '-');
-    String s = Platform.isWindows ? '\\' : '/';
+    String separator = Platform.isWindows ? '\\' : '/';
     var cacheDir = await _getCacheDir();
     if (multipleArgs) {
       if (cacheDir.existsSync()) {
         List<FileSystemEntity> files = cacheDir.listSync();
         for (var file in files) {
           if (file is File) {
-            String fileName = file.path.split(s).last;
+            String fileName = file.path.split(separator).last;
             if (fileName.contains(uri)) {
               file.deleteSync();
             }
@@ -205,7 +206,7 @@ Future deleteCache({required String? uri, bool multipleArgs = false}) async {
         }
       }
     } else {
-      File file = File(cacheDir.path + s + fileName);
+      File file = File(cacheDir.path + separator + fileName);
       if (file.existsSync()) {
         // print('delete cache'+fileName);
         await file.delete();
@@ -277,7 +278,7 @@ Future<http.Response> httpGet({
           uri: uri!.substring(1), overwriteCache: overwriteCache);
       if (responseFromCache != null) {
         //print('de cache!');
-        await Future.delayed(Duration(milliseconds: 500));
+        await Future.delayed(Duration(milliseconds: 300 + ((Random().nextDouble() - 0.5) * 100).toInt()));
         return responseFromCache;
       }
     }

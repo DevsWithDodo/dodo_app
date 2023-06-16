@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:csocsort_szamla/auth/login_or_register_page.dart';
 import 'package:csocsort_szamla/essentials/app_theme.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
+import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
 import 'package:csocsort_szamla/essentials/save_preferences.dart';
 import 'package:csocsort_szamla/essentials/widgets/version_not_supported_page.dart';
 import 'package:csocsort_szamla/groups/join_group.dart';
@@ -464,51 +465,54 @@ class _LenderAppState extends State<LenderApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<AppStateNotifier>(
-      builder: (context, appState, child) {
-        return DynamicColorBuilder(
-            builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-          if (lightDynamic != null && !_dynamicColorLoaded) {
-            AppTheme.addDynamicThemes(lightDynamic, darkDynamic!);
-            appState.updateThemeNoNotify(widget.themeName);
-            _dynamicColorLoaded = true;
-          }
-
-          if (_first) {
-            appState.updateThemeNoNotify(widget.themeName);
-            _first = false;
-          }
-          return ShowCaseWidget(
-            builder: Builder(
-              builder: (context) {
-                return MaterialApp(
-                  debugShowCheckedModeBanner: false,
-                  title: 'Dodo',
-                  theme: appState.theme,
-                  localizationsDelegates: context.localizationDelegates,
-                  supportedLocales: context.supportedLocales,
-                  locale: context.locale,
-                  navigatorKey: getIt.get<NavigationService>().navigatorKey,
-                  home: currentUserId == null
-                      ? LoginOrRegisterPage(
-                          inviteURL: _link,
-                        )
-                      : (_link != null)
-                          ? JoinGroup(
-                              inviteURL: _link,
-                              fromAuth: (currentGroupId == null) ? true : false,
-                            )
-                          : (currentGroupId == null)
-                              ? JoinGroup(
-                                  fromAuth: true,
-                                )
-                              : MainPage(),
-                );
-              }
-            ),
-          );
-        });
-      },
+    return ChangeNotifierProvider(
+      create: (context) => EventBusProvider(),
+      child: Consumer<AppStateNotifier>(
+        builder: (context, appState, child) {
+          return DynamicColorBuilder(
+              builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+            if (lightDynamic != null && !_dynamicColorLoaded) {
+              AppTheme.addDynamicThemes(lightDynamic, darkDynamic!);
+              appState.updateThemeNoNotify(widget.themeName);
+              _dynamicColorLoaded = true;
+            }
+    
+            if (_first) {
+              appState.updateThemeNoNotify(widget.themeName);
+              _first = false;
+            }
+            return ShowCaseWidget(
+              builder: Builder(
+                builder: (context) {
+                  return MaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    title: 'Dodo',
+                    theme: appState.theme,
+                    localizationsDelegates: context.localizationDelegates,
+                    supportedLocales: context.supportedLocales,
+                    locale: context.locale,
+                    navigatorKey: getIt.get<NavigationService>().navigatorKey,
+                    home: currentUserId == null
+                        ? LoginOrRegisterPage(
+                            inviteURL: _link,
+                          )
+                        : (_link != null)
+                            ? JoinGroup(
+                                inviteURL: _link,
+                                fromAuth: (currentGroupId == null) ? true : false,
+                              )
+                            : (currentGroupId == null)
+                                ? JoinGroup(
+                                    fromAuth: true,
+                                  )
+                                : MainPage(),
+                  );
+                }
+              ),
+            );
+          });
+        },
+      ),
     );
   }
 }

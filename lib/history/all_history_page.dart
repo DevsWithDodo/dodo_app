@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
 import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/payment/payment_entry.dart';
 import 'package:csocsort_szamla/purchase/purchase_entry.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import '../essentials/models.dart';
 import 'history_filter.dart';
@@ -87,7 +89,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     }
   }
 
-  Future<Map<DateTime, List<Payment>>> _getPayments({bool overwriteCache = false}) async {
+  Future<Map<DateTime, List<Payment>>> _getPayments(
+      {bool overwriteCache = false}) async {
     try {
       http.Response response;
       response = await httpGet(
@@ -110,7 +113,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
       );
 
       List<dynamic> decoded = jsonDecode(response.body)['data'];
-      List<Payment> paymentData = decoded.map((data) => Payment.fromJson(data)).toList();
+      List<Payment> paymentData =
+          decoded.map((data) => Payment.fromJson(data)).toList();
 
       // Group by week starting from now
       Map<DateTime, List<Payment>> grouped = {};
@@ -132,52 +136,9 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
         }
       }
       return grouped;
-      
     } catch (_) {
       throw _;
     }
-  }
-
-  void onDeletePurchasePayment({bool purchase = false, bool payment = false}) {
-    if (!purchase && !payment) {
-      clearGroupCache();
-      setState(() {
-        _payments = null;
-        _payments = _getPayments(overwriteCache: true);
-        _purchases = null;
-        _purchases = _getPurchases(overwriteCache: true);
-      });
-      return;
-    }
-    setState(() {
-      if (payment) {
-        deleteCache(
-          uri: generateUri(
-            GetUriKeys.payments,
-            queryParams: {'group': currentGroupId.toString()},
-          ),
-        );
-        deleteCache(
-            uri: 'payments?group=$currentGroupId&from_date',
-            multipleArgs: true); //payments date
-        _payments = null;
-        _payments = _getPayments(overwriteCache: true);
-      }
-      if (purchase) {
-        deleteCache(
-            uri: generateUri(
-          GetUriKeys.purchases,
-          queryParams: {'group': currentGroupId.toString()},
-        ));
-        deleteCache(
-            uri: 'purchases?group=$currentGroupId&from_date',
-            multipleArgs: true); //purchases date
-        _purchases = null;
-        _purchases = _getPurchases(overwriteCache: true);
-      }
-      deleteCache(uri: generateUri(GetUriKeys.groupCurrent)); //Balances
-      deleteCache(uri: generateUri(GetUriKeys.userBalanceSum));
-    });
   }
 
   @override
@@ -191,6 +152,25 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
 
     _payments = null;
     _payments = _getPayments();
+
+    final bus = context.read<EventBusProvider>().eventBus;
+    bus.on<RefreshPurchases>().listen((_) {
+      if (mounted) {
+        setState(() {
+          _purchases = null;
+          _purchases = _getPurchases(overwriteCache: true);
+        });
+      }
+    });
+    bus.on<RefreshPayments>().listen((_) {
+      if (mounted) {
+        setState(() {
+          _payments = null;
+          _payments = _getPayments(overwriteCache: true);
+        });
+      }
+    });
+
     super.initState();
   }
 
@@ -372,7 +352,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
       ),
       FutureBuilder(
         future: _payments,
-        builder: (context, AsyncSnapshot<Map<DateTime, List<Payment>>> snapshot) {
+        builder:
+            (context, AsyncSnapshot<Map<DateTime, List<Payment>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               return SingleChildScrollView(
@@ -404,7 +385,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     ];
   }
 
-  Widget _generatePaymentWeekWidget(DateTime startDate, List<Payment> payments) {
+  Widget _generatePaymentWeekWidget(
+      DateTime startDate, List<Payment> payments) {
     return Column(
       children: [
         Center(
@@ -429,7 +411,6 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
               children: payments
                   .map((e) => PaymentEntry(
                         payment: e,
-                        onDelete: onDeletePurchasePayment,
                         selectedMemberId: _selectedMemberId,
                       ))
                   .toList()),
@@ -456,7 +437,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
         .toList();
   }
 
-  Widget _generatePurchaseWeekWidget(DateTime startDate, List<Purchase> purchases) {
+  Widget _generatePurchaseWeekWidget(
+      DateTime startDate, List<Purchase> purchases) {
     return Column(
       children: [
         Center(
@@ -479,9 +461,8 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
           padding: const EdgeInsets.all(8.0),
           child: Column(
               children: purchases
-                  .map((e) => PurchaseEntry(
-                        purchase: e,
-                        onDelete: onDeletePurchasePayment,
+                  .map((purchase) => PurchaseEntry(
+                        purchase: purchase,
                         selectedMemberId: _selectedMemberId,
                       ))
                   .toList()),

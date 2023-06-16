@@ -1,19 +1,19 @@
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/http_handler.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/payment/payment_entry.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PaymentsNeededDialog extends StatefulWidget {
   final List<Payment> payments;
-  final Function onPaymentsPosted;
 
   const PaymentsNeededDialog({
     required this.payments,
-    required this.onPaymentsPosted,
     super.key,
   });
 
@@ -52,7 +52,9 @@ class _PaymentsNeededDialogState extends State<PaymentsNeededDialog> {
   void _onPostPayments() {
     Navigator.pop(context);
     Navigator.pop(context);
-    widget.onPaymentsPosted();
+    final bus = context.read<EventBusProvider>().eventBus;
+    bus.fire(RefreshPayments());
+    bus.fire(RefreshBalances());
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/groups/dialogs/download_export_dialog.dart';
@@ -9,6 +10,7 @@ import 'package:csocsort_szamla/main/statistics_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class StatisticsDataExport extends StatefulWidget {
   const StatisticsDataExport();
@@ -88,13 +90,15 @@ class _StatisticsDataExportState extends State<StatisticsDataExport> {
   void initState() {
     super.initState();
     _group = _getGroup();
-  }
-
-  @override
-  void didUpdateWidget(covariant StatisticsDataExport oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _group = null;
-    _group = _getGroup();
+    context.read<EventBusProvider>().eventBus.on<RefreshStatistics>().listen(
+      (_) {
+        if (mounted) {
+          setState(() {
+            _group = _getGroup();
+          });
+        }
+      },
+    );
   }
 
   @override

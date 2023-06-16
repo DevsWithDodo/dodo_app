@@ -4,6 +4,7 @@ import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
 import 'package:csocsort_szamla/essentials/save_preferences.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
@@ -12,6 +13,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import 'dialogs/change_nickname_dialog.dart';
 import 'dialogs/confirm_leave_dialog.dart';
@@ -252,7 +254,6 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                           showDialog(
                               builder: (context) => FutureSuccessDialog(
                                     future: _removeMember(null),
-                                    dataTrueText: 'leave_scf',
                                     onDataTrue: () async {
                                       _onRemoveMemberNull();
                                     },
@@ -322,6 +323,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
       usersGroups!.remove(currentGroupName);
       saveUsersGroupIds();
       saveUsersGroups();
+      context.read<EventBusProvider>().eventBus.fire(RefreshGroups());
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(

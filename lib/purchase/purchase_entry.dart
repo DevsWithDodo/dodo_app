@@ -5,20 +5,21 @@ import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/app_theme.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
 import 'package:csocsort_szamla/essentials/widgets/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/past_reaction_container.dart';
 import 'package:csocsort_szamla/purchase/purchase_all_info.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PurchaseEntry extends StatefulWidget {
   final Purchase purchase;
-  final Function({bool purchase, bool payment}) onDelete;
   final int selectedMemberId;
   const PurchaseEntry({
     required this.purchase,
-    required this.onDelete,
     required this.selectedMemberId,
   });
 
@@ -182,8 +183,11 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                       child: PurchaseAllInfo(
                           widget.purchase, widget.selectedMemberId)),
                 ).then((val) {
-                  if (val == 'deleted')
-                    widget.onDelete(purchase: true, payment: false);
+                  if (val == 'deleted') {
+                    EventBus eventBus = context.read<EventBusProvider>().eventBus;
+                    eventBus.fire(RefreshPurchases());
+                    eventBus.fire(RefreshBalances());
+                  }
                 });
               },
               borderRadius: BorderRadius.circular(15),
