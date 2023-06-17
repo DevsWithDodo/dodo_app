@@ -465,8 +465,7 @@ class _LenderAppState extends State<LenderApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => EventBusProvider(),
+    return EventBusProvider(
       child: Consumer<AppStateNotifier>(
         builder: (context, appState, child) {
           return DynamicColorBuilder(

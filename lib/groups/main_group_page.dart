@@ -17,7 +17,7 @@ import 'package:csocsort_szamla/main/trial_ended_dialog.dart';
 import 'package:csocsort_szamla/shopping/shopping_list.dart';
 import 'package:csocsort_szamla/user_settings/user_settings_page.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
+import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -173,7 +173,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 _selectedIndex = 0;
                 _tabController!.animateTo(_selectedIndex);
               });
-              final bus = context.read<EventBusProvider>().eventBus;
+              final bus = context.read<EventBus>();
               bus.fire(RefreshBalances());
               bus.fire(RefreshPayments());
               bus.fire(RefreshPurchases());
@@ -193,7 +193,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         length: 3, vsync: this, initialIndex: widget.selectedIndex);
     _groups = _getGroups();
     _sumBalance = _getSumBalance();
-    final bus = context.read<EventBusProvider>().eventBus;
+    final bus = context.read<EventBus>();
     bus.on<RefreshBalances>().listen((event) async {
       if (mounted) {
         _sumBalance = _getSumBalance();
@@ -421,7 +421,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     return [
       RefreshIndicator(
         onRefresh: () async {
-          final eventBus = context.read<EventBusProvider>().eventBus;
+          final eventBus = context.read<EventBus>();
           eventBus.fire(RefreshBalances());
           eventBus.fire(RefreshPayments());
           eventBus.fire(RefreshPurchases());

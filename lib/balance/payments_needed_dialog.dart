@@ -6,6 +6,7 @@ import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/payment/payment_entry.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -52,7 +53,7 @@ class _PaymentsNeededDialogState extends State<PaymentsNeededDialog> {
   void _onPostPayments() {
     Navigator.pop(context);
     Navigator.pop(context);
-    final bus = context.read<EventBusProvider>().eventBus;
+    final bus = context.read<EventBus>();
     bus.fire(RefreshPayments());
     bus.fire(RefreshBalances());
   }

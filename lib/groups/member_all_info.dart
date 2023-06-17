@@ -10,6 +10,7 @@ import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/groups/dialogs/select_member_to_merge_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -323,7 +324,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
       usersGroups!.remove(currentGroupName);
       saveUsersGroupIds();
       saveUsersGroups();
-      context.read<EventBusProvider>().eventBus.fire(RefreshGroups());
+      context.read<EventBus>().fire(RefreshGroups());
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(

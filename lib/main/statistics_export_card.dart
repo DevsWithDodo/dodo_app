@@ -8,6 +8,7 @@ import 'package:csocsort_szamla/groups/dialogs/download_export_dialog.dart';
 import 'package:csocsort_szamla/main/in_app_purchase_page.dart';
 import 'package:csocsort_szamla/main/statistics_page.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -90,7 +91,7 @@ class _StatisticsDataExportState extends State<StatisticsDataExport> {
   void initState() {
     super.initState();
     _group = _getGroup();
-    context.read<EventBusProvider>().eventBus.on<RefreshStatistics>().listen(
+    context.read<EventBus>().on<RefreshStatistics>().listen(
       (_) {
         if (mounted) {
           setState(() {

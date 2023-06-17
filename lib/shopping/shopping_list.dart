@@ -8,6 +8,7 @@ import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/groups/main_group_page.dart';
 import 'package:csocsort_szamla/shopping/im_shopping_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -206,7 +207,7 @@ class _ShoppingListState extends State<ShoppingList> {
     super.initState();
     _shoppingList = null;
     _shoppingList = _getShoppingList();
-    context.read<EventBusProvider>().eventBus.on<RefreshShopping>().listen((_) {
+    context.read<EventBus>().on<RefreshShopping>().listen((_) {
       if (mounted) {
         setState(() {
           _shoppingList = null;

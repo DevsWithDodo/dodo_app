@@ -184,7 +184,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                           widget.purchase, widget.selectedMemberId)),
                 ).then((val) {
                   if (val == 'deleted') {
-                    EventBus eventBus = context.read<EventBusProvider>().eventBus;
+                    EventBus eventBus = context.read<EventBus>();
                     eventBus.fire(RefreshPurchases());
                     eventBus.fire(RefreshBalances());
                   }

@@ -8,6 +8,7 @@ import 'package:csocsort_szamla/essentials/widgets/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/past_reaction_container.dart';
 import 'package:csocsort_szamla/payment/payment_all_info.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -150,7 +151,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
                                   child: PaymentAllInfo(widget.payment)))
                           .then((returnValue) {
                         if (returnValue == 'deleted') {
-                          final bus = context.read<EventBusProvider>().eventBus;
+                          final bus = context.read<EventBus>();
                           bus.fire(RefreshPayments());
                           bus.fire(RefreshBalances());
                         }

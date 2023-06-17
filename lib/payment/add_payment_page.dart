@@ -5,6 +5,7 @@ import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/payment/add_modify_payment.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -33,7 +34,7 @@ class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment
   void _onPostPayment(BuildContext context) {
     Navigator.pop(context);
     Navigator.pop(context);
-    final bus = context.read<EventBusProvider>().eventBus;
+    final bus = context.read<EventBus>();
     bus.fire(RefreshBalances());
     bus.fire(RefreshPayments());
   }

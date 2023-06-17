@@ -7,6 +7,7 @@ import 'package:csocsort_szamla/history/all_history_page.dart';
 import 'package:csocsort_szamla/payment/payment_entry.dart';
 import 'package:csocsort_szamla/purchase/purchase_entry.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -86,7 +87,7 @@ class _HistoryState extends State<History> {
     _purchases = null;
     _purchases = _getPurchases();
 
-    final eventBus = context.read<EventBusProvider>().eventBus;
+    final eventBus = context.read<EventBus>();
     eventBus.on<RefreshPurchases>().listen((_) {
       if (mounted) {
         _purchases = null;

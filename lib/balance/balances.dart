@@ -9,6 +9,7 @@ import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/groups/dialogs/add_guest_dialog.dart';
 import 'package:csocsort_szamla/groups/dialogs/share_group_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -53,8 +54,7 @@ class _BalancesState extends State<Balances> {
   @override
   void initState() {
     super.initState();
-    context.read<EventBusProvider>().eventBus.on<RefreshBalances>().listen((_) {
-      print('refreshing balances');
+    context.read<EventBus>().on<RefreshBalances>().listen((_) {
       if (mounted) {
         setState(() {
           _members = null;

@@ -8,6 +8,7 @@ import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/payment/payment_entry.dart';
 import 'package:csocsort_szamla/purchase/purchase_entry.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
@@ -153,7 +154,7 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     _payments = null;
     _payments = _getPayments();
 
-    final bus = context.read<EventBusProvider>().eventBus;
+    final bus = context.read<EventBus>();
     bus.on<RefreshPurchases>().listen((_) {
       if (mounted) {
         setState(() {

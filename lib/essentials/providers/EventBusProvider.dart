@@ -1,11 +1,21 @@
 import 'package:csocsort_szamla/essentials/http_handler.dart';
 import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class EventBusProvider extends ChangeNotifier {
+class EventBusProvider extends StatelessWidget {
   final EventBus _eventBus = EventBus();
+  final Widget child;
 
-  EventBus get eventBus => _eventBus;
+  EventBusProvider({Key? key, required this.child}) : super(key: key);
+  
+  @override
+  Widget build(BuildContext context) {
+    return Provider.value(
+      value: _eventBus,
+      child: child,
+    );
+  }
 }
 
 class RefreshBalances extends EmptyEvent {
