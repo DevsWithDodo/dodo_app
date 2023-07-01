@@ -1,9 +1,10 @@
-import 'package:csocsort_szamla/essentials/save_preferences.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
-import '../essentials/http_handler.dart';
+import '../essentials/http.dart';
 import '../essentials/validation_rules.dart';
 import '../essentials/widgets/future_success_dialog.dart';
 import '../essentials/widgets/gradient_button.dart';
@@ -22,8 +23,8 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
     try {
       Map<String, dynamic> body = {'username': newUsername};
 
-      await httpPut(uri: '/user', context: context, body: body);
-      saveUsername(newUsername);
+      await Http.put(uri: '/user', body: body);
+      context.read<UserProvider>().setUsername(newUsername);
       Future.delayed(delayTime()).then((value) => _onUpdateUsername());
       return true;
     } catch (_) {

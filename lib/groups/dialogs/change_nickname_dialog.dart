@@ -1,9 +1,10 @@
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
-import '../../config.dart';
-import '../../essentials/http_handler.dart';
+import '../../essentials/http.dart';
 import '../../essentials/validation_rules.dart';
 import '../../essentials/widgets/future_success_dialog.dart';
 import '../../essentials/widgets/gradient_button.dart';
@@ -24,10 +25,10 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
   Future<bool> _updateNickname(String nickname, int? memberId) async {
     try {
       Map<String, dynamic> body = {"member_id": memberId, "nickname": nickname};
-      await httpPut(
-          uri: '/groups/' + currentGroupId.toString() + '/members',
-          context: context,
-          body: body);
+      await Http.put(
+            uri: '/groups/' + context.read<UserProvider>().currentGroup!.id.toString() + '/members',
+            body: body,
+          );
       Future.delayed(delayTime()).then((value) => _onUpdateNickname());
       return true;
     } catch (_) {
@@ -39,7 +40,7 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
     _nicknameController.text = '';
     Navigator.pop(context);
     Navigator.pop(context, 'madeAdmin');
-    clearGroupCache();
+    clearGroupCache(context);
   }
 
   @override

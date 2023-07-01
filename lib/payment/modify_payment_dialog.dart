@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
@@ -23,12 +23,12 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog>
   Future<bool> _updatePayment(
       double amount, String note, Member toMember, int? paymentId) async {
     try {
-      Map<String, dynamic> body = generateBody(note, amount, toMember);
+      Map<String, dynamic> body = generateBody(note, amount, toMember, context);
 
-      await httpPut(
-          uri: '/payments/' + paymentId.toString(),
-          body: body,
-          context: context);
+      await Http.put(
+            uri: '/payments/' + paymentId.toString(),
+            body: body,
+          );
       Future.delayed(delayTime()).then((value) => _onUpdatePayment());
       return true;
     } catch (_) {
@@ -90,7 +90,7 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog>
               ),
               Visibility(
                 visible: _index == 2,
-                child: payerChooser(context),
+                child: payerChooser(),
               ),
               Visibility(
                 visible: _index == 3,

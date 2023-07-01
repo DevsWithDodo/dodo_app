@@ -1,6 +1,35 @@
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import '../config.dart';
+
+class User {
+  String apiToken;
+  String username;
+  int id;
+  String currency;
+  Group? group;
+  List<Group> groups;
+  bool ratedApp;
+  bool showAds;
+  bool useGradients;
+  bool personalisedAds;
+  bool trialVersion;
+  String themeName;
+
+  User({
+    required this.apiToken,
+    required this.username,
+    required this.id,
+    required this.currency,
+    this.group,
+    this.groups = const [],
+    this.ratedApp = false,
+    this.showAds = false,
+    this.useGradients = true,
+    this.personalisedAds = false,
+    this.trialVersion = false,
+    this.themeName = "dodoLightTheme",
+  });
+}
 
 class Member {
   int id;
@@ -113,7 +142,7 @@ class Purchase {
     required this.receivers,
     required this.totalAmount,
     double? totalAmountOriginalCurrency,
-    originalCurrency,
+    required this.originalCurrency,
     required this.updatedAt,
     this.reactions,
     this.category,
@@ -121,7 +150,6 @@ class Purchase {
     this.buyerNickname = buyerNickname ?? buyerUsername;
     this.totalAmountOriginalCurrency =
         totalAmountOriginalCurrency ?? totalAmount;
-    this.originalCurrency = originalCurrency ?? currentGroupCurrency!;
   }
 
   factory Purchase.fromJson(Map<String, dynamic> json) {
@@ -131,7 +159,7 @@ class Purchase {
       updatedAt: json['updated_at'] == null
           ? DateTime.now()
           : DateTime.parse(json['updated_at']).toLocal(),
-      originalCurrency: json['original_currency'] ?? currentGroupCurrency!,
+      originalCurrency: json['original_currency'],
       buyerUsername: json['buyer_username'] ?? json['buyer_nickname'],
       buyerId: json['buyer_id'],
       buyerNickname: json['buyer_nickname'],
@@ -193,7 +221,7 @@ class Payment {
       takerUsername: json['taker_username'] ?? json['taker_nickname'],
       takerNickname: json['taker_nickname'],
       note: json['note'],
-      originalCurrency: json['original_currency'] ?? currentGroupCurrency!,
+      originalCurrency: json['original_currency'],
       amountOriginalCurrency: (json['original_amount'] ?? json['amount']) * 1.0,
       reactions: json['reactions']
           .map<Reaction>((reaction) => Reaction.fromJson(reaction))

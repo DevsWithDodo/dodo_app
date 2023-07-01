@@ -3,14 +3,16 @@ import 'dart:math';
 
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/category_picker_icon_button.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 
 class StatisticsPage extends StatefulWidget {
   final DateTime? groupCreation;
@@ -31,6 +33,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   @override
   void initState() {
     super.initState();
+    
     if (widget.groupCreation != null &&
         _startDate!.isBefore(widget.groupCreation!)) {
       _startDate = widget.groupCreation;
@@ -44,12 +47,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
     try {
       String startDate = DateFormat('yyyy-MM-dd').format(_startDate!);
       String endDate = DateFormat('yyyy-MM-dd').format(_endDate);
-      http.Response response = await httpGet(
+      Response response = await Http.get(
           useCache: false,
           overwriteCache: true,
-          context: context,
           uri: generateUri(
-            GetUriKeys.statisticsPayments,
+            GetUriKeys.statisticsPayments, context,
             queryParams: {
               'from_date': startDate,
               'until_date': endDate,
@@ -79,12 +81,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
     try {
       String startDate = DateFormat('yyyy-MM-dd').format(_startDate!);
       String endDate = DateFormat('yyyy-MM-dd').format(_endDate);
-      http.Response response = await httpGet(
+      Response response = await Http.get(
           useCache: false,
           overwriteCache: true,
-          context: context,
           uri: generateUri(
-            GetUriKeys.statisticsPurchases,
+            GetUriKeys.statisticsPurchases, context,
             queryParams: {
               'from_date': startDate,
               'until_date': endDate,
@@ -114,12 +115,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
     try {
       String startDate = DateFormat('yyyy-MM-dd').format(_startDate!);
       String endDate = DateFormat('yyyy-MM-dd').format(_endDate);
-      http.Response response = await httpGet(
+      Response response = await Http.get(
           useCache: false,
           overwriteCache: true,
-          context: context,
           uri: generateUri(
-            GetUriKeys.statisticsAll,
+            GetUriKeys.statisticsAll, context,
             queryParams: {
               'from_date': startDate,
               'until_date': endDate,
@@ -237,7 +237,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       (lineBarSpot.barIndex == 0
                           ? keywords[0].tr() + ' '
                           : keywords[1].tr() + ' ') +
-                      lineBarSpot.y.toMoneyString(currentGroupCurrency!,
+                      lineBarSpot.y.toMoneyString(context.watch<UserProvider>().currentGroup!.currency,
                           withSymbol: true),
                   Theme.of(context).textTheme.bodySmall!.copyWith(
                       height: lineBarSpot.barIndex == 0 ? 1.5 : 1,
@@ -321,7 +321,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               return Padding(
                 padding: const EdgeInsets.all(0),
                 child: Text(
-                  value.toMoneyString(currentGroupCurrency!),
+                  value.toMoneyString(context.watch<UserProvider>().currentGroup!.currency),
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
@@ -390,7 +390,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         ),
         Flexible(
             child: Text(
-          amount.toMoneyString(currentGroupCurrency!, withSymbol: true),
+          amount.toMoneyString(context.watch<UserProvider>().currentGroup!.currency, withSymbol: true),
           style: Theme.of(context)
               .textTheme
               .bodyLarge!
@@ -406,7 +406,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     double height = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -
         56 - //appbar
-        adHeight(); //Height without status bar and appbar
+        adHeight(context); //Height without status bar and appbar
     return Scaffold(
       appBar: AppBar(
         title: Text(

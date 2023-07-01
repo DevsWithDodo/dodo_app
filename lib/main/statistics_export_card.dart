@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/essentials/http_handler.dart';
-import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
+import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/groups/dialogs/download_export_dialog.dart';
@@ -25,8 +25,7 @@ class _StatisticsDataExportState extends State<StatisticsDataExport> {
 
   Future<Map<String, dynamic>> _getGroup() async {
     try {
-      http.Response response = await httpGet(
-          context: context, uri: generateUri(GetUriKeys.groupBoost));
+      http.Response response = await Http.get(uri: generateUri(GetUriKeys.groupBoost, context));
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data'];
     } catch (_) {

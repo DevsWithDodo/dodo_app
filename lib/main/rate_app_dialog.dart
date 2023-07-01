@@ -1,7 +1,8 @@
 import 'dart:io';
 
-import 'package:csocsort_szamla/essentials/save_preferences.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../essentials/widgets/gradient_button.dart';
@@ -42,7 +43,7 @@ class RateAppDialog extends StatelessWidget {
                 break;
             }
             launchUrlString(url);
-            saveRatedApp(true);
+            context.read<UserProvider>().setRatedApp(true);
           },
         ),
       ),

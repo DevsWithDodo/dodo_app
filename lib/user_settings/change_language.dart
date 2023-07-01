@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
@@ -56,7 +56,7 @@ class LanguageElement extends StatefulWidget {
 class _LanguageElementState extends State<LanguageElement> {
   Future<bool> _changeLanguage(String? localeCode) {
     Map<String, dynamic> body = {'language': localeCode};
-    httpPut(context: context, uri: '/user', body: body);
+    Http.put(uri: '/user', body: body);
     return Future.value(true);
   }
 

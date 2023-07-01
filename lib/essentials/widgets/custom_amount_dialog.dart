@@ -1,9 +1,10 @@
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/essentials/widgets/tap_or_hold_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
-import 'package:csocsort_szamla/config.dart';
+import 'package:provider/provider.dart';
 
 class CustomAmountDialog extends StatefulWidget {
   final double? initialValue;
@@ -36,7 +37,7 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
     super.initState();
     sliderValue = widget.initialValue;
     magnet = 0.5;
-    currency = widget.currency ?? currentGroupCurrency;
+    currency = widget.currency ?? context.read<UserProvider>().currentGroup!.currency;
     customAmountController.text = sliderValue.toMoneyString(currency!);
   }
 

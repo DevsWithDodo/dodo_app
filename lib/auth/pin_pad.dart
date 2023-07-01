@@ -99,7 +99,7 @@ class _PinPadState extends State<PinPad> {
           child: Padding(
             padding: const EdgeInsets.only(left: 16, top: 4),
             child: Text(
-              (widget.validationText ?? '').tr(),
+              widget.validationText?.tr() ?? '',
               style: Theme.of(context).textTheme.bodySmall!.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),

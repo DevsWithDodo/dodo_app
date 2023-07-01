@@ -1,11 +1,12 @@
 import 'dart:collection';
 
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/app_theme.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:csocsort_szamla/essentials/stack.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
+import 'package:provider/provider.dart';
 
 class Calculator extends StatefulWidget {
   final void Function(String fromCalculation) onCalculationReady;
@@ -242,7 +243,7 @@ class _CalculatorState extends State<Calculator> {
               shape: BoxShape.circle,
               gradient: _operators.length != 0 && _isStillNum
                   ? LinearGradient(colors: [Colors.grey, Colors.grey])
-                  : AppTheme.gradientFromTheme(currentThemeName),
+                  : AppTheme.gradientFromTheme(context.watch<UserProvider>().user!.themeName),
             ),
             child: InkWell(
               borderRadius: BorderRadius.circular(100),
@@ -252,7 +253,7 @@ class _CalculatorState extends State<Calculator> {
                       Navigator.pop(context);
                       if (double.tryParse(_numToWrite) != null) {
                         widget.onCalculationReady(double.parse(_numToWrite)
-                            .toMoneyString(currentGroupCurrency!));
+                            .toMoneyString(context.watch<UserProvider>().currentGroup!.currency));
                       }
                     },
               child: Icon(

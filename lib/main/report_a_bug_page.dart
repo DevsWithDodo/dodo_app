@@ -2,7 +2,7 @@ import 'package:csocsort_szamla/essentials/ad_management.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-import '../essentials/http_handler.dart';
+import '../essentials/http.dart';
 import '../essentials/validation_rules.dart';
 import '../essentials/widgets/future_success_dialog.dart';
 
@@ -176,7 +176,7 @@ class _ReportABugPageState extends State<ReportABugPage> {
             details,
       };
 
-      await httpPost(uri: '/bug', body: body, context: context);
+      await Http.post(uri: '/bug', body: body);
       Future.delayed(delayTime()).then((value) => _onPostBug());
       return true;
     } catch (_) {

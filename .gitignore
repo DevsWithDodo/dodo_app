@@ -77,7 +77,6 @@
 key.properties
 google-services.json
 config.dart
-ad_management.dart
 
 /.flutter-plugins-dependencies
 /android/settings_aar.gradle

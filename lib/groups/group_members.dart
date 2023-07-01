@@ -1,11 +1,12 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import '../essentials/app_theme.dart';
 import 'member_all_info.dart';
@@ -22,11 +23,11 @@ class _GroupMembersState extends State<GroupMembers> {
 
   Future<List<Member>> _getMembers() async {
     try {
-      http.Response response = await httpGet(
-          uri: generateUri(GetUriKeys.groupCurrent,
-              params: [currentGroupId.toString()]),
-          context: context,
-          useCache: false);
+      http.Response response = await Http.get(
+            uri: generateUri(GetUriKeys.groupCurrent, context,
+                params: [context.read<UserProvider>().user!.group!.id.toString()]),
+            useCache: false,
+          );
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = [];
       for (var member in decoded['data']['members']) {
@@ -35,7 +36,7 @@ class _GroupMembersState extends State<GroupMembers> {
       members.sort(
           (member1, member2) => member1.nickname.compareTo(member2.nickname));
       currentMember =
-          members.firstWhere((member) => member.id == currentUserId);
+          members.firstWhere((member) => member.id == context.read<UserProvider>().user!.id);
       members.remove(currentMember);
       members.insert(0, currentMember!);
       return members;
@@ -198,20 +199,22 @@ class _MemberEntryState extends State<MemberEntry> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.member.id == currentUserId) {
+    User user = context.watch<UserProvider>().user!;
+    String themeName = user.themeName;
+    if (widget.member.id == user.id) {
       mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          color: currentThemeName!.contains('Gradient')
+          color: themeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onTertiaryContainer);
       subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
-          color: currentThemeName!.contains('Gradient')
+          color: themeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onTertiaryContainer);
-      iconColor = currentThemeName!.contains('Gradient')
+      iconColor = themeName.contains('Gradient')
           ? Theme.of(context).colorScheme.onPrimary
           : Theme.of(context).colorScheme.onTertiaryContainer;
       boxDecoration = BoxDecoration(
-        gradient: AppTheme.gradientFromTheme(currentThemeName,
+        gradient: AppTheme.gradientFromTheme(themeName,
             useTertiaryContainer: true),
         // color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(15),

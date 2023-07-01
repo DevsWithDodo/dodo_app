@@ -2,12 +2,14 @@ import 'package:csocsort_szamla/auth/login/forgot_password_dialog.dart';
 import 'package:csocsort_szamla/auth/login/login_pin_page.dart';
 import 'package:csocsort_szamla/auth/registration/register_pin_page.dart';
 import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,9 +17,8 @@ import '../essentials/validation_rules.dart';
 import '../essentials/widgets/gradient_button.dart';
 
 class NamePage extends StatefulWidget {
-  final String? inviteUrl;
   final bool isLogin;
-  NamePage({this.inviteUrl, this.isLogin = false});
+  NamePage({this.isLogin = false});
   @override
   State<NamePage> createState() => _NamePageState();
 }
@@ -34,8 +35,9 @@ class _NamePageState extends State<NamePage> {
   @override
   void initState() {
     super.initState();
-    if (widget.isLogin && currentUsername != null) {
-      _usernameController.text = currentUsername!;
+    if (widget.isLogin) {
+      _usernameController.text =
+          context.read<SharedPreferences>().getString('current_username') ?? '';
     }
   }
 
@@ -253,7 +255,6 @@ class _NamePageState extends State<NamePage> {
           context,
           MaterialPageRoute(
             builder: (context) => LoginPinPage(
-              inviteUrl: widget.inviteUrl,
               username: _usernameController.text,
             ),
           ),
@@ -301,7 +302,6 @@ class _NamePageState extends State<NamePage> {
       context,
       MaterialPageRoute(
         builder: (context) => RegisterPinPage(
-          inviteUrl: widget.inviteUrl,
           username: _usernameController.text,
         ),
       ),

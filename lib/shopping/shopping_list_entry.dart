@@ -1,13 +1,14 @@
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/past_reaction_container.dart';
 import 'package:csocsort_szamla/purchase/add_purchase_page.dart';
 import 'package:csocsort_szamla/shopping/shopping_all_info.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../purchase/add_modify_purchase.dart';
 import 'edit_request_dialog.dart';
@@ -34,10 +35,17 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
   late BoxDecoration boxDecoration;
 
   String? name;
+  late User user;
+
+  @override
+  void initState() {
+    super.initState();
+    user = context.read<UserProvider>().user!;
+  }
 
   void handleSendReaction(String reaction) {
     Reaction? oldReaction = widget.shoppingRequest.reactions!
-        .firstWhereOrNull((element) => element.userId == currentUserId);
+        .firstWhereOrNull((element) => element.userId == user.id);
     bool alreadyReacted = oldReaction != null;
     bool sameReaction =
         alreadyReacted ? oldReaction.reaction == reaction : false;
@@ -46,16 +54,16 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
       setState(() {});
     } else if (!alreadyReacted) {
       widget.shoppingRequest.reactions!.add(Reaction(
-        nickname: currentUsername!,
+        nickname: context.read<UserProvider>().user!.username,
         reaction: reaction,
-        userId: currentUserId!,
+        userId: user.id,
       ));
       setState(() {});
     } else {
       widget.shoppingRequest.reactions!.add(Reaction(
         nickname: oldReaction.nickname,
         reaction: reaction,
-        userId: currentUserId!,
+        userId: user.id,
       ));
       widget.shoppingRequest.reactions!.remove(oldReaction);
       setState(() {});
@@ -76,7 +84,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
     boxDecoration = BoxDecoration(
       borderRadius: BorderRadius.circular(20),
     );
-    if (widget.shoppingRequest.requesterId == currentUserId) {
+    if (widget.shoppingRequest.requesterId == user.id) {
       icon = Icon(
         Icons.shopping_cart_outlined,
         color: Theme.of(context).colorScheme.primary,
@@ -91,7 +99,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
         child: Align(
             alignment: Alignment.centerRight,
             child: Icon(
-              widget.shoppingRequest.requesterId != currentUserId
+              widget.shoppingRequest.requesterId != user.id
                   ? Icons.done
                   : Icons.delete,
               size: 30,
@@ -105,7 +113,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
       background: Align(
           alignment: Alignment.centerLeft,
           child: Icon(
-            widget.shoppingRequest.requesterId != currentUserId
+            widget.shoppingRequest.requesterId != user.id
                 ? Icons.attach_money
                 : Icons.edit,
             size: 30,
@@ -113,7 +121,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
           )),
       onDismissed: (direction) {
         // If requester is not the current user, the request has to be deleted either way
-        if (widget.shoppingRequest.requesterId != currentUserId) {
+        if (widget.shoppingRequest.requesterId != user.id) {
           showDialog(
                   builder: (context) => FutureSuccessDialog(
                         future: _deleteFulfillShoppingRequest(
@@ -267,7 +275,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
             reactions: widget.shoppingRequest.reactions!,
             reactedToId: widget.shoppingRequest.id,
             isSecondaryColor:
-                widget.shoppingRequest.requesterId == currentUserId,
+                widget.shoppingRequest.requesterId == user.id,
             type: 'requests',
             onSendReaction: this.handleSendReaction,
           ),
@@ -278,7 +286,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
 
   Future<bool> _deleteFulfillShoppingRequest(int? id, var buildContext) async {
     try {
-      await httpDelete(uri: '/requests/' + id.toString(), context: context);
+      await Http.delete(uri: '/requests/' + id.toString());
       Future.delayed(delayTime())
           .then((value) => _onDeleteFulfillShoppingRequest());
       return true;

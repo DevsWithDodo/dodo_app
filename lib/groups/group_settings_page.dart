@@ -1,13 +1,14 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/groups/dialogs/change_group_currency_dialog.dart';
 import 'package:csocsort_szamla/groups/dialogs/rename_group_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 
 import '../essentials/widgets/error_message.dart';
 import 'boost_group.dart';
@@ -20,11 +21,7 @@ class GroupSettings extends StatefulWidget {
   final double? width;
   final String? scrollTo;
   GroupSettings(
-      {
-      this.scrollTo,
-      this.bigScreen = false,
-      this.height,
-      this.width});
+      {this.scrollTo, this.bigScreen = false, this.height, this.width});
   @override
   _GroupSettingState createState() => _GroupSettingState();
 }
@@ -36,10 +33,10 @@ class _GroupSettingState extends State<GroupSettings> {
 
   Future<bool> _getHasGuests() async {
     try {
-      http.Response response = await httpGet(
-          uri: generateUri(GetUriKeys.groupHasGuests,
-              params: [currentGroupId.toString()]),
-          context: context);
+      Response response = await Http.get(
+        uri: generateUri(GetUriKeys.groupHasGuests, context,
+            params: [context.read<UserProvider>().user!.group!.id.toString()]),
+      );
       Map<String, dynamic> decoded = jsonDecode(response.body);
       // print(decoded);
       return decoded['data'] == 1;
@@ -50,10 +47,10 @@ class _GroupSettingState extends State<GroupSettings> {
 
   Future<bool> _getIsUserAdmin() async {
     try {
-      http.Response response = await httpGet(
-          uri: generateUri(GetUriKeys.groupMember),
-          context: context,
-          useCache: false);
+      Response response = await Http.get(
+        uri: generateUri(GetUriKeys.groupMember, context),
+        useCache: false,
+      );
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data']['is_admin'] == 1;
     } catch (_) {

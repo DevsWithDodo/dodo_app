@@ -2,15 +2,16 @@ import 'dart:convert';
 
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
-import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
+import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/payment/payment_entry.dart';
 import 'package:csocsort_szamla/purchase/purchase_entry.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 import '../essentials/models.dart';
@@ -27,7 +28,7 @@ class AllHistoryRoute extends StatefulWidget {
 }
 
 class _AllHistoryRouteState extends State<AllHistoryRoute>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin {    
   DateTime? _startDate;
   DateTime? _endDate;
   Category? _category;
@@ -39,16 +40,16 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
   TabController? _tabController;
   int? _selectedIndex = 0;
   bool _showFilter = false;
-  int _selectedMemberId = currentUserId!;
+  late int _selectedMemberId;
 
   Future<Map<DateTime, List<Purchase>>> _getPurchases(
       {bool overwriteCache = false}) async {
     try {
-      http.Response response = await httpGet(
+      Response response = await Http.get(
         uri: generateUri(
-          GetUriKeys.purchases,
+          GetUriKeys.purchases, context,
           queryParams: {
-            'group': currentGroupId.toString(),
+            'group': context.read<UserProvider>().currentGroup!.id.toString(),
             'from_date': _startDate == null
                 ? null
                 : DateFormat('yyyy-MM-dd').format(_startDate!),
@@ -59,7 +60,6 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
             ...(_category == null ? {} : {'category': _category!.text})
           },
         ),
-        context: context,
         overwriteCache: overwriteCache,
       );
       List<dynamic> decoded = jsonDecode(response.body)['data'];
@@ -93,12 +93,12 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
   Future<Map<DateTime, List<Payment>>> _getPayments(
       {bool overwriteCache = false}) async {
     try {
-      http.Response response;
-      response = await httpGet(
+      Response response;
+      response = await Http.get(
         uri: generateUri(
-          GetUriKeys.payments,
+          GetUriKeys.payments, context,
           queryParams: {
-            'group': currentGroupId.toString(),
+            'group': context.read<UserProvider>().currentGroup!.id.toString(),
             'from_date': _startDate == null
                 ? null
                 : DateFormat('yyyy-MM-dd').format(_startDate!),
@@ -109,7 +109,6 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
             ...(_category == null ? {} : {'category': _category!.text}),
           },
         ),
-        context: context,
         overwriteCache: overwriteCache,
       );
 
@@ -144,6 +143,7 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
 
   @override
   void initState() {
+    _selectedMemberId = context.read<UserProvider>().user!.id;
     _tabController = TabController(
         length: 2, vsync: this, initialIndex: widget.startingIndex!);
     _selectedIndex = widget.startingIndex;

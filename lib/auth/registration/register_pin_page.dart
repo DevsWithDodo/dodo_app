@@ -5,9 +5,8 @@ import 'package:flutter/material.dart';
 import '../../essentials/widgets/gradient_button.dart';
 
 class RegisterPinPage extends StatefulWidget {
-  final String? inviteUrl;
-  final String? username;
-  RegisterPinPage({this.inviteUrl, this.username});
+  final String username;
+  RegisterPinPage({required this.username});
   @override
   State<RegisterPinPage> createState() => _RegisterPinPageState();
 }
@@ -94,7 +93,6 @@ class _RegisterPinPageState extends State<RegisterPinPage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => CurrencyPage(
-                                      inviteUrl: widget.inviteUrl,
                                       username: widget.username,
                                       pin: _pin,
                                     ),

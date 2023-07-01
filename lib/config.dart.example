@@ -2,23 +2,17 @@ const String APP_URL =  'https://www.examp.le/api';
 const String TEST_URL = 'https://test.examp.le/api';
 int currentVersion=YOUR_CURRENT_VERSION;
 bool useTest = false;
-String? apiToken;
-String? currentUsername;
-int? currentUserId;
-String? currentUserCurrency;
-bool? usesPassword;
-String? currentGroupName;
-int? currentGroupId;
-String? currentGroupCurrency;
-List<String>? usersGroups;
-List<int>? usersGroupIds;
-bool showAds = false;
-bool useGradients = true;
-bool personalisedAds = false;
-bool trialVersion = false;
-bool trialJustEnded = false;
-bool? ratedApp = false;
-String currentThemeName = "dodoLightTheme";
+
+Map<String, String> adUnitIds = {
+  'create_group':'example',
+  'history':'example',
+  'home_screen':'example',
+  'join_group':'example',
+  'payment':'example',
+  'purchase':'example',
+  'report_bug':'example',
+  'settings':'example'
+};
 
 /// Whether in app purchase enabled on the platform. Set programmatically.
 bool isIAPPlatformEnabled = false;
@@ -30,4 +24,4 @@ bool isAdPlatformEnabled = false;
 bool isFirebasePlatformEnabled = false;
 
 double tabletViewWidth = 850;
-double adHeight() => (isAdPlatformEnabled && showAds) ? 50 : 0;
+double adHeight(BuildContext context) => (isAdPlatformEnabled && (context.read<UserProvider>().user?.showAds ?? false)) ? 50 : 0;

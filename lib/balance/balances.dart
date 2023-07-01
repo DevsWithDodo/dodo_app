@@ -4,20 +4,20 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:csocsort_szamla/balance/payments_needed_dialog.dart';
 import 'package:csocsort_szamla/balance/select_balance_currency.dart';
 import 'package:csocsort_szamla/essentials/payments_needed.dart';
-import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
+import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/groups/dialogs/add_guest_dialog.dart';
 import 'package:csocsort_szamla/groups/dialogs/share_group_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
-import '../config.dart';
 import '../essentials/app_theme.dart';
 import '../essentials/currencies.dart';
-import '../essentials/http_handler.dart';
+import '../essentials/http.dart';
 import '../essentials/models.dart';
 import '../essentials/widgets/gradient_button.dart';
 
@@ -28,15 +28,13 @@ class Balances extends StatefulWidget {
 
 class _BalancesState extends State<Balances> {
   Future<List<Member>>? _members;
-  String? _selectedCurrency = currentGroupCurrency;
+  late String _selectedCurrency;
 
   Future<List<Member>> _getMembers() async {
     try {
-      http.Response response = await httpGet(
-        uri: generateUri(GetUriKeys.groupCurrent,
-            params: [currentGroupId.toString()]),
-        context: context,
-      );
+      Response response = await Http.get(
+          uri: generateUri(GetUriKeys.groupCurrent, context,
+              params: [context.read<UserProvider>().user!.group!.id.toString()]));
 
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = [];
@@ -64,7 +62,8 @@ class _BalancesState extends State<Balances> {
     });
     _members = null;
     _members = _getMembers();
-    _selectedCurrency = currentGroupCurrency;
+    _selectedCurrency = context.read<UserProvider>().user!.group!.currency;
+    print(_selectedCurrency);
   }
 
   @override
@@ -91,9 +90,10 @@ class _BalancesState extends State<Balances> {
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
                         Member? currentMember = snapshot.data!.firstWhereOrNull(
-                            (element) => element.id == currentUserId);
+                            (element) =>
+                                element.id == context.watch<UserProvider>().user!.id);
                         double currencyThreshold =
-                            threshold(currentGroupCurrency!);
+                            threshold(context.watch<UserProvider>().currentGroup!.currency);
                         return Column(
                           children: [
                             Column(children: _generateBalances(snapshot.data!)),
@@ -112,11 +112,12 @@ class _BalancesState extends State<Balances> {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      List<Payment> payments = paymentsNeeded(
-                                              snapshot.data!)
-                                          .where((payment) =>
-                                              payment.payerId == currentUserId)
-                                          .toList();
+                                      List<Payment> payments =
+                                          paymentsNeeded(snapshot.data!, context)
+                                              .where((payment) =>
+                                                  payment.payerId ==
+                                                  context.watch<User>().id)
+                                              .toList();
                                       showDialog(
                                         context: context,
                                         barrierDismissible: true,
@@ -178,10 +179,11 @@ class _BalancesState extends State<Balances> {
 
   Future<String> _getInvitation() async {
     try {
-      http.Response response = await httpGet(
-        uri: generateUri(GetUriKeys.groupCurrent,
-            params: [currentGroupId.toString()]),
-        context: context,
+      Response response = await Http.get(
+        uri: generateUri(
+          GetUriKeys.groupCurrent, context,
+          params: [context.read<UserProvider>().user!.group!.id.toString()],
+        ),
       );
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data']['invitation'];
@@ -191,18 +193,19 @@ class _BalancesState extends State<Balances> {
   }
 
   List<Widget> _generateBalances(List<Member> members) {
+    String themeName = context.watch<UserProvider>().user!.themeName;
     return members.map<Widget>((Member member) {
       TextStyle textStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          color: member.id == currentUserId
-              ? currentThemeName.contains('Gradient')
+          color: member.id == context.read<UserProvider>().user!.id
+              ? themeName.contains('Gradient')
                   ? Theme.of(context).colorScheme.onPrimary
                   : Theme.of(context).colorScheme.onSecondary
               : Theme.of(context).colorScheme.onSurface);
       return Container(
           padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-          decoration: member.id == currentUserId
+          decoration: member.id == context.read<UserProvider>().user!.id
               ? BoxDecoration(
-                  gradient: AppTheme.gradientFromTheme(currentThemeName,
+                  gradient: AppTheme.gradientFromTheme(themeName,
                       useSecondary: true),
                   borderRadius: BorderRadius.circular(15),
                 )
@@ -219,8 +222,8 @@ class _BalancesState extends State<Balances> {
                 firstChild: Container(),
                 secondChild: Text(
                   member.balance
-                      .exchange(currentGroupCurrency!, _selectedCurrency!)
-                      .toMoneyString(_selectedCurrency!),
+                      .exchange(context.watch<UserProvider>().currentGroup!.currency, _selectedCurrency)
+                      .toMoneyString(_selectedCurrency),
                   style: textStyle,
                 ),
                 crossFadeState: CrossFadeState.showSecond,

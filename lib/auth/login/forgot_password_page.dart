@@ -7,7 +7,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   final String username;
@@ -18,10 +18,9 @@ class ForgotPasswordPage extends StatefulWidget {
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Future<String?> _getPasswordReminder(String username) async {
-    http.Response response = await httpGet(
-      context: context,
+    http.Response response = await Http.get(
       uri: generateUri(
-        GetUriKeys.passwordReminder,
+        GetUriKeys.passwordReminder, context,
         queryParams: {'username': username},
       ),
     );

@@ -1,13 +1,14 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
 
-import '../../config.dart';
 import '../app_theme.dart';
 import '../models.dart';
-import '../http_handler.dart';
+import '../http.dart';
 
 class AddReactionDialog extends StatefulWidget {
   final String type;
@@ -37,8 +38,7 @@ class _AddReactionDialogState extends State<AddReactionDialog> {
             widget.reactToId,
         "reaction": reaction
       };
-      await httpPost(
-          context: context, uri: '/' + widget.type + '/reaction', body: body);
+      await Http.post(uri: '/' + widget.type + '/reaction', body: body);
       return true;
     } catch (_) {
       throw _;
@@ -46,13 +46,15 @@ class _AddReactionDialogState extends State<AddReactionDialog> {
   }
 
   List<Widget> _generateReactions() {
+    String themeName = context.read<UserProvider>().user!.themeName;
+    User user = context.read<UserProvider>().user!;
     return widget.reactions.map((e) {
       return Container(
         padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
         margin: EdgeInsets.fromLTRB(4, 0, 4, 4),
         decoration: BoxDecoration(
-          gradient: e.userId == currentUserId
-              ? AppTheme.gradientFromTheme(currentThemeName,
+          gradient: e.userId == user.id
+              ? AppTheme.gradientFromTheme(themeName,
                   useSecondaryContainer: true)
               : LinearGradient(
                   colors: [Colors.transparent, Colors.transparent]),
@@ -64,9 +66,9 @@ class _AddReactionDialogState extends State<AddReactionDialog> {
             Flexible(
               child: Text(
                 e.nickname,
-                style: e.userId == currentUserId
+                style: e.userId == user.id
                     ? Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: currentThemeName!.contains('Gradient')
+                        color: themeName.contains('Gradient')
                             ? Theme.of(context).colorScheme.onPrimary
                             : Theme.of(context)
                                 .colorScheme
@@ -85,78 +87,88 @@ class _AddReactionDialogState extends State<AddReactionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      child: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'reactions'.tr(),
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: Reaction.possibleReactions.map(
-                  (reaction) {
-                    return InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () {
-                        _sendReaction(reaction);
-                        _onSendReaction(reaction);
-                      },
-                      child: Ink(
-                        padding: EdgeInsets.all(3),
-                        decoration: BoxDecoration(
+    return Selector<UserProvider, int>(
+      selector: (_, userProvider) => userProvider.user!.id,
+      builder: (context, userId, _) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'reactions'.tr(),
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: Reaction.possibleReactions.map(
+                      (reaction) {
+                        return InkWell(
                           borderRadius: BorderRadius.circular(12),
-                          color: widget.reactions.firstWhereOrNull((el) =>
-                                      el.userId == currentUserId &&
-                                      el.reaction == reaction) !=
-                                  null
-                              ? Theme.of(context).colorScheme.secondaryContainer
-                              : Colors.transparent,
-                        ),
-                        child: Container(
-                          constraints: BoxConstraints(
-                              maxWidth: min(50,
-                                  MediaQuery.of(context).size.width / 2 / 6)),
-                          child: FittedBox(
-                            fit: BoxFit.fitWidth,
-                            child: Text(
-                              reaction,
-                              style: TextStyle(fontSize: 50),
+                          onTap: () {
+                            _sendReaction(reaction);
+                            _onSendReaction(reaction);
+                          },
+                          child: Ink(
+                            padding: EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              color: widget.reactions.firstWhereOrNull((el) =>
+                                          el.userId == userId &&
+                                          el.reaction == reaction) !=
+                                      null
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .secondaryContainer
+                                  : Colors.transparent,
+                            ),
+                            child: Container(
+                              constraints: BoxConstraints(
+                                  maxWidth: min(
+                                      50,
+                                      MediaQuery.of(context).size.width /
+                                          2 /
+                                          6)),
+                              child: FittedBox(
+                                fit: BoxFit.fitWidth,
+                                child: Text(
+                                  reaction,
+                                  style: TextStyle(fontSize: 50),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
+                        );
+                      },
+                    ).toList()),
+                Visibility(
+                  visible: widget.reactions.length != 0,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 10,
                       ),
-                    );
-                  },
-                ).toList()),
-            Visibility(
-              visible: widget.reactions.length != 0,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 10,
+                      Container(
+                        constraints: BoxConstraints(maxHeight: 200),
+                        child: ListView(
+                          shrinkWrap: true,
+                          children: _generateReactions(),
+                        ),
+                      )
+                    ],
                   ),
-                  Container(
-                    constraints: BoxConstraints(maxHeight: 200),
-                    child: ListView(
-                      shrinkWrap: true,
-                      children: _generateReactions(),
-                    ),
-                  )
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

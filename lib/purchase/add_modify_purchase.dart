@@ -1,16 +1,16 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/currencies.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/category_picker_icon_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 import 'package:showcaseview/showcaseview.dart';
 
-import '../config.dart';
-import '../essentials/app_theme.dart';
-import '../essentials/http_handler.dart';
+import '../essentials/http.dart';
 import '../essentials/models.dart';
 import '../essentials/validation_rules.dart';
 import '../essentials/widgets/calculator.dart';
@@ -27,7 +27,7 @@ class AddModifyPurchase {
   Future<List<Member>>? members;
   Map<Member, bool> membersMap = Map<Member, bool>();
   Map<Member, double> customAmountMap = Map<Member, double>();
-  String selectedCurrency = currentGroupCurrency!;
+  late String selectedCurrency;
   FocusNode focusNode = FocusNode();
   late Function(BuildContext context) buttonPush;
   late void Function(void Function()) _setState;
@@ -35,10 +35,11 @@ class AddModifyPurchase {
   ShoppingRequest? shoppingRequest;
   Purchase? savedPurchase;
   bool alreadyInitializedSave = false;
-  ThemeData? theme = AppTheme.themes[currentThemeName];
+  late ThemeData theme;
   CrossFadeState purchaserSelector = CrossFadeState.showFirst;
   int? purchaserId;
   Category? selectedCategory;
+  late User user;
 
   GlobalKey _noteKey = GlobalKey();
 
@@ -60,6 +61,9 @@ class AddModifyPurchase {
     this.savedPurchase = savedPurchase;
     this.buttonPush = buttonPush ?? (context) {};
     this._setState = setState;
+    this.user = context.read<UserProvider>().user!;
+    this.selectedCurrency = user.group!.currency;
+    this.theme = Theme.of(context);
     if (purchaseType == PurchaseType.fromShopping) {
       noteController.text = shoppingRequest!.name;
     } else if (purchaseType == PurchaseType.modifyPurchase) {
@@ -74,14 +78,14 @@ class AddModifyPurchase {
     focusNode.addListener(() {
       _setState(() {});
     });
-    purchaserId = purchaserId ?? currentUserId;
+    purchaserId = purchaserId ?? user.id;
   }
 
   Map<String, dynamic> generateBody(
-      String name, double amount, List<Member> members) {
+      String name, double amount, List<Member> members, BuildContext context) {
     return {
       "name": name,
-      "group": currentGroupId,
+      "group": context.read<UserProvider>().currentGroup!.id,
       "amount": amount,
       "currency": selectedCurrency,
       "category": selectedCategory != null ? selectedCategory!.text : null,
@@ -97,12 +101,10 @@ class AddModifyPurchase {
     };
   }
 
-  Future<List<Member>> getMembers(BuildContext context,
-      {bool overwriteCache = false}) async {
+  Future<List<Member>> getMembers(BuildContext context, {bool overwriteCache = false}) async {
     try {
-      http.Response response = await httpGet(
-        uri: generateUri(GetUriKeys.groupCurrent),
-        context: context,
+      Response response = await Http.get(
+        uri: generateUri(GetUriKeys.groupCurrent, context),
         overwriteCache: overwriteCache,
       );
 
@@ -161,7 +163,7 @@ class AddModifyPurchase {
           hintText: 'note'.tr(),
           prefixIcon: Icon(
             Icons.note,
-            color: theme!.colorScheme.onSurfaceVariant,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
           suffixIcon: showcaseKey != null
               ? Showcase(
@@ -192,7 +194,7 @@ class AddModifyPurchase {
 
   Icon _calculatorIcon() => Icon(
         Icons.calculate,
-        color: theme!.colorScheme.primary,
+        color: theme.colorScheme.primary,
       );
 
   TextFormField amountTextField(
@@ -211,7 +213,7 @@ class AddModifyPurchase {
           prefixIcon: GestureDetector(
             onDoubleTap: () {
               _setState(() {
-                selectedCurrency = currentGroupCurrency!;
+                selectedCurrency = context.read<UserProvider>().currentGroup!.currency;
               });
             },
             child: currencyKey != null
@@ -268,7 +270,7 @@ class AddModifyPurchase {
         onFieldSubmitted: (value) => buttonPush(context),
       );
 
-  Center purchaserChooser(BuildContext context) => Center(
+  Center purchaserChooser() => Center(
         child: FutureBuilder(
           future: members,
           builder: (context, AsyncSnapshot<List<Member>> snapshot) {
@@ -375,8 +377,7 @@ class AddModifyPurchase {
         ),
       );
 
-  Center receiverChooser(BuildContext context,
-          {GlobalKey? showcaseKey = null}) =>
+  Center receiverChooser({GlobalKey? showcaseKey = null}) =>
       Center(
         child: FutureBuilder(
           future: members,

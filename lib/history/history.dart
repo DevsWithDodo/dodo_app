@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
-import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
+import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/history/all_history_page.dart';
 import 'package:csocsort_szamla/payment/payment_entry.dart';
 import 'package:csocsort_szamla/purchase/purchase_entry.dart';
@@ -10,7 +10,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 import '../essentials/app_theme.dart';
@@ -32,15 +32,14 @@ class _HistoryState extends State<History> {
   int? _selectedIndex;
   Future<List<Purchase>> _getPurchases({bool overwriteCache = false}) async {
     try {
-      http.Response response = await httpGet(
+      Response response = await Http.get(
         uri: generateUri(
-          GetUriKeys.purchases,
+          GetUriKeys.purchases, context,
           queryParams: {
             'limit': '6',
-            'group': currentGroupId.toString(),
+            'group': context.read<UserProvider>().currentGroup!.id.toString(),
           },
         ),
-        context: context,
         overwriteCache: overwriteCache,
       );
 
@@ -57,15 +56,14 @@ class _HistoryState extends State<History> {
 
   Future<List<Payment>> _getPayments({bool overwriteCache = false}) async {
     try {
-      http.Response response = await httpGet(
+      Response response = await Http.get(
         uri: generateUri(
-          GetUriKeys.payments,
+          GetUriKeys.payments, context,
           queryParams: {
             'limit': '6',
-            'group': currentGroupId.toString(),
+            'group': context.read<UserProvider>().currentGroup!.id.toString(),
           },
         ),
-        context: context,
         overwriteCache: overwriteCache,
       );
       List<dynamic> decoded = jsonDecode(response.body)['data'];
@@ -148,7 +146,7 @@ class _HistoryState extends State<History> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
                         gradient: _selectedIndex == 0
-                            ? AppTheme.gradientFromTheme(currentThemeName)
+                            ? AppTheme.gradientFromTheme(context.watch<UserProvider>().user!.themeName)
                             : LinearGradient(colors: [
                                 ElevationOverlay.applyOverlay(context,
                                     Theme.of(context).colorScheme.surface, 10),
@@ -205,7 +203,7 @@ class _HistoryState extends State<History> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
                         gradient: _selectedIndex == 1
-                            ? AppTheme.gradientFromTheme(currentThemeName)
+                            ? AppTheme.gradientFromTheme(context.watch<UserProvider>().user!.themeName)
                             : LinearGradient(colors: [
                                 ElevationOverlay.applyOverlay(context,
                                     Theme.of(context).colorScheme.surface, 10),
@@ -404,7 +402,7 @@ class _HistoryState extends State<History> {
     return data.map((element) {
       return PaymentEntry(
         payment: element,
-        selectedMemberId: currentUserId!,
+        selectedMemberId: context.read<UserProvider>().user!.id,
       );
     }).toList();
   }
@@ -416,7 +414,7 @@ class _HistoryState extends State<History> {
     return data.map((element) {
       return PurchaseEntry(
         purchase: element,
-        selectedMemberId: currentUserId!,
+        selectedMemberId: context.read<UserProvider>().user!.id,
       );
     }).toList();
   }

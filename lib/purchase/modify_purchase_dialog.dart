@@ -1,5 +1,5 @@
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/purchase/add_modify_purchase.dart';
@@ -23,12 +23,11 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog>
   Future<bool> _updatePurchase(List<Member> members, double amount, String name,
       int? purchaseId, BuildContext context) async {
     try {
-      Map<String, dynamic> body = generateBody(name, amount, members);
+      Map<String, dynamic> body = generateBody(name, amount, members, context);
 
-      await httpPut(
+      await Http.put(
         uri: '/purchases/' + purchaseId.toString(),
         body: body,
-        context: context,
       );
       Future.delayed(delayTime()).then((value) => _onUpdatePurchase());
       return true;
@@ -93,7 +92,7 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog>
               ),
               Visibility(
                 visible: _index == 2,
-                child: purchaserChooser(context),
+                child: purchaserChooser(),
               ),
               Visibility(
                 visible: _index == 3,
@@ -105,7 +104,7 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog>
                       style: Theme.of(context).textTheme.labelLarge,
                     ),
                     SizedBox(width: 10),
-                    Expanded(child: receiverChooser(context)),
+                    Expanded(child: receiverChooser()),
                   ],
                 ),
               ),

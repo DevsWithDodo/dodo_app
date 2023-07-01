@@ -1,10 +1,9 @@
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/validation_rules.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../essentials/http_handler.dart';
+import '../essentials/http.dart';
 import '../essentials/widgets/future_success_dialog.dart';
 import '../essentials/widgets/gradient_button.dart';
 import '../groups/main_group_page.dart';
@@ -15,25 +14,24 @@ class ChangePasswordDialog extends StatefulWidget {
 }
 
 class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
-  TextEditingController _oldPasswordController = TextEditingController();
-  TextEditingController _newPasswordController = TextEditingController();
+  TextEditingController _oldPinController = TextEditingController();
+  TextEditingController _newPinController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
-  TextEditingController _passwordReminderController = TextEditingController();
   var _formKey = GlobalKey<FormState>();
   int _index = 0;
   List<TextFormField> textFields = <TextFormField>[];
 
   Future<bool> _updatePassword(
-      String oldPassword, String newPassword, String reminder) async {
+      String oldPassword, String newPassword) async {
     try {
       Map<String, dynamic> body = {
         'old_password': oldPassword,
         'new_password': newPassword,
         'new_password_confirmation': newPassword,
-        "password_reminder": reminder,
+        "password_reminder": "",
       };
 
-      await httpPut(uri: '/user', context: context, body: body);
+      await Http.put(uri: '/user', body: body);
       Future.delayed(delayTime()).then((value) => _onUpdatePassword());
       return true;
     } catch (_) {
@@ -51,17 +49,16 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       TextFormField(
         validator: (value) => validateTextField([isEmpty(value)]),
         decoration: InputDecoration(
-          hintText: (usesPassword! ? 'old_password' : 'old_pin').tr(),
+          hintText: 'old_pin'.tr(),
           prefixIcon: Icon(
             Icons.password,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
-        keyboardType: usesPassword! ? null : TextInputType.number,
         inputFormatters: [
           FilteringTextInputFormatter.allow(RegExp('[A-Za-z0-9]')),
         ],
-        controller: _oldPasswordController,
+        controller: _oldPinController,
         obscureText: true,
       ),
       TextFormField(
@@ -70,54 +67,38 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           minimalLength(value, 4),
         ]),
         decoration: InputDecoration(
-          hintText: (usesPassword! ? 'new_password' : 'new_pin').tr(),
+          hintText: 'new_pin'.tr(),
           prefixIcon: Icon(
             Icons.password,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
-        keyboardType: usesPassword! ? null : TextInputType.number,
+        keyboardType: TextInputType.number,
         inputFormatters: [
           FilteringTextInputFormatter.allow(RegExp('[A-Za-z0-9]')),
         ],
-        controller: _newPasswordController,
+        controller: _newPinController,
         obscureText: true,
       ),
       TextFormField(
         validator: (value) => validateTextField([
-          matchString(value, _newPasswordController.text),
+          matchString(value, _newPinController.text),
           isEmpty(value),
           minimalLength(value, 4),
         ]),
         decoration: InputDecoration(
           hintText:
-              (usesPassword! ? 'new_password_confirm' : 'new_pin_confirm').tr(),
+              'new_pin_confirm'.tr(),
           prefixIcon: Icon(
             Icons.password,
           ),
         ),
-        keyboardType: usesPassword! ? null : TextInputType.number,
+        keyboardType: TextInputType.number,
         inputFormatters: [
           FilteringTextInputFormatter.allow(RegExp('[A-Za-z0-9]')),
         ],
         controller: _confirmPasswordController,
         obscureText: true,
-      ),
-      TextFormField(
-        validator: (value) => validateTextField([
-          isEmpty(value),
-          minimalLength(value, 3),
-        ]),
-        controller: _passwordReminderController,
-        decoration: InputDecoration(
-          hintText: 'password_reminder'.tr(),
-          prefixIcon: Icon(
-            Icons.search,
-          ),
-        ),
-        inputFormatters: [
-          LengthLimitingTextInputFormatter(50),
-        ],
       ),
     ];
   }
@@ -135,7 +116,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
-                (usesPassword! ? 'change_password' : 'change_pin').tr(),
+                'change_pin'.tr(),
                 style: Theme.of(context).textTheme.titleLarge!.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
@@ -168,7 +149,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         FocusScope.of(context).unfocus();
-                        if (_index < (usesPassword! ? 3 : 2)) {
+                        if (_index < 2) {
                           setState(() {
                             _index++;
                           });
@@ -176,12 +157,9 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                           showDialog(
                               builder: (context) => FutureSuccessDialog(
                                     future: _updatePassword(
-                                        _oldPasswordController.text,
-                                        _newPasswordController.text,
-                                        _passwordReminderController.text),
-                                    dataTrueText: usesPassword!
-                                        ? 'change_password_scf'
-                                        : 'change_pin_scf',
+                                        _oldPinController.text,
+                                        _newPinController.text,
+                                      ),
                                     onDataTrue: () {
                                       _onUpdatePassword();
                                     },

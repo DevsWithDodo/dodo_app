@@ -1,16 +1,17 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/groups/dialogs/add_guest_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 
-import '../config.dart';
 import 'dialogs/share_group_dialog.dart';
 
 class Invitation extends StatefulWidget {
@@ -27,10 +28,10 @@ class _InvitationState extends State<Invitation> {
 
   Future<String> _getInvitation() async {
     try {
-      http.Response response = await httpGet(
-          uri: generateUri(GetUriKeys.groupCurrent),
-          context: context,
-          useCache: false);
+      Response response = await Http.get(
+        uri: generateUri(GetUriKeys.groupCurrent, context),
+        useCache: false,
+      );
       Map<String, dynamic> decoded = jsonDecode(response.body);
       _needsApproval = decoded['data']['admin_approval'] == 1;
       return decoded['data']['invitation'];
@@ -41,10 +42,10 @@ class _InvitationState extends State<Invitation> {
 
   Future<List<Member>> _getUnapprovedMembers() async {
     try {
-      http.Response response = await httpGet(
-          uri: generateUri(GetUriKeys.groupUnapprovedMembers),
-          context: context,
-          useCache: false);
+      Response response = await Http.get(
+        uri: generateUri(GetUriKeys.groupUnapprovedMembers, context),
+        useCache: false,
+      );
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = <Member>[];
       for (Map<String, dynamic> member in decoded['data']) {
@@ -59,10 +60,10 @@ class _InvitationState extends State<Invitation> {
   Future<bool> _updateNeedsApproval() async {
     try {
       Map<String, dynamic> body = {'admin_approval': _needsApproval ? 1 : 0};
-      await httpPut(
-          context: context,
-          uri: '/groups/' + currentGroupId.toString(),
-          body: body);
+      await Http.put(
+        uri: '/groups/' + context.read<UserProvider>().user!.group!.id.toString(),
+        body: body,
+      );
       Future.delayed(delayTime()).then((value) => _onUpdateNeedsApproval());
       return true;
     } catch (_) {
@@ -245,7 +246,9 @@ class _InvitationState extends State<Invitation> {
                                                         .onSurface),
                                           ),
                                           Switch(
-                                            trackOutlineColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                                            trackOutlineColor:
+                                                MaterialStateProperty.all<
+                                                    Color>(Colors.transparent),
                                             value: _needsApproval,
                                             activeColor: Theme.of(context)
                                                 .colorScheme
@@ -472,10 +475,9 @@ class _ApproveMemberState extends State<ApproveMember> {
   Future<bool> _postApproveMember(int? memberId, bool approve) async {
     try {
       Map<String, dynamic> body = {'member_id': memberId, 'approve': approve};
-      await httpPost(
-          context: context,
+      await Http.post(
           uri: '/groups/' +
-              currentGroupId.toString() +
+              context.read<UserProvider>().user!.group!.id.toString() +
               '/members/approve_or_deny',
           body: body);
       Future.delayed(delayTime()).then((value) => _onPostApproveMember());
@@ -486,7 +488,7 @@ class _ApproveMemberState extends State<ApproveMember> {
   }
 
   void _onPostApproveMember() {
-    clearGroupCache();
+    clearGroupCache(context);
     Navigator.pop(context);
     Navigator.pop(context, true);
   }

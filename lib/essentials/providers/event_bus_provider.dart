@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,34 +19,34 @@ class EventBusProvider extends StatelessWidget {
 }
 
 class RefreshBalances extends EmptyEvent {
-  RefreshBalances() {
-    deleteCache(uri: generateUri(GetUriKeys.userBalanceSum));
-    deleteCache(uri: generateUri(GetUriKeys.groupCurrent));
+  RefreshBalances(BuildContext context) {
+    deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, context));
+    deleteCache(uri: generateUri(GetUriKeys.groupCurrent, context));
   }
 }
 
 class RefreshPurchases extends EmptyEvent {
-  RefreshPurchases() {
-    deleteCache(uri: generateUri(GetUriKeys.purchases), multipleArgs: true);
+  RefreshPurchases(BuildContext context) {
+    deleteCache(uri: generateUri(GetUriKeys.purchases, context), multipleArgs: true);
   }
 }
 
 class RefreshPayments extends EmptyEvent {
-  RefreshPayments() {
-    deleteCache(uri: generateUri(GetUriKeys.payments), multipleArgs: true);
+  RefreshPayments(BuildContext context) {
+    deleteCache(uri: generateUri(GetUriKeys.payments, context), multipleArgs: true);
   }
 }
 
 class RefreshShopping extends EmptyEvent {
-  RefreshShopping() {
-    deleteCache(uri: generateUri(GetUriKeys.requests), multipleArgs: true);
+  RefreshShopping(BuildContext context) {
+    deleteCache(uri: generateUri(GetUriKeys.requests, context), multipleArgs: true);
   }
 }
 
 class RefreshStatistics extends EmptyEvent {}
 
 class RefreshGroups extends EmptyEvent {
-  RefreshGroups() {
-    deleteCache(uri: generateUri(GetUriKeys.groups));
+  RefreshGroups(BuildContext context) {
+    deleteCache(uri: generateUri(GetUriKeys.groups, context));
   }
 }

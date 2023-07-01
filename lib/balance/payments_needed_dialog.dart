@@ -1,7 +1,7 @@
-import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
+import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/payment/payment_entry.dart';
@@ -26,13 +26,13 @@ class _PaymentsNeededDialogState extends State<PaymentsNeededDialog> {
   Future<bool> _postPayment(double amount, String note, int? takerId) async {
     try {
       Map<String, dynamic> body = {
-        'group': currentGroupId,
+        'group': context.read<UserProvider>().user!.group!.id,
         'amount': amount,
         'note': note,
         'taker_id': takerId
       };
 
-      await httpPost(uri: '/payments', body: body, context: context);
+      await Http.post(uri: '/payments', body: body);
       return true;
     } catch (_) {
       throw _;
@@ -54,8 +54,8 @@ class _PaymentsNeededDialogState extends State<PaymentsNeededDialog> {
     Navigator.pop(context);
     Navigator.pop(context);
     final bus = context.read<EventBus>();
-    bus.fire(RefreshPayments());
-    bus.fire(RefreshBalances());
+    bus.fire(RefreshPayments(context));
+    bus.fire(RefreshBalances(context));
   }
 
   @override

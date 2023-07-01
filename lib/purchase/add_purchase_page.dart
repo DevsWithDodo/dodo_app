@@ -1,8 +1,8 @@
 import 'package:csocsort_szamla/essentials/ad_management.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
+import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/purchase/add_modify_purchase.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -39,9 +39,9 @@ class _AddPurchasePageState extends State<AddPurchasePage>
   Future<bool> _postPurchase(List<Member> members, double amount, String name,
       BuildContext context) async {
     try {
-      Map<String, dynamic> body = generateBody(name, amount, members);
+      Map<String, dynamic> body = generateBody(name, amount, members, context);
 
-      await httpPost(uri: '/purchases', body: body, context: context);
+      await Http.post(uri: '/purchases', body: body);
       Future.delayed(delayTime()).then((value) => _onPostPurchase(context));
       return true;
     } catch (_) {
@@ -53,8 +53,8 @@ class _AddPurchasePageState extends State<AddPurchasePage>
     Navigator.pop(context);
     Navigator.pop(context);
     final bus = context.read<EventBus>();
-    bus.fire(RefreshBalances());
-    bus.fire(RefreshPurchases());
+    bus.fire(RefreshBalances(context));
+    bus.fire(RefreshPurchases(context));
   }
 
   @override
@@ -122,7 +122,7 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                                   calculatorKey: _calculatorKey,
                                   currencyKey: _currencyKey),
                               SizedBox(height: 20),
-                              purchaserChooser(context),
+                              purchaserChooser(),
                               SizedBox(height: 20),
                               Row(
                                 mainAxisAlignment:
@@ -190,8 +190,7 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                                 ),
                               ),
                               SizedBox(height: 15),
-                              receiverChooser(context,
-                                  showcaseKey: _receiversKey),
+                              receiverChooser(showcaseKey: _receiversKey),
                               SizedBox(height: 20),
                               Row(
                                 mainAxisAlignment:

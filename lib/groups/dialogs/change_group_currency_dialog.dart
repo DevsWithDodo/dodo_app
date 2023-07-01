@@ -1,10 +1,10 @@
-import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
-import 'package:csocsort_szamla/essentials/save_preferences.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../essentials/widgets/currency_picker_dropdown.dart';
 import '../main_group_page.dart';
@@ -16,17 +16,19 @@ class ChangeGroupCurrencyDialog extends StatefulWidget {
 }
 
 class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
-  String? _currencyCode = currentGroupCurrency;
+  late String _currencyCode;
 
-  Future<bool> _updateGroupCurrency(String? code) async {
+  Future<bool> _updateGroupCurrency(String currency) async {
     try {
-      Map<String, dynamic> body = {"currency": code};
+      Map<String, dynamic> body = {"currency": currency};
 
-      await httpPut(
-          uri: '/groups/' + currentGroupId.toString(),
-          context: context,
-          body: body);
-      saveGroupCurrency(code);
+      await Http.put(
+        uri: '/groups/' +
+            context.read<UserProvider>().currentGroup!.id.toString(),
+        body: body,
+      );
+      context.read<UserProvider>().setGroupCurrency(currency);
+
       Future.delayed(delayTime()).then((value) => _onUpdateGroupCurrency());
       return true;
     } catch (_) {
@@ -35,11 +37,17 @@ class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
   }
 
   Future<void> _onUpdateGroupCurrency() async {
-    await clearGroupCache();
-    await deleteCache(uri: generateUri(GetUriKeys.groups));
-    await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum));
+    await clearGroupCache(context);
+    await deleteCache(uri: generateUri(GetUriKeys.groups, context));
+    await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, context));
     Navigator.pushAndRemoveUntil(context,
         MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _currencyCode = context.read<UserProvider>().currentGroup!.currency;
   }
 
   @override

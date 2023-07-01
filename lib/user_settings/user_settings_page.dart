@@ -1,13 +1,15 @@
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/user_settings/change_password.dart';
 import 'package:csocsort_szamla/user_settings/change_user_currency.dart';
 import 'package:csocsort_szamla/user_settings/delete_all_data.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'about_us.dart';
 import 'change_language.dart';
-import 'change_password.dart';
 import 'change_username.dart';
 import 'color_picker.dart';
 import 'personalised_ads.dart';
@@ -25,7 +27,7 @@ class _SettingsState extends State<Settings> {
     double height = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -
         56 - //appbar
-        adHeight(); //Height without status bar and appbar
+        adHeight(context); //Height without status bar and appbar
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -92,7 +94,7 @@ class _SettingsState extends State<Settings> {
       ChangePassword(),
       ChangeUsername(),
       ChangeUserCurrency(),
-      Visibility(visible: showAds, child: PersonalisedAds()),
+      Visibility(visible: context.watch<UserProvider>().user!.showAds, child: PersonalisedAds()),
       AboutUs(),
       DeleteAllData(),
       ReportBug(),

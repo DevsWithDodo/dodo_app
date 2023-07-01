@@ -1,7 +1,8 @@
-import 'package:csocsort_szamla/config.dart';
+import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import '../../essentials/validation_rules.dart';
 import '../../essentials/widgets/gradient_button.dart';
@@ -12,7 +13,7 @@ class ForgotPasswordDialog extends StatelessWidget {
 
   final GlobalKey<FormState> formState = GlobalKey<FormState>();
   final TextEditingController controller =
-      TextEditingController(text: currentUsername ?? '');
+      TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -26,6 +27,7 @@ class ForgotPasswordDialog extends StatelessWidget {
         ),
         content: TextFormField(
           controller: controller,
+          initialValue: context.watch<User?>()?.username,
           validator: (value) => validateTextField([
             isEmpty(value),
             minimalLength(value, 3),

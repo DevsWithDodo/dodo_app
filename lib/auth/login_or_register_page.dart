@@ -1,15 +1,16 @@
 import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:csocsort_szamla/auth/name_page.dart';
+import 'package:provider/provider.dart';
 
 class LoginOrRegisterPage extends StatefulWidget {
-  final String? inviteURL;
-  LoginOrRegisterPage({this.inviteURL});
+  LoginOrRegisterPage();
 
   @override
   _LoginOrRegisterPageState createState() => _LoginOrRegisterPageState();
@@ -130,7 +131,7 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
                         Theme.of(context).colorScheme.primary,
-                        currentThemeName.toLowerCase().contains('dodo') &&
+                        context.watch<UserProvider>().user!.themeName.toLowerCase().contains('dodo') &&
                                 !kIsWeb
                             ? BlendMode.dst
                             : BlendMode.srcIn),
@@ -174,7 +175,6 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                     MaterialPageRoute(
                       builder: (context) => NamePage(
                         isLogin: true,
-                        inviteUrl: widget.inviteURL,
                       ),
                     ),
                   );
@@ -191,7 +191,6 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => NamePage(
-                        inviteUrl: widget.inviteURL,
                       ),
                     ),
                   );

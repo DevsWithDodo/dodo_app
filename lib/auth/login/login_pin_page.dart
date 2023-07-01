@@ -1,10 +1,10 @@
-import 'package:csocsort_szamla/auth/login/login_methods.dart';
 import 'package:csocsort_szamla/auth/login/password_page.dart';
 
 import 'package:csocsort_szamla/auth/pin_pad.dart';
-import 'package:csocsort_szamla/essentials/save_preferences.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../essentials/widgets/future_success_dialog.dart';
 import '../../essentials/widgets/gradient_button.dart';
 
@@ -111,14 +111,12 @@ class _LoginPinPageState extends State<LoginPinPage> {
   void _pushedButton() {
     String? username = widget.username;
     String pin = _pin;
-    saveUsesPassword(false);
     showDialog(
       barrierDismissible: false,
       context: context,
       builder: (context) {
         return FutureSuccessDialog(
-          future: LoginMethods.login(
-              username, pin, context, widget.inviteUrl, false),
+          future: context.read<UserProvider>().login(username!, pin, context),
         );
       },
     );

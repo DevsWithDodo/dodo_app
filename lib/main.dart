@@ -7,8 +7,10 @@ import 'dart:io';
 import 'package:csocsort_szamla/auth/login_or_register_page.dart';
 import 'package:csocsort_szamla/essentials/app_theme.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
-import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
-import 'package:csocsort_szamla/essentials/save_preferences.dart';
+import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/invite_url_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/version_not_supported_page.dart';
 import 'package:csocsort_szamla/groups/join_group.dart';
 import 'package:csocsort_szamla/main/in_app_purchase_page.dart';
@@ -20,6 +22,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart' as http;
@@ -30,8 +33,7 @@ import 'package:showcaseview/showcaseview.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'config.dart';
-import 'essentials/app_state_notifier.dart';
-import 'essentials/http_handler.dart';
+import 'essentials/http.dart';
 import 'essentials/navigator_service.dart';
 import 'groups/main_group_page.dart';
 
@@ -53,61 +55,46 @@ void getItSetup() {
 
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-Future myBackgroundMessageHandler(RemoteMessage message) async {
+Future backgroundMessageHandler(
+    RemoteMessage message, UserProvider userProvider) async {
   await Firebase.initializeApp();
-  onSelectNotification(message.data['payload']);
+  onSelectNotification(message.data['payload'], userProvider);
 }
 
-Future onSelectNotification(String? payload) async {
+Future onSelectNotification(String? payload, UserProvider userProvider) async {
   print("Payload: " + payload!);
   try {
     Map<String, dynamic> decoded = jsonDecode(payload);
     int? groupId = decoded['group_id'];
     String? groupName = decoded['group_name'];
-    String? currency = decoded['group_currency'];
+    String? groupCurrency = decoded['group_currency'];
     String? page = decoded['screen'];
     String? details = decoded['details'];
 
-    //If this notification is about a user who just got accepted to a group
-    if (details == 'added_to_group') {
-      saveGroupId(groupId);
-      saveGroupName(groupName);
-      //If he doesn't have a group yet -> create the necessary lists
-      if (usersGroups == null) {
-        usersGroups = <String>[];
-        usersGroupIds = <int>[];
+    if (userProvider.user != null) {
+      if (groupId != null) {
+        userProvider.setGroup(
+            Group(id: groupId, name: groupName!, currency: groupCurrency!));
       }
-      //Add the group to the list and save them to the cache
-      usersGroups!.add(groupName!);
-      usersGroupIds!.add(groupId!);
-      saveUsersGroups();
-      saveUsersGroupIds();
-      //If the group is one of the user's groups
-    } else if (usersGroupIds != null && usersGroupIds!.contains(groupId)) {
-      saveGroupId(groupId);
-      saveGroupName(groupName);
-      if (currency != null) saveGroupCurrency(currency);
-    }
-    clearAllCache();
-    if (currentUserId != null) {
+      clearAllCache();
       if (page == 'home') {
         int selectedIndex = 0;
         if (details == 'payment') {
           selectedIndex = 1;
         }
-        getIt.get<NavigationService>().navigateToAndRemove(MaterialPageRoute(
+        getIt.get<NavigationService>().pushAndRemoveUntil(MaterialPageRoute(
             builder: (context) =>
                 MainPage(selectedHistoryIndex: selectedIndex)));
       } else if (page == 'shopping') {
         int selectedTab = 1;
-        getIt.get<NavigationService>().navigateToAndRemove(MaterialPageRoute(
+        getIt.get<NavigationService>().pushAndRemoveUntil(MaterialPageRoute(
             builder: (context) => MainPage(selectedIndex: selectedTab)));
       } else if (page == 'store') {
-        getIt.get<NavigationService>().navigateToAndRemove(
+        getIt.get<NavigationService>().pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => InAppPurchasePage()));
       } else if (page == 'group_settings') {
         int selectedTab = 2;
-        getIt.get<NavigationService>().navigateToAndRemove(MaterialPageRoute(
+        getIt.get<NavigationService>().pushAndRemoveUntil(MaterialPageRoute(
             builder: (context) => MainPage(selectedIndex: selectedTab)));
       }
     }
@@ -127,7 +114,6 @@ void main() async {
       MobileAds.instance.initialize();
     }
     if (isFirebasePlatformEnabled) {
-      FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
       await Firebase.initializeApp();
       await FirebaseMessaging.instance.getToken();
     }
@@ -140,7 +126,7 @@ void main() async {
   getItSetup();
   HttpOverrides.global = new MyHttpOverrides();
   SharedPreferences preferences = await SharedPreferences.getInstance();
-  String? themeName = '';
+  String themeName = '';
 
   if (!preferences.containsKey('theme')) {
     if (SchedulerBinding.instance.window.platformBrightness ==
@@ -152,50 +138,67 @@ void main() async {
       themeName = 'dodoDarkTheme';
     }
   } else {
-    themeName = preferences.getString('theme');
+    themeName = preferences.getString('theme')!;
   }
-  await loadAllPrefs();
-  String? initURL;
+  String? inviteURL;
   try {
-    initURL = await getInitialLink();
+    inviteURL = await getInitialLink();
   } catch (_) {}
 
   runApp(
-    EasyLocalization(
-      child: ChangeNotifierProvider<AppStateNotifier>(
-        create: (context) => AppStateNotifier(),
-        child: LenderApp(
-          themeName: themeName!,
-          initURL: initURL,
+    DynamicColorBuilder(
+        builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+      if (lightDynamic != null) {
+        AppTheme.addDynamicThemes(lightDynamic, darkDynamic!);
+      }
+      print(themeName);
+      return MultiProvider(
+        providers: [
+          Provider.value(value: preferences),
+          ChangeNotifierProvider(
+              create: (context) => UserProvider(context, themeName)),
+          ChangeNotifierProvider(
+              create: (context) => InviteUrlProvider(inviteURL)),
+        ],
+        child: EventBusProvider(
+          child: EasyLocalization(
+            child: Builder(builder: (context) {
+              if (isFirebasePlatformEnabled) {
+                FirebaseMessaging.onBackgroundMessage(
+                  (message) => backgroundMessageHandler(
+                    message,
+                    context.read<UserProvider>(),
+                  ),
+                );
+              }
+              return LenderApp();
+            }),
+            supportedLocales: [
+              Locale('en'),
+              Locale('de'),
+              Locale('it'),
+              Locale('hu')
+            ],
+            path: 'assets/translations',
+            fallbackLocale: Locale('en'),
+            useOnlyLangCode: true,
+            saveLocale: true,
+            useFallbackTranslations: true,
+          ),
         ),
-      ),
-      supportedLocales: [
-        Locale('en'),
-        Locale('de'),
-        Locale('it'),
-        Locale('hu')
-      ],
-      path: 'assets/translations',
-      fallbackLocale: Locale('en'),
-      useOnlyLangCode: true,
-      saveLocale: true,
-      useFallbackTranslations: true,
-    ),
+      );
+    }),
   );
 }
 
 class LenderApp extends StatefulWidget {
-  final String themeName;
-  final String? initURL;
-  const LenderApp({required this.themeName, this.initURL});
+  const LenderApp();
 
   @override
   State<StatefulWidget> createState() => _LenderAppState();
 }
 
 class _LenderAppState extends State<LenderApp> {
-  bool _first = true;
-  bool _dynamicColorLoaded = false;
   //deeplink
   StreamSubscription? _sub;
   String? _link;
@@ -207,16 +210,16 @@ class _LenderAppState extends State<LenderApp> {
       _link = link;
       print(link);
       setState(() {
-        if (currentUserId != null) {
-          getIt.get<NavigationService>().navigateTo(MaterialPageRoute(
+        if (context.read<UserProvider>().user?.id != null) {
+          getIt.get<NavigationService>().push(MaterialPageRoute(
               builder: (context) => JoinGroup(
                   inviteURL: _link,
-                  fromAuth: (currentGroupId == null) ? true : false)));
+                  fromAuth: (context.read<UserProvider>().user?.group == null)
+                      ? true
+                      : false)));
         } else {
-          getIt.get<NavigationService>().navigateTo(MaterialPageRoute(
-              builder: (context) => LoginOrRegisterPage(
-                    inviteURL: _link,
-                  )));
+          getIt.get<NavigationService>().push(
+              MaterialPageRoute(builder: (context) => LoginOrRegisterPage()));
         }
       });
     }, onError: (err) {
@@ -252,13 +255,15 @@ class _LenderAppState extends State<LenderApp> {
         await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
-      onSelectNotification(initialMessage.data['payload']);
+      onSelectNotification(
+          initialMessage.data['payload'], context.read<UserProvider>());
     }
   }
 
   @override
   void initState() {
     super.initState();
+    UserProvider userProvider = context.read<UserProvider>();
     if (isIAPPlatformEnabled) {
       final Stream purchaseUpdates = InAppPurchase.instance.purchaseStream;
       _subscription = purchaseUpdates.listen((purchases) {
@@ -268,31 +273,31 @@ class _LenderAppState extends State<LenderApp> {
             String url = (!useTest ? APP_URL : TEST_URL) + '/user';
             Map<String, String> header = {
               "Content-Type": "application/json",
-              "Authorization": "Bearer " + (apiToken == null ? '' : apiToken!)
+              "Authorization": "Bearer " + userProvider.user!.apiToken,
             };
             Map<String, dynamic> body = {};
             switch (details.productID) {
               case 'remove_ads':
-                showAds = false;
+                userProvider.setShownAds(false);
                 body['ad_free'] = 1;
                 break;
               case 'gradients':
-                useGradients = true;
+                userProvider.setUseGradients(true);
                 body['gradients_enabled'] = 1;
                 break;
               case 'ad_gradient_bundle':
-                showAds = false;
+                userProvider.setShownAds(false);
                 body['ad_free'] = 1;
-                useGradients = true;
+                userProvider.setUseGradients(true);
                 body['gradients_enabled'] = 1;
                 break;
               case 'group_boost':
                 body['boosts'] = 2;
                 break;
               case 'big_lender_bundle':
-                showAds = false;
+                userProvider.setShownAds(false);
                 body['ad_free'] = 1;
-                useGradients = true;
+                userProvider.setUseGradients(true);
                 body['gradients_enabled'] = 1;
                 body['boosts'] = 1;
                 break;
@@ -310,7 +315,7 @@ class _LenderAppState extends State<LenderApp> {
     }
     if (isFirebasePlatformEnabled) {
       initUniLinks();
-      _link = widget.initURL;
+      _link = context.read<InviteUrlProvider>().inviteUrl;
       var initializationSettingsAndroid =
           new AndroidInitializationSettings('@drawable/dodo');
       final IOSInitializationSettings initializationSettingsIOS =
@@ -321,7 +326,8 @@ class _LenderAppState extends State<LenderApp> {
 
       flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
       flutterLocalNotificationsPlugin.initialize(initializationSettings,
-          onSelectNotification: onSelectNotification);
+          onSelectNotification: (payload) =>
+              onSelectNotification(payload, userProvider));
 
       Future.delayed(Duration(seconds: 1)).then((value) {
         if (Platform.isAndroid) {
@@ -365,17 +371,17 @@ class _LenderAppState extends State<LenderApp> {
               payload: message.data['payload']);
         });
         FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-          onSelectNotification(message.data['payload']);
+          onSelectNotification(message.data['payload'], userProvider);
         });
       });
     }
-    if (currentUserId != null) {
-      _getUserData();
-    }
+    // if (user != null) {
+    //   _getUserData(user);
+    // }
     _getExchangeRates();
     _supportedVersion().then((value) {
       if (!(value ?? true)) {
-        getIt.get<NavigationService>().navigateToAndRemove(MaterialPageRoute(
+        getIt.get<NavigationService>().pushAndRemoveUntil(MaterialPageRoute(
               builder: (context) => VersionNotSupportedPage(),
             ));
       }
@@ -419,43 +425,6 @@ class _LenderAppState extends State<LenderApp> {
     }
   }
 
-  Future<void> _getUserData() async {
-    try {
-      Map<String, String> header = {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + (apiToken == null ? '' : apiToken!)
-      };
-      http.Response response = await http.get(
-          Uri.parse((useTest ? TEST_URL : APP_URL) + '/user'),
-          headers: header);
-      var decoded = jsonDecode(response.body);
-      showAds = decoded['data']['ad_free'] == 0;
-      useGradients = decoded['data']['gradients_enabled'] == 1;
-      personalisedAds = decoded['data']['personalised_ads'] == 1;
-      trialVersion = decoded['data']['trial'] == 1;
-      if (decoded['data']['trial'] == null) {
-        //Means that the trial just ended
-        trialJustEnded = true;
-      }
-      if (currentGroupId == null &&
-          decoded['data']['last_active_group'] != null) {
-        currentGroupId = decoded['data']['last_active_group'];
-        getIt.get<NavigationService>().navigateToAndRemove(
-              MaterialPageRoute(
-                builder: (context) => MainPage(),
-              ),
-            );
-      }
-      SharedPreferences preferences = await SharedPreferences.getInstance();
-      if (!useGradients &&
-          preferences.getString('theme')!.contains('Gradient')) {
-        preferences.setString('theme', 'greenLightTheme');
-      }
-    } catch (_) {
-      throw _;
-    }
-  }
-
   @override
   dispose() {
     if (_sub != null) _sub!.cancel();
@@ -465,53 +434,34 @@ class _LenderAppState extends State<LenderApp> {
 
   @override
   Widget build(BuildContext context) {
-    return EventBusProvider(
-      child: Consumer<AppStateNotifier>(
-        builder: (context, appState, child) {
-          return DynamicColorBuilder(
-              builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-            if (lightDynamic != null && !_dynamicColorLoaded) {
-              AppTheme.addDynamicThemes(lightDynamic, darkDynamic!);
-              appState.updateThemeNoNotify(widget.themeName);
-              _dynamicColorLoaded = true;
-            }
-    
-            if (_first) {
-              appState.updateThemeNoNotify(widget.themeName);
-              _first = false;
-            }
-            return ShowCaseWidget(
-              builder: Builder(
-                builder: (context) {
-                  return MaterialApp(
-                    debugShowCheckedModeBanner: false,
-                    title: 'Dodo',
-                    theme: appState.theme,
-                    localizationsDelegates: context.localizationDelegates,
-                    supportedLocales: context.supportedLocales,
-                    locale: context.locale,
-                    navigatorKey: getIt.get<NavigationService>().navigatorKey,
-                    home: currentUserId == null
-                        ? LoginOrRegisterPage(
-                            inviteURL: _link,
+    return ShowCaseWidget(
+      builder: Builder(builder: (context) {
+        return Consumer<UserProvider>(builder: (context, userProvider, _) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Dodo',
+            theme: AppTheme.themes[userProvider.user!.themeName],
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+            builder: FToastBuilder(),
+            navigatorKey: getIt.get<NavigationService>().navigatorKey,
+            home: userProvider.user == null
+                ? LoginOrRegisterPage()
+                : (_link != null)
+                    ? JoinGroup(
+                        inviteURL: _link,
+                        fromAuth:
+                            (userProvider.user?.group == null) ? true : false,
+                      )
+                    : (userProvider.user?.group == null)
+                        ? JoinGroup(
+                            fromAuth: true,
                           )
-                        : (_link != null)
-                            ? JoinGroup(
-                                inviteURL: _link,
-                                fromAuth: (currentGroupId == null) ? true : false,
-                              )
-                            : (currentGroupId == null)
-                                ? JoinGroup(
-                                    fromAuth: true,
-                                  )
-                                : MainPage(),
-                  );
-                }
-              ),
-            );
-          });
-        },
-      ),
+                        : MainPage(),
+          );
+        });
+      }),
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  AppTheme._();
 
   static final Map<String, ThemeData> themes = {
     'pinkLightTheme': generateThemeData(

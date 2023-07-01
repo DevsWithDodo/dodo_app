@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
+import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/groups/main_group_page.dart';
 import 'package:csocsort_szamla/shopping/im_shopping_dialog.dart';
@@ -11,7 +11,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 import '../essentials/validation_rules.dart';
@@ -36,12 +36,11 @@ class _ShoppingListState extends State<ShoppingList> {
   Future<List<ShoppingRequest>> _getShoppingList(
       {bool overwriteCache = false}) async {
     try {
-      http.Response response = await httpGet(
+      Response response = await Http.get(
         uri: generateUri(
-          GetUriKeys.requests,
-          queryParams: {'group': currentGroupId.toString()},
+          GetUriKeys.requests, context,
+          queryParams: {'group': context.read<UserProvider>().user!.group!.id.toString()},
         ),
-        context: context,
         overwriteCache: overwriteCache,
       );
       Map<String, dynamic> decoded = jsonDecode(response.body);
@@ -59,9 +58,9 @@ class _ShoppingListState extends State<ShoppingList> {
 
   Future<bool> _postShoppingRequest(String name) async {
     try {
-      Map<String, dynamic> body = {'group': currentGroupId, 'name': name};
-      http.Response response =
-          await httpPost(uri: '/requests', context: context, body: body);
+      Map<String, dynamic> body = {'group': context.read<UserProvider>().currentGroup!.id, 'name': name};
+      Response response =
+          await Http.post(uri: '/requests', body: body);
       Future.delayed(delayTime()).then((value) => _onPostShoppingRequest(
           ShoppingRequest.fromJson(jsonDecode(response.body)['data'])));
       return true;
@@ -85,8 +84,7 @@ class _ShoppingListState extends State<ShoppingList> {
 
   Future<bool> _undoDeleteRequest(int id) async {
     try {
-      http.Response response = await httpPost(
-          context: context, uri: '/requests/restore/' + id.toString());
+      Response response = await Http.post(uri: '/requests/restore/' + id.toString());
       Future.delayed(delayTime()).then((value) => _onUndoDeleteRequest(
           ShoppingRequest.fromJson(jsonDecode(response.body)['data'])));
       return true;
@@ -205,6 +203,7 @@ class _ShoppingListState extends State<ShoppingList> {
   @override
   void initState() {
     super.initState();
+    
     _shoppingList = null;
     _shoppingList = _getShoppingList();
     context.read<EventBus>().on<RefreshShopping>().listen((_) {

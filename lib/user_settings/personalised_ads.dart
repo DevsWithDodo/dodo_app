@@ -1,9 +1,10 @@
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
+import 'package:provider/provider.dart';
 
 class PersonalisedAds extends StatefulWidget {
   @override
@@ -11,16 +12,22 @@ class PersonalisedAds extends StatefulWidget {
 }
 
 class _PersonalisedAdsState extends State<PersonalisedAds> {
-  bool _personalisedAds = personalisedAds;
+  late bool _personalisedAds;
+
+  @override
+  void initState() {
+    super.initState();
+    _personalisedAds = context.read<UserProvider>().user!.personalisedAds;
+  }
 
   Future<bool> _updatePersonalisedAds() async {
     try {
-      if (personalisedAds != _personalisedAds) {
+      if (context.read<UserProvider>().user!.personalisedAds != _personalisedAds) {
         Map<String, dynamic> body = {
           "personalised_ads": _personalisedAds ? "on" : "off"
         };
-        await httpPut(context: context, uri: '/user', body: body);
-        personalisedAds = _personalisedAds;
+        await Http.put(uri: '/user', body: body);
+        context.read<UserProvider>().setPersonalisedAds(_personalisedAds);
         Future.delayed(delayTime()).then((value) => _onUpdatePersonalisedAds());
         return true;
       } else {

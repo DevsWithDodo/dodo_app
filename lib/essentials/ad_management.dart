@@ -1,17 +1,8 @@
 import 'package:csocsort_szamla/config.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-
-Map<String, String> appUnitIds = {
-  'create_group':'example',
-  'history':'example',
-  'home_screen':'example',
-  'join_group':'example',
-  'payment':'example',
-  'purchase':'example',
-  'report_bug':'example',
-  'settings':'example'
-};
+import 'package:provider/provider.dart';
 
 class AdUnitForSite extends StatefulWidget {
   final String site;
@@ -26,12 +17,12 @@ class _AdUnitForSiteState extends State<AdUnitForSite> {
   @override
   void initState() {
     ad = BannerAd(
-      adUnitId: appUnitIds[widget.site]!,
+      adUnitId: adUnitIds[widget.site]!,
       size: AdSize.banner,
       request: AdRequest(),
       listener: BannerAdListener(),
     );
-    if (showAds && isAdPlatformEnabled) {
+    if (context.read<UserProvider>().user!.showAds && isAdPlatformEnabled) {
       ad.load();
     }
     super.initState();
@@ -39,6 +30,7 @@ class _AdUnitForSiteState extends State<AdUnitForSite> {
 
   @override
   Widget build(BuildContext context) {
+    bool showAds = context.read<UserProvider>().user!.showAds;
     if (ad.responseInfo == null && showAds && isAdPlatformEnabled) {
       ad.load();
     }

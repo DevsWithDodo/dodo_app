@@ -1,7 +1,7 @@
 import 'package:csocsort_szamla/essentials/ad_management.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
+import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/payment/add_modify_payment.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -21,9 +21,9 @@ class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment
   Future<bool> _postPayment(
       double amount, String note, Member toMember, BuildContext context) async {
     try {
-      Map<String, dynamic> body = generateBody(note, amount, toMember);
+      Map<String, dynamic> body = generateBody(note, amount, toMember, context);
 
-      await httpPost(uri: '/payments', body: body, context: context);
+      await Http.post(uri: '/payments', body: body);
       Future.delayed(delayTime()).then((value) => _onPostPayment(context));
       return true;
     } catch (_) {
@@ -35,8 +35,8 @@ class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment
     Navigator.pop(context);
     Navigator.pop(context);
     final bus = context.read<EventBus>();
-    bus.fire(RefreshBalances());
-    bus.fire(RefreshPayments());
+    bus.fire(RefreshBalances(context));
+    bus.fire(RefreshPayments(context));
   }
 
   @override
@@ -92,7 +92,7 @@ class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment
                               SizedBox(
                                 height: 20,
                               ),
-                              payerChooser(context),
+                              payerChooser(),
                               SizedBox(
                                 height: 20,
                               ),

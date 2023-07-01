@@ -1,14 +1,15 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import '../essentials/validation_rules.dart';
 
@@ -29,9 +30,8 @@ class _EditRequestDialogState extends State<EditRequestDialog> {
   Future<bool> _updateRequest(String newRequest) async {
     try {
       Map<String, dynamic> body = {'name': newRequest};
-      http.Response response = await httpPut(
+      http.Response response = await Http.put(
         uri: '/requests/' + widget.requestId.toString(),
-        context: context,
         body: body,
       );
       Future.delayed(delayTime()).then((value) => _onUpdateRequest(
@@ -45,8 +45,8 @@ class _EditRequestDialogState extends State<EditRequestDialog> {
   void _onUpdateRequest(ShoppingRequest request) {
     deleteCache(
         uri: generateUri(
-      GetUriKeys.requests,
-      queryParams: {'group': currentGroupId.toString()},
+      GetUriKeys.requests, context,
+      queryParams: {'group': context.read<UserProvider>().currentGroup!.id.toString()},
     ));
     Navigator.pop(context);
     Navigator.pop(context, request);

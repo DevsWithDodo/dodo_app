@@ -2,10 +2,9 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 
 import 'package:csocsort_szamla/auth/login_or_register_page.dart';
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
-import 'package:csocsort_szamla/essentials/save_preferences.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/user_settings/user_settings_page.dart';
@@ -14,8 +13,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 import '../essentials/models.dart';
 import '../essentials/validation_rules.dart';
@@ -36,25 +36,19 @@ class JoinGroup extends StatefulWidget {
 
 class _JoinGroupState extends State<JoinGroup> {
   TextEditingController _tokenController = TextEditingController();
-  TextEditingController _nicknameController = TextEditingController(
-      text: currentUsername![0].toUpperCase() + currentUsername!.substring(1));
+  late TextEditingController _nicknameController;
+  late User user;
+
+  @override
+  void initState() {
+    super.initState();
+    user = context.read<UserProvider>().user!;
+    _nicknameController = TextEditingController(
+        text: user.username[0].toUpperCase() + user.username.substring(1));
+  }
 
   var _formKey = GlobalKey<FormState>();
 
-  Future _logout() async {
-    try {
-      await clearAllCache();
-      await httpPost(context: context, uri: '/logout', body: {});
-      deleteApiToken();
-      deleteUserId();
-      deleteUserCurrency();
-      deleteUsesPassword();
-      deleteGroupId();
-      deleteGroupName();
-    } catch (_) {
-      throw _;
-    }
-  }
 
   Future<bool> _joinGroup(String token, String nickname) async {
     try {
@@ -62,22 +56,19 @@ class _JoinGroupState extends State<JoinGroup> {
         'invitation_token': token,
         'nickname': nickname
       };
-      http.Response response =
-          await httpPost(uri: '/join', context: context, body: body);
+      Response response = await Http.post(uri: '/join', body: body);
 
       if (response.body != "") {
         Map<String, dynamic> decoded = jsonDecode(response.body);
-        saveGroupName(decoded['data']['group_name']);
-        saveGroupId(decoded['data']['group_id']);
-        saveGroupCurrency(decoded['data']['currency']);
-        if (usersGroups == null) {
-          usersGroupIds = <int>[];
-          usersGroups = <String>[];
-        }
-        usersGroupIds!.add(decoded['data']['group_id']);
-        usersGroups!.add(decoded['data']['group_name']);
-        saveUsersGroupIds();
-        saveUsersGroups();
+        UserProvider userProvider = context.read<UserProvider>();
+        userProvider.setGroups(userProvider.user!.groups + [
+          Group(
+            id: decoded['data']['group_id'],
+            name: decoded['data']['group_name'],
+            currency: decoded['data']['currency'],
+          )
+        ], notify: false);
+        userProvider.setGroup(userProvider.user!.groups.last);
         List<Member> guests = (decoded['data']['members'] as List<dynamic>)
             .where((element) => element['is_guest'] == 1)
             .map((e) => Member.fromJson(e))
@@ -116,347 +107,367 @@ class _JoinGroupState extends State<JoinGroup> {
           ? widget.inviteURL!.split('/').removeLast()
           : '';
     }
-    return WillPopScope(
-      onWillPop: () {
-        if (currentGroupName != null && currentGroupId != null) {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => MainPage()),
-              (r) => false);
-          return Future.value(false);
-        }
-        return Future.value(true);
-      },
-      child: Form(
-        key: _formKey,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              'join'.tr(),
-            ),
-            leading: (currentGroupName != null)
-                ? IconButton(
-                    icon: Icon(Icons.arrow_back,
-                        color: Theme.of(context).colorScheme.onSurface),
-                    onPressed: () => Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => MainPage()),
-                        (r) => false),
-                  )
-                : null,
-          ),
-          drawer: !(widget.fromAuth || currentGroupName != null)
-              ? null
-              : Drawer(
-                  shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.horizontal(right: Radius.circular(16))),
-                  elevation: 16,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: ListView(
-                          children: <Widget>[
-                            DrawerHeader(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+    return Selector<UserProvider, User>(
+        selector: (context, userProvider) => userProvider.user!,
+        builder: (context, user, _) {
+          return WillPopScope(
+            onWillPop: () {
+              if (user.group != null) {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => MainPage()),
+                    (r) => false);
+                return Future.value(false);
+              }
+              return Future.value(true);
+            },
+            child: Form(
+              key: _formKey,
+              child: Scaffold(
+                appBar: AppBar(
+                  title: Text(
+                    'join'.tr(),
+                  ),
+                  leading: (user.group != null)
+                      ? IconButton(
+                          icon: Icon(Icons.arrow_back,
+                              color: Theme.of(context).colorScheme.onSurface),
+                          onPressed: () => Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MainPage()),
+                              (r) => false),
+                        )
+                      : null,
+                ),
+                drawer: !(widget.fromAuth || user.group != null)
+                    ? null
+                    : Drawer(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.horizontal(
+                                right: Radius.circular(16))),
+                        elevation: 16,
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: ListView(
                                 children: <Widget>[
-                                  Text(
-                                    'DODO',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall!
-                                        .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    'hi'.tr() + ' ' + currentUsername! + '!',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .primary),
+                                  DrawerHeader(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Text(
+                                          'DODO',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineSmall!
+                                              .copyWith(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onSurfaceVariant),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          'hi'.tr() + ' ' + user.username + '!',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge!
+                                              .copyWith(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .primary),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
+                            Divider(),
+                            ListTile(
+                              leading: Icon(
+                                Icons.settings,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                              ),
+                              title: Text(
+                                'settings'.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Settings()));
+                              },
+                            ),
+                            ListTile(
+                              leading: Icon(
+                                Icons.exit_to_app,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                              ),
+                              title: Text(
+                                'logout'.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant),
+                              ),
+                              onTap: () {
+                                context.read<UserProvider>().logout();
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            LoginOrRegisterPage()),
+                                    (r) => false);
+                              },
+                            ),
                           ],
                         ),
                       ),
-                      Divider(),
-                      ListTile(
-                        leading: Icon(
-                          Icons.settings,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        title: Text(
-                          'settings'.tr(),
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge!
-                              .copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Settings()));
-                        },
-                      ),
-                      ListTile(
-                        leading: Icon(
-                          Icons.exit_to_app,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        title: Text(
-                          'logout'.tr(),
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge!
-                              .copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant),
-                        ),
-                        onTap: () {
-                          _logout();
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LoginOrRegisterPage()),
-                              (r) => false);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-          body: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 500),
-                          child: Column(
-                            children: [
-                              Visibility(
-                                visible: widget.inviteURL == null &&
-                                    !kIsWeb &&
-                                    (Platform.isAndroid || Platform.isIOS),
+                body: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    FocusScope.of(context).unfocus();
+                  },
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(maxWidth: 500),
                                 child: Column(
                                   children: [
-                                    Text(
-                                      'scan_code'.tr(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge!
-                                          .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurfaceVariant),
+                                    Visibility(
+                                      visible: widget.inviteURL == null &&
+                                          !kIsWeb &&
+                                          (Platform.isAndroid ||
+                                              Platform.isIOS),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            'scan_code'.tr(),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge!
+                                                .copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurfaceVariant),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              GradientButton(
+                                                child:
+                                                    Icon(Icons.qr_code_scanner),
+                                                onPressed: () async {
+                                                  if (await Permission.camera
+                                                      .request()
+                                                      .isGranted) {
+                                                    String? scanResult;
+                                                    await Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                QRScannerPage())).then(
+                                                        (value) =>
+                                                            scanResult = value);
+                                                    if (scanResult != null) {
+                                                      setState(() {
+                                                        _tokenController.text =
+                                                            scanResult!;
+                                                      });
+                                                    }
+                                                  } else {
+                                                    Fluttertoast.showToast(
+                                                        msg: 'no_camera_access'
+                                                            .tr(),
+                                                        toastLength:
+                                                            Toast.LENGTH_LONG);
+                                                  }
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            'paste_code'.tr(),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge!
+                                                .copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurfaceVariant),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          )
+                                        ],
+                                      ),
                                     ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        GradientButton(
-                                          child: Icon(Icons.qr_code_scanner),
-                                          onPressed: () async {
-                                            if (await Permission.camera
-                                                .request()
-                                                .isGranted) {
-                                              String? scanResult;
-                                              await Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              QRScannerPage()))
-                                                  .then((value) =>
-                                                      scanResult = value);
-                                              if (scanResult != null) {
-                                                setState(() {
-                                                  _tokenController.text =
-                                                      scanResult!;
-                                                });
-                                              }
-                                            } else {
-                                              Fluttertoast.showToast(
-                                                  msg:
-                                                      'no_camera_access'.tr(),
-                                                  toastLength:
-                                                      Toast.LENGTH_LONG);
-                                            }
-                                          },
+                                    TextFormField(
+                                      validator: (value) => validateTextField([
+                                        isEmpty(value),
+                                      ]),
+                                      decoration: InputDecoration(
+                                        hintText: 'invitation'.tr(),
+                                        prefixIcon: Icon(
+                                          Icons.mail,
                                         ),
+                                      ),
+                                      controller: _tokenController,
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    TextFormField(
+                                      validator: (value) => validateTextField([
+                                        isEmpty(value),
+                                        minimalLength(value, 1),
+                                      ]),
+                                      decoration: InputDecoration(
+                                        labelText: 'nickname_in_group'.tr(),
+                                        hintText: 'nickname_in_group'.tr(),
+                                        floatingLabelBehavior:
+                                            FloatingLabelBehavior.always,
+                                        prefixIcon: Icon(
+                                          Icons.account_circle,
+                                        ),
+                                        border: UnderlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                      ),
+                                      controller: _nicknameController,
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(15),
                                       ],
                                     ),
                                     SizedBox(
                                       height: 10,
                                     ),
-                                    Text(
-                                      'paste_code'.tr(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge!
-                                          .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurfaceVariant),
+                                    Wrap(
+                                      alignment: WrapAlignment.center,
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      children: [
+                                        Text(
+                                          'no_group_yet'.tr(),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelLarge!
+                                              .copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurfaceVariant,
+                                              ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        TextButton(
+                                          child: Text('create_group'.tr()),
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        CreateGroup()));
+                                          },
+                                          // color: Theme.of(context).colorScheme.secondary,
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(
-                                      height: 10,
-                                    )
                                   ],
                                 ),
                               ),
-                              TextFormField(
-                                validator: (value) => validateTextField([
-                                  isEmpty(value),
-                                ]),
-                                decoration: InputDecoration(
-                                  hintText: 'invitation'.tr(),
-                                  prefixIcon: Icon(
-                                    Icons.mail,
-                                  ),
-                                ),
-                                controller: _tokenController,
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              TextFormField(
-                                validator: (value) => validateTextField([
-                                  isEmpty(value),
-                                  minimalLength(value, 1),
-                                ]),
-                                decoration: InputDecoration(
-                                  labelText: 'nickname_in_group'.tr(),
-                                  hintText: 'nickname_in_group'.tr(),
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.always,
-                                  prefixIcon: Icon(
-                                    Icons.account_circle,
-                                  ),
-                                  border: UnderlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                ),
-                                controller: _nicknameController,
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(15),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Wrap(
-                                alignment: WrapAlignment.center,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: [
-                                  Text(
-                                    'no_group_yet'.tr(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelLarge!
-                                        .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant,
-                                        ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  TextButton(
-                                    child: Text('create_group'.tr()),
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  CreateGroup()));
-                                    },
-                                    // color: Theme.of(context).colorScheme.secondary,
-                                  ),
-                                ],
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                      AdUnitForSite(site: 'join_group'),
+                    ],
                   ),
                 ),
-                AdUnitForSite(site: 'join_group'),
-              ],
-            ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-            child: Icon(Icons.send, color: Theme.of(context).colorScheme.onSecondaryContainer,),
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                String token = _tokenController.text;
-                String nickname = _nicknameController.text[0].toUpperCase() +
-                    _nicknameController.text.substring(1);
-                showDialog(
-                  builder: (context) => FutureSuccessDialog(
-                    future: _joinGroup(token, nickname),
-                    dataFalse: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                            child: Text(
-                          'approve_still_needed'.tr(),
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(color: Colors.white),
-                          textAlign: TextAlign.center,
-                        )),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            GradientButton(
-                              child: Icon(Icons.check),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
+                floatingActionButton: FloatingActionButton(
+                  backgroundColor:
+                      Theme.of(context).colorScheme.secondaryContainer,
+                  child: Icon(
+                    Icons.send,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
                   ),
-                  barrierDismissible: false,
-                  context: context,
-                );
-              }
-            },
-          ),
-        ),
-      ),
-    );
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      String token = _tokenController.text;
+                      String nickname =
+                          _nicknameController.text[0].toUpperCase() +
+                              _nicknameController.text.substring(1);
+                      showDialog(
+                        builder: (context) => FutureSuccessDialog(
+                          future: _joinGroup(token, nickname),
+                          dataFalse: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                  child: Text(
+                                'approve_still_needed'.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(color: Colors.white),
+                                textAlign: TextAlign.center,
+                              )),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  GradientButton(
+                                    child: Icon(Icons.check),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                        barrierDismissible: false,
+                        context: context,
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
+          );
+        });
   }
 }

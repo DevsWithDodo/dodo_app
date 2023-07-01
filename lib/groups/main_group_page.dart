@@ -3,24 +3,24 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:connectivity_widget/connectivity_widget.dart';
 import 'package:csocsort_szamla/auth/login_or_register_page.dart';
-import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
-import 'package:csocsort_szamla/essentials/save_preferences.dart';
+import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/groups/create_group.dart';
 import 'package:csocsort_szamla/groups/group_settings_page.dart';
 import 'package:csocsort_szamla/groups/join_group.dart';
 import 'package:csocsort_szamla/history/history.dart';
 import 'package:csocsort_szamla/main/in_app_purchase_page.dart';
 import 'package:csocsort_szamla/main/statistics_export_card.dart';
-import 'package:csocsort_szamla/main/trial_ended_dialog.dart';
 import 'package:csocsort_szamla/shopping/shopping_list.dart';
 import 'package:csocsort_szamla/user_settings/user_settings_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +29,7 @@ import '../balance/balances.dart';
 import '../config.dart';
 import '../essentials/ad_management.dart';
 import '../essentials/currencies.dart';
-import '../essentials/http_handler.dart';
+import '../essentials/http.dart';
 import '../essentials/models.dart';
 import '../essentials/widgets/error_message.dart';
 import '../main/iapp_not_supported_dialog.dart';
@@ -80,9 +80,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   Future<List<Group>> _getGroups() async {
-    http.Response response =
-        await httpGet(context: context, uri: generateUri(GetUriKeys.groups));
+    Response response =
+        await Http.get(uri: generateUri(GetUriKeys.groups, context));
     Map<String, dynamic> decoded = jsonDecode(response.body);
+    UserProvider userProvider = context.read<UserProvider>();
     List<Group> groups = [];
     for (var group in decoded['data']) {
       groups.add(Group(
@@ -91,34 +92,20 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         currency: group['currency'],
       ));
     }
-    usersGroups = groups.map<String>((group) => group.name).toList();
-    usersGroupIds = groups.map<int>((group) => group.id).toList();
-    saveUsersGroups();
-    saveUsersGroupIds();
+    userProvider.setGroups(groups, notify: false);
     //The group ID cannot change, but the group name and currency can change
-    if (groups.any((element) => element.id == currentGroupId)) {
-      var group = groups.firstWhere((element) => element.id == currentGroupId);
-      saveGroupName(group.name);
-      saveGroupCurrency(group.currency);
+    Group? group = groups
+        .firstWhereOrNull((group) => group.id == userProvider.user!.group!.id);
+    if (group != null) {
+      userProvider.setGroup(group);
     }
     return groups;
   }
 
-  Future<String?> _getCurrentGroup() async {
-    http.Response response = await httpGet(
-      context: context,
-      uri: generateUri(GetUriKeys.groupCurrent,
-          params: [currentGroupId.toString()]),
-    );
-    Map<String, dynamic> decoded = jsonDecode(response.body);
-    saveGroupName(decoded['data']['group_name']);
-    return currentGroupName;
-  }
-
   Future<dynamic> _getSumBalance() async {
     try {
-      http.Response response = await httpGet(
-          context: context, uri: generateUri(GetUriKeys.userBalanceSum));
+      Response response =
+          await Http.get(uri: generateUri(GetUriKeys.userBalanceSum, context));
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data'];
     } catch (_) {
@@ -126,25 +113,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     }
   }
 
-  Future _logout() async {
-    try {
-      await httpPost(uri: '/logout', context: context, body: {});
-      await clearAllCache();
-      deleteUserId();
-      deleteUserCurrency();
-      deleteUsesPassword();
-      deleteGroupId();
-      deleteGroupName();
-      deleteGroupCurrency();
-      deleteApiToken();
-      deleteUsersGroups();
-      deleteUsersGroupIds();
-    } catch (_) {
-      throw _;
-    }
-  }
-
   List<Widget> _generateListTiles(List<Group> groups) {
+    String currentGroupName = context.watch<UserProvider>().user!.group!.name;
     return groups.map((group) {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 12),
@@ -166,18 +136,16 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             onTap: () async {
-              saveGroupName(group.name);
-              saveGroupId(group.id);
-              saveGroupCurrency(group.currency);
+              context.read<UserProvider>().setGroup(group);
               setState(() {
                 _selectedIndex = 0;
                 _tabController!.animateTo(_selectedIndex);
               });
               final bus = context.read<EventBus>();
-              bus.fire(RefreshBalances());
-              bus.fire(RefreshPayments());
-              bus.fire(RefreshPurchases());
-              bus.fire(RefreshShopping());
+              bus.fire(RefreshBalances(context));
+              bus.fire(RefreshPayments(context));
+              bus.fire(RefreshPurchases(context));
+              bus.fire(RefreshShopping(context));
             },
           ),
         ),
@@ -188,6 +156,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
     _selectedIndex = widget.selectedIndex;
     _tabController = TabController(
         length: 3, vsync: this, initialIndex: widget.selectedIndex);
@@ -223,19 +192,19 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   Future<void> clearRelevantCache() async {
-    await clearGroupCache();
-    await deleteCache(uri: generateUri(GetUriKeys.groups));
-    await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum));
+    await clearGroupCache(context);
+    await deleteCache(uri: generateUri(GetUriKeys.groups, context));
+    await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, context));
   }
 
   Future<void> handleReturn() async {
-
-    if (!kIsWeb && !ratedApp! && !trialVersion) {
+    User user = context.read<UserProvider>().user!;
+    if (!kIsWeb && !user.ratedApp && !user.trialVersion) {
       double r = Random().nextDouble();
       if (r < 0.15) {
         showDialog(context: context, builder: (context) => LikeTheAppDialog());
         // Don't show the dialog multiple times in one session. Value is not saved in the memory
-        ratedApp = true;
+        user.ratedApp = true;
       }
     }
   }
@@ -244,10 +213,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((timeStamp) {
       //TODO: for new version: save version code in storage, if version code is newer than the one in the storage, show dialog with news
-      if (trialJustEnded) {
-        showDialog(context: context, builder: (context) => TrialEndedDialog());
-        trialJustEnded = false;
-      }
+      // if (trialJustEnded) { // TODO: needs backend to implement trialJustEnded
+      //   showDialog(context: context, builder: (context) => TrialEndedDialog());
+      //   trialJustEnded = false;
+      // }
     });
 
     double width = MediaQuery.of(context).size.width;
@@ -270,22 +239,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
             : null,
         actions: [Container()],
         centerTitle: true,
-        title: FutureBuilder(
-          future: _getCurrentGroup(),
-          builder: (context, AsyncSnapshot<String?> snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasData) {
-                return Text(
-                  snapshot.data!,
-                  style: TextStyle(letterSpacing: 0.25, fontSize: 24),
-                );
-              }
-            }
-            return Text(
-              currentGroupName ?? 'error'.tr(),
-              style: TextStyle(letterSpacing: 0.25, fontSize: 24),
-            );
-          },
+        title: Text(
+          context.watch<UserProvider>().user!.group!.name,
+          style: TextStyle(letterSpacing: 0.25, fontSize: 24),
         ),
       ),
       bottomNavigationBar: bigScreen
@@ -356,7 +312,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         MediaQuery.of(context).padding.top -
         56 - //appbar
         (bigScreen ? 0 : 56) - //bottomNavbar
-        adHeight();
+        adHeight(context);
     List<Widget> tabWidgets = _tabWidgets(isOnline, bigScreen, height, width);
     return Row(
       children: [
@@ -422,10 +378,10 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       RefreshIndicator(
         onRefresh: () async {
           final eventBus = context.read<EventBus>();
-          eventBus.fire(RefreshBalances());
-          eventBus.fire(RefreshPayments());
-          eventBus.fire(RefreshPurchases());
-          eventBus.fire(RefreshShopping());
+          eventBus.fire(RefreshBalances(context));
+          eventBus.fire(RefreshPayments(context));
+          eventBus.fire(RefreshPurchases(context));
+          eventBus.fire(RefreshShopping(context));
           eventBus.fire(RefreshStatistics());
           if (isOnline) await clearRelevantCache();
           setState(() {
@@ -461,321 +417,368 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   Widget _drawer() {
-    return Ink(
-      decoration: BoxDecoration(
-        color: ElevationOverlay.applyOverlay(
-            context, Theme.of(context).colorScheme.surface, 1),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              controller: ScrollController(),
-              children: <Widget>[
-                DrawerHeader(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+    return Selector<UserProvider, User>(
+        selector: (context, userProvider) => userProvider.user!,
+        builder: (context, user, _) {
+          return Ink(
+            decoration: BoxDecoration(
+              color: ElevationOverlay.applyOverlay(
+                  context, Theme.of(context).colorScheme.surface, 1),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    controller: ScrollController(),
                     children: <Widget>[
-                      Expanded(
-                        child: ColorFiltered(
-                          colorFilter: ColorFilter.mode(
-                              Theme.of(context).colorScheme.primary,
-                              currentThemeName.toLowerCase().contains('dodo') &&
-                                      !kIsWeb
-                                  ? BlendMode.dst
-                                  : BlendMode.srcIn),
-                          child: Image(
-                            image: AssetImage('assets/dodo.png'),
-                          ),
+                      DrawerHeader(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Expanded(
+                              child: ColorFiltered(
+                                colorFilter: ColorFilter.mode(
+                                    Theme.of(context).colorScheme.primary,
+                                    user.themeName
+                                                .toLowerCase()
+                                                .contains('dodo') &&
+                                            !kIsWeb
+                                        ? BlendMode.dst
+                                        : BlendMode.srcIn),
+                                child: Image(
+                                  image: AssetImage('assets/dodo.png'),
+                                ),
+                              ),
+                            ),
+                            Text(
+                              'title'.tr().toUpperCase(),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant),
+                            ),
+                            Text(
+                              'hi'.tr() + ' ' + user.username + '!',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                            ),
+                          ],
                         ),
                       ),
-                      Text(
-                        'title'.tr().toUpperCase(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall!
-                            .copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant),
+                      FutureBuilder(
+                        future: _groups,
+                        builder:
+                            (context, AsyncSnapshot<List<Group>> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            if (snapshot.hasData) {
+                              return Card(
+                                color: Colors.transparent,
+                                elevation: 0,
+                                margin: EdgeInsets.symmetric(horizontal: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(28)),
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                child: ExpansionTile(
+                                  title: Text('groups'.tr(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelLarge!
+                                          .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurfaceVariant)),
+                                  leading: Icon(Icons.group,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant),
+                                  children: _generateListTiles(snapshot.data!),
+                                ),
+                              );
+                            } else {
+                              return ErrorMessage(
+                                error: snapshot.error.toString(),
+                                errorLocation: 'home_groups',
+                                onTap: () {
+                                  setState(() {
+                                    _groups = null;
+                                    _groups = _getGroups();
+                                  });
+                                },
+                              );
+                            }
+                          }
+                          return LinearProgressIndicator(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                          );
+                        },
                       ),
-                      Text(
-                        'hi'.tr() + ' ' + currentUsername! + '!',
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.primary),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        child: ListTile(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(28)),
+                          ),
+                          leading: Icon(
+                            Icons.group_add,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                          title: Text(
+                            'join_group'.tr(),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge!
+                                .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => JoinGroup()));
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        child: ListTile(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(28)),
+                          ),
+                          leading: Icon(
+                            Icons.library_add,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                          title: Text(
+                            'create_group'.tr(),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge!
+                                .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CreateGroup(),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ],
                   ),
                 ),
                 FutureBuilder(
-                  future: _groups,
-                  builder: (context, AsyncSnapshot<List<Group>> snapshot) {
+                  future: _sumBalance,
+                  builder: (context, AsyncSnapshot<dynamic> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
-                        return Card(
-                          color: Colors.transparent,
-                          elevation: 0,
-                          margin: EdgeInsets.symmetric(horizontal: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(28)),
-                          ),
-                          clipBehavior: Clip.antiAlias,
-                          child: ExpansionTile(
-                            title: Text('groups'.tr(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelLarge!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant)),
-                            leading: Icon(Icons.group,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant),
-                            children: _generateListTiles(snapshot.data!),
-                          ),
-                        );
-                      } else {
-                        return ErrorMessage(
-                          error: snapshot.error.toString(),
-                          errorLocation: 'home_groups',
-                          onTap: () {
-                            setState(() {
-                              _groups = null;
-                              _groups = _getGroups();
-                            });
-                          },
-                        );
+                        String currency = snapshot.data!['currency'];
+                        double balance = snapshot.data!['balance'] * 1.0;
+                        return Text(
+                            'Σ: ' +
+                                balance.toMoneyString(currency,
+                                    withSymbol: true),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary));
                       }
                     }
-                    return LinearProgressIndicator(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
+                    return Text(
+                      'Σ: ...',
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          color: Theme.of(context).colorScheme.secondary),
                     );
                   },
                 ),
+                Divider(),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  padding: EdgeInsets.symmetric(horizontal: 12.0),
                   child: ListTile(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(28)),
                     ),
+                    dense: true,
+                    onTap: () {
+                      if (user.trialVersion) {
+                        showDialog(
+                            builder: (context) => TrialVersionDialog(),
+                            context: context);
+                      } else if (!isIAPPlatformEnabled) {
+                        showDialog(
+                            builder: (context) => IAPPNotSupportedDialog(),
+                            context: context);
+                      } else {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => InAppPurchasePage()));
+                      }
+                    },
+                    leading: ColorFiltered(
+                      colorFilter: ColorFilter.mode(
+                          Theme.of(context).colorScheme.onSurfaceVariant,
+                          BlendMode.srcIn),
+                      child: Image.asset(
+                        'assets/dodo.png',
+                        width: 25,
+                      ),
+                    ),
+                    subtitle: user.trialVersion
+                        ? Text(
+                            'trial_version'.tr().toUpperCase(),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall!
+                                .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                          )
+                        : Text(
+                            'in_app_purchase_description'.tr(),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge!
+                                .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant),
+                          ),
+                    title: Text(
+                      'in_app_purchase'.tr(),
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: !kIsWeb,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: ListTile(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(28)),
+                      ),
+                      leading: Icon(
+                        Icons.rate_review,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      dense: true,
+                      title: Text(
+                        'rate_app'.tr(),
+                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                      onTap: () {
+                        String url = "";
+                        String platform =
+                            kIsWeb ? "web" : Platform.operatingSystem;
+                        switch (platform) {
+                          case "android":
+                            url =
+                                "market://details?id=csocsort.hu.machiato32.csocsort_szamla";
+                            break;
+                          case "windows":
+                            url =
+                                "ms-windows-store://pdp/?productid=9NVB4CZJDSQ7";
+                            break;
+                          case "ios":
+                            url =
+                                "itms-apps://itunes.apple.com/app/id1558223634?action=write-review";
+                            break;
+                          default:
+                            url =
+                                "https://play.google.com/store/apps/details?id=csocsort.hu.machiato32.csocsort_szamla";
+                            break;
+                        }
+                        launchUrlString(url);
+                        context.read<UserProvider>().setRatedApp(true);
+                      },
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(28)),
+                    ),
+                    dense: true,
                     leading: Icon(
-                      Icons.group_add,
+                      Icons.settings,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     title: Text(
-                      'join_group'.tr(),
+                      'settings'.tr(),
                       style: Theme.of(context).textTheme.labelLarge!.copyWith(
                           color:
                               Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     onTap: () {
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => JoinGroup()));
+                          MaterialPageRoute(builder: (context) => Settings()));
                     },
                   ),
                 ),
+                Divider(),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   child: ListTile(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(28)),
                     ),
                     leading: Icon(
-                      Icons.library_add,
+                      Icons.exit_to_app,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
+                    dense: true,
                     title: Text(
-                      'create_group'.tr(),
+                      'logout'.tr(),
                       style: Theme.of(context).textTheme.labelLarge!.copyWith(
                           color:
                               Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CreateGroup(),
-                        ),
-                      );
+                    onTap: () async {
+                      context.read<UserProvider>().logout();
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LoginOrRegisterPage()),
+                          (r) => false);
                     },
                   ),
                 ),
               ],
             ),
-          ),
-          FutureBuilder(
-            future: _sumBalance,
-            builder: (context, AsyncSnapshot<dynamic> snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasData) {
-                  String currency = snapshot.data!['currency'];
-                  double balance = snapshot.data!['balance'] * 1.0;
-                  return Text(
-                      'Σ: ' + balance.toMoneyString(currency, withSymbol: true),
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          color: Theme.of(context).colorScheme.secondary));
-                }
-              }
-              return Text(
-                'Σ: ...',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(color: Theme.of(context).colorScheme.secondary),
-              );
-            },
-          ),
-          Divider(),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.0),
-            child: ListTile(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(28)),
-              ),
-              dense: true,
-              onTap: () {
-                if (trialVersion) {
-                  showDialog(
-                      builder: (context) => TrialVersionDialog(),
-                      context: context);
-                } else if (!isIAPPlatformEnabled) {
-                  showDialog(
-                      builder: (context) => IAPPNotSupportedDialog(),
-                      context: context);
-                } else {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => InAppPurchasePage()));
-                }
-              },
-              leading: ColorFiltered(
-                colorFilter: ColorFilter.mode(
-                    Theme.of(context).colorScheme.onSurfaceVariant,
-                    BlendMode.srcIn),
-                child: Image.asset(
-                  'assets/dodo.png',
-                  width: 25,
-                ),
-              ),
-              subtitle: trialVersion
-                  ? Text(
-                      'trial_version'.tr().toUpperCase(),
-                      style: Theme.of(context).textTheme.labelSmall!.copyWith(
-                          color: Theme.of(context).colorScheme.secondary),
-                    )
-                  : Text(
-                      'in_app_purchase_description'.tr(),
-                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                          color:
-                              Theme.of(context).colorScheme.onSurfaceVariant),
-                    ),
-              title: Text(
-                'in_app_purchase'.tr(),
-                style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: !kIsWeb,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: ListTile(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(28)),
-                ),
-                leading: Icon(
-                  Icons.rate_review,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                dense: true,
-                title: Text(
-                  'rate_app'.tr(),
-                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
-                ),
-                onTap: () {
-                  String url = "";
-                  String platform = kIsWeb ? "web" : Platform.operatingSystem;
-                  switch (platform) {
-                    case "android":
-                      url =
-                          "market://details?id=csocsort.hu.machiato32.csocsort_szamla";
-                      break;
-                    case "windows":
-                      url = "ms-windows-store://pdp/?productid=9NVB4CZJDSQ7";
-                      break;
-                    case "ios":
-                      url =
-                          "itms-apps://itunes.apple.com/app/id1558223634?action=write-review";
-                      break;
-                    default:
-                      url =
-                          "https://play.google.com/store/apps/details?id=csocsort.hu.machiato32.csocsort_szamla";
-                      break;
-                  }
-                  launchUrlString(url);
-                  saveRatedApp(true);
-                },
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: ListTile(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(28)),
-              ),
-              dense: true,
-              leading: Icon(
-                Icons.settings,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              title: Text(
-                'settings'.tr(),
-                style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-              ),
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => Settings()));
-              },
-            ),
-          ),
-          Divider(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
-            child: ListTile(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(28)),
-              ),
-              leading: Icon(
-                Icons.exit_to_app,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-              dense: true,
-              title: Text(
-                'logout'.tr(),
-                style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-              ),
-              onTap: () async {
-                _logout();
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => LoginOrRegisterPage()),
-                    (r) => false);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
+          );
+        });
   }
 
   List<NavigationRailDestination> _navigationRailItems() {

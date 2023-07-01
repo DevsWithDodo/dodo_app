@@ -1,11 +1,11 @@
 import 'dart:io' show Platform;
 
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/app_theme.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/EventBusProvider.dart';
+import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/past_reaction_container.dart';
 import 'package:csocsort_szamla/purchase/purchase_all_info.dart';
@@ -38,8 +38,9 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
   String? amountToSelfOriginal = '';
 
   void handleSendReaction(String reaction) {
+    User user = context.read<UserProvider>().user!;
     Reaction? oldReaction = widget.purchase.reactions!
-        .firstWhereOrNull((element) => element.userId == currentUserId);
+        .firstWhereOrNull((element) => element.userId == user.id);
     bool alreadyReacted = oldReaction != null;
     bool sameReaction =
         alreadyReacted ? oldReaction.reaction == reaction : false;
@@ -48,16 +49,16 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
       setState(() {});
     } else if (!alreadyReacted) {
       widget.purchase.reactions!.add(Reaction(
-        nickname: currentUsername!,
+        nickname: user.username,
         reaction: reaction,
-        userId: currentUserId!,
+        userId: user.id,
       ));
       setState(() {});
     } else {
       widget.purchase.reactions!.add(Reaction(
         nickname: oldReaction.nickname,
         reaction: reaction,
-        userId: currentUserId!,
+        userId: user.id,
       ));
       widget.purchase.reactions!.remove(oldReaction);
       setState(() {});
@@ -66,6 +67,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
 
   @override
   Widget build(BuildContext context) {
+    String themeName = context.watch<UserProvider>().user!.themeName;
     int? selectedMemberId = widget.selectedMemberId;
     note = (widget.purchase.name == '')
         ? 'no_note'.tr()
@@ -78,7 +80,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
     /* Set icon, amount and names */
     if (bought && received) {
       leadingIcon = Icon(Icons.swap_horiz,
-          color: currentThemeName.contains('Gradient')
+          color: themeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onSecondaryContainer);
       amountOriginal = widget.purchase.totalAmountOriginalCurrency
@@ -93,21 +95,21 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
         names = widget.purchase.receivers[0].nickname;
       }
       mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          color: currentThemeName.contains('Gradient')
+          color: themeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onSecondaryContainer);
       subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
-          color: currentThemeName.contains('Gradient')
+          color: themeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onSecondaryContainer);
       boxDecoration = BoxDecoration(
-        gradient: AppTheme.gradientFromTheme(currentThemeName,
+        gradient: AppTheme.gradientFromTheme(themeName,
             useSecondaryContainer: true),
         borderRadius: BorderRadius.circular(15),
       );
     } else if (bought) {
       leadingIcon = Icon(Icons.call_made,
-          color: currentThemeName.contains('Gradient')
+          color: themeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
       amountOriginal = widget.purchase.totalAmountOriginalCurrency
@@ -118,15 +120,15 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
         names = widget.purchase.receivers[0].nickname;
       }
       mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          color: currentThemeName.contains('Gradient')
+          color: themeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
       subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
-          color: currentThemeName.contains('Gradient')
+          color: themeName.contains('Gradient')
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
       boxDecoration = BoxDecoration(
-        gradient: AppTheme.gradientFromTheme(currentThemeName,
+        gradient: AppTheme.gradientFromTheme(themeName,
             usePrimaryContainer: true),
         borderRadius: BorderRadius.circular(15),
       );
@@ -148,139 +150,144 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
           .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
       boxDecoration = BoxDecoration();
     }
-    return Stack(
-      children: [
-        Container(
-          height: !kIsWeb && Platform.isWindows ? 85 : 80,
-          width: MediaQuery.of(context).size.width,
-          decoration: boxDecoration,
-          margin: EdgeInsets.only(
-              top: widget.purchase.reactions!.length == 0 ? 0 : 14,
-              bottom: 4,
-              left: 4,
-              right: 4),
-          child: Material(
-            type: MaterialType.transparency,
-            child: InkWell(
-              onLongPress: selectedMemberId != currentUserId
-                  ? null
-                  : () {
-                      showDialog(
-                          builder: (context) => AddReactionDialog(
-                                type: 'purchases',
-                                reactions: widget.purchase.reactions!,
-                                reactToId: widget.purchase.id,
-                                onSend: this.handleSendReaction,
+    return Selector<UserProvider, User>(
+      selector: (context, userProvider) => userProvider.user!,
+      builder: (context, user, _) {
+        return Stack(
+          children: [
+            Container(
+              height: !kIsWeb && Platform.isWindows ? 85 : 80,
+              width: MediaQuery.of(context).size.width,
+              decoration: boxDecoration,
+              margin: EdgeInsets.only(
+                  top: widget.purchase.reactions!.length == 0 ? 0 : 14,
+                  bottom: 4,
+                  left: 4,
+                  right: 4),
+              child: Material(
+                type: MaterialType.transparency,
+                child: InkWell(
+                  onLongPress: selectedMemberId != user.id
+                      ? null
+                      : () {
+                          showDialog(
+                              builder: (context) => AddReactionDialog(
+                                    type: 'purchases',
+                                    reactions: widget.purchase.reactions!,
+                                    reactToId: widget.purchase.id,
+                                    onSend: this.handleSendReaction,
+                                  ),
+                              context: context);
+                        },
+                  onTap: () async {
+                    showModalBottomSheet<String>(
+                      isScrollControlled: true,
+                      context: context,
+                      backgroundColor: Theme.of(context).cardTheme.color,
+                      builder: (context) => SingleChildScrollView(
+                          child: PurchaseAllInfo(
+                              widget.purchase, widget.selectedMemberId)),
+                    ).then((val) {
+                      if (val == 'deleted') {
+                        EventBus eventBus = context.read<EventBus>();
+                        eventBus.fire(RefreshPurchases(context));
+                        eventBus.fire(RefreshBalances(context));
+                      }
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(15),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Flexible(
+                          child: Row(
+                            children: <Widget>[
+                              leadingIcon,
+                              SizedBox(
+                                width: 20,
                               ),
-                          context: context);
-                    },
-              onTap: () async {
-                showModalBottomSheet<String>(
-                  isScrollControlled: true,
-                  context: context,
-                  backgroundColor: Theme.of(context).cardTheme.color,
-                  builder: (context) => SingleChildScrollView(
-                      child: PurchaseAllInfo(
-                          widget.purchase, widget.selectedMemberId)),
-                ).then((val) {
-                  if (val == 'deleted') {
-                    EventBus eventBus = context.read<EventBus>();
-                    eventBus.fire(RefreshPurchases());
-                    eventBus.fire(RefreshBalances());
-                  }
-                });
-              },
-              borderRadius: BorderRadius.circular(15),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Flexible(
-                      child: Row(
-                        children: <Widget>[
-                          leadingIcon,
-                          SizedBox(
-                            width: 20,
+                              Flexible(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Flexible(
+                                      child: Text(
+                                        note,
+                                        style: mainTextStyle,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        names!,
+                                        style: subTextStyle,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          Flexible(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Column(
                               mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
-                                Flexible(
+                                Text(
+                                  amountOriginal!,
+                                  style: mainTextStyle,
+                                ),
+                                Visibility(
+                                  visible: received && bought,
                                   child: Text(
-                                    note,
+                                    amountToSelfOriginal!,
                                     style: mainTextStyle,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                Flexible(
-                                  child: Text(
-                                    names!,
-                                    style: subTextStyle,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                )
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: <Widget>[
-                            Text(
-                              amountOriginal!,
-                              style: mainTextStyle,
-                            ),
                             Visibility(
-                              visible: received && bought,
-                              child: Text(
-                                amountToSelfOriginal!,
-                                style: mainTextStyle,
+                              visible: widget.purchase.category != null,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Icon(
+                                  widget.purchase.category != null
+                                      ? widget.purchase.category!.icon
+                                      : Icons.not_interested,
+                                  color: widget.purchase.category != null
+                                      ? mainTextStyle!.color
+                                      : Colors.transparent,
+                                ),
                               ),
                             ),
                           ],
-                        ),
-                        Visibility(
-                          visible: widget.purchase.category != null,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: Icon(
-                              widget.purchase.category != null
-                                  ? widget.purchase.category!.icon
-                                  : Icons.not_interested,
-                              color: widget.purchase.category != null
-                                  ? mainTextStyle!.color
-                                  : Colors.transparent,
-                            ),
-                          ),
-                        ),
+                        )
                       ],
-                    )
-                  ],
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-        Visibility(
-          visible: selectedMemberId == currentUserId,
-          child: PastReactionContainer(
-            reactions: widget.purchase.reactions!,
-            reactedToId: widget.purchase.id,
-            isSecondaryColor: bought,
-            type: 'purchases',
-            onSendReaction: this.handleSendReaction,
-          ),
-        ),
-      ],
+            Visibility(
+              visible: selectedMemberId == user.id,
+              child: PastReactionContainer(
+                reactions: widget.purchase.reactions!,
+                reactedToId: widget.purchase.id,
+                isSecondaryColor: bought,
+                type: 'purchases',
+                onSendReaction: this.handleSendReaction,
+              ),
+            ),
+          ],
+        );
+      }
     );
   }
 }

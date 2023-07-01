@@ -5,10 +5,9 @@ import 'package:flutter/material.dart';
 import '../../essentials/widgets/gradient_button.dart';
 
 class CurrencyPage extends StatefulWidget {
-  final String? inviteUrl;
-  final String? username;
-  final String? pin;
-  CurrencyPage({this.inviteUrl, this.username, this.pin});
+  final String username;
+  final String pin;
+  CurrencyPage({required this.username, required this.pin});
   @override
   State<CurrencyPage> createState() => _CurrencyPageState();
 }
@@ -71,7 +70,6 @@ class _CurrencyPageState extends State<CurrencyPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => PersonalisedAdsPage(
-                                inviteUrl: widget.inviteUrl,
                                 username: widget.username,
                                 pin: widget.pin,
                                 defaultCurrency: _defaultCurrency,

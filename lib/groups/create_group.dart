@@ -1,15 +1,16 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
-import 'package:csocsort_szamla/essentials/http_handler.dart';
-import 'package:csocsort_szamla/essentials/save_preferences.dart';
+import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/currency_picker_dropdown.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import '../essentials/validation_rules.dart';
 import 'main_group_page.dart';
@@ -21,11 +22,19 @@ class CreateGroup extends StatefulWidget {
 
 class _CreateGroupState extends State<CreateGroup> {
   TextEditingController _groupName = TextEditingController();
-  TextEditingController _nicknameController = TextEditingController(
-      text: currentUsername![0].toUpperCase() + currentUsername!.substring(1));
+  late TextEditingController _nicknameController;
 
   var _formKey = GlobalKey<FormState>();
-  String? _defaultCurrencyValue = currentUserCurrency;
+  String? _defaultCurrencyValue;
+
+  @override
+  void initState() {
+    super.initState();
+    User user = context.read<UserProvider>().user!;
+    _nicknameController = TextEditingController(
+      text: user.username[0].toUpperCase() + user.username.substring(1));
+    _defaultCurrencyValue = user.currency;
+  }
 
   Future<bool> _createGroup(
       String groupName, String nickname, String? currency) async {
@@ -36,17 +45,17 @@ class _CreateGroupState extends State<CreateGroup> {
         'member_nickname': nickname
       };
       http.Response response =
-          await httpPost(uri: '/groups', body: body, context: context);
+          await Http.post(uri: '/groups', body: body);
       Map<String, dynamic> decoded = jsonDecode(response.body);
-      saveGroupName(decoded['group_name']);
-      saveGroupId(decoded['group_id']);
-      saveGroupCurrency(decoded['currency']);
-      if (usersGroups == null) {
-        usersGroups = <String>[];
-        usersGroupIds = <int>[];
-      }
-      usersGroups!.add(decoded['group_name']);
-      usersGroupIds!.add(decoded['group_id']);
+      UserProvider userProvider = context.read<UserProvider>();
+      userProvider.setGroups(userProvider.user!.groups + [
+        Group(
+          id: decoded['group_id'],
+          name: decoded['group_name'],
+          currency: decoded['currency'],
+        )
+      ], notify: false);
+      userProvider.setGroup(userProvider.user!.groups.last);
       Future.delayed(delayTime()).then((value) => _onCreateGroup());
       return true;
     } catch (_) {

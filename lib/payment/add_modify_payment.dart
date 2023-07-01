@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:csocsort_szamla/essentials/currencies.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/custom_choice_chip.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import '../config.dart';
-import '../essentials/app_theme.dart';
-import '../essentials/http_handler.dart';
+import 'package:http/http.dart';
+import 'package:provider/provider.dart';
+import '../essentials/http.dart';
 import '../essentials/models.dart';
 import '../essentials/validation_rules.dart';
 import '../essentials/widgets/calculator.dart';
@@ -23,15 +23,16 @@ class AddModifyPayment {
   TextEditingController amountController = TextEditingController();
   TextEditingController noteController = TextEditingController();
   Future<List<Member>>? members;
-  String? selectedCurrency = currentGroupCurrency;
+  String? selectedCurrency;
   late Function(BuildContext context) _buttonPush;
   late void Function(void Function()) _setState;
   PaymentType? _paymentType;
   Payment? _savedPayment;
   bool _alreadyInitializedSave = false;
-  ThemeData? _theme = AppTheme.themes[currentThemeName];
+  late ThemeData _theme;
   int? payerId;
   CrossFadeState purchaserSelector = CrossFadeState.showFirst;
+  late User user;
 
   void initAddModifyPayment(
     BuildContext context,
@@ -45,6 +46,9 @@ class AddModifyPayment {
     this._setState = setState;
     this._paymentType = paymentType;
     this._buttonPush = buttonPush ?? (context) {};
+    this.user = context.read<UserProvider>().user!;
+    this.selectedCurrency = context.watch<UserProvider>().currentGroup!.currency;
+    this._theme = Theme.of(context);
     if (_paymentType == PaymentType.modifyPayment) {
       this._savedPayment = savedPayment;
       selectedCurrency = savedPayment!.originalCurrency;
@@ -53,15 +57,13 @@ class AddModifyPayment {
           .toMoneyString(savedPayment.originalCurrency);
     }
     members = getMembers(context);
-    payerId = currentUserId;
+    payerId = user.id;
   }
 
-  Future<List<Member>> getMembers(BuildContext context,
-      {bool overwriteCache = false}) async {
+  Future<List<Member>> getMembers(BuildContext context, {bool overwriteCache = false}) async {
     try {
-      http.Response response = await httpGet(
-        uri: generateUri(GetUriKeys.groupCurrent),
-        context: context,
+      Response response = await Http.get(
+        uri: generateUri(GetUriKeys.groupCurrent, context),
         overwriteCache: overwriteCache,
       );
 
@@ -77,9 +79,9 @@ class AddModifyPayment {
   }
 
   Map<String, dynamic> generateBody(
-      String note, double amount, Member toMember) {
+      String note, double amount, Member toMember, BuildContext context) {
     return {
-      'group': currentGroupId,
+      'group': context.read<UserProvider>().currentGroup!.id,
       'currency': selectedCurrency,
       'amount': amount,
       'note': note,
@@ -93,7 +95,7 @@ class AddModifyPayment {
           hintText: 'note'.tr(),
           prefixIcon: Icon(
             Icons.note,
-            color: _theme!.colorScheme.onSurface,
+            color: _theme.colorScheme.onSurface,
           ),
         ),
         inputFormatters: [LengthLimitingTextInputFormatter(50)],
@@ -112,7 +114,7 @@ class AddModifyPayment {
           prefixIcon: GestureDetector(
             onDoubleTap: () {
               _setState(() {
-                selectedCurrency = currentGroupCurrency;
+                selectedCurrency = context.watch<UserProvider>().currentGroup!.currency;
               });
             },
             child: CurrencyPickerIconButton(
@@ -127,7 +129,7 @@ class AddModifyPayment {
           suffixIcon: IconButton(
             icon: Icon(
               Icons.calculate,
-              color: _theme!.colorScheme.primary,
+              color: _theme.colorScheme.primary,
             ),
             onPressed: () {
               showModalBottomSheet(
@@ -156,7 +158,7 @@ class AddModifyPayment {
         onFieldSubmitted: (value) => _buttonPush(context),
       );
 
-  Center payerChooser(BuildContext context) => Center(
+  Center payerChooser() => Center(
         child: FutureBuilder(
           future: members,
           builder: (context, AsyncSnapshot<List<Member>> snapshot) {
@@ -314,8 +316,8 @@ class AddModifyPayment {
 
   AnimatedCrossFade warningText() {
     bool isVisible =
-        (selectedMember != null && selectedMember!.id != currentUserId) &&
-            payerId != currentUserId;
+        (selectedMember != null && selectedMember!.id != user.id) &&
+            payerId != user.id;
     CrossFadeState state =
         isVisible ? CrossFadeState.showSecond : CrossFadeState.showFirst;
     return AnimatedCrossFade(
@@ -327,8 +329,8 @@ class AddModifyPayment {
         child: Center(
           child: Text(
             'warning_wont_see'.tr(),
-            style: _theme!.textTheme.titleMedium!
-                .copyWith(color: _theme!.colorScheme.error),
+            style: _theme.textTheme.titleMedium!
+                .copyWith(color: _theme.colorScheme.error),
             textAlign: TextAlign.center,
           ),
         ),

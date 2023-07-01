@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/save_preferences.dart';
+import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
-import '../../essentials/http_handler.dart';
+import '../../essentials/http.dart';
 import '../../essentials/validation_rules.dart';
 import '../../essentials/widgets/future_success_dialog.dart';
 import '../../essentials/widgets/gradient_button.dart';
@@ -26,13 +26,13 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
     try {
       Map<String, dynamic> body = {"name": groupName};
 
-      http.Response response = await httpPut(
-          uri: '/groups/' + currentGroupId.toString(),
-          context: context,
-          body: body);
+      http.Response response = await Http.put(
+            uri: '/groups/' + context.read<UserProvider>().currentGroup!.id.toString(),
+            body: body,
+          );
 
       Map<String, dynamic> decoded = jsonDecode(response.body);
-      saveGroupName(decoded['group_name']);
+      context.read<UserProvider>().setGroupName(decoded['group_name']);
       Future.delayed(delayTime()).then((value) => _onUpdateGroupName());
       return true;
     } catch (_) {
@@ -44,8 +44,8 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
     Navigator.pushAndRemoveUntil(context,
         MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
     _groupNameController.text = '';
-    clearGroupCache();
-    deleteCache(uri: generateUri(GetUriKeys.groups));
+    clearGroupCache(context);
+    deleteCache(uri: generateUri(GetUriKeys.groups, context));
   }
 
   @override
