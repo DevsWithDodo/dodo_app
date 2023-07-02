@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:csocsort_szamla/essentials/currencies.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/custom_choice_chip.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +29,6 @@ class AddModifyPayment {
   PaymentType? _paymentType;
   Payment? _savedPayment;
   bool _alreadyInitializedSave = false;
-  late ThemeData _theme;
   int? payerId;
   CrossFadeState purchaserSelector = CrossFadeState.showFirst;
   late User user;
@@ -46,9 +45,8 @@ class AddModifyPayment {
     this._setState = setState;
     this._paymentType = paymentType;
     this._buttonPush = buttonPush ?? (context) {};
-    this.user = context.read<UserProvider>().user!;
-    this.selectedCurrency = context.watch<UserProvider>().currentGroup!.currency;
-    this._theme = Theme.of(context);
+    this.user = context.read<AppStateProvider>().user!;
+    this.selectedCurrency = context.read<AppStateProvider>().currentGroup!.currency;
     if (_paymentType == PaymentType.modifyPayment) {
       this._savedPayment = savedPayment;
       selectedCurrency = savedPayment!.originalCurrency;
@@ -81,7 +79,7 @@ class AddModifyPayment {
   Map<String, dynamic> generateBody(
       String note, double amount, Member toMember, BuildContext context) {
     return {
-      'group': context.read<UserProvider>().currentGroup!.id,
+      'group': context.read<AppStateProvider>().currentGroup!.id,
       'currency': selectedCurrency,
       'amount': amount,
       'note': note,
@@ -95,7 +93,7 @@ class AddModifyPayment {
           hintText: 'note'.tr(),
           prefixIcon: Icon(
             Icons.note,
-            color: _theme.colorScheme.onSurface,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         inputFormatters: [LengthLimitingTextInputFormatter(50)],
@@ -114,7 +112,7 @@ class AddModifyPayment {
           prefixIcon: GestureDetector(
             onDoubleTap: () {
               _setState(() {
-                selectedCurrency = context.watch<UserProvider>().currentGroup!.currency;
+                selectedCurrency = context.watch<AppStateProvider>().currentGroup!.currency;
               });
             },
             child: CurrencyPickerIconButton(
@@ -129,7 +127,7 @@ class AddModifyPayment {
           suffixIcon: IconButton(
             icon: Icon(
               Icons.calculate,
-              color: _theme.colorScheme.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
             onPressed: () {
               showModalBottomSheet(
@@ -314,7 +312,7 @@ class AddModifyPayment {
         ),
       );
 
-  AnimatedCrossFade warningText() {
+  AnimatedCrossFade warningText(BuildContext context) {
     bool isVisible =
         (selectedMember != null && selectedMember!.id != user.id) &&
             payerId != user.id;
@@ -329,8 +327,8 @@ class AddModifyPayment {
         child: Center(
           child: Text(
             'warning_wont_see'.tr(),
-            style: _theme.textTheme.titleMedium!
-                .copyWith(color: _theme.colorScheme.error),
+            style: Theme.of(context).textTheme.titleMedium!
+                .copyWith(color: Theme.of(context).colorScheme.error),
             textAlign: TextAlign.center,
           ),
         ),

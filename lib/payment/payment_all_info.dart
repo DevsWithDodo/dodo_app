@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/payment/modify_payment_dialog.dart';
@@ -107,7 +107,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
               Icon(Icons.attach_money,
                   color: Theme.of(context).colorScheme.secondary),
               Flexible(
-                  child: Selector<UserProvider, String>(
+                  child: Selector<AppStateProvider, String>(
                     selector: (context, userProvider) => userProvider.currentGroup!.currency,
                     builder: (context, currentGroupCurrency, _) {
                       return Text(

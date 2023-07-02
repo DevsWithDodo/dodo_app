@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/currencies.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/category_picker_icon_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +35,6 @@ class AddModifyPurchase {
   ShoppingRequest? shoppingRequest;
   Purchase? savedPurchase;
   bool alreadyInitializedSave = false;
-  late ThemeData theme;
   CrossFadeState purchaserSelector = CrossFadeState.showFirst;
   int? purchaserId;
   Category? selectedCategory;
@@ -61,9 +60,8 @@ class AddModifyPurchase {
     this.savedPurchase = savedPurchase;
     this.buttonPush = buttonPush ?? (context) {};
     this._setState = setState;
-    this.user = context.read<UserProvider>().user!;
+    this.user = context.read<AppStateProvider>().user!;
     this.selectedCurrency = user.group!.currency;
-    this.theme = Theme.of(context);
     if (purchaseType == PurchaseType.fromShopping) {
       noteController.text = shoppingRequest!.name;
     } else if (purchaseType == PurchaseType.modifyPurchase) {
@@ -85,7 +83,7 @@ class AddModifyPurchase {
       String name, double amount, List<Member> members, BuildContext context) {
     return {
       "name": name,
-      "group": context.read<UserProvider>().currentGroup!.id,
+      "group": context.read<AppStateProvider>().currentGroup!.id,
       "amount": amount,
       "currency": selectedCurrency,
       "category": selectedCategory != null ? selectedCategory!.text : null,
@@ -163,7 +161,7 @@ class AddModifyPurchase {
           hintText: 'note'.tr(),
           prefixIcon: Icon(
             Icons.note,
-            color: theme.colorScheme.onSurfaceVariant,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           suffixIcon: showcaseKey != null
               ? Showcase(
@@ -192,9 +190,9 @@ class AddModifyPurchase {
         },
       );
 
-  Icon _calculatorIcon() => Icon(
+  Icon _calculatorIcon(BuildContext context) => Icon(
         Icons.calculate,
-        color: theme.colorScheme.primary,
+        color: Theme.of(context).colorScheme.primary,
       );
 
   TextFormField amountTextField(
@@ -213,7 +211,7 @@ class AddModifyPurchase {
           prefixIcon: GestureDetector(
             onDoubleTap: () {
               _setState(() {
-                selectedCurrency = context.read<UserProvider>().currentGroup!.currency;
+                selectedCurrency = context.read<AppStateProvider>().currentGroup!.currency;
               });
             },
             child: currencyKey != null
@@ -256,10 +254,10 @@ class AddModifyPurchase {
                     targetBorderRadius: BorderRadius.circular(10),
                     targetPadding: EdgeInsets.all(10),
                     description: "use_calculator".tr(),
-                    child: _calculatorIcon(),
+                    child: _calculatorIcon(context),
                     scaleAnimationDuration: Duration(milliseconds: 200),
                   )
-                : _calculatorIcon(),
+                : _calculatorIcon(context),
           ),
         ),
         controller: amountController,

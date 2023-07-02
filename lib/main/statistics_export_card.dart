@@ -1,17 +1,15 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
+import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/groups/dialogs/download_export_dialog.dart';
 import 'package:csocsort_szamla/main/in_app_purchase_page.dart';
 import 'package:csocsort_szamla/main/statistics_page.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
 class StatisticsDataExport extends StatefulWidget {
   const StatisticsDataExport();
@@ -86,19 +84,23 @@ class _StatisticsDataExportState extends State<StatisticsDataExport> {
     );
   }
 
+  void onRefreshStatisticsEvent() {
+    setState(() {
+      _group = _getGroup();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     _group = _getGroup();
-    context.read<EventBus>().on<RefreshStatistics>().listen(
-      (_) {
-        if (mounted) {
-          setState(() {
-            _group = _getGroup();
-          });
-        }
-      },
-    );
+    EventBus.instance.register(EventBus.refreshStatistics, onRefreshStatisticsEvent);
+  }
+
+  @override
+  void dispose() {
+    EventBus.instance.unregister(EventBus.refreshStatistics, onRefreshStatisticsEvent);
+    super.dispose();
   }
 
   @override

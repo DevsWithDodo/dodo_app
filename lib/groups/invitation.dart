@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
@@ -61,7 +61,7 @@ class _InvitationState extends State<Invitation> {
     try {
       Map<String, dynamic> body = {'admin_approval': _needsApproval ? 1 : 0};
       await Http.put(
-        uri: '/groups/' + context.read<UserProvider>().user!.group!.id.toString(),
+        uri: '/groups/' + context.read<AppStateProvider>().user!.group!.id.toString(),
         body: body,
       );
       Future.delayed(delayTime()).then((value) => _onUpdateNeedsApproval());
@@ -477,7 +477,7 @@ class _ApproveMemberState extends State<ApproveMember> {
       Map<String, dynamic> body = {'member_id': memberId, 'approve': approve};
       await Http.post(
           uri: '/groups/' +
-              context.read<UserProvider>().user!.group!.id.toString() +
+              context.read<AppStateProvider>().user!.group!.id.toString() +
               '/members/approve_or_deny',
           body: body);
       Future.delayed(delayTime()).then((value) => _onPostApproveMember());

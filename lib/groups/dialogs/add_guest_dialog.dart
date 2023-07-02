@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,7 +27,7 @@ class _AddGuestDialogState extends State<AddGuestDialog> {
         "username": username
       };
       await Http.post(
-            uri: '/groups/' + context.read<UserProvider>().currentGroup!.id.toString() + '/add_guest',
+            uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString() + '/add_guest',
             body: body,
           );
       Future.delayed(delayTime()).then((value) => _onAddGuest());

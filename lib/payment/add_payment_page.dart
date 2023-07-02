@@ -1,14 +1,12 @@
 import 'package:csocsort_szamla/essentials/ad_management.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
+import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/payment/add_modify_payment.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:provider/provider.dart';
 
 class AddPaymentRoute extends StatefulWidget {
   @override
@@ -34,9 +32,9 @@ class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment
   void _onPostPayment(BuildContext context) {
     Navigator.pop(context);
     Navigator.pop(context);
-    final bus = context.read<EventBus>();
-    bus.fire(RefreshBalances(context));
-    bus.fire(RefreshPayments(context));
+    final bus = EventBus.instance;
+    bus.fire(EventBus.refreshBalances);
+    bus.fire(EventBus.refreshPayments);
   }
 
   @override
@@ -83,7 +81,7 @@ class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              warningText(),
+                              warningText(context),
                               noteTextField(context),
                               SizedBox(
                                 height: 20,

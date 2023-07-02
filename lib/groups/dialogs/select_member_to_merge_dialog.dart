@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
@@ -33,7 +33,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
       'guest_id': widget.guestId
     };
     await Http.post(
-        uri: '/groups/' + context.read<UserProvider>().currentGroup!.id.toString() + '/merge_guest',
+        uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString() + '/merge_guest',
         body: body);
     Future.delayed(delayTime()).then((value) => _onMergeGuest());
     return true;

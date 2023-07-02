@@ -13,7 +13,6 @@ class User {
   bool useGradients;
   bool personalisedAds;
   bool trialVersion;
-  String themeName;
 
   User({
     required this.apiToken,
@@ -27,7 +26,6 @@ class User {
     this.useGradients = true,
     this.personalisedAds = false,
     this.trialVersion = false,
-    this.themeName = "dodoLightTheme",
   });
 }
 

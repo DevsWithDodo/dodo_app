@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -25,7 +25,7 @@ class _GroupMembersState extends State<GroupMembers> {
     try {
       http.Response response = await Http.get(
             uri: generateUri(GetUriKeys.groupCurrent, context,
-                params: [context.read<UserProvider>().user!.group!.id.toString()]),
+                params: [context.read<AppStateProvider>().user!.group!.id.toString()]),
             useCache: false,
           );
       Map<String, dynamic> decoded = jsonDecode(response.body);
@@ -36,7 +36,7 @@ class _GroupMembersState extends State<GroupMembers> {
       members.sort(
           (member1, member2) => member1.nickname.compareTo(member2.nickname));
       currentMember =
-          members.firstWhere((member) => member.id == context.read<UserProvider>().user!.id);
+          members.firstWhere((member) => member.id == context.read<AppStateProvider>().user!.id);
       members.remove(currentMember);
       members.insert(0, currentMember!);
       return members;
@@ -199,8 +199,9 @@ class _MemberEntryState extends State<MemberEntry> {
 
   @override
   Widget build(BuildContext context) {
-    User user = context.watch<UserProvider>().user!;
-    String themeName = user.themeName;
+    AppStateProvider provider = context.watch<AppStateProvider>();
+    User user = provider.user!;
+    String themeName = provider.themeName;
     if (widget.member.id == user.id) {
       mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
           color: themeName.contains('Gradient')

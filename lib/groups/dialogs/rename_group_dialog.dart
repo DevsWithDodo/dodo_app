@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,12 +27,12 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
       Map<String, dynamic> body = {"name": groupName};
 
       http.Response response = await Http.put(
-            uri: '/groups/' + context.read<UserProvider>().currentGroup!.id.toString(),
+            uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString(),
             body: body,
           );
 
       Map<String, dynamic> decoded = jsonDecode(response.body);
-      context.read<UserProvider>().setGroupName(decoded['group_name']);
+      context.read<AppStateProvider>().setGroupName(decoded['group_name']);
       Future.delayed(delayTime()).then((value) => _onUpdateGroupName());
       return true;
     } catch (_) {

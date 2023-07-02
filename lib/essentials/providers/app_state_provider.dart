@@ -19,13 +19,15 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class UserProvider extends ChangeNotifier {
+class AppStateProvider extends ChangeNotifier {
   User? user;
+  late String themeName;
 
   Group? get currentGroup => user?.group;
-  ThemeData get theme => AppTheme.themes[user!.themeName]!;
+  ThemeData get theme => AppTheme.themes[themeName]!;
 
-  UserProvider(BuildContext context, String themeName) {
+  AppStateProvider(BuildContext context, String themeName) {
+    this.themeName = themeName;
     final preferences = context.read<SharedPreferences>();
     if (preferences.containsKey('api_token')) {
       List<String> usersGroupNames =
@@ -61,7 +63,6 @@ class UserProvider extends ChangeNotifier {
             .values
             .toList(),
         ratedApp: preferences.getBool('rated_app') ?? false,
-        themeName: themeName,
       );
       _fetchUserData();
     }
@@ -69,7 +70,11 @@ class UserProvider extends ChangeNotifier {
 
   Future _fetchUserData() async {
     try {
-      http.Response response = await Http.get(uri: '/user', useCache: false);
+      http.Response response = await http
+          .get(Uri.parse((useTest ? TEST_URL : APP_URL) + '/user'), headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${user!.apiToken}"
+      });
       var decoded = jsonDecode(response.body);
       setShownAds(decoded['data']['ad_free'] == 0);
       setUseGradients(decoded['data']['gradients_enabled'] == 1);
@@ -88,8 +93,8 @@ class UserProvider extends ChangeNotifier {
             );
       }
       if (!user!.useGradients &&
-          !AppTheme.simpleColorThemes.contains(user!.themeName)) {
-        user!.themeName.contains('Dark')
+          !AppTheme.simpleColorThemes.contains(themeName)) {
+        themeName.contains('Dark')
             ? setThemeName('greenDarkTheme')
             : setThemeName('greenLightTheme');
       }
@@ -175,12 +180,11 @@ class UserProvider extends ChangeNotifier {
               MaterialPageRoute(builder: (context) => MainPage()),
             );
           } else {
-            getIt<NavigationService>().pushAndRemoveUntil(
-              MaterialPageRoute(
-                  builder: (context) => JoinGroup(
-                        inviteURL: inviteUrl,
-                      )),
-            );
+            getIt<NavigationService>().pushAndRemoveUntil(MaterialPageRoute(
+              builder: (context) => JoinGroup(
+                inviteURL: inviteUrl,
+              ),
+            ));
           }
         });
         return true;
@@ -226,11 +230,12 @@ class UserProvider extends ChangeNotifier {
       );
       if (response.statusCode == 201) {
         Map<String, dynamic> decoded = jsonDecode(response.body);
+        print(decoded);
         setUser(User(
-          apiToken: decoded['data']['api_token'],
-          username: decoded['data']['username'],
-          id: decoded['data']['id'],
-          currency: decoded['data']['default_currency'],
+          apiToken: decoded['api_token'],
+          username: decoded['username'],
+          id: decoded['id'],
+          currency: decoded['default_currency'],
           group: null,
           groups: [],
           ratedApp: false,
@@ -412,7 +417,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   void setThemeName(String themeName, {bool notify = true}) {
-    user!.themeName = themeName;
+    this.themeName = themeName;
     SharedPreferences.getInstance().then((preferences) {
       preferences.setString('theme', themeName);
     });

@@ -1,7 +1,7 @@
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/app_theme.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/main/iapp_not_supported_dialog.dart';
 import 'package:csocsort_szamla/main/in_app_purchase_page.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -61,7 +61,7 @@ class _ColorPickerState extends State<ColorPicker> {
   Widget build(BuildContext context) { 
     // This line is important so that textTheme is updated, don't know why
     print(Theme.of(context).colorScheme.onSurfaceVariant.alpha);
-    return Selector<UserProvider, bool>(
+    return Selector<AppStateProvider, bool>(
       selector: (context, provider) => provider.user!.useGradients,
       builder: (context, useGradients, _) {
         return Card(
@@ -211,8 +211,8 @@ class _ColorElementState extends State<ColorElement> {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<UserProvider, String>(
-      selector: (context, provider) => provider.user!.themeName,
+    return Selector<AppStateProvider, String>(
+      selector: (context, provider) => provider.themeName,
       builder: (context, themeName, _) {
         return Ink(
           padding: EdgeInsets.all(4),
@@ -237,7 +237,7 @@ class _ColorElementState extends State<ColorElement> {
             borderRadius: BorderRadius.circular(18),
             onTap: () {
               if (widget.enabled) {
-                context.read<UserProvider>().setThemeName(widget.themeName);
+                context.read<AppStateProvider>().setThemeName(widget.themeName);
                 _updateColor(widget.themeName);
               } else if (isIAPPlatformEnabled) {
                 Navigator.push(context,

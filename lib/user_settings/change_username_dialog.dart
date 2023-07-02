@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,7 +24,7 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
       Map<String, dynamic> body = {'username': newUsername};
 
       await Http.put(uri: '/user', body: body);
-      context.read<UserProvider>().setUsername(newUsername);
+      context.read<AppStateProvider>().setUsername(newUsername);
       Future.delayed(delayTime()).then((value) => _onUpdateUsername());
       return true;
     } catch (_) {

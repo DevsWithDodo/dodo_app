@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/essentials/widgets/tap_or_hold_button.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -37,7 +37,7 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
     super.initState();
     sliderValue = widget.initialValue;
     magnet = 0.5;
-    currency = widget.currency ?? context.read<UserProvider>().currentGroup!.currency;
+    currency = widget.currency ?? context.read<AppStateProvider>().currentGroup!.currency;
     customAmountController.text = sliderValue.toMoneyString(currency!);
   }
 

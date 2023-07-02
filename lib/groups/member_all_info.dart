@@ -3,13 +3,12 @@ import 'dart:convert';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/event_bus.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/groups/dialogs/select_member_to_merge_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
@@ -39,7 +38,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
 
       await Http.put(
         uri: '/groups/' +
-            context.read<UserProvider>().currentGroup!.id.toString() +
+            context.read<AppStateProvider>().currentGroup!.id.toString() +
             '/admins',
         body: body,
       );
@@ -67,7 +66,9 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<User>(builder: (context, user, _) {
+    return Selector<AppStateProvider, User>(
+      selector: (context, provider) => provider.user!,
+      builder: (context, user, _) {
       return Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
@@ -235,9 +236,9 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                   child: GradientButton.icon(
                     onPressed: () {
                       double currencyThreshold = threshold(
-                          context.read<UserProvider>().currentGroup!.currency);
+                          context.read<AppStateProvider>().currentGroup!.currency);
                       (currencies[context
-                                      .read<UserProvider>()
+                                      .read<AppStateProvider>()
                                       .currentGroup!
                                       .currency]!['subunit'] ==
                                   1
@@ -288,9 +289,9 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
 
   Future<bool> _removeMember(int? memberId) async {
     Map<String, dynamic> body = {
-      "member_id": memberId ?? context.read<UserProvider>().user!.id,
+      "member_id": memberId ?? context.read<AppStateProvider>().user!.id,
       "threshold": (currencies[context
-                      .read<UserProvider>()
+                      .read<AppStateProvider>()
                       .currentGroup!
                       .currency]!['subunit'] ==
                   1
@@ -301,13 +302,13 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
 
     Response response = await Http.post(
       uri: '/groups/' +
-          context.read<UserProvider>().currentGroup!.id.toString() +
+          context.read<AppStateProvider>().currentGroup!.id.toString() +
           '/members/delete',
       body: body,
     );
     // The member leaves on his own
     if (memberId == null) {
-      UserProvider userProvider = context.read<UserProvider>();
+      AppStateProvider userProvider = context.read<AppStateProvider>();
       if (response.body != "") { // The API returns the group if the user has other groups
         Map<String, dynamic> decoded = jsonDecode(response.body);
         userProvider.setGroup(Group(
@@ -335,11 +336,11 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
 
   void _onRemoveMemberNull() async {
     await clearAllCache();
-    if (context.read<UserProvider>().currentGroup != null) {
+    if (context.read<AppStateProvider>().currentGroup != null) {
       Navigator.pushAndRemoveUntil(context,
           MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
     } else {
-      context.read<EventBus>().fire(RefreshGroups(context));
+      EventBus.instance.fire(EventBus.refreshGroups);
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(

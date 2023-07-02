@@ -2,13 +2,12 @@ import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/event_bus.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/groups/main_group_page.dart';
 import 'package:csocsort_szamla/shopping/im_shopping_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
@@ -24,7 +23,7 @@ class ShoppingList extends StatefulWidget {
   _ShoppingListState createState() => _ShoppingListState();
 }
 
-class _ShoppingListState extends State<ShoppingList> {
+class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClientMixin {
   Future<List<ShoppingRequest>>? _shoppingList;
 
   TextEditingController _addRequestController = TextEditingController();
@@ -33,13 +32,16 @@ class _ShoppingListState extends State<ShoppingList> {
 
   var _formKey = GlobalKey<FormState>();
 
+  @override
+  bool get wantKeepAlive => true;
+
   Future<List<ShoppingRequest>> _getShoppingList(
       {bool overwriteCache = false}) async {
     try {
       Response response = await Http.get(
         uri: generateUri(
           GetUriKeys.requests, context,
-          queryParams: {'group': context.read<UserProvider>().user!.group!.id.toString()},
+          queryParams: {'group': context.read<AppStateProvider>().user!.group!.id.toString()},
         ),
         overwriteCache: overwriteCache,
       );
@@ -58,7 +60,7 @@ class _ShoppingListState extends State<ShoppingList> {
 
   Future<bool> _postShoppingRequest(String name) async {
     try {
-      Map<String, dynamic> body = {'group': context.read<UserProvider>().currentGroup!.id, 'name': name};
+      Map<String, dynamic> body = {'group': context.read<AppStateProvider>().currentGroup!.id, 'name': name};
       Response response =
           await Http.post(uri: '/requests', body: body);
       Future.delayed(delayTime()).then((value) => _onPostShoppingRequest(
@@ -200,24 +202,31 @@ class _ShoppingListState extends State<ShoppingList> {
     }
   }
 
+  void onRefreshShoppingEvent() {
+    setState(() {
+      _shoppingList = null;
+      _shoppingList = _getShoppingList(overwriteCache: true);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     
     _shoppingList = null;
     _shoppingList = _getShoppingList();
-    context.read<EventBus>().on<RefreshShopping>().listen((_) {
-      if (mounted) {
-        setState(() {
-          _shoppingList = null;
-          _shoppingList = _getShoppingList(overwriteCache: true);
-        });
-      }
-    });
+    EventBus.instance.register(EventBus.refreshShopping, onRefreshShoppingEvent);
+  }
+
+  @override
+  void dispose() {
+    EventBus.instance.unregister(EventBus.refreshShopping, onRefreshShoppingEvent);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return RefreshIndicator(
       onRefresh: () async {
         if (context.read<IsOnlineProvider>().isOnline) await deleteCache(uri: '/groups');

@@ -1,6 +1,6 @@
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
@@ -131,7 +131,7 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
                         Theme.of(context).colorScheme.primary,
-                        context.watch<UserProvider>().user!.themeName.toLowerCase().contains('dodo') &&
+                        context.watch<AppStateProvider>().themeName.toLowerCase().contains('dodo') &&
                                 !kIsWeb
                             ? BlendMode.dst
                             : BlendMode.srcIn),

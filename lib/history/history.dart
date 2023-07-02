@@ -1,13 +1,12 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/event_bus.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/history/all_history_page.dart';
 import 'package:csocsort_szamla/payment/payment_entry.dart';
 import 'package:csocsort_szamla/purchase/purchase_entry.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
@@ -37,13 +36,14 @@ class _HistoryState extends State<History> {
           GetUriKeys.purchases, context,
           queryParams: {
             'limit': '6',
-            'group': context.read<UserProvider>().currentGroup!.id.toString(),
+            'group': context.read<AppStateProvider>().currentGroup!.id.toString(),
           },
         ),
         overwriteCache: overwriteCache,
       );
 
       List<dynamic> decoded = jsonDecode(response.body)['data'];
+      // print(decoded);
       List<Purchase> purchaseData = [];
       for (var data in decoded) {
         purchaseData.add(Purchase.fromJson(data));
@@ -61,7 +61,7 @@ class _HistoryState extends State<History> {
           GetUriKeys.payments, context,
           queryParams: {
             'limit': '6',
-            'group': context.read<UserProvider>().currentGroup!.id.toString(),
+            'group': context.read<AppStateProvider>().currentGroup!.id.toString(),
           },
         ),
         overwriteCache: overwriteCache,
@@ -77,31 +77,40 @@ class _HistoryState extends State<History> {
     }
   }
 
+  void onRefreshPurchasesEvent() {
+    setState(() {
+      _purchases = null;
+      _purchases = _getPurchases(overwriteCache: true);
+    });
+  }
+
+  void onRefreshPaymentsEvent() {
+    setState(() {
+      _payments = null;
+      _payments = _getPayments(overwriteCache: true);
+    });
+  }
+
   @override
   void initState() {
+    super.initState();
     _selectedIndex = widget.selectedIndex;
     _payments = null;
     _payments = _getPayments();
     _purchases = null;
     _purchases = _getPurchases();
 
-    final eventBus = context.read<EventBus>();
-    eventBus.on<RefreshPurchases>().listen((_) {
-      if (mounted) {
-        _purchases = null;
-        _purchases = _getPurchases(overwriteCache: true);
-        setState(() {});
-      }
-    });
-    eventBus.on<RefreshPayments>().listen((_) {
-      if (mounted) {
-        _payments = null;
-        _payments = _getPayments(overwriteCache: true);
-        setState(() {});
-      }
-    });
+    final bus = EventBus.instance;
+    bus.register(EventBus.refreshPurchases, onRefreshPurchasesEvent);
+    bus.register(EventBus.refreshPayments, onRefreshPaymentsEvent);
+  }
 
-    super.initState();
+  @override
+  void dispose() {
+    final bus = EventBus.instance;
+    bus.unregister(EventBus.refreshPurchases, onRefreshPurchasesEvent);
+    bus.unregister(EventBus.refreshPayments, onRefreshPaymentsEvent);
+    super.dispose();
   }
 
   @override
@@ -146,7 +155,7 @@ class _HistoryState extends State<History> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
                         gradient: _selectedIndex == 0
-                            ? AppTheme.gradientFromTheme(context.watch<UserProvider>().user!.themeName)
+                            ? AppTheme.gradientFromTheme(context.watch<AppStateProvider>().themeName)
                             : LinearGradient(colors: [
                                 ElevationOverlay.applyOverlay(context,
                                     Theme.of(context).colorScheme.surface, 10),
@@ -203,7 +212,7 @@ class _HistoryState extends State<History> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
                         gradient: _selectedIndex == 1
-                            ? AppTheme.gradientFromTheme(context.watch<UserProvider>().user!.themeName)
+                            ? AppTheme.gradientFromTheme(context.watch<AppStateProvider>().themeName)
                             : LinearGradient(colors: [
                                 ElevationOverlay.applyOverlay(context,
                                     Theme.of(context).colorScheme.surface, 10),
@@ -402,7 +411,7 @@ class _HistoryState extends State<History> {
     return data.map((element) {
       return PaymentEntry(
         payment: element,
-        selectedMemberId: context.read<UserProvider>().user!.id,
+        selectedMemberId: context.read<AppStateProvider>().user!.id,
       );
     }).toList();
   }
@@ -414,7 +423,7 @@ class _HistoryState extends State<History> {
     return data.map((element) {
       return PurchaseEntry(
         purchase: element,
-        selectedMemberId: context.read<UserProvider>().user!.id,
+        selectedMemberId: context.read<AppStateProvider>().user!.id,
       );
     }).toList();
   }

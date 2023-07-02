@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/currency_picker_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +45,7 @@ class _CurrencyPickerIconButtonState extends State<CurrencyPickerIconButton> {
           child: Text(
             getSymbol(widget.selectedCurrency!)!,
             style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                color: widget.selectedCurrency == context.watch<UserProvider>().currentGroup!.currency
+                color: widget.selectedCurrency == context.watch<AppStateProvider>().currentGroup!.currency
                     ? Theme.of(context).colorScheme.primary
                     : Theme.of(context).colorScheme.tertiary,
                 fontSize: 18),

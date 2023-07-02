@@ -1,6 +1,6 @@
 import 'package:csocsort_szamla/auth/login_or_register_page.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +19,7 @@ class _DeleteAllDataState extends State<DeleteAllData> {
     try {
       await Http.delete(uri: '/user');
       clearAllCache();
-      UserProvider userProvider = context.read<UserProvider>();
+      AppStateProvider userProvider = context.read<AppStateProvider>();
       userProvider.setGroup(null);
       userProvider.setGroups([]);
       userProvider.setUser(null);

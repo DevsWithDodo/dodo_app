@@ -1,5 +1,5 @@
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/currency_picker_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +29,7 @@ class _SelectBalanceCurrencyState extends State<SelectBalanceCurrency> {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<UserProvider, Group>(
+    return Selector<AppStateProvider, Group>(
       selector: (context, userProvider) => userProvider.currentGroup!,
       builder: (context, currentGroup, _) {
         return Row(
@@ -38,7 +38,7 @@ class _SelectBalanceCurrencyState extends State<SelectBalanceCurrency> {
             InkWell(
               borderRadius: BorderRadius.circular(12),
               onDoubleTap: () {
-                _selectedCurrency = context.watch<User>().currency;
+                _selectedCurrency = context.read<AppStateProvider>().currentGroup!.currency;
                 widget.onCurrencyChange!(_selectedCurrency);
               },
               child: Ink(

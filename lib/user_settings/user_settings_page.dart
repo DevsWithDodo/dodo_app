@@ -1,6 +1,6 @@
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/user_settings/change_password.dart';
 import 'package:csocsort_szamla/user_settings/change_user_currency.dart';
 import 'package:csocsort_szamla/user_settings/delete_all_data.dart';
@@ -94,7 +94,7 @@ class _SettingsState extends State<Settings> {
       ChangePassword(),
       ChangeUsername(),
       ChangeUserCurrency(),
-      Visibility(visible: context.watch<UserProvider>().user!.showAds, child: PersonalisedAds()),
+      Visibility(visible: context.watch<AppStateProvider>().user!.showAds, child: PersonalisedAds()),
       AboutUs(),
       DeleteAllData(),
       ReportBug(),

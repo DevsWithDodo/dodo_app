@@ -1,4 +1,5 @@
 import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/shopping/edit_request_dialog.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +61,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<User>(
+    return Selector<AppStateProvider, User>(
+      selector: (context, provider) => provider.user!,
       builder: (context, user, _) {
         return Padding(
           padding: const EdgeInsets.all(15),

@@ -1,5 +1,5 @@
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -25,7 +25,7 @@ class _ImShoppingDialogState extends State<ImShoppingDialog> {
       await Http.post(
         body: body,
         uri: '/groups/' +
-            context.read<UserProvider>().currentGroup!.id.toString() +
+            context.read<AppStateProvider>().currentGroup!.id.toString() +
             '/send_shopping_notification',
       );
       Future.delayed(delayTime()).then((value) => _onPostImShopping());

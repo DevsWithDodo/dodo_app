@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -60,7 +60,7 @@ class GradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String themeName = context.watch<UserProvider>().user!.themeName;
+    String themeName = context.watch<AppStateProvider>().themeName;
     Color textColor = AppTheme.textColorOnGradient(
      themeName ,
       useSecondary: this.useSecondary,

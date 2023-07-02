@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/groups/dialogs/change_group_currency_dialog.dart';
 import 'package:csocsort_szamla/groups/dialogs/rename_group_dialog.dart';
@@ -35,7 +35,7 @@ class _GroupSettingState extends State<GroupSettings> {
     try {
       Response response = await Http.get(
         uri: generateUri(GetUriKeys.groupHasGuests, context,
-            params: [context.read<UserProvider>().user!.group!.id.toString()]),
+            params: [context.read<AppStateProvider>().user!.group!.id.toString()]),
       );
       Map<String, dynamic> decoded = jsonDecode(response.body);
       // print(decoded);

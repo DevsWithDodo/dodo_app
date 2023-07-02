@@ -4,7 +4,7 @@ import 'dart:io' show Platform;
 import 'package:csocsort_szamla/auth/login_or_register_page.dart';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/user_settings/user_settings_page.dart';
@@ -42,7 +42,7 @@ class _JoinGroupState extends State<JoinGroup> {
   @override
   void initState() {
     super.initState();
-    user = context.read<UserProvider>().user!;
+    user = context.read<AppStateProvider>().user!;
     _nicknameController = TextEditingController(
         text: user.username[0].toUpperCase() + user.username.substring(1));
   }
@@ -60,7 +60,7 @@ class _JoinGroupState extends State<JoinGroup> {
 
       if (response.body != "") {
         Map<String, dynamic> decoded = jsonDecode(response.body);
-        UserProvider userProvider = context.read<UserProvider>();
+        AppStateProvider userProvider = context.read<AppStateProvider>();
         userProvider.setGroups(userProvider.user!.groups + [
           Group(
             id: decoded['data']['group_id'],
@@ -107,7 +107,7 @@ class _JoinGroupState extends State<JoinGroup> {
           ? widget.inviteURL!.split('/').removeLast()
           : '';
     }
-    return Selector<UserProvider, User>(
+    return Selector<AppStateProvider, User>(
         selector: (context, userProvider) => userProvider.user!,
         builder: (context, user, _) {
           return WillPopScope(
@@ -229,7 +229,7 @@ class _JoinGroupState extends State<JoinGroup> {
                                             .onSurfaceVariant),
                               ),
                               onTap: () {
-                                context.read<UserProvider>().logout();
+                                context.read<AppStateProvider>().logout();
                                 Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(

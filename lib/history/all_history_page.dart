@@ -3,13 +3,12 @@ import 'dart:convert';
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/event_bus.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/payment/payment_entry.dart';
 import 'package:csocsort_szamla/purchase/purchase_entry.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
@@ -49,7 +48,7 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
         uri: generateUri(
           GetUriKeys.purchases, context,
           queryParams: {
-            'group': context.read<UserProvider>().currentGroup!.id.toString(),
+            'group': context.read<AppStateProvider>().currentGroup!.id.toString(),
             'from_date': _startDate == null
                 ? null
                 : DateFormat('yyyy-MM-dd').format(_startDate!),
@@ -98,7 +97,7 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
         uri: generateUri(
           GetUriKeys.payments, context,
           queryParams: {
-            'group': context.read<UserProvider>().currentGroup!.id.toString(),
+            'group': context.read<AppStateProvider>().currentGroup!.id.toString(),
             'from_date': _startDate == null
                 ? null
                 : DateFormat('yyyy-MM-dd').format(_startDate!),
@@ -141,9 +140,24 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     }
   }
 
+  void onRefreshPurchasesEvent() {
+    setState(() {
+      _purchases = null;
+      _purchases = _getPurchases(overwriteCache: true);
+    });
+  }
+
+  void onRefreshPaymentsEvent() {
+    setState(() {
+      _payments = null;
+      _payments = _getPayments(overwriteCache: true);
+    });
+  }
+
   @override
   void initState() {
-    _selectedMemberId = context.read<UserProvider>().user!.id;
+    super.initState();
+    _selectedMemberId = context.read<AppStateProvider>().user!.id;
     _tabController = TabController(
         length: 2, vsync: this, initialIndex: widget.startingIndex!);
     _selectedIndex = widget.startingIndex;
@@ -154,25 +168,20 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     _payments = null;
     _payments = _getPayments();
 
-    final bus = context.read<EventBus>();
-    bus.on<RefreshPurchases>().listen((_) {
-      if (mounted) {
-        setState(() {
-          _purchases = null;
-          _purchases = _getPurchases(overwriteCache: true);
-        });
-      }
-    });
-    bus.on<RefreshPayments>().listen((_) {
-      if (mounted) {
-        setState(() {
-          _payments = null;
-          _payments = _getPayments(overwriteCache: true);
-        });
-      }
-    });
+    final bus = EventBus.instance;
+    bus.register(EventBus.refreshPurchases, onRefreshPurchasesEvent);
+    bus.register(EventBus.refreshPayments, onRefreshPaymentsEvent);
+  }
 
-    super.initState();
+  @override
+  void dispose() {
+    _tabController!.dispose();
+    _purchaseScrollController.dispose();
+    _paymentScrollController.dispose();
+    final bus = EventBus.instance;
+    bus.unregister(EventBus.refreshPurchases, onRefreshPurchasesEvent);
+    bus.unregister(EventBus.refreshPayments, onRefreshPaymentsEvent);
+    super.dispose();
   }
 
   @override

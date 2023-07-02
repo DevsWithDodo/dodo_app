@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -43,7 +43,7 @@ class RateAppDialog extends StatelessWidget {
                 break;
             }
             launchUrlString(url);
-            context.read<UserProvider>().setRatedApp(true);
+            context.read<AppStateProvider>().setRatedApp(true);
           },
         ),
       ),

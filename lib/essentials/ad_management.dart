@@ -1,5 +1,5 @@
 import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +22,7 @@ class _AdUnitForSiteState extends State<AdUnitForSite> {
       request: AdRequest(),
       listener: BannerAdListener(),
     );
-    if (context.read<UserProvider>().user!.showAds && isAdPlatformEnabled) {
+    if (context.read<AppStateProvider>().user!.showAds && isAdPlatformEnabled) {
       ad.load();
     }
     super.initState();
@@ -30,7 +30,7 @@ class _AdUnitForSiteState extends State<AdUnitForSite> {
 
   @override
   Widget build(BuildContext context) {
-    bool showAds = context.read<UserProvider>().user!.showAds;
+    bool showAds = context.read<AppStateProvider>().user!.showAds;
     if (ad.responseInfo == null && showAds && isAdPlatformEnabled) {
       ad.load();
     }

@@ -8,9 +8,8 @@ import 'package:csocsort_szamla/auth/login_or_register_page.dart';
 import 'package:csocsort_szamla/essentials/app_theme.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
 import 'package:csocsort_szamla/essentials/providers/invite_url_provider.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/version_not_supported_page.dart';
 import 'package:csocsort_szamla/groups/join_group.dart';
 import 'package:csocsort_szamla/main/in_app_purchase_page.dart';
@@ -55,19 +54,13 @@ void getItSetup() {
 
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-Future backgroundMessageHandler(
-    RemoteMessage message, UserProvider userProvider) async {
-  await Firebase.initializeApp();
-  onSelectNotification(message.data['payload'], userProvider);
-}
-
-Future onSelectNotification(String? payload, UserProvider userProvider) async {
+Future onSelectNotification(String? payload, AppStateProvider userProvider) async {
   print("Payload: " + payload!);
   try {
     Map<String, dynamic> decoded = jsonDecode(payload);
     int? groupId = decoded['group_id'];
     String? groupName = decoded['group_name'];
-    String? groupCurrency = decoded['group_currency'];
+    String? groupCurrency = decoded['currency'];
     String? page = decoded['screen'];
     String? details = decoded['details'];
 
@@ -151,40 +144,27 @@ void main() async {
       if (lightDynamic != null) {
         AppTheme.addDynamicThemes(lightDynamic, darkDynamic!);
       }
-      print(themeName);
       return MultiProvider(
         providers: [
           Provider.value(value: preferences),
           ChangeNotifierProvider(
-              create: (context) => UserProvider(context, themeName)),
+              create: (context) => AppStateProvider(context, themeName)),
           ChangeNotifierProvider(
               create: (context) => InviteUrlProvider(inviteURL)),
         ],
-        child: EventBusProvider(
-          child: EasyLocalization(
-            child: Builder(builder: (context) {
-              if (isFirebasePlatformEnabled) {
-                FirebaseMessaging.onBackgroundMessage(
-                  (message) => backgroundMessageHandler(
-                    message,
-                    context.read<UserProvider>(),
-                  ),
-                );
-              }
-              return LenderApp();
-            }),
-            supportedLocales: [
-              Locale('en'),
-              Locale('de'),
-              Locale('it'),
-              Locale('hu')
-            ],
-            path: 'assets/translations',
-            fallbackLocale: Locale('en'),
-            useOnlyLangCode: true,
-            saveLocale: true,
-            useFallbackTranslations: true,
-          ),
+        child: EasyLocalization(
+          child: LenderApp(),
+          supportedLocales: [
+            Locale('en'),
+            Locale('de'),
+            Locale('it'),
+            Locale('hu')
+          ],
+          path: 'assets/translations',
+          fallbackLocale: Locale('en'),
+          useOnlyLangCode: true,
+          saveLocale: true,
+          useFallbackTranslations: true,
         ),
       );
     }),
@@ -210,11 +190,11 @@ class _LenderAppState extends State<LenderApp> {
       _link = link;
       print(link);
       setState(() {
-        if (context.read<UserProvider>().user?.id != null) {
+        if (context.read<AppStateProvider>().user?.id != null) {
           getIt.get<NavigationService>().push(MaterialPageRoute(
               builder: (context) => JoinGroup(
                   inviteURL: _link,
-                  fromAuth: (context.read<UserProvider>().user?.group == null)
+                  fromAuth: (context.read<AppStateProvider>().user?.group == null)
                       ? true
                       : false)));
         } else {
@@ -250,20 +230,20 @@ class _LenderAppState extends State<LenderApp> {
     }
   }
 
-  Future<void> setupInitialMessage() async {
+  Future setupInitialMessage() async {
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
       onSelectNotification(
-          initialMessage.data['payload'], context.read<UserProvider>());
+          initialMessage.data['payload'], context.read<AppStateProvider>());
     }
   }
 
   @override
   void initState() {
     super.initState();
-    UserProvider userProvider = context.read<UserProvider>();
+    AppStateProvider userProvider = context.read<AppStateProvider>();
     if (isIAPPlatformEnabled) {
       final Stream purchaseUpdates = InAppPurchase.instance.purchaseStream;
       _subscription = purchaseUpdates.listen((purchases) {
@@ -436,11 +416,11 @@ class _LenderAppState extends State<LenderApp> {
   Widget build(BuildContext context) {
     return ShowCaseWidget(
       builder: Builder(builder: (context) {
-        return Consumer<UserProvider>(builder: (context, userProvider, _) {
+        return Consumer<AppStateProvider>(builder: (context, userProvider, _) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Dodo',
-            theme: AppTheme.themes[userProvider.user!.themeName],
+            theme: userProvider.theme,
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
             locale: context.locale,

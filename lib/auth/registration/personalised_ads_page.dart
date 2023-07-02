@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -99,7 +99,7 @@ class _PersonalisedAdsPageState extends State<PersonalisedAdsPage> {
                           showDialog(
                             context: context,
                             builder: (context) => FutureSuccessDialog(
-                              future: context.read<UserProvider>().register(
+                              future: context.read<AppStateProvider>().register(
                                   widget.username,
                                   widget.pin,
                                   widget.defaultCurrency,

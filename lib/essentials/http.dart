@@ -4,7 +4,7 @@ import 'dart:math';
 
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/navigator_service.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/main.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
@@ -53,7 +53,7 @@ String generateUri(
   Map<String, String?>? queryParams,
 }) {
   if (type == HttpType.get) {
-      Group? currentGroup = context.read<UserProvider>().currentGroup;
+    Group? currentGroup = context.read<AppStateProvider>().currentGroup;
     if (params == null && currentGroup != null) {
       params = [currentGroup.id.toString()];
     }
@@ -105,11 +105,12 @@ class Http {
       Map<String, String> header = {
         "Content-Type": "application/json",
         "Authorization":
-            "Bearer " + (context.read<UserProvider>().user?.apiToken ?? '')
+            "Bearer " + (context.read<AppStateProvider>().user?.apiToken ?? '')
       };
       http.Response response = await http.get(
-          Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
-          headers: header);
+        Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
+        headers: header,
+      );
       if (response.statusCode < 300 && response.statusCode >= 200) {
         if (useCache) toCache(uri: uri.substring(1), response: response);
         return response;
@@ -160,7 +161,7 @@ class Http {
       Map<String, String> header = {
         "Content-Type": "application/json",
         "Authorization":
-            "Bearer " + (context.read<UserProvider>().user?.apiToken ?? '')
+            "Bearer " + (context.read<AppStateProvider>().user?.apiToken ?? '')
       };
       http.Response response;
       if (body != null) {
@@ -216,7 +217,7 @@ class Http {
       Map<String, String> header = {
         "Content-Type": "application/json",
         "Authorization":
-            "Bearer " + (context.read<UserProvider>().user?.apiToken ?? '')
+            "Bearer " + (context.read<AppStateProvider>().user?.apiToken ?? '')
       };
       http.Response response;
       if (body != null) {
@@ -269,7 +270,7 @@ class Http {
       Map<String, String> header = {
         "Content-Type": "application/json",
         "Authorization":
-            "Bearer " + (context.read<UserProvider>().user?.apiToken ?? '')
+            "Bearer " + (context.read<AppStateProvider>().user?.apiToken ?? '')
       };
       http.Response response = await http.delete(
           Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
@@ -306,7 +307,7 @@ class Http {
   }
 
   static void memberNotInGroup(BuildContext context) {
-    UserProvider userProvider = context.read<UserProvider>();
+    AppStateProvider userProvider = context.read<AppStateProvider>();
     userProvider.setGroup(null, notify: false);
     clearAllCache();
     FToast ft = FToast();
@@ -377,15 +378,12 @@ Future<http.Response?> fromCache(
     if (!cacheDir.existsSync()) {
       return null;
     }
-    // print(cacheDir.listSync());
     File file = File(cacheDir.path + s + fileName);
-    if (alwaysReturnCache ||
+    if (file.existsSync() && (alwaysReturnCache ||
         (!overwriteCache &&
-            (file.existsSync() &&
-                DateTime.now().difference(await file.lastModified()).inMinutes <
+            DateTime.now().difference(await file.lastModified()).inMinutes <
                     5))) {
-      // print('from cache');
-      return http.Response(file.readAsStringSync(), 200);
+      return http.Response(await file.readAsString(), 200);
     }
     // print('from API');
     return null;
@@ -425,7 +423,7 @@ Future deleteCache({required String uri, bool multipleArgs = false}) async {
         for (var file in files) {
           if (file is File) {
             String fileName = file.path.split(separator).last;
-            if (fileName.contains(uri)) {
+            if (fileName.contains(uri) && file.existsSync()) {
               file.deleteSync();
             }
           }
@@ -434,7 +432,6 @@ Future deleteCache({required String uri, bool multipleArgs = false}) async {
     } else {
       File file = File(cacheDir.path + separator + fileName);
       if (file.existsSync()) {
-        // print('delete cache'+fileName);
         await file.delete();
       }
     }
@@ -443,17 +440,19 @@ Future deleteCache({required String uri, bool multipleArgs = false}) async {
 
 Future clearGroupCache(BuildContext context) async {
   if (!kIsWeb) {
-    int currentGroupId = context.read<UserProvider>().currentGroup!.id;
+    int currentGroupId = context.read<AppStateProvider>().currentGroup!.id;
     var cacheDir = await _getCacheDir();
     String s = Platform.isWindows ? '\\' : '/';
     if (cacheDir.existsSync()) {
       List<FileSystemEntity> files = cacheDir.listSync();
       for (var file in files) {
         if (file is File) {
+          if(!file.existsSync()) {
+            continue;
+          }
           String fileName = file.path.split(s).last;
           if (fileName.contains('groups-' + currentGroupId.toString()) ||
               fileName.contains('group=' + currentGroupId.toString())) {
-            // print('deleting '+fileName);
             file.deleteSync();
           }
         }
@@ -470,20 +469,8 @@ Future clearAllCache() async {
       for (FileSystemEntity file in cacheDir.listSync()) {
         if (file is File) {
           file.deleteSync();
-          // print(delet)
         }
       }
-      // cacheDir.delete(recursive: true);
-      // for (String uri in getUris) {
-      //   uri =
-      //       uri.replaceAll('/', '-').replaceAll('&', '-').replaceAll('?', '-');
-      //   File file = File(cacheDir.path + s + uri);
-      //   print(file.path);
-      //   if (file.existsSync()) {
-      //     file.deleteSync();
-      //     print(file.path);
-      //   }
-      // }
     }
   }
 }

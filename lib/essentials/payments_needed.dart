@@ -1,11 +1,11 @@
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'models.dart';
 
 List<Payment> paymentsNeeded(List<Member> members, BuildContext context) {
-  Group currentGroup = context.read<UserProvider>().currentGroup!;
+  Group currentGroup = context.read<AppStateProvider>().currentGroup!;
   List<Payment> payments = <Payment>[];
   List<Member> memberCopy = <Member>[];
   if (members.where((member) => member.balance != 0).length > 0) {
@@ -52,7 +52,6 @@ List<Payment> paymentsNeeded(List<Member> members, BuildContext context) {
       }
     } while (memberCopy.where((member) => member.balance > 0).length > 0 &&
         memberCopy.where((member) => member.balance < 0).length > 0);
-    print(payments.first.takerNickname);
     return payments;
   } else {
     return payments;

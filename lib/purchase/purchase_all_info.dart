@@ -1,5 +1,5 @@
 import 'package:csocsort_szamla/essentials/currencies.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/purchase/modify_purchase_dialog.dart';
@@ -46,7 +46,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
       note = widget.purchase!.name[0].toUpperCase() +
           widget.purchase!.name.substring(1);
     }
-    return Selector<UserProvider, User>(
+    return Selector<AppStateProvider, User>(
       selector: (context, provider) => provider.user!,
       builder: (context, user, _) {
         return Padding(
@@ -110,7 +110,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                   Icon(Icons.attach_money,
                       color: Theme.of(context).colorScheme.secondary),
                   Flexible(
-                      child: Selector<UserProvider, String>(
+                      child: Selector<AppStateProvider, String>(
                         selector: (context, provider) => provider.currentGroup!.currency,
                         builder: (context, currentGroupCurrency, _) {
                           return Text(

@@ -4,13 +4,12 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:csocsort_szamla/essentials/app_theme.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/event_bus.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/past_reaction_container.dart';
 import 'package:csocsort_szamla/purchase/purchase_all_info.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -38,7 +37,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
   String? amountToSelfOriginal = '';
 
   void handleSendReaction(String reaction) {
-    User user = context.read<UserProvider>().user!;
+    User user = context.read<AppStateProvider>().user!;
     Reaction? oldReaction = widget.purchase.reactions!
         .firstWhereOrNull((element) => element.userId == user.id);
     bool alreadyReacted = oldReaction != null;
@@ -67,7 +66,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
 
   @override
   Widget build(BuildContext context) {
-    String themeName = context.watch<UserProvider>().user!.themeName;
+    String themeName = context.watch<AppStateProvider>().themeName;
     int? selectedMemberId = widget.selectedMemberId;
     note = (widget.purchase.name == '')
         ? 'no_note'.tr()
@@ -103,8 +102,8 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onSecondaryContainer);
       boxDecoration = BoxDecoration(
-        gradient: AppTheme.gradientFromTheme(themeName,
-            useSecondaryContainer: true),
+        gradient:
+            AppTheme.gradientFromTheme(themeName, useSecondaryContainer: true),
         borderRadius: BorderRadius.circular(15),
       );
     } else if (bought) {
@@ -128,8 +127,8 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onPrimaryContainer);
       boxDecoration = BoxDecoration(
-        gradient: AppTheme.gradientFromTheme(themeName,
-            usePrimaryContainer: true),
+        gradient:
+            AppTheme.gradientFromTheme(themeName, usePrimaryContainer: true),
         borderRadius: BorderRadius.circular(15),
       );
     } else if (received) {
@@ -150,144 +149,145 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
           .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
       boxDecoration = BoxDecoration();
     }
-    return Selector<UserProvider, User>(
-      selector: (context, userProvider) => userProvider.user!,
-      builder: (context, user, _) {
-        return Stack(
-          children: [
-            Container(
-              height: !kIsWeb && Platform.isWindows ? 85 : 80,
-              width: MediaQuery.of(context).size.width,
-              decoration: boxDecoration,
-              margin: EdgeInsets.only(
-                  top: widget.purchase.reactions!.length == 0 ? 0 : 14,
-                  bottom: 4,
-                  left: 4,
-                  right: 4),
-              child: Material(
-                type: MaterialType.transparency,
-                child: InkWell(
-                  onLongPress: selectedMemberId != user.id
-                      ? null
-                      : () {
-                          showDialog(
-                              builder: (context) => AddReactionDialog(
-                                    type: 'purchases',
-                                    reactions: widget.purchase.reactions!,
-                                    reactToId: widget.purchase.id,
-                                    onSend: this.handleSendReaction,
-                                  ),
-                              context: context);
-                        },
-                  onTap: () async {
-                    showModalBottomSheet<String>(
-                      isScrollControlled: true,
-                      context: context,
-                      backgroundColor: Theme.of(context).cardTheme.color,
-                      builder: (context) => SingleChildScrollView(
-                          child: PurchaseAllInfo(
-                              widget.purchase, widget.selectedMemberId)),
-                    ).then((val) {
-                      if (val == 'deleted') {
-                        EventBus eventBus = context.read<EventBus>();
-                        eventBus.fire(RefreshPurchases(context));
-                        eventBus.fire(RefreshBalances(context));
-                      }
-                    });
-                  },
-                  borderRadius: BorderRadius.circular(15),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Flexible(
-                          child: Row(
-                            children: <Widget>[
-                              leadingIcon,
-                              SizedBox(
-                                width: 20,
-                              ),
-                              Flexible(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Flexible(
-                                      child: Text(
-                                        note,
-                                        style: mainTextStyle,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
+    return Selector<AppStateProvider, User>(
+        selector: (context, userProvider) => userProvider.user!,
+        builder: (context, user, _) {
+          return Stack(
+            children: [
+              Container(
+                height: !kIsWeb && Platform.isWindows ? 85 : 80,
+                width: MediaQuery.of(context).size.width,
+                decoration: boxDecoration,
+                margin: EdgeInsets.only(
+                    top: widget.purchase.reactions!.length == 0 ? 0 : 14,
+                    bottom: 4,
+                    left: 4,
+                    right: 4),
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: InkWell(
+                    onLongPress: selectedMemberId != user.id
+                        ? null
+                        : () {
+                            showDialog(
+                                builder: (context) => AddReactionDialog(
+                                      type: 'purchases',
+                                      reactions: widget.purchase.reactions!,
+                                      reactToId: widget.purchase.id,
+                                      onSend: this.handleSendReaction,
                                     ),
-                                    Flexible(
-                                      child: Text(
-                                        names!,
-                                        style: subTextStyle,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                                context: context);
+                          },
+                    onTap: () async {
+                      showModalBottomSheet<String>(
+                        isScrollControlled: true,
+                        context: context,
+                        backgroundColor: Theme.of(context).cardTheme.color,
+                        builder: (context) => SingleChildScrollView(
+                          child: PurchaseAllInfo(
+                              widget.purchase, widget.selectedMemberId),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                      ).then((val) {
+                        if (val == 'deleted') {
+                          EventBus bus = EventBus.instance;
+                          bus.fire(EventBus.refreshPurchases);
+                          bus.fire(EventBus.refreshBalances);
+                        }
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(15),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Flexible(
+                            child: Row(
                               children: <Widget>[
-                                Text(
-                                  amountOriginal!,
-                                  style: mainTextStyle,
+                                leadingIcon,
+                                SizedBox(
+                                  width: 20,
                                 ),
-                                Visibility(
-                                  visible: received && bought,
-                                  child: Text(
-                                    amountToSelfOriginal!,
-                                    style: mainTextStyle,
+                                Flexible(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Flexible(
+                                        child: Text(
+                                          note,
+                                          style: mainTextStyle,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          names!,
+                                          style: subTextStyle,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
-                            Visibility(
-                              visible: widget.purchase.category != null,
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: Icon(
-                                  widget.purchase.category != null
-                                      ? widget.purchase.category!.icon
-                                      : Icons.not_interested,
-                                  color: widget.purchase.category != null
-                                      ? mainTextStyle!.color
-                                      : Colors.transparent,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: <Widget>[
+                                  Text(
+                                    amountOriginal!,
+                                    style: mainTextStyle,
+                                  ),
+                                  Visibility(
+                                    visible: received && bought,
+                                    child: Text(
+                                      amountToSelfOriginal!,
+                                      style: mainTextStyle,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Visibility(
+                                visible: widget.purchase.category != null,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Icon(
+                                    widget.purchase.category != null
+                                        ? widget.purchase.category!.icon
+                                        : Icons.not_interested,
+                                    color: widget.purchase.category != null
+                                        ? mainTextStyle!.color
+                                        : Colors.transparent,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        )
-                      ],
+                            ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Visibility(
-              visible: selectedMemberId == user.id,
-              child: PastReactionContainer(
-                reactions: widget.purchase.reactions!,
-                reactedToId: widget.purchase.id,
-                isSecondaryColor: bought,
-                type: 'purchases',
-                onSendReaction: this.handleSendReaction,
+              Visibility(
+                visible: selectedMemberId == user.id,
+                child: PastReactionContainer(
+                  reactions: widget.purchase.reactions!,
+                  reactedToId: widget.purchase.id,
+                  isSecondaryColor: bought,
+                  type: 'purchases',
+                  onSendReaction: this.handleSendReaction,
+                ),
               ),
-            ),
-          ],
-        );
-      }
-    );
+            ],
+          );
+        });
   }
 }

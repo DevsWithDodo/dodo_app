@@ -1,5 +1,5 @@
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -21,7 +21,7 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
   @override
   void initState() {
     super.initState();
-    _currencyCode = context.read<UserProvider>().user!.currency;
+    _currencyCode = context.read<AppStateProvider>().user!.currency;
   }
 
   Future<bool> _updateGroupCurrency(String currency) async {
@@ -29,7 +29,7 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
       Map<String, dynamic> body = {"default_currency": currency};
 
       await Http.put(uri: '/user', body: body);
-      context.read<UserProvider>().setUserCurrency(currency);      
+      context.read<AppStateProvider>().setUserCurrency(currency);      
       Future.delayed(delayTime()).then((value) => _onUpdateGroupCurrency());
       return true;
     } catch (_) {

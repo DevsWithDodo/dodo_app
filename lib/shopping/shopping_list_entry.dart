@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/past_reaction_container.dart';
@@ -40,7 +40,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
   @override
   void initState() {
     super.initState();
-    user = context.read<UserProvider>().user!;
+    user = context.read<AppStateProvider>().user!;
   }
 
   void handleSendReaction(String reaction) {
@@ -54,7 +54,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
       setState(() {});
     } else if (!alreadyReacted) {
       widget.shoppingRequest.reactions!.add(Reaction(
-        nickname: context.read<UserProvider>().user!.username,
+        nickname: context.read<AppStateProvider>().user!.username,
         reaction: reaction,
         userId: user.id,
       ));

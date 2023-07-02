@@ -1,16 +1,14 @@
 import 'dart:convert';
 
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:csocsort_szamla/balance/payments_needed_dialog.dart';
 import 'package:csocsort_szamla/balance/select_balance_currency.dart';
 import 'package:csocsort_szamla/essentials/payments_needed.dart';
-import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/event_bus.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/groups/dialogs/add_guest_dialog.dart';
 import 'package:csocsort_szamla/groups/dialogs/share_group_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
@@ -26,15 +24,20 @@ class Balances extends StatefulWidget {
   _BalancesState createState() => _BalancesState();
 }
 
-class _BalancesState extends State<Balances> {
+class _BalancesState extends State<Balances>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  get wantKeepAlive => true;
+
   Future<List<Member>>? _members;
   late String _selectedCurrency;
 
   Future<List<Member>> _getMembers() async {
     try {
       Response response = await Http.get(
-          uri: generateUri(GetUriKeys.groupCurrent, context,
-              params: [context.read<UserProvider>().user!.group!.id.toString()]));
+          uri: generateUri(GetUriKeys.groupCurrent, context, params: [
+        context.read<AppStateProvider>().user!.group!.id.toString()
+      ]));
 
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = [];
@@ -49,25 +52,38 @@ class _BalancesState extends State<Balances> {
     }
   }
 
+  void onRefreshBalancesEvent() {
+    setState(() {
+      _members = null;
+      _members = _getMembers();
+      _selectedCurrency = context.read<AppStateProvider>().user!.group!.currency;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    context.read<EventBus>().on<RefreshBalances>().listen((_) {
-      if (mounted) {
-        setState(() {
-          _members = null;
-          _members = _getMembers();
-        });
-      }
-    });
+    EventBus.instance.register(
+      EventBus.refreshBalances,
+      onRefreshBalancesEvent,
+    );
     _members = null;
     _members = _getMembers();
-    _selectedCurrency = context.read<UserProvider>().user!.group!.currency;
-    print(_selectedCurrency);
+    _selectedCurrency = context.read<AppStateProvider>().user!.group!.currency;
+  }
+
+  @override
+  void dispose() {
+    EventBus.instance.unregister(
+      EventBus.refreshBalances,
+      onRefreshBalancesEvent,
+    );
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(15),
@@ -89,11 +105,6 @@ class _BalancesState extends State<Balances> {
                   builder: (context, AsyncSnapshot<List<Member>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
-                        Member? currentMember = snapshot.data!.firstWhereOrNull(
-                            (element) =>
-                                element.id == context.watch<UserProvider>().user!.id);
-                        double currencyThreshold =
-                            threshold(context.watch<UserProvider>().currentGroup!.currency);
                         return Column(
                           children: [
                             Column(children: _generateBalances(snapshot.data!)),
@@ -101,10 +112,7 @@ class _BalancesState extends State<Balances> {
                                 visible: snapshot.data!.length < 2,
                                 child: _oneMemberWidget()),
                             Visibility(
-                              visible: currentMember == null
-                                  ? false
-                                  : (currentMember.balance <
-                                      -currencyThreshold),
+                              visible: snapshot.data!.where((element) => element.balance < 0).length > 0,
                               child: Column(
                                 children: [
                                   SizedBox(
@@ -113,11 +121,7 @@ class _BalancesState extends State<Balances> {
                                   TextButton(
                                     onPressed: () {
                                       List<Payment> payments =
-                                          paymentsNeeded(snapshot.data!, context)
-                                              .where((payment) =>
-                                                  payment.payerId ==
-                                                  context.watch<User>().id)
-                                              .toList();
+                                          paymentsNeeded(snapshot.data!, context);
                                       showDialog(
                                         context: context,
                                         barrierDismissible: true,
@@ -126,18 +130,15 @@ class _BalancesState extends State<Balances> {
                                                 payments: payments),
                                       );
                                     },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'who_to_pay'.tr(),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelLarge!
-                                            .copyWith(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .primary),
-                                      ),
+                                    child: Text(
+                                      'payments_needed'.tr(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelLarge!
+                                          .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary),
                                     ),
                                   ),
                                 ],
@@ -181,8 +182,9 @@ class _BalancesState extends State<Balances> {
     try {
       Response response = await Http.get(
         uri: generateUri(
-          GetUriKeys.groupCurrent, context,
-          params: [context.read<UserProvider>().user!.group!.id.toString()],
+          GetUriKeys.groupCurrent,
+          context,
+          params: [context.read<AppStateProvider>().user!.group!.id.toString()],
         ),
       );
       Map<String, dynamic> decoded = jsonDecode(response.body);
@@ -193,20 +195,20 @@ class _BalancesState extends State<Balances> {
   }
 
   List<Widget> _generateBalances(List<Member> members) {
-    String themeName = context.watch<UserProvider>().user!.themeName;
+    String themeName = context.watch<AppStateProvider>().themeName;
     return members.map<Widget>((Member member) {
       TextStyle textStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          color: member.id == context.read<UserProvider>().user!.id
+          color: member.id == context.read<AppStateProvider>().user!.id
               ? themeName.contains('Gradient')
                   ? Theme.of(context).colorScheme.onPrimary
                   : Theme.of(context).colorScheme.onSecondary
               : Theme.of(context).colorScheme.onSurface);
       return Container(
           padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-          decoration: member.id == context.read<UserProvider>().user!.id
+          decoration: member.id == context.read<AppStateProvider>().user!.id
               ? BoxDecoration(
-                  gradient: AppTheme.gradientFromTheme(themeName,
-                      useSecondary: true),
+                  gradient:
+                      AppTheme.gradientFromTheme(themeName, useSecondary: true),
                   borderRadius: BorderRadius.circular(15),
                 )
               : null,
@@ -222,7 +224,9 @@ class _BalancesState extends State<Balances> {
                 firstChild: Container(),
                 secondChild: Text(
                   member.balance
-                      .exchange(context.watch<UserProvider>().currentGroup!.currency, _selectedCurrency)
+                      .exchange(
+                          context.watch<AppStateProvider>().currentGroup!.currency,
+                          _selectedCurrency)
                       .toMoneyString(_selectedCurrency),
                   style: textStyle,
                 ),

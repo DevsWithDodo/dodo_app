@@ -1,5 +1,5 @@
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/essentials/widgets/member_chips.dart';
@@ -88,11 +88,11 @@ class _MergeOnJoinPageState extends State<MergeOnJoinPage> {
   Future<bool> _mergeWithGuest() async {
     try {
       Map<String, dynamic> body = {
-        'member_id': context.read<UserProvider>().user!.id,
+        'member_id': context.read<AppStateProvider>().user!.id,
         'guest_id': _selectedMember!.id
       };
       await Http.post(
-            uri: '/groups/' + context.read<UserProvider>().currentGroup!.id.toString() + '/merge_guest',
+            uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString() + '/merge_guest',
             body: body,
           );
       Future.delayed(delayTime()).then((value) => _onMergeGuest());

@@ -2,13 +2,12 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:csocsort_szamla/essentials/app_theme.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/event_bus_provider.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/event_bus.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/past_reaction_container.dart';
 import 'package:csocsort_szamla/payment/payment_all_info.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:event_bus_plus/event_bus_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -37,7 +36,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
   String? amount;
 
   void handleSendReaction(String reaction) {
-    User user = context.read<UserProvider>().user!;
+    User user = context.read<AppStateProvider>().user!;
     Reaction? oldReaction = widget.payment.reactions!
         .firstWhereOrNull((element) => element.userId == user.id);
     bool alreadyReacted = oldReaction != null;
@@ -68,8 +67,8 @@ class _PaymentEntryState extends State<PaymentEntry> {
 
   @override
   Widget build(BuildContext context) {
-    String themeName = context.watch<UserProvider>().user!.themeName;
-    return Selector<UserProvider, User>(
+    String themeName = context.watch<AppStateProvider>().themeName;
+    return Selector<AppStateProvider, User>(
       selector: (context, userProvider) => userProvider.user!,
       builder: (context, user, _) {
       int selectedMemberId = widget.selectedMemberId ?? user.id;
@@ -154,9 +153,9 @@ class _PaymentEntryState extends State<PaymentEntry> {
                                     child: PaymentAllInfo(widget.payment)))
                             .then((returnValue) {
                           if (returnValue == 'deleted') {
-                            final bus = context.read<EventBus>();
-                            bus.fire(RefreshPayments(context));
-                            bus.fire(RefreshBalances(context));
+                            final bus = EventBus.instance;
+                            bus.fire(EventBus.refreshPayments);
+                            bus.fire(EventBus.refreshBalances);
                           }
                         });
                       },

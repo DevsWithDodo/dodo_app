@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/category_picker_icon_button.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
@@ -70,7 +71,8 @@ class _HistoryFilterState extends State<HistoryFilter> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<User>(
+    return Selector<AppStateProvider, User>(
+      selector: (context, provider) => provider.user!,
       builder: (context, user, _) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),

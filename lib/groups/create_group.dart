@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/currency_picker_dropdown.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -30,7 +30,7 @@ class _CreateGroupState extends State<CreateGroup> {
   @override
   void initState() {
     super.initState();
-    User user = context.read<UserProvider>().user!;
+    User user = context.read<AppStateProvider>().user!;
     _nicknameController = TextEditingController(
       text: user.username[0].toUpperCase() + user.username.substring(1));
     _defaultCurrencyValue = user.currency;
@@ -47,7 +47,7 @@ class _CreateGroupState extends State<CreateGroup> {
       http.Response response =
           await Http.post(uri: '/groups', body: body);
       Map<String, dynamic> decoded = jsonDecode(response.body);
-      UserProvider userProvider = context.read<UserProvider>();
+      AppStateProvider userProvider = context.read<AppStateProvider>();
       userProvider.setGroups(userProvider.user!.groups + [
         Group(
           id: decoded['group_id'],

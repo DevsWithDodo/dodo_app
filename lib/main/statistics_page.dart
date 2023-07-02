@@ -5,7 +5,7 @@ import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/category_picker_icon_button.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -237,7 +237,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       (lineBarSpot.barIndex == 0
                           ? keywords[0].tr() + ' '
                           : keywords[1].tr() + ' ') +
-                      lineBarSpot.y.toMoneyString(context.watch<UserProvider>().currentGroup!.currency,
+                      lineBarSpot.y.toMoneyString(context.watch<AppStateProvider>().currentGroup!.currency,
                           withSymbol: true),
                   Theme.of(context).textTheme.bodySmall!.copyWith(
                       height: lineBarSpot.barIndex == 0 ? 1.5 : 1,
@@ -321,7 +321,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               return Padding(
                 padding: const EdgeInsets.all(0),
                 child: Text(
-                  value.toMoneyString(context.watch<UserProvider>().currentGroup!.currency),
+                  value.toMoneyString(context.watch<AppStateProvider>().currentGroup!.currency),
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
@@ -390,7 +390,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         ),
         Flexible(
             child: Text(
-          amount.toMoneyString(context.watch<UserProvider>().currentGroup!.currency, withSymbol: true),
+          amount.toMoneyString(context.watch<AppStateProvider>().currentGroup!.currency, withSymbol: true),
           style: Theme.of(context)
               .textTheme
               .bodyLarge!

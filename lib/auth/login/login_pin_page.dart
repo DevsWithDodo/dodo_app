@@ -1,7 +1,7 @@
 import 'package:csocsort_szamla/auth/login/password_page.dart';
 
 import 'package:csocsort_szamla/auth/pin_pad.dart';
-import 'package:csocsort_szamla/essentials/providers/user_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -116,7 +116,7 @@ class _LoginPinPageState extends State<LoginPinPage> {
       context: context,
       builder: (context) {
         return FutureSuccessDialog(
-          future: context.read<UserProvider>().login(username!, pin, context),
+          future: context.read<AppStateProvider>().login(username!, pin, context),
         );
       },
     );
