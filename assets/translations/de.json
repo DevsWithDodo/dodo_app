@@ -452,5 +452,7 @@
     "pick_category": "Wähle die Kategorie",
     "pick_currency": "Wähle die Währung",
     "use_calculator": "Benutze den Taschenrechner",
-    "choose_custom_amount": "Drücke lange auf einen der Nutzer um einen individuellen Betrag zu wählen"
+    "choose_custom_amount": "Drücke lange auf einen der Nutzer um einen individuellen Betrag zu wählen",
+
+    "payments_needed_explanation": "Die nötigen Zahlungen damit alle wieder auf 0 kommen"
 }

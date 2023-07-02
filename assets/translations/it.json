@@ -448,5 +448,7 @@
     "pick_category": "Scegli la categoria",
     "pick_currency": "Usa la calcolatrice",
     "use_calculator": "Use the calculator",
-    "choose_custom_amount": "Premere a lungo sull'utente per scegliere l'importo personalizzato"
+    "choose_custom_amount": "Premere a lungo sull'utente per scegliere l'importo personalizzato",
+
+    "payments_needed_explanation": "I pagamenti necessari per raggiungere il pareggio"
 }
