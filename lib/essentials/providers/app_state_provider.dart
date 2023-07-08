@@ -43,7 +43,7 @@ class AppStateProvider extends ChangeNotifier {
         apiToken: preferences.getString('api_token')!,
         username: preferences.getString('current_username')!,
         id: preferences.getInt('current_user_id')!,
-        currency: preferences.getString('current_user_currency')!,
+        currency: preferences.getString('current_user_currency') ?? 'EUR',
         group: preferences.containsKey('current_group_id')
             ? Group(
                 id: preferences.getInt('current_group_id')!,
@@ -58,7 +58,7 @@ class AppStateProvider extends ChangeNotifier {
                 Group(
                   id: usersGroupIds[index],
                   name: value,
-                  currency: usersGroupCurrencies[index],
+                  currency: usersGroupCurrencies.length > index ? usersGroupCurrencies[index] : 'EUR',
                 )))
             .values
             .toList(),
@@ -269,9 +269,9 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  Future logout() async {
+  Future logout({bool withoutRequest = false}) async {
     try {
-      await Http.post(uri: '/logout', body: {});
+      if (!withoutRequest) await Http.post(uri: '/logout', body: {});
       await clearAllCache();
       setGroup(null, notify: false);
       setGroups([], notify: false);

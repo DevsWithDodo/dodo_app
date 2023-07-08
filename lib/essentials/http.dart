@@ -119,6 +119,8 @@ class Http {
         if (error['error'] == 'Unauthenticated.') {
           //TODO: lehet itt dobja a random hibat
           clearAllCache();
+          AppStateProvider appStateProvider = context.read<AppStateProvider>();
+          appStateProvider.logout(withoutRequest: true);
           FToast ft = FToast();
           ft.init(context);
           ft.removeQueuedCustomToasts();
