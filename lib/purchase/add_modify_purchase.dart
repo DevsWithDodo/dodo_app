@@ -234,6 +234,7 @@ class AddModifyPurchase {
                 builder: (context) {
                   return SingleChildScrollView(
                     child: Calculator(
+                      selectedCurrency: selectedCurrency,
                       initialNumber: amountController.text,
                       onCalculationReady: (String fromCalc) {
                         _setState(() {

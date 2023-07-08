@@ -11,7 +11,8 @@ import 'package:provider/provider.dart';
 class Calculator extends StatefulWidget {
   final void Function(String fromCalculation) onCalculationReady;
   final String? initialNumber;
-  Calculator({required this.onCalculationReady, this.initialNumber});
+  final String selectedCurrency;
+  Calculator({required this.onCalculationReady, this.initialNumber, required this.selectedCurrency});
   @override
   _CalculatorState createState() => _CalculatorState();
 }
@@ -253,7 +254,7 @@ class _CalculatorState extends State<Calculator> {
                       Navigator.pop(context);
                       if (double.tryParse(_numToWrite) != null) {
                         widget.onCalculationReady(double.parse(_numToWrite)
-                            .toMoneyString(context.watch<AppStateProvider>().currentGroup!.currency));
+                            .toMoneyString(context.read<AppStateProvider>().currentGroup!.currency));
                       }
                     },
               child: Icon(

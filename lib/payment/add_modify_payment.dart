@@ -23,7 +23,7 @@ class AddModifyPayment {
   TextEditingController amountController = TextEditingController();
   TextEditingController noteController = TextEditingController();
   Future<List<Member>>? members;
-  String? selectedCurrency;
+  late String selectedCurrency;
   late Function(BuildContext context) _buttonPush;
   late void Function(void Function()) _setState;
   PaymentType? _paymentType;
@@ -136,6 +136,7 @@ class AddModifyPayment {
                 builder: (context) {
                   return SingleChildScrollView(
                     child: Calculator(
+                      selectedCurrency: selectedCurrency,
                       initialNumber: amountController.text,
                       onCalculationReady: (String fromCalc) {
                         _setState(() {
