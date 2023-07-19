@@ -254,7 +254,7 @@ class _CalculatorState extends State<Calculator> {
                       Navigator.pop(context);
                       if (double.tryParse(_numToWrite) != null) {
                         widget.onCalculationReady(double.parse(_numToWrite)
-                            .toMoneyString(context.read<AppStateProvider>().currentGroup!.currency));
+                            .toMoneyString(widget.selectedCurrency));
                       }
                     },
               child: Icon(
