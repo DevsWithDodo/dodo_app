@@ -339,8 +339,8 @@
 
     "share": "Oszd meg a csoportot",
     "share_url": "Vagy hívd meg a barátaid üzenetben",
-    "scan_code": "Olvasd be a QR kódot",
-    "paste_code": "Vagy másold ide a meghívót:",
+    "scan_code": "Csoporthoz való csatlakozáshoz olvasd be a csoport QR kódját",
+    "paste_code": "vagy másold ide a meghívót:",
 
     "gradient_themes" : "Színátmenetes témák",
     "dynamic_themes" : "Dinamikus témák",
@@ -451,6 +451,22 @@
     "use_calculator": "Használd a számológépet",
     "choose_custom_amount": "Nyomj hosszan egy tagra, hogy kiválaszd a hozzá tartozó összeget",
 
-    "payments_needed_explanation": "A tagok egyenlegének kiegyenlítéséhez szükséges fizetések"
+    "payments_needed_explanation": "A tagok egyenlegének kiegyenlítéséhez szükséges fizetések",
 
+    "pin-practice.title": "Pin gyakorlása",
+    "pin-practice.description": "Hogy megbizonyosodjunk róla, hogy nem felejtetted el a pin kódod, néha rákérdezünk.",
+    "pin-practice.check": "Ellenőrzés",
+    "pin-practice.forgot-pin": "Elfelejtett pin",
+    
+    "join-group.first-hint": "A Dodoban 🦤 csoportok segítségével követheted a kiadásaid. Csatlakozz egy csoporthoz vagy hozz létre egy újat!",
+
+    "payments.recommended-payments": "Ajánlott fizetések",
+
+    "payment-methods.title": "Fizetési módok",
+    "payment-methods.subtitle": "Add meg a módokat, amelyeken keresztül a többiek fizethetnek neked",
+    "payment-method.value.hint": "pl. 1234567-891011",
+    "payment-method.name.hint": "pl. Számlaszám",
+    "member.payment-methods.title": "Fizetési módok",
+    "member.payment-methods.subtitle": "A kiválasztott tagnak így lehet fizetni",
+    "member.payment-methods.none": "A tag még nem adott meg fizetési módot"
 }

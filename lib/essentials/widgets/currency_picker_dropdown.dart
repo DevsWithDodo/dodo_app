@@ -4,16 +4,12 @@ import '../currencies.dart';
 class CurrencyPickerDropdown extends StatefulWidget {
   final String? defaultCurrencyValue;
   final ValueChanged<String> currencyChanged;
-  final bool filled;
-  final bool noContentPadding;
   final bool showSymbol;
   final Color? dropdownColor;
   final Color? textColor;
   CurrencyPickerDropdown({
     required this.defaultCurrencyValue,
     required this.currencyChanged,
-    this.filled = true,
-    this.noContentPadding = false,
     this.showSymbol = true,
     this.textColor,
     this.dropdownColor,
@@ -37,11 +33,13 @@ class _CurrencyPickerDropdownState extends State<CurrencyPickerDropdown> {
     _defaultCurrencyValue = widget.defaultCurrencyValue;
     return ButtonTheme(
       alignedDropdown: true,
-      child: DropdownButtonFormField(
-        decoration: InputDecoration(
-            filled: widget.filled,
-            contentPadding:
-                widget.noContentPadding ? EdgeInsets.only(top: 0) : null),
+      highlightColor: Colors.transparent,
+      focusColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      buttonColor: Colors.transparent,
+      splashColor: Colors.transparent,
+      child: DropdownButton(
+        focusColor: Colors.transparent,
         elevation: 0,
         isExpanded: true,
         iconEnabledColor:
@@ -57,10 +55,9 @@ class _CurrencyPickerDropdownState extends State<CurrencyPickerDropdown> {
         },
         value: _defaultCurrencyValue,
         borderRadius: BorderRadius.circular(12),
-        dropdownColor: ElevationOverlay.applySurfaceTint(
+        underline: Container(),
+        dropdownColor:
             widget.dropdownColor ?? Theme.of(context).colorScheme.surface,
-            Theme.of(context).colorScheme.surfaceTint,
-            2),
         style: Theme.of(context).textTheme.labelLarge!.copyWith(
             color: widget.textColor ??
                 Theme.of(context).colorScheme.onSurfaceVariant),

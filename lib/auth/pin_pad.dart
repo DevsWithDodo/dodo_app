@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:csocsort_szamla/auth/pin_number_button.dart';
+import 'package:csocsort_szamla/auth/pin_pad_number.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +11,7 @@ class PinPad extends StatefulWidget {
   final ValueChanged<String>? onPinConfirmChanged;
   final bool showConfirm;
   final String? validationText;
-  final ValueChanged<String?> onValidationTextChanged;
+  final ValueChanged<String?>? onValidationTextChanged;
   final double? maxWidth;
   PinPad({
     required String this.pin,
@@ -20,7 +20,7 @@ class PinPad extends StatefulWidget {
     required this.onPinChanged,
     this.onPinConfirmChanged,
     this.validationText,
-    required this.onValidationTextChanged,
+    this.onValidationTextChanged,
     this.showConfirm = true,
     this.maxWidth,
   });
@@ -120,81 +120,39 @@ class _PinPadState extends State<PinPad> {
                 2: FractionColumnWidth(1 / 3),
               },
               children: [
-                TableRow(
-                  children: ['1', '2', '3'].map((number) {
-                    return PinNumberButton(
-                      number: number,
-                      pin: widget.pin,
-                      pinConfirm: widget.pinConfirm,
-                      onValidationTextChanged: widget.onValidationTextChanged,
-                      onPinChanged: widget.onPinChanged,
-                      onPinConfirmChanged: widget.onPinConfirmChanged,
-                      isPinInput: widget.isPinInput,
-                      backgroundColor:
-                          Theme.of(context).colorScheme.secondaryContainer,
-                      textColor:
-                          Theme.of(context).colorScheme.onSecondaryContainer,
-                    );
-                  }).toList(),
-                ),
-                TableRow(
-                  children: ['4', '5', '6'].map((number) {
-                    return PinNumberButton(
-                      number: number,
-                      pin: widget.pin,
-                      pinConfirm: widget.pinConfirm,
-                      onValidationTextChanged: widget.onValidationTextChanged,
-                      onPinChanged: widget.onPinChanged,
-                      onPinConfirmChanged: widget.onPinConfirmChanged,
-                      isPinInput: widget.isPinInput,
-                      backgroundColor:
-                          Theme.of(context).colorScheme.secondaryContainer,
-                      textColor:
-                          Theme.of(context).colorScheme.onSecondaryContainer,
-                    );
-                  }).toList(),
-                ),
-                TableRow(
-                  children: ['7', '8', '9'].map((number) {
-                    return PinNumberButton(
-                      number: number,
-                      pin: widget.pin,
-                      pinConfirm: widget.pinConfirm,
-                      onValidationTextChanged: widget.onValidationTextChanged,
-                      onPinChanged: widget.onPinChanged,
-                      onPinConfirmChanged: widget.onPinConfirmChanged,
-                      isPinInput: widget.isPinInput,
-                      backgroundColor:
-                          Theme.of(context).colorScheme.secondaryContainer,
-                      textColor:
-                          Theme.of(context).colorScheme.onSecondaryContainer,
-                    );
-                  }).toList(),
-                ),
-                TableRow(
-                  children: ['', '0', 'C'].map((number) {
-                    return (number == 'C' && isPinFieldNotEmpty()) ||
-                            number == '0'
-                        ? PinNumberButton(
-                            number: number,
-                            pin: widget.pin,
-                            pinConfirm: widget.pinConfirm,
-                            onValidationTextChanged:
-                                widget.onValidationTextChanged,
-                            onPinChanged: widget.onPinChanged,
-                            onPinConfirmChanged: widget.onPinConfirmChanged,
-                            isPinInput: widget.isPinInput,
-                            backgroundColor: Theme.of(context)
-                                .colorScheme
-                                .secondaryContainer,
-                            textColor: Theme.of(context)
-                                .colorScheme
-                                .onSecondaryContainer,
-                          )
-                        : Container();
-                  }).toList(),
-                ),
-              ],
+                ['1', '2', '3'],
+                ['4', '5', '6'],
+                ['7', '8', '9'],
+                ['', '0', 'C']
+              ]
+                  .map((row) => TableRow(
+                        children: row
+                            .map(
+                              (number) =>
+                                  (number == 'C' && !isPinFieldNotEmpty() ||
+                                          number == '')
+                                      ? Container()
+                                      : PinPadNumber(
+                                          number: number,
+                                          pin: widget.pin,
+                                          pinConfirm: widget.pinConfirm,
+                                          onValidationTextChanged:
+                                              widget.onValidationTextChanged,
+                                          onPinChanged: widget.onPinChanged,
+                                          onPinConfirmChanged:
+                                              widget.onPinConfirmChanged,
+                                          isPinInput: widget.isPinInput,
+                                          backgroundColor: Theme.of(context)
+                                              .colorScheme
+                                              .secondaryContainer,
+                                          textColor: Theme.of(context)
+                                              .colorScheme
+                                              .onSecondaryContainer,
+                                        ),
+                            )
+                            .toList(),
+                      ))
+                  .toList(),
             ),
           ),
         ),

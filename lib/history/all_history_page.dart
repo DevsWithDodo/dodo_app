@@ -92,8 +92,7 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
   Future<Map<DateTime, List<Payment>>> _getPayments(
       {bool overwriteCache = false}) async {
     try {
-      Response response;
-      response = await Http.get(
+      Response response = await Http.get(
         uri: generateUri(
           GetUriKeys.payments, context,
           queryParams: {
@@ -338,7 +337,7 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
                 controller: _purchaseScrollController,
                 key: PageStorageKey('purchaseList'),
                 child: Column(
-                  children: _generatePurchase(snapshot.data!),
+                  children: _generatePurchases(snapshot.data!),
                 ),
               );
             } else {
@@ -481,7 +480,7 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
     );
   }
 
-  List<Widget> _generatePurchase(Map<DateTime, List<Purchase>> data) {
+  List<Widget> _generatePurchases(Map<DateTime, List<Purchase>> data) {
     if (data.length == 0) {
       return [
         Padding(

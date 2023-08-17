@@ -208,24 +208,17 @@ class AddModifyPurchase {
         focusNode: focusNode,
         decoration: InputDecoration(
           hintText: 'full_amount'.tr(),
-          prefixIcon: GestureDetector(
-            onDoubleTap: () {
-              _setState(() {
-                selectedCurrency = context.read<AppStateProvider>().currentGroup!.currency;
-              });
-            },
-            child: currencyKey != null
-                ? Showcase(
-                    key: currencyKey,
-                    showArrow: false,
-                    targetBorderRadius: BorderRadius.circular(10),
-                    targetPadding: EdgeInsets.all(0),
-                    description: "pick_currency".tr(),
-                    child: _currencyPickerIconButton(),
-                    scaleAnimationDuration: Duration(milliseconds: 200),
-                  )
-                : _currencyPickerIconButton(),
-          ),
+          prefixIcon: currencyKey != null
+              ? Showcase(
+                  key: currencyKey,
+                  showArrow: false,
+                  targetBorderRadius: BorderRadius.circular(10),
+                  targetPadding: EdgeInsets.all(0),
+                  description: "pick_currency".tr(),
+                  child: _currencyPickerIconButton(),
+                  scaleAnimationDuration: Duration(milliseconds: 200),
+                )
+              : _currencyPickerIconButton(),
           suffixIcon: IconButton(
             onPressed: () {
               showModalBottomSheet(

@@ -1,9 +1,11 @@
+import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/user_settings/change_password.dart';
 import 'package:csocsort_szamla/user_settings/change_user_currency.dart';
 import 'package:csocsort_szamla/user_settings/delete_all_data.dart';
+import 'package:csocsort_szamla/user_settings/payment_methods.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +13,7 @@ import 'package:provider/provider.dart';
 import 'about_us.dart';
 import 'change_language.dart';
 import 'change_username.dart';
-import 'color_picker.dart';
+import 'components/color_picker.dart';
 import 'personalised_ads.dart';
 import 'report_bug.dart';
 
@@ -37,7 +39,7 @@ class _SettingsState extends State<Settings> {
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
-          FocusScope.of(context).requestFocus(FocusNode());
+          FocusManager.instance.primaryFocus?.unfocus();
         },
         child: Column(
           children: [
@@ -56,27 +58,29 @@ class _SettingsState extends State<Settings> {
                         1: FractionColumnWidth(0.5)
                       },
                       children: [
-                        TableRow(children: [
-                          AspectRatio(
-                            aspectRatio: width / 2 / height,
-                            child: ListView(
-                              controller: ScrollController(),
-                              children: _settings().take(3).toList(),
+                        TableRow(
+                          children: [
+                            AspectRatio(
+                              aspectRatio: width / 2 / height,
+                              child: ListView(
+                                controller: ScrollController(),
+                                children: _settings().take(3).toList(),
+                              ),
                             ),
-                          ),
-                          AspectRatio(
-                            aspectRatio: width / 2 / height,
-                            child: ListView(
-                              controller: ScrollController(),
-                              children: _settings()
-                                  .reversed
-                                  .take(6)
-                                  .toList()
-                                  .reversed
-                                  .toList(),
-                            ),
-                          )
-                        ])
+                            AspectRatio(
+                              aspectRatio: width / 2 / height,
+                              child: ListView(
+                                controller: ScrollController(),
+                                children: _settings()
+                                    .reversed
+                                    .take(7)
+                                    .toList()
+                                    .reversed
+                                    .toList(),
+                              ),
+                            )
+                          ],
+                        )
                       ],
                     ),
                   ),
@@ -94,7 +98,15 @@ class _SettingsState extends State<Settings> {
       ChangePassword(),
       ChangeUsername(),
       ChangeUserCurrency(),
-      Visibility(visible: context.watch<AppStateProvider>().user!.showAds, child: PersonalisedAds()),
+      PaymentMethods(),
+      Selector<AppStateProvider, bool>(
+          selector: (context, provider) => provider.user!.showAds,
+          builder: (context, showAds, child) {
+            return Visibility(
+              visible: showAds,
+              child: PersonalisedAds(),
+            );
+          }),
       AboutUs(),
       DeleteAllData(),
       ReportBug(),

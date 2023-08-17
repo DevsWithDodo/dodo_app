@@ -1,0 +1,103 @@
+import 'package:collection/collection.dart';
+import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
+import 'package:csocsort_szamla/user_settings/components/payment_method_list_item.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+class PaymentMethodList extends StatelessWidget {
+  final void Function(List<PaymentMethod>) onSubmit;
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  PaymentMethodList({super.key, required this.onSubmit});
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: formKey,
+      child: ChangeNotifierProvider(
+        create: (context) => PaymentMethodProvider(
+            paymentMethods: context
+                .read<AppStateProvider>()
+                .user!
+                .paymentMethods
+                .map((paymentMethod) => paymentMethod.clone())
+                .toList()),
+        builder: (context, _) {
+          return Consumer<PaymentMethodProvider>(
+            builder: (context, provider, _) {
+              print(provider.paymentMethods
+                  .sorted((a, b) => a.priority ? -1 : 1)
+                  .map((e) => "${e.name} ${e.value} ${e.priority}")
+                  .toList());
+              return Column(
+                children: [
+                  Column(
+                    children: provider.paymentMethods
+                        .sorted((a, b) => a.priority ? -1 : 1)
+                        .map((paymentMethod) => Padding(
+                              key: UniqueKey(),
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: PaymentMethodListItem(
+                                paymentMethod: paymentMethod,
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                  PaymentMethodListItem(),
+                  Visibility(
+                    visible: provider.paymentMethods.length > 0,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: GradientButton(
+                        child: Icon(Icons.save),
+                        onPressed: () {
+                          if (formKey.currentState!.validate()) {
+                            onSubmit(provider.paymentMethods);
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class PaymentMethodProvider extends ChangeNotifier {
+  List<PaymentMethod> paymentMethods;
+  PaymentMethodProvider({required this.paymentMethods});
+
+  void addPaymentMethod(String name, String value, bool priority) {
+    paymentMethods.add(PaymentMethod(
+      name: name,
+      value: value,
+      priority: priority,
+    ));
+    notifyListeners();
+  }
+
+  void setName(PaymentMethod paymentMethod, String name) {
+    paymentMethod.name = name;
+  }
+
+  void setValue(PaymentMethod paymentMethod, String value) {
+    paymentMethod.value = value;
+  }
+
+  void setPriority(PaymentMethod paymentMethod, bool priority) {
+    paymentMethod.priority = priority;
+    notifyListeners();
+  }
+
+  void removePaymentMethod(PaymentMethod paymentMethod) {
+    paymentMethods.remove(paymentMethod);
+    notifyListeners();
+  }
+}

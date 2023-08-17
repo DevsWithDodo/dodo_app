@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:connectivity_widget/connectivity_widget.dart';
 import 'package:csocsort_szamla/auth/login_or_register_page.dart';
+import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/groups/create_group.dart';
@@ -248,7 +249,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 icon: Icon(Icons.menu),
               )
             : null,
-        actions: [Container()],
         centerTitle: true,
         title: Text(
           context.watch<AppStateProvider>().user!.group!.name,
@@ -815,11 +815,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               ),
             ],
           ),
-          label: 'group'.tr()),
-      NavigationDestination(
-        icon: Icon(Icons.menu),
-        label: 'more'.tr(),
-      )
+          label: 'group'.tr(),
+        ),
     ];
   }
 }

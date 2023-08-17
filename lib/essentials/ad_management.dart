@@ -30,7 +30,7 @@ class _AdUnitForSiteState extends State<AdUnitForSite> {
 
   @override
   Widget build(BuildContext context) {
-    bool showAds = context.read<AppStateProvider>().user!.showAds;
+    bool showAds = context.select<AppStateProvider,  bool>((AppStateProvider appState) => appState.user!.showAds);
     if (ad.responseInfo == null && showAds && isAdPlatformEnabled) {
       ad.load();
     }

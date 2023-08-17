@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/navigator_service.dart';
@@ -96,9 +95,9 @@ class Http {
             uri: uri.substring(1), overwriteCache: overwriteCache);
         if (responseFromCache != null) {
           //print('de cache!');
-          await Future.delayed(Duration(
-              milliseconds:
-                  300 + ((Random().nextDouble() - 0.5) * 100).toInt()));
+          // await Future.delayed(Duration(
+          //     milliseconds:
+          //         300 + ((Random().nextDouble() - 0.5) * 100).toInt()));
           return responseFromCache;
         }
       }

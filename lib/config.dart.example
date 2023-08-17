@@ -24,4 +24,3 @@ bool isAdPlatformEnabled = false;
 bool isFirebasePlatformEnabled = false;
 
 double tabletViewWidth = 850;
-double adHeight(BuildContext context) => (isAdPlatformEnabled && (context.read<UserProvider>().user?.showAds ?? false)) ? 50 : 0;

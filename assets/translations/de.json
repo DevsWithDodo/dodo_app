@@ -343,8 +343,8 @@
 
     "share": "Teile die Gruppe",
     "share_url": "Oder lade deine Freunde mit einer Message ein",
-    "scan_code": "Lese den QR code",
-    "paste_code": "Oder füge die Einladung ein:",
+    "scan_code": "Lese den QR-Code einer Gruppe um ihr beizutreten",
+    "paste_code": "oder füge den Einladungscode ein:",
 
     "gradient_themes" : "Farbübergängige Themen",
     "dynamic_themes" : "Dynimische Themen",
@@ -454,5 +454,22 @@
     "use_calculator": "Benutze den Taschenrechner",
     "choose_custom_amount": "Drücke lange auf einen der Nutzer um einen individuellen Betrag zu wählen",
 
-    "payments_needed_explanation": "Die nötigen Zahlungen damit alle wieder auf 0 kommen"
+    "payments_needed_explanation": "Die nötigen Zahlungen damit alle wieder auf 0 kommen",
+
+    "pin-practice.title": "Pin üben",
+    "pin-practice.description": "Wir werden dir von Zeit zu Zeit dieses Popup zeigen, um sicherzustellen, dass du deinen Pin nicht vergessen hast. Du kannst es jederzeit überspringen.",
+    "pin-practice.check": "Überprüfen",
+    "pin-practice.forgot-pin": "Pin vergessen",
+    
+    "join-group.first-hint": "In Dodo 🦤 kannst du deine Ausgaben mit Hilfe von Gruppen verfolgen. Trete einer Gruppe bei oder erstelle eine neue um loszulegen!",
+
+    "payments.recommended-payments": "Empfohlene Zahlungen",
+
+    "payment-methods.title": "Zahlungsmethoden",
+    "payment-methods.subtitle": "Füge die Methoden hinzu, mit denen andere dir Geld schicken können",
+    "payment-method.value.hint": "zB. 1234567-891011",
+    "payment-method.name.hint": "zB. IBAN",    
+    "member.payment-methods.title": "Zahlungsmethoden",
+    "member.payment-methods.subtitle": "Das ausgewählte Mitglied kann über diese Methoden bezahlt werden",
+    "member.payment-methods.none": "Das Mitglied hat noch keine Zahlungsmethoden hinzugefügt"
 }

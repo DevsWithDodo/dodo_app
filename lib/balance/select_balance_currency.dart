@@ -56,8 +56,6 @@ class _SelectBalanceCurrencyState extends State<SelectBalanceCurrency> {
                     widget.onCurrencyChange!(newCurrency);
                   },
                   defaultCurrencyValue: _selectedCurrency,
-                  filled: false,
-                  noContentPadding: true,
                   showSymbol: false,
                   textColor: widget.selectedCurrency != currentGroup.currency
                       ? Theme.of(context).colorScheme.onTertiaryContainer

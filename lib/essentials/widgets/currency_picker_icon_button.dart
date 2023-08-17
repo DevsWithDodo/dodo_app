@@ -1,5 +1,6 @@
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/currency_picker_dropdown.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,11 +29,19 @@ class _CurrencyPickerIconButtonState extends State<CurrencyPickerIconButton> {
               return Dialog(
                 child: Padding(
                   padding: const EdgeInsets.all(15),
-                  child: CurrencyPickerDropdown(
-                    defaultCurrencyValue: widget.selectedCurrency,
-                    currencyChanged: (newCurrency) {
-                      Navigator.pop(context, newCurrency);
-                    },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CurrencyPickerDropdown(
+                        defaultCurrencyValue: widget.selectedCurrency,
+                        currencyChanged: (newCurrency) {
+                          Navigator.pop(context, newCurrency);
+                        },
+                      ),
+                      TextButton.icon(onPressed: () {
+                        Navigator.pop(context, context.read<AppStateProvider>().currentGroup!.currency);
+                      }, icon: Icon(Icons.undo), label: Text('reset'.tr()),)
+                    ],
                   ),
                 ),
               );

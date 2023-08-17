@@ -63,6 +63,7 @@ class AppStateProvider extends ChangeNotifier {
             .values
             .toList(),
         ratedApp: preferences.getBool('rated_app') ?? false,
+        paymentMethods: [], // TODO
       );
       _fetchUserData();
     }
@@ -80,6 +81,10 @@ class AppStateProvider extends ChangeNotifier {
       setUseGradients(decoded['data']['gradients_enabled'] == 1);
       setPersonalisedAds(decoded['data']['personalised_ads'] == 1);
       setTrialVersion(decoded['data']['trial'] == 1);
+      if(decoded['data']['payment_details'] != null) {
+        setPaymentMethods(((jsonDecode(decoded['data']['payment_details']) as List).map((e) => PaymentMethod.fromJson(e))
+            .toList()));
+      }
       if (currentGroup == null &&
           decoded['data']['last_active_group'] != null) {
         Group? group = user!.groups.firstWhereOrNull(
@@ -140,6 +145,9 @@ class AppStateProvider extends ChangeNotifier {
           showAds: decoded['data']['ad_free'] == 0,
           useGradients: decoded['data']['gradients_enabled'] == 1,
           trialVersion: decoded['data']['trial'] == 1,
+          paymentMethods: decoded['data']['payment_details'] != null ? jsonDecode(decoded['data']['payment_details'])
+              .map((paymentMethod) => PaymentMethod.fromJson(paymentMethod))
+              .toList() : [],
         );
         setUser(user, notify: false);
 
@@ -243,6 +251,7 @@ class AppStateProvider extends ChangeNotifier {
           useGradients: true,
           personalisedAds: personalisedAds,
           trialVersion: true,
+          paymentMethods: [],
         ));
         await clearAllCache();
         Future.delayed(delayTime()).then(
@@ -421,6 +430,14 @@ class AppStateProvider extends ChangeNotifier {
     SharedPreferences.getInstance().then((preferences) {
       preferences.setString('theme', themeName);
     });
+    if (notify) {
+      notifyListeners();
+    }
+  }
+
+  void setPaymentMethods(List<PaymentMethod> paymentMethods,
+      {bool notify = true}) {
+    user!.paymentMethods = paymentMethods;
     if (notify) {
       notifyListeners();
     }

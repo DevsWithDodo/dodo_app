@@ -1,6 +1,7 @@
-import 'package:csocsort_szamla/balance/payment_needed_entry.dart';
+import 'package:csocsort_szamla/balance/necessary_payments_entry.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/payments_needed.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -8,19 +9,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class PaymentsNeededDialog extends StatefulWidget {
-  final List<Payment> payments;
+class NecessaryPaymentsDialog extends StatefulWidget {
+  final List<Member> members;
 
-  const PaymentsNeededDialog({
-    required this.payments,
+  const NecessaryPaymentsDialog({
+    required this.members,
     super.key,
   });
 
   @override
-  State<PaymentsNeededDialog> createState() => _PaymentsNeededDialogState();
+  State<NecessaryPaymentsDialog> createState() => _NecessaryPaymentsDialogState();
 }
 
-class _PaymentsNeededDialogState extends State<PaymentsNeededDialog> {
+class _NecessaryPaymentsDialogState extends State<NecessaryPaymentsDialog> {
+  late List<Payment> _payments;
+
+  @override
+  void initState() {
+    super.initState();
+    _payments = necessaryPayments(widget.members, context);
+  }
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -74,16 +82,16 @@ class _PaymentsNeededDialogState extends State<PaymentsNeededDialog> {
                   onPressed: () {
                     String currency =
                         context.read<AppStateProvider>().currentGroup!.currency;
-                    int longestPayerNick = widget.payments
+                    int longestPayerNick = _payments
                         .map((e) => e.payerNickname.length)
                         .reduce((value, element) =>
                             value > element ? value : element);
-                    int longestTakerNick = widget.payments
+                    int longestTakerNick = _payments
                         .map((e) => e.takerNickname.length)
                         .reduce((value, element) =>
                             value > element ? value : element);
                     Clipboard.setData(ClipboardData(
-                      text: widget.payments.map((payment) {
+                      text: _payments.map((payment) {
                         String firstSpaces = ' ' *
                             (longestPayerNick - payment.payerNickname.length);
                         String secondSpaces = ' ' *
@@ -103,7 +111,7 @@ class _PaymentsNeededDialogState extends State<PaymentsNeededDialog> {
 
   List<Widget> _generatePaymentEntries() {
     Map<int, List<Payment>> paymentsByPayer = {};
-    for (Payment payment in widget.payments) {
+    for (Payment payment in _payments) {
       if (paymentsByPayer.containsKey(payment.payerId)) {
         paymentsByPayer[payment.payerId]!.add(payment);
       } else {
@@ -113,8 +121,9 @@ class _PaymentsNeededDialogState extends State<PaymentsNeededDialog> {
     List<Widget> paymentEntries = <Widget>[];
     for (int payerId in paymentsByPayer.keys) {
       paymentEntries.add(
-        PaymentsNeededEntry(
+        NecessaryPaymentsEntry(
           payments: paymentsByPayer[payerId]!,
+          takers: widget.members.where((element) => paymentsByPayer[payerId]!.any((payment) => payment.takerId == element.id)).toList(),
         ),
       );
     }

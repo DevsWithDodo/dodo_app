@@ -16,6 +16,7 @@ class GradientButton extends StatelessWidget {
   final bool disabled;
   final double paddingRight;
   final double paddingLeft;
+  final String? themeName; 
   GradientButton({
     required this.child,
     this.onPressed,
@@ -28,12 +29,14 @@ class GradientButton extends StatelessWidget {
     this.disabled = false,
     this.paddingRight = 24,
     this.paddingLeft = 24,
+    this.themeName,
   });
 
   factory GradientButton.icon({
     required Widget icon,
     required Widget label,
     required Function() onPressed,
+    String? themeName,
     bool useSecondary = false,
     double borderRadius = 20,
     bool useSecondaryContainer = false,
@@ -56,11 +59,12 @@ class GradientButton extends StatelessWidget {
         useTertiaryContainer: useTertiaryContainer,
         disabled: disabled,
         paddingLeft: 16,
+        themeName: themeName,
       );
 
   @override
   Widget build(BuildContext context) {
-    String themeName = context.watch<AppStateProvider>().themeName;
+    String themeName = this.themeName ?? context.watch<AppStateProvider>().themeName;
     Color textColor = AppTheme.textColorOnGradient(
      themeName ,
       useSecondary: this.useSecondary,

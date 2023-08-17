@@ -1,39 +1,43 @@
 import 'package:collection/collection.dart';
+import 'package:csocsort_szamla/balance/payment_methods_dialog.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PaymentsNeededEntry extends StatelessWidget {
+class NecessaryPaymentsEntry extends StatelessWidget {
   /// The list of payments grouped by the payer.
   final List<Payment> payments;
-  const PaymentsNeededEntry({required this.payments, super.key});
+  final List<Member> takers;
+  const NecessaryPaymentsEntry(
+      {required this.payments, required this.takers, super.key});
 
   @override
   Widget build(BuildContext context) {
     return Selector<AppStateProvider, User>(
-      selector: (_, provider) => provider.user!,
-      builder: (context, user, _) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: Container(
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: payments[0].payerId == user.id
-                  ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
-                  : Theme.of(context).colorScheme.surfaceVariant,
-            ),
-            child: Table(
+        selector: (_, provider) => provider.user!,
+        builder: (context, user, _) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Container(
+              padding: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: payments[0].payerId == user.id
+                    ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+                    : Theme.of(context).colorScheme.surfaceVariant,
+              ),
+              child: Table(
                 columnWidths: {
                   0: FlexColumnWidth(1),
                   1: FractionColumnWidth(0.1),
                   2: FlexColumnWidth(1),
+                  3: FractionColumnWidth(0.1),
                 },
                 children: payments
                     .mapIndexed(
-                      (index, payment) => (TableRow(
+                      (index, payment) => TableRow(
                         children: [
                           Visibility(
                             visible: index == 0,
@@ -69,18 +73,32 @@ class PaymentsNeededEntry extends StatelessWidget {
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
                               Visibility(
-                                visible: payments.length > 1 && index != payments.length - 1,
-                                child: SizedBox(height: 8),  
+                                visible: payments.length > 1 &&
+                                    index != payments.length - 1,
+                                child: SizedBox(height: 8),
                               ),
                             ],
                           ),
+                          IconButton(
+                            onPressed: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return PaymentMethodsDialog(
+                                      member: takers.firstWhere((element) =>
+                                          element.id == payment.takerId),
+                                    );
+                                  });
+                            },
+                            icon: Icon(Icons.search),
+                          ),
                         ],
-                      )),
+                      ),
                     )
-                    .toList()),
-          ),
-        );
-      }
-    );
+                    .toList(),
+              ),
+            ),
+          );
+        });
   }
 }

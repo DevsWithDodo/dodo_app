@@ -3,7 +3,7 @@
     "subtitle":"Privacy-focused bill splitting",
 
     "login":"Log in",
-    "register":"Register",
+    "register":"Sign up",
     "username":"Username",
     "password":"Password",
 
@@ -342,8 +342,8 @@
 
     "share": "Share the group",
     "share_url": "Or invite your friends with a message",
-    "scan_code": "Read the QR code",
-    "paste_code": "Or paste the invitation:",
+    "scan_code": "Join a group by reading its QR code",
+    "paste_code": "or by pasting its invitation code:",
 
     "gradient_themes" : "Gradient themes",
     "dynamic_themes" : "Dynamic themes",
@@ -453,5 +453,22 @@
     "use_calculator": "Use the calculator",
     "choose_custom_amount": "Long press on user to choose custom amount",
 
-    "payments_needed_explanation": "The necessary payments for everyone to break even"
+    "payments_needed_explanation": "The necessary payments for everyone to break even",
+
+    "pin-practice.title": "Practice pin",
+    "pin-practice.description": "We show this dialog once a while to make sure you remember your pin. You can skip it if you want.",
+    "pin-practice.check": "Check",
+    "pin-practice.forgot-pin": "Forgot pin",
+    
+    "join-group.first-hint": "In Dodo 🦤 expenses are managed via groups. Join or create a group to start!",
+
+    "payments.recommended-payments": "Recommended payments",
+
+    "payment-methods.title": "Payment methods",
+    "payment-methods.subtitle": "List the methods other members can pay you with",
+    "payment-method.value.hint": "eg. 1234567-891011",
+    "payment-method.name.hint": "eg. IBAN",
+    "member.payment-methods.title": "Payment methods",
+    "member.payment-methods.subtitle": "The chosen member can be paid via the following methods",
+    "member.payment-methods.none": "The member hasn't added any payment methods yet"
 }

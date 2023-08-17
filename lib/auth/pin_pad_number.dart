@@ -4,16 +4,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class PinNumberButton extends StatefulWidget {
+class PinPadNumber extends StatefulWidget {
   final String? number;
   final bool isPinInput;
   final String? pin, pinConfirm;
   final ValueChanged<String> onPinChanged;
   final ValueChanged<String>? onPinConfirmChanged;
-  final ValueChanged<String?> onValidationTextChanged;
+  final ValueChanged<String?>? onValidationTextChanged;
   final Color backgroundColor;
   final Color textColor;
-  const PinNumberButton({
+  const PinPadNumber({
     this.number,
     required this.isPinInput,
     this.pin,
@@ -26,10 +26,10 @@ class PinNumberButton extends StatefulWidget {
   });
 
   @override
-  State<PinNumberButton> createState() => _PinNumberButtonState();
+  State<PinPadNumber> createState() => _PinPadNumberState();
 }
 
-class _PinNumberButtonState extends State<PinNumberButton>
+class _PinPadNumberState extends State<PinPadNumber>
     with SingleTickerProviderStateMixin {
   bool isTapped = false;
   late AnimationController _controller;
@@ -103,7 +103,7 @@ class _PinNumberButtonState extends State<PinNumberButton>
                         if (widget.isPinInput) {
                           if (widget.pin?.length == 3) {
                             widget.onPinChanged(widget.pin! + widget.number!);
-                            widget.onValidationTextChanged(null);
+                            widget.onValidationTextChanged?.call(null);
                           } else if (widget.pin!.length < 4) {
                             widget.onPinChanged(widget.pin! + widget.number!);
                           }
@@ -111,7 +111,7 @@ class _PinNumberButtonState extends State<PinNumberButton>
                           if (widget.pinConfirm?.length == 3) {
                             widget.onPinConfirmChanged!(
                                 widget.pinConfirm! + widget.number!);
-                            widget.onValidationTextChanged(null);
+                            widget.onValidationTextChanged?.call(null);
                           } else if ((widget.pinConfirm?.length ?? 4) < 4) {
                             widget.onPinConfirmChanged!(
                                 widget.pinConfirm! + widget.number!);

@@ -66,7 +66,7 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
           child: Icon(Icons.payments),
           onTap: () {
             Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => AddPaymentRoute()))
+                    MaterialPageRoute(builder: (context) => AddPaymentPage()))
                 .then((value) => widget.onReturn());
           },
         ),

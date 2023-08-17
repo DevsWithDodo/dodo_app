@@ -49,7 +49,6 @@ class _JoinGroupState extends State<JoinGroup> {
 
   var _formKey = GlobalKey<FormState>();
 
-
   Future<bool> _joinGroup(String token, String nickname) async {
     try {
       Map<String, dynamic> body = {
@@ -61,13 +60,16 @@ class _JoinGroupState extends State<JoinGroup> {
       if (response.body != "") {
         Map<String, dynamic> decoded = jsonDecode(response.body);
         AppStateProvider userProvider = context.read<AppStateProvider>();
-        userProvider.setGroups(userProvider.user!.groups + [
-          Group(
-            id: decoded['data']['group_id'],
-            name: decoded['data']['group_name'],
-            currency: decoded['data']['currency'],
-          )
-        ], notify: false);
+        userProvider.setGroups(
+            userProvider.user!.groups +
+                [
+                  Group(
+                    id: decoded['data']['group_id'],
+                    name: decoded['data']['group_name'],
+                    currency: decoded['data']['currency'],
+                  )
+                ],
+            notify: false);
         userProvider.setGroup(userProvider.user!.groups.last);
         List<Member> guests = (decoded['data']['members'] as List<dynamic>)
             .where((element) => element['is_guest'] == 1)
@@ -241,45 +243,64 @@ class _JoinGroupState extends State<JoinGroup> {
                           ],
                         ),
                       ),
-                body: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    FocusScope.of(context).unfocus();
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: SingleChildScrollView(
-                            child: Padding(
-                              padding: const EdgeInsets.all(20),
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: 500),
-                                child: Column(
-                                  children: [
-                                    Visibility(
-                                      visible: widget.inviteURL == null &&
+                body: Selector<AppStateProvider, List<Group>>(
+                  selector: (context, userProvider) =>
+                      userProvider.user!.groups,
+                  builder: (context, groups, _) {
+                    return GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () {
+                        FocusScope.of(context).unfocus();
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Expanded(
+                            child: Align(
+                              alignment: (widget.inviteURL == null &&
                                           !kIsWeb &&
                                           (Platform.isAndroid ||
-                                              Platform.isIOS),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            'scan_code'.tr(),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyLarge!
-                                                .copyWith(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onSurfaceVariant),
+                                              Platform.isIOS)) &&
+                                      (groups.length == 0)
+                                  ? Alignment.topCenter
+                                  : Alignment.center,
+                              child: SingleChildScrollView(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(maxWidth: 500),
+                                    child: Column(
+                                      children: [
+                                        Visibility(
+                                          visible: groups.length == 0,
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                20, 0, 20, 20),
+                                            child: Text(
+                                              'join-group.first-hint'.tr(),
+                                              textAlign: TextAlign.center,
+                                            ),
                                           ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                        ),
+                                        Visibility(
+                                          visible: widget.inviteURL == null &&
+                                              !kIsWeb &&
+                                              (Platform.isAndroid ||
+                                                  Platform.isIOS),
+                                          child: Column(
                                             children: [
+                                              Text(
+                                                'scan_code'.tr(),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .copyWith(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onSurfaceVariant),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              SizedBox(height: 5),
                                               GradientButton(
                                                 child:
                                                     Icon(Icons.qr_code_scanner),
@@ -310,109 +331,112 @@ class _JoinGroupState extends State<JoinGroup> {
                                                   }
                                                 },
                                               ),
+                                              SizedBox(
+                                                height: 2,
+                                              ),
+                                              Text(
+                                                'paste_code'.tr(),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .copyWith(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onSurfaceVariant),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              )
                                             ],
                                           ),
-                                          SizedBox(
-                                            height: 10,
+                                        ),
+                                        TextFormField(
+                                          validator: (value) =>
+                                              validateTextField([
+                                            isEmpty(value),
+                                          ]),
+                                          decoration: InputDecoration(
+                                            hintText: 'invitation'.tr(),
+                                            prefixIcon: Icon(
+                                              Icons.mail,
+                                            ),
                                           ),
-                                          Text(
-                                            'paste_code'.tr(),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyLarge!
-                                                .copyWith(
+                                          controller: _tokenController,
+                                        ),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        TextFormField(
+                                          validator: (value) =>
+                                              validateTextField([
+                                            isEmpty(value),
+                                            minimalLength(value, 1),
+                                          ]),
+                                          decoration: InputDecoration(
+                                            labelText: 'nickname_in_group'.tr(),
+                                            hintText: 'nickname_in_group'.tr(),
+                                            floatingLabelBehavior:
+                                                FloatingLabelBehavior.always,
+                                            prefixIcon: Icon(
+                                              Icons.account_circle,
+                                            ),
+                                            border: UnderlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              borderSide: BorderSide.none,
+                                            ),
+                                          ),
+                                          controller: _nicknameController,
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(
+                                                15),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 10,
+                                        ),
+                                        Wrap(
+                                          alignment: WrapAlignment.center,
+                                          crossAxisAlignment:
+                                              WrapCrossAlignment.center,
+                                          children: [
+                                            Text(
+                                              'no_group_yet'.tr(),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelLarge!
+                                                  .copyWith(
                                                     color: Theme.of(context)
                                                         .colorScheme
-                                                        .onSurfaceVariant),
-                                          ),
-                                          SizedBox(
-                                            height: 10,
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                    TextFormField(
-                                      validator: (value) => validateTextField([
-                                        isEmpty(value),
-                                      ]),
-                                      decoration: InputDecoration(
-                                        hintText: 'invitation'.tr(),
-                                        prefixIcon: Icon(
-                                          Icons.mail,
-                                        ),
-                                      ),
-                                      controller: _tokenController,
-                                    ),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    TextFormField(
-                                      validator: (value) => validateTextField([
-                                        isEmpty(value),
-                                        minimalLength(value, 1),
-                                      ]),
-                                      decoration: InputDecoration(
-                                        labelText: 'nickname_in_group'.tr(),
-                                        hintText: 'nickname_in_group'.tr(),
-                                        floatingLabelBehavior:
-                                            FloatingLabelBehavior.always,
-                                        prefixIcon: Icon(
-                                          Icons.account_circle,
-                                        ),
-                                        border: UnderlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          borderSide: BorderSide.none,
-                                        ),
-                                      ),
-                                      controller: _nicknameController,
-                                      inputFormatters: [
-                                        LengthLimitingTextInputFormatter(15),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Wrap(
-                                      alignment: WrapAlignment.center,
-                                      crossAxisAlignment:
-                                          WrapCrossAlignment.center,
-                                      children: [
-                                        Text(
-                                          'no_group_yet'.tr(),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelLarge!
-                                              .copyWith(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onSurfaceVariant,
-                                              ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        TextButton(
-                                          child: Text('create_group'.tr()),
-                                          onPressed: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        CreateGroup()));
-                                          },
-                                          // color: Theme.of(context).colorScheme.secondary,
+                                                        .onSurfaceVariant,
+                                                  ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            TextButton(
+                                              child: Text('create_group'.tr()),
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            CreateGroup()));
+                                              },
+                                              // color: Theme.of(context).colorScheme.secondary,
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
+                          AdUnitForSite(site: 'join_group'),
+                        ],
                       ),
-                      AdUnitForSite(site: 'join_group'),
-                    ],
-                  ),
+                    );
+                  },
                 ),
                 floatingActionButton: FloatingActionButton(
                   backgroundColor:

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'models.dart';
 
-List<Payment> paymentsNeeded(List<Member> members, BuildContext context) {
+List<Payment> necessaryPayments(List<Member> members, BuildContext context) {
   Group currentGroup = context.read<AppStateProvider>().currentGroup!;
   List<Payment> payments = <Payment>[];
   List<Member> memberCopy = <Member>[];

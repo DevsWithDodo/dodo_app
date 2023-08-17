@@ -4,16 +4,18 @@ import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/payment/add_modify_payment.dart';
+import 'package:csocsort_szamla/payment/recommended_payments.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class AddPaymentRoute extends StatefulWidget {
+class AddPaymentPage extends StatefulWidget {
   @override
-  _AddPaymentRouteState createState() => _AddPaymentRouteState();
+  _AddPaymentPageState createState() => _AddPaymentPageState();
 }
 
-class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment {
+class _AddPaymentPageState extends State<AddPaymentPage>
+    with AddModifyPayment {
   var _formKey = GlobalKey<FormState>();
 
   Future<bool> _postPayment(
@@ -68,6 +70,32 @@ class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment
             },
             child: Column(
               children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: FutureBuilder(
+                      future: members,
+                      builder: (context, AsyncSnapshot<List<Member>> snapshot) {
+                        if (snapshot.hasData) {
+                          return RecommendedPayments(
+                            members: snapshot.data!,
+                            onChange: (payment, selected) {
+                              setState(() {
+                                if (selected) {
+                                  amountController.text =
+                                      payment.amount.toString();
+                                  selectedMember = snapshot.data!.firstWhere(
+                                      (member) => member.id == payment.takerId);
+                                } else {
+                                  amountController.text = "";
+                                  selectedMember = null;
+                                }
+                              });
+                            },
+                          );
+                        }
+                        return LinearProgressIndicator();
+                      }),
+                ),
                 Expanded(
                   child: Align(
                     alignment: Alignment.center,
@@ -119,7 +147,8 @@ class _AddPaymentRouteState extends State<AddPaymentRoute> with AddModifyPayment
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.tertiary,
-          child: Icon(Icons.send, color: Theme.of(context).colorScheme.onTertiary),
+          child:
+              Icon(Icons.send, color: Theme.of(context).colorScheme.onTertiary),
           onPressed: () => _buttonPush(context),
         ),
       ),

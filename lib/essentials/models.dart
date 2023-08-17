@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
 
@@ -13,6 +15,7 @@ class User {
   bool useGradients;
   bool personalisedAds;
   bool trialVersion;
+  List<PaymentMethod> paymentMethods;
 
   User({
     required this.apiToken,
@@ -26,7 +29,38 @@ class User {
     this.useGradients = true,
     this.personalisedAds = false,
     this.trialVersion = false,
+    this.paymentMethods = const [],
   });
+}
+
+class PaymentMethod {
+  String name;
+  String value;
+  bool priority;
+
+  PaymentMethod(
+      {required this.name, required this.value, required this.priority});
+
+  factory PaymentMethod.fromJson(Map<String, dynamic> json) {
+    return PaymentMethod(
+        name: json['name'], value: json['value'], priority: json['priority']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'value': value,
+      'priority': priority,
+    };
+  }
+
+  PaymentMethod clone() {
+    return PaymentMethod(
+      name: this.name,
+      value: this.value,
+      priority: this.priority,
+    );
+  }
 }
 
 class Member {
@@ -39,6 +73,7 @@ class Member {
   bool? isGuest;
   String? apiToken;
   bool? isAdmin;
+  List<PaymentMethod>? paymentMethods;
   Member({
     required this.id,
     required this.username,
@@ -49,6 +84,7 @@ class Member {
     double? balanceOriginalCurrency,
     this.isCustomAmount,
     this.isGuest,
+    this.paymentMethods,
   }) {
     this.balanceOriginalCurrency = balanceOriginalCurrency ?? balance;
     this.nickname = nickname ?? username;
@@ -64,6 +100,12 @@ class Member {
           (json['original_balance'] ?? json['balance']) * 1.0,
       isCustomAmount: json['custom_amount'] ?? false,
       isGuest: json['is_guest'] == 1,
+      paymentMethods: json['payment_details'] != null
+          ? (jsonDecode(json['payment_details']) as List)
+              .map<PaymentMethod>(
+                  (paymentMethod) => PaymentMethod.fromJson(paymentMethod))
+              .toList()
+          : null,
     );
   }
 

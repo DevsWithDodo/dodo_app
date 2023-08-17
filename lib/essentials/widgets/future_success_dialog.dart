@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
+import 'package:csocsort_szamla/common.dart';
 
 class FutureSuccessDialog extends StatefulWidget {
+  final Future<bool> future;
+  final BuildContext? context;
+  final bool popOnTrue;
+
   final Widget? dataTrue;
   final Widget? dataFalse;
   final Widget? noData;
 
-  final Future<bool> future;
 
   final Function? onDataTrue;
   final Function? onDataFalse;
@@ -21,16 +25,20 @@ class FutureSuccessDialog extends StatefulWidget {
   ///[onDataFalse], [dataFalseText] and [onNoData] have default values.
   ///Fully customizable with [dataTrue], [dataFalse] and [noData]
   FutureSuccessDialog({
+    required this.future,
+    this.context,
+    this.popOnTrue = true,
     this.dataTrue,
     this.dataFalse,
     this.noData,
-    required this.future,
     this.onDataFalse,
     this.onDataTrue,
     this.onNoData,
     this.dataTrueText,
     this.dataFalseText = 'error',
-  });
+  }) {
+    assert(popOnTrue && context != null, 'context must be given if popOnTrue is true');
+  }
 
   @override
   _FutureSuccessDialogState createState() => _FutureSuccessDialogState();
@@ -205,6 +213,9 @@ class _FutureSuccessDialogState extends State<FutureSuccessDialog> {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               if (snapshot.data!) {
+                if(widget.popOnTrue) {
+                  Future.delayed(Duration(milliseconds: delayTime)).then((value) => Navigator.pop(widget.context!));
+                }
                 return _buildDataTrue()!;
               } else {
                 return _buildDataFalse()!;

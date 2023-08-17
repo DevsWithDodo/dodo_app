@@ -49,7 +49,9 @@ class _QRScannerPageState extends State<QRScannerPage> {
                               (element) =>
                                   element.rawValue!.startsWith('dodo://'),
                               orElse: null)
-                          .rawValue;
+                          .rawValue
+                          ?.replaceAll('http://', '')
+                          .replaceAll('htttp://', '');
                       if (code == null) {
                         return;
                       }

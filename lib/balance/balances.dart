@@ -1,8 +1,7 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/balance/payments_needed_dialog.dart';
+import 'package:csocsort_szamla/balance/necessary_payment_dialog.dart';
 import 'package:csocsort_szamla/balance/select_balance_currency.dart';
-import 'package:csocsort_szamla/essentials/payments_needed.dart';
 import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/error_message.dart';
@@ -38,8 +37,8 @@ class _BalancesState extends State<Balances>
           uri: generateUri(GetUriKeys.groupCurrent, context, params: [
         context.read<AppStateProvider>().user!.group!.id.toString()
       ]));
-
       Map<String, dynamic> decoded = jsonDecode(response.body);
+      print(decoded);
       List<Member> members = [];
       for (var member in decoded['data']['members']) {
         members.add(Member.fromJson(member));
@@ -120,14 +119,11 @@ class _BalancesState extends State<Balances>
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      List<Payment> payments =
-                                          paymentsNeeded(snapshot.data!, context);
                                       showDialog(
                                         context: context,
                                         barrierDismissible: true,
-                                        builder: (BuildContext context) =>
-                                            PaymentsNeededDialog(
-                                                payments: payments),
+                                        builder: (context) =>
+                                            NecessaryPaymentsDialog(members: snapshot.data!),
                                       );
                                     },
                                     child: Text(
