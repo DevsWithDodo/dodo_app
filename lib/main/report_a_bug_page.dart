@@ -146,16 +146,16 @@ class _ReportABugPageState extends State<ReportABugPage> {
               DateTime date = widget.date ?? now;
               String location = widget.location ?? _locationController.text;
               String details = _detailsController.text;
-              showDialog(
-                  builder: (context) => FutureSuccessDialog(
-                        future: _postBug(error, date, location, details),
-                        dataTrueText: 'bug_scf',
-                        onDataTrue: () {
-                          _onPostBug();
-                        },
-                      ),
-                  barrierDismissible: false,
-                  context: context);
+              showFutureOutputDialog(
+                context: context,
+                future: _postBug(error, date, location, details),
+                outputCallbacks: {
+                  BoolFutureOutput.True: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  }
+                }
+              );
             }
           },
           child: Icon(Icons.send),
@@ -164,7 +164,7 @@ class _ReportABugPageState extends State<ReportABugPage> {
     );
   }
 
-  Future<bool> _postBug(String bugText, DateTime date, String location, String details) async {
+  Future<BoolFutureOutput> _postBug(String bugText, DateTime date, String location, String details) async {
     try {
       Map<String, dynamic> body = {
         "description": bugText +
@@ -177,15 +177,9 @@ class _ReportABugPageState extends State<ReportABugPage> {
       };
 
       await Http.post(uri: '/bug', body: body);
-      Future.delayed(delayTime()).then((value) => _onPostBug());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onPostBug() {
-    Navigator.pop(context);
-    Navigator.pop(context);
   }
 }

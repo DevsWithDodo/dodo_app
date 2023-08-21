@@ -122,14 +122,13 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
       onDismissed: (direction) {
         // If requester is not the current user, the request has to be deleted either way
         if (widget.shoppingRequest.requesterId != user.id) {
-          showDialog(
-                  builder: (context) => FutureSuccessDialog(
-                        future: _deleteFulfillShoppingRequest(
-                            widget.shoppingRequest.id, context),
-                      ),
-                  barrierDismissible: false,
-                  context: context)
-              .then((value) {
+          showFutureOutputDialog(
+            context: context,
+            future: _deleteFulfillShoppingRequest(widget.shoppingRequest.id),
+            outputCallbacks: {
+              BoolFutureOutput.True: () => Navigator.of(context).pop(true),
+            },
+          ).then((value) {
             widget.onDeleteRequest(widget.shoppingRequest.id);
             // But if the direction is startToEnd, the AddPurchase site has to be called
             if (direction == DismissDirection.startToEnd && value == true) {
@@ -147,14 +146,14 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
         } else {
           // If the requester is the current user, then on one swipe the request is deleted, on the other it is edited
           if (direction == DismissDirection.endToStart) {
-            showDialog(
-                    builder: (context) => FutureSuccessDialog(
-                          future: _deleteFulfillShoppingRequest(
-                              widget.shoppingRequest.id, context),
-                        ),
-                    barrierDismissible: false,
-                    context: context)
-                .then((value) {
+            showFutureOutputDialog(
+              barrierDismissible: false,
+              context: context,
+              future: _deleteFulfillShoppingRequest(widget.shoppingRequest.id),
+              outputCallbacks: {
+                BoolFutureOutput.True: () => Navigator.of(context).pop(true),
+              },
+            ).then((value) {
               if (value ?? false)
                 widget.onDeleteRequest(widget.shoppingRequest.id);
             });
@@ -274,8 +273,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
           PastReactionContainer(
             reactions: widget.shoppingRequest.reactions!,
             reactedToId: widget.shoppingRequest.id,
-            isSecondaryColor:
-                widget.shoppingRequest.requesterId == user.id,
+            isSecondaryColor: widget.shoppingRequest.requesterId == user.id,
             type: 'requests',
             onSendReaction: this.handleSendReaction,
           ),
@@ -284,18 +282,12 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
     );
   }
 
-  Future<bool> _deleteFulfillShoppingRequest(int? id, var buildContext) async {
+  Future<BoolFutureOutput> _deleteFulfillShoppingRequest(int id) async {
     try {
       await Http.delete(uri: '/requests/' + id.toString());
-      Future.delayed(delayTime())
-          .then((value) => _onDeleteFulfillShoppingRequest());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onDeleteFulfillShoppingRequest() {
-    Navigator.pop(context, true);
   }
 }

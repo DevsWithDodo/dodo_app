@@ -23,7 +23,11 @@ class ShoppingList extends StatefulWidget {
   _ShoppingListState createState() => _ShoppingListState();
 }
 
-class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClientMixin {
+class _ShoppingListState extends State<ShoppingList>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   Future<List<ShoppingRequest>>? _shoppingList;
 
   TextEditingController _addRequestController = TextEditingController();
@@ -32,16 +36,18 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
 
   var _formKey = GlobalKey<FormState>();
 
-  @override
-  bool get wantKeepAlive => true;
+  // late ShoppingRequest _newShoppingRequest;
 
   Future<List<ShoppingRequest>> _getShoppingList(
       {bool overwriteCache = false}) async {
     try {
       Response response = await Http.get(
         uri: generateUri(
-          GetUriKeys.requests, context,
-          queryParams: {'group': context.read<AppStateProvider>().user!.group!.id.toString()},
+          GetUriKeys.requests,
+          context,
+          queryParams: {
+            'group': context.read<AppStateProvider>().user!.group!.id.toString()
+          },
         ),
         overwriteCache: overwriteCache,
       );
@@ -58,53 +64,37 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
     }
   }
 
-  Future<bool> _postShoppingRequest(String name) async {
+  Future<BoolFutureOutput> _postShoppingRequest(String name) async {
     try {
-      Map<String, dynamic> body = {'group': context.read<AppStateProvider>().currentGroup!.id, 'name': name};
-      Response response =
-          await Http.post(uri: '/requests', body: body);
-      Future.delayed(delayTime()).then((value) => _onPostShoppingRequest(
-          ShoppingRequest.fromJson(jsonDecode(response.body)['data'])));
-      return true;
-    } catch (_) {
-      throw _;
-    }
-  }
-
-  _onPostShoppingRequest(ShoppingRequest request) async {
-    if (_shoppingList != null) {
-      await (_shoppingList!.then<List<ShoppingRequest>>((value) {
-        value.add(request);
+      Map<String, dynamic> body = {
+        'group': context.read<AppStateProvider>().currentGroup!.id,
+        'name': name
+      };
+      Response response = await Http.post(uri: '/requests', body: body);
+      await(_shoppingList!.then<List<ShoppingRequest>>((value) {
+        value.add(ShoppingRequest.fromJson(jsonDecode(response.body)['data']));
         return value;
       }));
-    }
-    Navigator.pop(context);
-    setState(() {
-      _addRequestController.text = '';
-    });
-  }
-
-  Future<bool> _undoDeleteRequest(int id) async {
-    try {
-      Response response = await Http.post(uri: '/requests/restore/' + id.toString());
-      Future.delayed(delayTime()).then((value) => _onUndoDeleteRequest(
-          ShoppingRequest.fromJson(jsonDecode(response.body)['data'])));
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
   }
 
-  void _onUndoDeleteRequest(ShoppingRequest request) async {
-    if (_shoppingList != null) {
-      await (_shoppingList!.then((list) {
-        list.add(request);
-        return list;
-      }));
+  Future<BoolFutureOutput> _undoDeleteRequest(int id) async {
+    try {
+      Response response =
+          await Http.post(uri: '/requests/restore/' + id.toString());
+      if (_shoppingList != null) {
+        await (_shoppingList!.then((list) {
+          list.add(jsonDecode(response.body)['data']);
+          return list;
+        }));
+      }
+      return BoolFutureOutput.True;
+    } catch (_) {
+      throw _;
     }
-    setState(() {});
-    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    Navigator.pop(context);
   }
 
   void handleEditShoppingRequest(ShoppingRequest request) async {
@@ -144,13 +134,16 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
           ),
           InkWell(
             onTap: () {
-              showDialog(
-                      builder: (context) => FutureSuccessDialog(
-                            future: _undoDeleteRequest(requestId),
-                          ),
-                      context: context,
-                      barrierDismissible: false)
-                  .then((value) {
+              showFutureOutputDialog(
+                  context: context,
+                  future: _undoDeleteRequest(requestId),
+                  outputCallbacks: {
+                    BoolFutureOutput.True: () async {
+                      setState(() {});
+                      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                      Navigator.pop(context);
+                    }
+                  }).then((value) {
                 if (value ?? false) handleDeleteEditShoppingRequest();
               });
             },
@@ -188,17 +181,17 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
     FocusScope.of(context).unfocus();
     if (_formKey.currentState!.validate()) {
       String name = _addRequestController.text;
-      showDialog(
-        builder: (context) => FutureSuccessDialog(
+      showFutureOutputDialog(
+          context: context,
           future: _postShoppingRequest(name),
-          onDataFalse: () {
-            Navigator.pop(context);
-            setState(() {});
-          },
-        ),
-        barrierDismissible: false,
-        context: context,
-      );
+          outputCallbacks: {
+            BoolFutureOutput.True: () {
+              Navigator.pop(context);
+              setState(() {
+                _addRequestController.text = '';
+              });
+            }
+          });
     }
   }
 
@@ -212,15 +205,17 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
   @override
   void initState() {
     super.initState();
-    
+
     _shoppingList = null;
     _shoppingList = _getShoppingList();
-    EventBus.instance.register(EventBus.refreshShopping, onRefreshShoppingEvent);
+    EventBus.instance
+        .register(EventBus.refreshShopping, onRefreshShoppingEvent);
   }
 
   @override
   void dispose() {
-    EventBus.instance.unregister(EventBus.refreshShopping, onRefreshShoppingEvent);
+    EventBus.instance
+        .unregister(EventBus.refreshShopping, onRefreshShoppingEvent);
     super.dispose();
   }
 
@@ -229,7 +224,8 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
     super.build(context);
     return RefreshIndicator(
       onRefresh: () async {
-        if (context.read<IsOnlineProvider>().isOnline) await deleteCache(uri: '/groups');
+        if (context.read<IsOnlineProvider>().isOnline)
+          await deleteCache(uri: '/groups');
         setState(() {
           _shoppingList = null;
           _shoppingList = _getShoppingList(overwriteCache: true);

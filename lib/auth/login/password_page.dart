@@ -133,12 +133,13 @@ class _PasswordPageState extends State<PasswordPage> {
   void _pushButton() {
     showDialog(
       context: context,
-      builder: (context) => FutureSuccessDialog(
+      builder: (context) => FutureOutputDialog(
         future: context.read<AppStateProvider>().login(
           widget.username!,
           _passwordController.text,
           context,
         ),
+        context: context,
       ),
     );
   }

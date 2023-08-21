@@ -14,10 +14,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
-import '../main_group_page.dart';
-
 class MergeGuestDialog extends StatefulWidget {
-  final int? guestId;
+  final int guestId;
   MergeGuestDialog({required this.guestId});
   @override
   _MergeGuestDialogState createState() => _MergeGuestDialogState();
@@ -27,7 +25,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
   Future<List<Member>>? _allMembers;
   Member? _selectedMember;
 
-  Future<bool> _mergeGuest() async {
+  Future<BoolFutureOutput> _mergeGuest() async {
     Map<String, dynamic> body = {
       'member_id': _selectedMember!.id,
       'guest_id': widget.guestId
@@ -35,15 +33,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
     await Http.post(
         uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString() + '/merge_guest',
         body: body);
-    Future.delayed(delayTime()).then((value) => _onMergeGuest());
-    return true;
-  }
-
-  void _onMergeGuest() {
-    clearGroupCache(context);
-    deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, context));
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
+    return BoolFutureOutput.True;
   }
 
   Future<List<Member>> _getAllMembers() async {
@@ -155,15 +145,16 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
                       ).then(
                         (value) {
                           if (value ?? false == true) {
-                            showDialog(
-                              builder: (context) => FutureSuccessDialog(
-                                future: _mergeGuest(),
-                                dataTrueText: 'merge_scf',
-                                onDataTrue: () {
-                                  _onMergeGuest();
-                                },
-                              ),
+                            showFutureOutputDialog(
                               context: context,
+                              future: _mergeGuest(),
+                              outputCallbacks: {
+                                BoolFutureOutput.True: () async {
+                                  await clearGroupCache(context);
+                                  await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, context)); // TODO: event bus?
+                                  Navigator.of(context).pop();
+                                }
+                              }
                             );
                           }
                         },

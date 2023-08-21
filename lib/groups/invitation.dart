@@ -57,22 +57,18 @@ class _InvitationState extends State<Invitation> {
     }
   }
 
-  Future<bool> _updateNeedsApproval() async {
+  Future<BoolFutureOutput> _updateNeedsApproval() async {
     try {
       Map<String, dynamic> body = {'admin_approval': _needsApproval ? 1 : 0};
       await Http.put(
-        uri: '/groups/' + context.read<AppStateProvider>().user!.group!.id.toString(),
+        uri: '/groups/' +
+            context.read<AppStateProvider>().user!.group!.id.toString(),
         body: body,
       );
-      Future.delayed(delayTime()).then((value) => _onUpdateNeedsApproval());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onUpdateNeedsApproval() {
-    Navigator.pop(context);
   }
 
   @override
@@ -257,33 +253,20 @@ class _InvitationState extends State<Invitation> {
                                               setState(() {
                                                 _needsApproval = value;
                                               });
-                                              showDialog(
-                                                  builder: (context) =>
-                                                      FutureSuccessDialog(
-                                                        future:
-                                                            _updateNeedsApproval(),
-                                                        onDataTrue: () {
-                                                          _onUpdateNeedsApproval();
-                                                        },
-                                                        onDataFalse: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                          setState(() {
-                                                            _needsApproval =
-                                                                !_needsApproval;
-                                                          });
-                                                        },
-                                                        onNoData: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                          setState(() {
-                                                            _needsApproval =
-                                                                !_needsApproval;
-                                                          });
-                                                        },
-                                                      ),
-                                                  context: context,
-                                                  barrierDismissible: false);
+                                              VoidCallback resetSwitcher = () =>
+                                                  setState(() =>
+                                                      _needsApproval =
+                                                          !_needsApproval);
+                                              showFutureOutputDialog(
+                                                context: context,
+                                                future: _updateNeedsApproval(),
+                                                outputCallbacks: {
+                                                  BoolFutureOutput.False:
+                                                      resetSwitcher,
+                                                  FutureOutput.Error:
+                                                      resetSwitcher,
+                                                },
+                                              );
                                             },
                                           ),
                                         ],
@@ -472,7 +455,8 @@ class ApproveMember extends StatefulWidget {
 }
 
 class _ApproveMemberState extends State<ApproveMember> {
-  Future<bool> _postApproveMember(int? memberId, bool approve) async {
+  Future<BoolFutureOutput> _postApproveMember(
+      int? memberId, bool approve) async {
     try {
       Map<String, dynamic> body = {'member_id': memberId, 'approve': approve};
       await Http.post(
@@ -480,17 +464,10 @@ class _ApproveMemberState extends State<ApproveMember> {
               context.read<AppStateProvider>().user!.group!.id.toString() +
               '/members/approve_or_deny',
           body: body);
-      Future.delayed(delayTime()).then((value) => _onPostApproveMember());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onPostApproveMember() {
-    clearGroupCache(context);
-    Navigator.pop(context);
-    Navigator.pop(context, true);
   }
 
   @override
@@ -536,30 +513,32 @@ class _ApproveMemberState extends State<ApproveMember> {
             height: 5,
           ),
           GradientButton.icon(
-            onPressed: () {
-              showDialog(
-                  builder: (context) => FutureSuccessDialog(
-                        future: _postApproveMember(widget.member!.id, true),
-                      ),
-                  context: context);
-            },
+            onPressed: () => approveMember(true),
             icon: Icon(Icons.check),
             label: Text('approve'.tr()),
           ),
           SizedBox(height: 10),
           GradientButton.icon(
-            onPressed: () {
-              showDialog(
-                  builder: (context) => FutureSuccessDialog(
-                        future: _postApproveMember(widget.member!.id, false),
-                      ),
-                  context: context);
-            },
+            onPressed: () => approveMember(false),
             icon: Icon(Icons.clear),
             label: Text('disapprove'.tr()),
           )
         ],
       ),
+    );
+  }
+
+  void approveMember(bool approve) {
+    showFutureOutputDialog(
+      context: context,
+      future: _postApproveMember(widget.member!.id, approve),
+      outputCallbacks: {
+        BoolFutureOutput.True: () async {
+          await clearGroupCache(context); // TODO: event bus?
+          Navigator.pop(context);
+          Navigator.pop(context, true);
+        }
+      },
     );
   }
 }

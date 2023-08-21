@@ -20,8 +20,8 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog>
 
   int _index = 0;
 
-  Future<bool> _updatePurchase(List<Member> members, double amount, String name,
-      int? purchaseId, BuildContext context) async {
+  Future<BoolFutureOutput> _updatePurchase(List<Member> members, double amount,
+      String name, int purchaseId, BuildContext context) async {
     try {
       Map<String, dynamic> body = generateBody(name, amount, members, context);
 
@@ -29,16 +29,10 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog>
         uri: '/purchases/' + purchaseId.toString(),
         body: body,
       );
-      Future.delayed(delayTime()).then((value) => _onUpdatePurchase());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onUpdatePurchase() {
-    Navigator.pop(context);
-    Navigator.pop(context, true);
   }
 
   @override
@@ -153,16 +147,17 @@ class _ModifyPurchaseDialogState extends State<ModifyPurchaseDialog>
                           membersMap.forEach((Member key, bool value) {
                             if (value) members.add(key);
                           });
-                          showDialog(
-                              builder: (context) => FutureSuccessDialog(
-                                    future: _updatePurchase(
-                                        members,
-                                        amount,
-                                        name,
-                                        widget.savedPurchase!.id,
-                                        context),
-                                  ),
-                              context: context);
+                          showFutureOutputDialog(
+                            context: context,
+                            future: _updatePurchase(members, amount, name,
+                                widget.savedPurchase!.id, context),
+                            outputCallbacks: {
+                              BoolFutureOutput.True: () {
+                                Navigator.pop(context);
+                                Navigator.pop(context, true);
+                              }
+                            },
+                          );
                         }
                       }
                     },

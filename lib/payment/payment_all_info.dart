@@ -22,19 +22,13 @@ class PaymentAllInfo extends StatefulWidget {
 }
 
 class _PaymentAllInfoState extends State<PaymentAllInfo> {
-  Future<bool> _deletePayment(int? id) async {
+  Future<BoolFutureOutput> _deletePayment(int id) async {
     try {
       await Http.delete(uri: '/payments/' + id.toString());
-      Future.delayed(delayTime()).then((value) => _onDeletePayment());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onDeletePayment() {
-    Navigator.pop(context);
-    Navigator.pop(context, 'deleted');
   }
 
   @override
@@ -108,25 +102,31 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                   color: Theme.of(context).colorScheme.secondary),
               Flexible(
                   child: Selector<AppStateProvider, String>(
-                    selector: (context, userProvider) => userProvider.currentGroup!.currency,
-                    builder: (context, currentGroupCurrency, _) {
-                      return Text(
-                          ' - ' +
-                              widget.data!.amount.toMoneyString(
-                                  currentGroupCurrency,
-                                  withSymbol: true) +
-                              (widget.data!.originalCurrency != currentGroupCurrency
-                                  ? (' (' +
-                                      widget.data!.amountOriginalCurrency
-                                          .toMoneyString(
-                                              widget.data!.originalCurrency,
-                                              withSymbol: true) +
-                                      ')')
-                                  : ''),
-                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface));
-                    }
-                  )),
+                      selector: (context, userProvider) =>
+                          userProvider.currentGroup!.currency,
+                      builder: (context, currentGroupCurrency, _) {
+                        return Text(
+                            ' - ' +
+                                widget.data!.amount.toMoneyString(
+                                    currentGroupCurrency,
+                                    withSymbol: true) +
+                                (widget.data!.originalCurrency !=
+                                        currentGroupCurrency
+                                    ? (' (' +
+                                        widget.data!.amountOriginalCurrency
+                                            .toMoneyString(
+                                                widget.data!.originalCurrency,
+                                                withSymbol: true) +
+                                        ')')
+                                    : ''),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge!
+                                .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface));
+                      })),
             ],
           ),
           SizedBox(
@@ -177,13 +177,17 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                     ),
                     context: context,
                   ).then((value) {
-                    if (value != null && value) {
-                      showDialog(
-                          builder: (context) => FutureSuccessDialog(
-                                future: _deletePayment(widget.data!.id),
-                              ),
-                          barrierDismissible: false,
-                          context: context);
+                    if (value ?? false) {
+                      showFutureOutputDialog(
+                        context: context,
+                        future: _deletePayment(widget.data!.id),
+                        outputCallbacks: {
+                          BoolFutureOutput.True: () {
+                            Navigator.pop(context);
+                            Navigator.pop(context, 'deleted');
+                          }
+                        },
+                      );
                     }
                   });
                 },

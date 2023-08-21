@@ -8,7 +8,7 @@ import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/navigator_service.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/providers/invite_url_provider.dart';
-import 'package:csocsort_szamla/groups/join_group.dart';
+import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/groups/main_group_page.dart';
 import 'package:csocsort_szamla/main.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -82,8 +82,8 @@ class AppStateProvider extends ChangeNotifier {
       setPersonalisedAds(decoded['data']['personalised_ads'] == 1);
       setTrialVersion(decoded['data']['trial'] == 1);
       if(decoded['data']['payment_details'] != null) {
-        setPaymentMethods(((jsonDecode(decoded['data']['payment_details']) as List).map((e) => PaymentMethod.fromJson(e))
-            .toList()));
+        setPaymentMethods((jsonDecode(decoded['data']['payment_details']) as List).map((e) => PaymentMethod.fromJson(e))
+            .toList());
       }
       if (currentGroup == null &&
           decoded['data']['last_active_group'] != null) {
@@ -108,7 +108,7 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> login(
+  Future<LoginFutureOutputs> login(
       String username, String password, BuildContext context) async {
     try {
       String? token;
@@ -145,9 +145,9 @@ class AppStateProvider extends ChangeNotifier {
           showAds: decoded['data']['ad_free'] == 0,
           useGradients: decoded['data']['gradients_enabled'] == 1,
           trialVersion: decoded['data']['trial'] == 1,
-          paymentMethods: decoded['data']['payment_details'] != null ? jsonDecode(decoded['data']['payment_details'])
-              .map((paymentMethod) => PaymentMethod.fromJson(paymentMethod))
-              .toList() : [],
+          paymentMethods: decoded['data']['payment_details'] != null ? 
+            (jsonDecode(decoded['data']['payment_details']) as List).map((e) => PaymentMethod.fromJson(e)).toList() 
+            : [],
         );
         setUser(user, notify: false);
 
@@ -165,16 +165,7 @@ class AppStateProvider extends ChangeNotifier {
         String? inviteUrl = context.read<InviteUrlProvider>().inviteUrl;
         setGroups(groups);
         if (groups.isEmpty) {
-          Future.delayed(delayTime()).then((value) {
-            getIt<NavigationService>().pushAndRemoveUntil(
-              MaterialPageRoute(
-                  builder: (context) => JoinGroup(
-                        fromAuth: true,
-                        inviteURL: inviteUrl,
-                      )),
-            );
-          });
-          return true;
+          return LoginFutureOutputs.joinGroupFromAuth;
         }
 
         Group currentGroup = groups.firstWhere(
@@ -182,20 +173,7 @@ class AppStateProvider extends ChangeNotifier {
             orElse: () => groups[0]);
         setGroup(currentGroup, notify: false);
 
-        Future.delayed(delayTime()).then((value) {
-          if (inviteUrl == null) {
-            getIt<NavigationService>().pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => MainPage()),
-            );
-          } else {
-            getIt<NavigationService>().pushAndRemoveUntil(MaterialPageRoute(
-              builder: (context) => JoinGroup(
-                inviteURL: inviteUrl,
-              ),
-            ));
-          }
-        });
-        return true;
+        return inviteUrl == null ? LoginFutureOutputs.main : LoginFutureOutputs.joinGroup;
       } else {
         Map<String, dynamic> error = jsonDecode(response.body);
         throw error['error'];
@@ -209,7 +187,7 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> register(String username, String password, String currency,
+  Future<BoolFutureOutput> register(String username, String password, String currency,
       bool personalisedAds, BuildContext context) async {
     try {
       String? token;
@@ -238,7 +216,6 @@ class AppStateProvider extends ChangeNotifier {
       );
       if (response.statusCode == 201) {
         Map<String, dynamic> decoded = jsonDecode(response.body);
-        print(decoded);
         setUser(User(
           apiToken: decoded['api_token'],
           username: decoded['username'],
@@ -254,17 +231,7 @@ class AppStateProvider extends ChangeNotifier {
           paymentMethods: [],
         ));
         await clearAllCache();
-        Future.delayed(delayTime()).then(
-          (value) => getIt<NavigationService>().pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (context) => JoinGroup(
-                fromAuth: true,
-                inviteURL: context.read<InviteUrlProvider>().inviteUrl,
-              ),
-            ),
-          ),
-        );
-        return true;
+        return BoolFutureOutput.True;
       } else {
         Map<String, dynamic> error = jsonDecode(response.body);
         throw error['error'];
@@ -442,4 +409,12 @@ class AppStateProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+}
+
+class LoginFutureOutputs extends FutureOutput {
+  static const main = LoginFutureOutputs(true, 'main');
+  static const joinGroup = LoginFutureOutputs(true, 'joinGroup');
+  static const joinGroupFromAuth = LoginFutureOutputs(true, 'joinGroupFromAuth');
+
+  const LoginFutureOutputs(super.value, super.name);
 }

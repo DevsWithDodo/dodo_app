@@ -49,7 +49,7 @@ class _JoinGroupState extends State<JoinGroup> {
 
   var _formKey = GlobalKey<FormState>();
 
-  Future<bool> _joinGroup(String token, String nickname) async {
+  Future<BoolFutureOutput> _joinGroup(String token, String nickname) async {
     try {
       Map<String, dynamic> body = {
         'invitation_token': token,
@@ -57,49 +57,40 @@ class _JoinGroupState extends State<JoinGroup> {
       };
       Response response = await Http.post(uri: '/join', body: body);
 
-      if (response.body != "") {
-        Map<String, dynamic> decoded = jsonDecode(response.body);
-        AppStateProvider userProvider = context.read<AppStateProvider>();
-        userProvider.setGroups(
-            userProvider.user!.groups +
-                [
-                  Group(
-                    id: decoded['data']['group_id'],
-                    name: decoded['data']['group_name'],
-                    currency: decoded['data']['currency'],
-                  )
-                ],
-            notify: false);
-        userProvider.setGroup(userProvider.user!.groups.last);
-        List<Member> guests = (decoded['data']['members'] as List<dynamic>)
-            .where((element) => element['is_guest'] == 1)
-            .map((e) => Member.fromJson(e))
-            .toList();
-        if (guests.isNotEmpty) {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MergeOnJoinPage(
-                guests: guests,
-              ),
+      if (response.body == "") {
+        return BoolFutureOutput.False;
+      } 
+      Map<String, dynamic> decoded = jsonDecode(response.body);
+      AppStateProvider userProvider = context.read<AppStateProvider>();
+      userProvider.setGroups(
+          userProvider.user!.groups +
+              [
+                Group(
+                  id: decoded['data']['group_id'],
+                  name: decoded['data']['group_name'],
+                  currency: decoded['data']['currency'],
+                )
+              ],
+          notify: false);
+      userProvider.setGroup(userProvider.user!.groups.last);
+      List<Member> guests = (decoded['data']['members'] as List<dynamic>)
+          .where((element) => element['is_guest'] == 1)
+          .map((e) => Member.fromJson(e))
+          .toList();
+      if (guests.isNotEmpty) {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MergeOnJoinPage(
+              guests: guests,
             ),
-          );
-        }
-        Future.delayed(delayTime()).then((value) => _onJoinGroup());
-      } else {
-        return false;
+          ),
+        );
       }
-
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onJoinGroup() async {
-    await clearAllCache();
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
   }
 
   @override
@@ -451,10 +442,20 @@ class _JoinGroupState extends State<JoinGroup> {
                       String nickname =
                           _nicknameController.text[0].toUpperCase() +
                               _nicknameController.text.substring(1);
-                      showDialog(
-                        builder: (context) => FutureSuccessDialog(
-                          future: _joinGroup(token, nickname),
-                          dataFalse: Column(
+                      showFutureOutputDialog(
+                        context: context,
+                        future: _joinGroup(token, nickname),
+                        outputCallbacks: {
+                          BoolFutureOutput.True: () async {
+                            await clearAllCache(); // TODO: event bus?
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) => MainPage()), 
+                              (r) => false,
+                            );
+                          },
+                        },
+                        outputChildren: {
+                          BoolFutureOutput.False: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Flexible(
@@ -482,9 +483,7 @@ class _JoinGroupState extends State<JoinGroup> {
                               )
                             ],
                           ),
-                        ),
-                        barrierDismissible: false,
-                        context: context,
+                        },
                       );
                     }
                   },

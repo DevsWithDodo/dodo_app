@@ -20,7 +20,7 @@ class _PersonalisedAdsState extends State<PersonalisedAds> {
     _personalisedAds = context.read<AppStateProvider>().user!.personalisedAds;
   }
 
-  Future<bool> _updatePersonalisedAds() async {
+  Future<BoolFutureOutput> _updatePersonalisedAds() async {
     try {
       if (context.read<AppStateProvider>().user!.personalisedAds != _personalisedAds) {
         Map<String, dynamic> body = {
@@ -28,19 +28,11 @@ class _PersonalisedAdsState extends State<PersonalisedAds> {
         };
         await Http.put(uri: '/user', body: body);
         context.read<AppStateProvider>().setPersonalisedAds(_personalisedAds);
-        Future.delayed(delayTime()).then((value) => _onUpdatePersonalisedAds());
-        return true;
-      } else {
-        return Future.value(true);
       }
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onUpdatePersonalisedAds() {
-    Navigator.pop(context);
-    Navigator.pop(context);
   }
 
   @override
@@ -82,28 +74,13 @@ class _PersonalisedAdsState extends State<PersonalisedAds> {
                 setState(() {
                   _personalisedAds = value;
                 });
-                showDialog(
-                    builder: (context) => FutureSuccessDialog(
-                          future: _updatePersonalisedAds(),
-                          onDataTrue: () {
-                            _onUpdatePersonalisedAds();
-                          },
-                          onDataFalse: () {
-                            Navigator.pop(context);
-                            setState(() {
-                              _personalisedAds = !_personalisedAds;
-                            });
-                          },
-                          onNoData: () {
-                            Navigator.pop(context);
-                            setState(() {
-                              _personalisedAds = !_personalisedAds;
-                            });
-                          },
-                          dataTrueText: 'update_personalised_ads_scf',
-                        ),
-                    context: context,
-                    barrierDismissible: false);
+                showFutureOutputDialog(
+                  context: context,
+                  future: _updatePersonalisedAds(),
+                  outputCallbacks: {
+                    FutureOutput.Error: () => setState(() => _personalisedAds = !value),
+                  },
+                );
               },
               title: Text(
                 'use_personalised_ads'.tr(),

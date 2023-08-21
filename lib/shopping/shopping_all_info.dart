@@ -22,237 +22,228 @@ class ShoppingAllInfo extends StatefulWidget {
 }
 
 class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
-
-  Future<bool> _fulfillShoppingRequest(int id) async {
+  Future<BoolFutureOutput> _fulfillShoppingRequest(int id) async {
     try {
       await Http.delete(uri: '/requests/' + id.toString());
-      Future.delayed(delayTime()).then((value) => _onFulfillShoppingRequest());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
   }
 
-  void _onFulfillShoppingRequest() {
-    Navigator.pop(context, true);
-    Navigator.pop(context, {'type': 'deleted'});
-  }
-
-  Future<bool> _deleteShoppingRequest(int id) async {
+  Future<BoolFutureOutput> _deleteShoppingRequest(int id) async {
     try {
       await Http.delete(uri: '/requests/' + id.toString());
-      Future.delayed(delayTime()).then((value) => _onDeleteShoppingRequest());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onDeleteShoppingRequest() {
-    Navigator.pop(context);
-    Navigator.pop(context, {'type': 'deleted'});
   }
 
   @override
   void initState() {
     super.initState();
-    
   }
 
   @override
   Widget build(BuildContext context) {
     return Selector<AppStateProvider, User>(
-      selector: (context, provider) => provider.user!,
-      builder: (context, user, _) {
-        return Padding(
-          padding: const EdgeInsets.all(15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Icon(Icons.account_circle,
-                      color: Theme.of(context).colorScheme.secondary),
-                  Flexible(
-                    child: Text(
-                      ' - ' + widget.shoppingRequest.requesterNickname,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(color: Theme.of(context).colorScheme.onSurface),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Icon(Icons.receipt_long,
-                      color: Theme.of(context).colorScheme.secondary),
-                  Flexible(
-                    child: Text(
-                      ' - ' + widget.shoppingRequest.name,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(color: Theme.of(context).colorScheme.onSurface),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Row(
-                children: <Widget>[
-                  Icon(
-                    Icons.date_range,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                  Flexible(
-                    child: Text(
-                      ' - ' +
-                          DateFormat('yyyy/MM/dd - HH:mm')
-                              .format(widget.shoppingRequest.updatedAt),
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge!
-                          .copyWith(color: Theme.of(context).colorScheme.onSurface),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Visibility(
-                visible: widget.shoppingRequest.requesterId == user.id,
-                child: Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          GradientButton.icon(
-                            onPressed: () {
-                              showDialog<ShoppingRequest>(
-                                builder: (context) => EditRequestDialog(
-                                  requestId: widget.shoppingRequest.id,
-                                  textBefore: widget.shoppingRequest.name,
-                                ),
-                                context: context,
-                              ).then((value) {
-                                if (value != null) {
-                                  Navigator.pop(context, {
-                                    'type': 'modified',
-                                    'request': value,
-                                  });
-                                }
-                              });
-                            },
-                            icon: Icon(Icons.edit),
-                            label: Text('modify'.tr()),
-                          ),
-                        ],
+        selector: (context, provider) => provider.user!,
+        builder: (context, user, _) {
+          return Padding(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Icon(Icons.account_circle,
+                        color: Theme.of(context).colorScheme.secondary),
+                    Flexible(
+                      child: Text(
+                        ' - ' + widget.shoppingRequest.requesterNickname,
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface),
                       ),
-                      SizedBox(
-                        height: 10,
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(Icons.receipt_long,
+                        color: Theme.of(context).colorScheme.secondary),
+                    Flexible(
+                      child: Text(
+                        ' - ' + widget.shoppingRequest.name,
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          GradientButton.icon(
-                            onPressed: () {
-                              showDialog(
-                                builder: (context) => FutureSuccessDialog(
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  children: <Widget>[
+                    Icon(
+                      Icons.date_range,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    Flexible(
+                      child: Text(
+                        ' - ' +
+                            DateFormat('yyyy/MM/dd - HH:mm')
+                                .format(widget.shoppingRequest.updatedAt),
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Visibility(
+                  visible: widget.shoppingRequest.requesterId == user.id,
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GradientButton.icon(
+                              onPressed: () {
+                                showDialog<ShoppingRequest>(
+                                  builder: (context) => EditRequestDialog(
+                                    requestId: widget.shoppingRequest.id,
+                                    textBefore: widget.shoppingRequest.name,
+                                  ),
+                                  context: context,
+                                ).then((value) {
+                                  if (value != null) {
+                                    Navigator.pop(context, {
+                                      'type': 'modified',
+                                      'request': value,
+                                    });
+                                  }
+                                });
+                              },
+                              icon: Icon(Icons.edit),
+                              label: Text('modify'.tr()),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GradientButton.icon(
+                              onPressed: () {
+                                showFutureOutputDialog(
+                                  context: context,
                                   future: _deleteShoppingRequest(
                                       widget.shoppingRequest.id),
-                                ),
-                                barrierDismissible: false,
-                                context: context,
-                              );
-                            },
-                            icon: Icon(Icons.delete),
-                            label: Text('delete'.tr()),
-                          ),
-                        ],
-                      ),
-                    ],
+                                  outputCallbacks: {
+                                    BoolFutureOutput.True: () {
+                                      Navigator.pop(context);
+                                      Navigator.pop(
+                                          context, {'type': 'deleted'});
+                                    }
+                                  },
+                                );
+                              },
+                              icon: Icon(Icons.delete),
+                              label: Text('delete'.tr()),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Visibility(
-                visible: widget.shoppingRequest.requesterId != user.id,
-                child: Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          GradientButton.icon(
-                            onPressed: () {
-                              showDialog(
-                                builder: (context) => FutureSuccessDialog(
+                Visibility(
+                  visible: widget.shoppingRequest.requesterId != user.id,
+                  child: Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GradientButton.icon(
+                              onPressed: () {
+                                showFutureOutputDialog(
+                                  context: context,
                                   future: _fulfillShoppingRequest(
                                     widget.shoppingRequest.id,
                                   ),
-                                ),
-                                barrierDismissible: false,
-                                context: context,
-                              );
-                            },
-                            icon: Icon(Icons.check),
-                            label: Text('remove_from_list'.tr()),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          GradientButton.icon(
-                            onPressed: () {
-                              showDialog<bool>(
-                                builder: (context) => FutureSuccessDialog(
+                                  outputCallbacks: {
+                                    BoolFutureOutput.True: () {
+                                      Navigator.pop(context, true);
+                                      Navigator.pop(
+                                          context, {'type': 'deleted'});
+                                    }
+                                  },
+                                );
+                              },
+                              icon: Icon(Icons.check),
+                              label: Text('remove_from_list'.tr()),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GradientButton.icon(
+                              onPressed: () {
+                                showFutureOutputDialog<bool, BoolFutureOutput>(
+                                  context: context,
                                   future: _fulfillShoppingRequest(
                                       widget.shoppingRequest.id),
-                                ),
-                                barrierDismissible: false,
-                                context: context,
-                              ).then((value) {
-                                if (value == true) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AddPurchasePage(
-                                        type: PurchaseType.fromShopping,
-                                        shoppingData: widget.shoppingRequest,
+                                  outputCallbacks: {
+                                    BoolFutureOutput.True: () {
+                                      Navigator.pop(context, true);
+                                      Navigator.pop(
+                                          context, {'type': 'deleted'});
+                                    }
+                                  },
+                                ).then((value) {
+                                  if (value == true) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AddPurchasePage(
+                                          type: PurchaseType.fromShopping,
+                                          shoppingData: widget.shoppingRequest,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                }
-                              });
-                            },
-                            icon: Icon(Icons.attach_money),
-                            label: Text('add_as_expense'.tr()),
-                          ),
-                        ],
-                      ),
-                    ],
+                                    );
+                                  }
+                                });
+                              },
+                              icon: Icon(Icons.attach_money),
+                              label: Text('add_as_expense'.tr()),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              )
-            ],
-          ),
-        );
-      }
-    );
+                )
+              ],
+            ),
+          );
+        });
   }
 }

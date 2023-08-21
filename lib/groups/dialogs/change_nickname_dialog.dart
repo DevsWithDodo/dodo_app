@@ -22,25 +22,17 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
   TextEditingController _nicknameController = TextEditingController();
   var _nicknameFormKey = GlobalKey<FormState>();
 
-  Future<bool> _updateNickname(String nickname, int? memberId) async {
+  Future<BoolFutureOutput> _updateNickname(String nickname, int? memberId) async {
     try {
       Map<String, dynamic> body = {"member_id": memberId, "nickname": nickname};
       await Http.put(
             uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString() + '/members',
             body: body,
           );
-      Future.delayed(delayTime()).then((value) => _onUpdateNickname());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onUpdateNickname() {
-    _nicknameController.text = '';
-    Navigator.pop(context);
-    Navigator.pop(context, 'madeAdmin');
-    clearGroupCache(context);
   }
 
   @override
@@ -108,16 +100,18 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
       FocusScope.of(context).requestFocus(FocusNode());
       String nickname = _nicknameController.text[0].toUpperCase() +
           _nicknameController.text.substring(1);
-      showDialog(
-          builder: (context) => FutureSuccessDialog(
-                future: _updateNickname(nickname, widget.memberId),
-                onDataTrue: () {
-                  _onUpdateNickname();
-                },
-                dataTrueText: 'nickname_scf',
-              ),
-          barrierDismissible: false,
-          context: context);
+      showFutureOutputDialog(
+        context: context,
+        future: _updateNickname(nickname, widget.memberId),
+        outputCallbacks: {
+          BoolFutureOutput.True: () async {
+            _nicknameController.text = '';
+            await clearGroupCache(context);
+            Navigator.pop(context);
+            Navigator.pop(context, 'madeAdmin');
+          }
+        }
+      );
     }
   }
 }

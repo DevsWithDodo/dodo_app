@@ -19,7 +19,7 @@ class _ImShoppingDialogState extends State<ImShoppingDialog> {
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  Future<bool> _postImShopping(String store) async {
+  Future<BoolFutureOutput> _postImShopping(String store) async {
     try {
       Map<String, dynamic> body = {'store': store};
       await Http.post(
@@ -28,16 +28,10 @@ class _ImShoppingDialogState extends State<ImShoppingDialog> {
             context.read<AppStateProvider>().currentGroup!.id.toString() +
             '/send_shopping_notification',
       );
-      Future.delayed(delayTime()).then((value) => _onPostImShopping());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onPostImShopping() {
-    Navigator.pop(context);
-    Navigator.pop(context);
   }
 
   @override
@@ -99,16 +93,16 @@ class _ImShoppingDialogState extends State<ImShoppingDialog> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         String store = _controller.text;
-                        showDialog(
-                            builder: (context) => FutureSuccessDialog(
-                                  future: _postImShopping(store),
-                                  dataTrueText: 'store_scf',
-                                  onDataTrue: () {
-                                    _onPostImShopping();
-                                  },
-                                ),
-                            context: context,
-                            barrierDismissible: false);
+                        showFutureOutputDialog(
+                          context: context,
+                          future: _postImShopping(store),
+                          outputCallbacks: {
+                            BoolFutureOutput.True: () {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            }
+                          }
+                        );
                       }
                     },
                     child: Icon(Icons.send),

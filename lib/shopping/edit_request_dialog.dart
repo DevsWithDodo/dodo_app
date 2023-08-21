@@ -27,42 +27,49 @@ class _EditRequestDialogState extends State<EditRequestDialog> {
 
   TextEditingController _requestController = TextEditingController();
 
-  Future<bool> _updateRequest(String newRequest) async {
+  late ShoppingRequest _updatedReqest;
+
+  Future<BoolFutureOutput> _updateRequest(String newRequest) async {
     try {
       Map<String, dynamic> body = {'name': newRequest};
       http.Response response = await Http.put(
         uri: '/requests/' + widget.requestId.toString(),
         body: body,
       );
-      Future.delayed(delayTime()).then((value) => _onUpdateRequest(
-          ShoppingRequest.fromJson(jsonDecode(response.body)['data'])));
-      return true;
+      _updatedReqest =
+          ShoppingRequest.fromJson(jsonDecode(response.body)['data']);
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onUpdateRequest(ShoppingRequest request) {
-    deleteCache(
-        uri: generateUri(
-      GetUriKeys.requests, context,
-      queryParams: {'group': context.read<AppStateProvider>().currentGroup!.id.toString()},
-    ));
-    Navigator.pop(context);
-    Navigator.pop(context, request);
   }
 
   void _buttonPressed() {
     if (_requestFormKey.currentState!.validate()) {
       FocusScope.of(context).unfocus();
       String newRequest = _requestController.text;
-      showDialog(
-        builder: (context) => FutureSuccessDialog(
+      showFutureOutputDialog(
+          context: context,
           future: _updateRequest(newRequest),
-        ),
-        barrierDismissible: false,
-        context: context,
-      );
+          outputCallbacks: {
+            BoolFutureOutput.True: () async {
+              await deleteCache( // TODO: event bus?
+                uri: generateUri(
+                  GetUriKeys.requests,
+                  context,
+                  queryParams: {
+                    'group': context
+                        .read<AppStateProvider>()
+                        .currentGroup!
+                        .id
+                        .toString()
+                  },
+                ),
+              );
+              Navigator.pop(context);
+              Navigator.pop(context, _updatedReqest);
+            }
+          });
     }
   }
 

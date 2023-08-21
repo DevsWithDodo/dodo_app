@@ -2,6 +2,9 @@ import 'package:csocsort_szamla/auth/login/password_page.dart';
 
 import 'package:csocsort_szamla/auth/pin_pad.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/invite_url_provider.dart';
+import 'package:csocsort_szamla/groups/join_group.dart';
+import 'package:csocsort_szamla/groups/main_group_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -111,14 +114,28 @@ class _LoginPinPageState extends State<LoginPinPage> {
   void _pushedButton() {
     String? username = widget.username;
     String pin = _pin;
-    showDialog(
-      barrierDismissible: false,
+    showFutureOutputDialog(
       context: context,
-      builder: (context) {
-        return FutureSuccessDialog(
-          future: context.read<AppStateProvider>().login(username!, pin, context),
-        );
-      },
+      future: context.read<AppStateProvider>().login(username!, pin, context),
+      outputCallbacks: {
+        LoginFutureOutputs.main: () => Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => MainPage()),
+          (r) => false  
+        ),
+        LoginFutureOutputs.joinGroup: () => Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => JoinGroup(
+            inviteURL: context.read<InviteUrlProvider>().inviteUrl,
+          )),
+          (route) => false,
+        ),
+        LoginFutureOutputs.joinGroupFromAuth:() => Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => JoinGroup(
+            inviteURL: context.read<InviteUrlProvider>().inviteUrl,
+            fromAuth: true,
+          )),
+          (route) => false,
+        ),
+      }
     );
   }
 }

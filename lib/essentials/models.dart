@@ -352,6 +352,16 @@ class ShoppingRequest {
     );
   }
 
+  ShoppingRequest clone() {
+    return ShoppingRequest(
+      id: this.id,
+      name: this.name,
+      requesterId: this.requesterId,
+      requesterNickname: this.requesterNickname,
+      updatedAt: this.updatedAt,
+    );
+  }
+
   @override
   String toString() {
     return name + '; ' + updatedAt.toString() + '; ' + reactions!.join(', ');

@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 class PaymentMethods extends StatelessWidget  {
   const PaymentMethods({super.key});
 
-  Future<bool> _updatePaymentMethods(List<PaymentMethod> paymentMethods, BuildContext context) async {
+  Future<BoolFutureOutput> _updatePaymentMethods(List<PaymentMethod> paymentMethods, BuildContext context) async {
     try {
       Map<String, dynamic> body = {
         "payment_details":
@@ -22,8 +22,8 @@ class PaymentMethods extends StatelessWidget  {
 
       await Http.put(uri: '/user', body: body);
       context.read<AppStateProvider>().setPaymentMethods(paymentMethods);
-      // context.read<EventBus>().fire(EventBus.refreshBalances);
-      return true;
+      EventBus.instance.fire(EventBus.refreshBalances);
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
@@ -58,14 +58,10 @@ class PaymentMethods extends StatelessWidget  {
             PaymentMethodList(
               key: UniqueKey(),
               onSubmit: (paymentMethods) {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return FutureSuccessDialog(
-                        future: _updatePaymentMethods(paymentMethods, context),
-                        context: context,
-                      );
-                    });
+                showFutureOutputDialog(
+                  context: context,
+                  future: _updatePaymentMethods(paymentMethods, context),
+                );
               },
             ),
           ],

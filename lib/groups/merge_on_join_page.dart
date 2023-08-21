@@ -68,11 +68,15 @@ class _MergeOnJoinPageState extends State<MergeOnJoinPage> {
                 GradientButton(
                   disabled: _selectedMember == null,
                   onPressed: () {
-                    showDialog(
+                    showFutureOutputDialog(
                       context: context,
-                      builder: (context) {
-                        return FutureSuccessDialog(future: _mergeWithGuest());
-                      },
+                      future: _mergeWithGuest(),
+                      outputCallbacks: {
+                        BoolFutureOutput.True: () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        }
+                      }
                     );
                   },
                   child: Text('merge'.tr()),
@@ -85,7 +89,7 @@ class _MergeOnJoinPageState extends State<MergeOnJoinPage> {
     );
   }
 
-  Future<bool> _mergeWithGuest() async {
+  Future<BoolFutureOutput> _mergeWithGuest() async {
     try {
       Map<String, dynamic> body = {
         'member_id': context.read<AppStateProvider>().user!.id,
@@ -95,15 +99,9 @@ class _MergeOnJoinPageState extends State<MergeOnJoinPage> {
             uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString() + '/merge_guest',
             body: body,
           );
-      Future.delayed(delayTime()).then((value) => _onMergeGuest());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onMergeGuest() {
-    Navigator.pop(context);
-    Navigator.pop(context);
   }
 }

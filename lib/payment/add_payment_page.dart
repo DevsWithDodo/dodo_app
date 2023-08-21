@@ -18,25 +18,16 @@ class _AddPaymentPageState extends State<AddPaymentPage>
     with AddModifyPayment {
   var _formKey = GlobalKey<FormState>();
 
-  Future<bool> _postPayment(
+  Future<BoolFutureOutput> _postPayment(
       double amount, String note, Member toMember, BuildContext context) async {
     try {
       Map<String, dynamic> body = generateBody(note, amount, toMember, context);
 
       await Http.post(uri: '/payments', body: body);
-      Future.delayed(delayTime()).then((value) => _onPostPayment(context));
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onPostPayment(BuildContext context) {
-    Navigator.pop(context);
-    Navigator.pop(context);
-    final bus = EventBus.instance;
-    bus.fire(EventBus.refreshBalances);
-    bus.fire(EventBus.refreshPayments);
   }
 
   @override
@@ -169,12 +160,19 @@ class _AddPaymentPageState extends State<AddPaymentPage>
       }
       double amount = double.parse(amountController.text.replaceAll(',', '.'));
       String note = noteController.text;
-      showDialog(
-          builder: (context) => FutureSuccessDialog(
-                future: _postPayment(amount, note, selectedMember!, context),
-              ),
-          barrierDismissible: false,
-          context: context);
+      showFutureOutputDialog(
+        future: _postPayment(amount, note, selectedMember!, context),
+        context: context,
+        outputCallbacks: {
+          BoolFutureOutput.True: () {
+            Navigator.pop(context);
+            Navigator.pop(context);
+            final bus = EventBus.instance;
+            bus.fire(EventBus.refreshBalances);
+            bus.fire(EventBus.refreshPayments);
+          }
+        }
+      );
     }
   }
 }

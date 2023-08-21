@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

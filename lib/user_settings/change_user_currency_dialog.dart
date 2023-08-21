@@ -24,25 +24,16 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
     _currencyCode = context.read<AppStateProvider>().user!.currency;
   }
 
-  Future<bool> _updateGroupCurrency(String currency) async {
+  Future<BoolFutureOutput> _updateGroupCurrency(String currency) async {
     try {
       Map<String, dynamic> body = {"default_currency": currency};
 
       await Http.put(uri: '/user', body: body);
-      context.read<AppStateProvider>().setUserCurrency(currency);      
-      Future.delayed(delayTime()).then((value) => _onUpdateGroupCurrency());
-      return true;
+      context.read<AppStateProvider>().setUserCurrency(currency);
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  Future<void> _onUpdateGroupCurrency() async {
-    await clearGroupCache(context);
-    await deleteCache(uri: generateUri(GetUriKeys.groups, context));
-    await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, context));
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
   }
 
   @override
@@ -79,16 +70,20 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
                 GradientButton(
                   onPressed: () {
                     FocusScope.of(context).unfocus();
-                    showDialog(
-                        builder: (context) => FutureSuccessDialog(
-                              future: _updateGroupCurrency(_currencyCode),
-                              dataTrueText: 'currency_scf',
-                              onDataTrue: () {
-                                _onUpdateGroupCurrency();
-                              },
-                            ),
-                        barrierDismissible: false,
-                        context: context);
+                    showFutureOutputDialog(
+                        context: context,
+                        future: _updateGroupCurrency(_currencyCode),
+                        outputCallbacks: {
+                          BoolFutureOutput.True: () async {
+                            await clearGroupCache(context);
+                            await deleteCache(uri: generateUri(GetUriKeys.groups, context));
+                            await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, context)); // TODO: event bus?
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(builder: (context) => MainPage()),
+                              (r) => false,
+                            );
+                          }
+                        });
                   },
                   child: Icon(Icons.check),
                 ),

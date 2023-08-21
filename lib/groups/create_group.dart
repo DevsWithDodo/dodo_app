@@ -32,11 +32,11 @@ class _CreateGroupState extends State<CreateGroup> {
     super.initState();
     User user = context.read<AppStateProvider>().user!;
     _nicknameController = TextEditingController(
-      text: user.username[0].toUpperCase() + user.username.substring(1));
+        text: user.username[0].toUpperCase() + user.username.substring(1));
     _defaultCurrencyValue = user.currency;
   }
 
-  Future<bool> _createGroup(
+  Future<BoolFutureOutput> _createGroup(
       String groupName, String nickname, String? currency) async {
     try {
       Map<String, dynamic> body = {
@@ -44,29 +44,24 @@ class _CreateGroupState extends State<CreateGroup> {
         'currency': currency,
         'member_nickname': nickname
       };
-      http.Response response =
-          await Http.post(uri: '/groups', body: body);
+      http.Response response = await Http.post(uri: '/groups', body: body);
       Map<String, dynamic> decoded = jsonDecode(response.body);
       AppStateProvider userProvider = context.read<AppStateProvider>();
-      userProvider.setGroups(userProvider.user!.groups + [
-        Group(
-          id: decoded['group_id'],
-          name: decoded['group_name'],
-          currency: decoded['currency'],
-        )
-      ], notify: false);
+      userProvider.setGroups(
+          userProvider.user!.groups +
+              [
+                Group(
+                  id: decoded['group_id'],
+                  name: decoded['group_name'],
+                  currency: decoded['currency'],
+                )
+              ],
+          notify: false);
       userProvider.setGroup(userProvider.user!.groups.last);
-      Future.delayed(delayTime()).then((value) => _onCreateGroup());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onCreateGroup() async {
-    await clearAllCache();
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
   }
 
   @override
@@ -193,17 +188,19 @@ class _CreateGroupState extends State<CreateGroup> {
             if (_formKey.currentState!.validate()) {
               String token = _groupName.text;
               String nickname = _nicknameController.text;
-              showDialog(
-                  builder: (context) => FutureSuccessDialog(
-                        future: _createGroup(
-                            token, nickname, _defaultCurrencyValue),
-                        onDataTrue: () {
-                          _onCreateGroup();
-                        },
-                        dataTrueText: 'creation_scf',
-                      ),
-                  barrierDismissible: false,
-                  context: context);
+              showFutureOutputDialog(
+                future: _createGroup(token, nickname, _defaultCurrencyValue),
+                context: context,
+                outputCallbacks: {
+                  BoolFutureOutput.True: () async {
+                    await clearAllCache();
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => MainPage()),
+                      (r) => false,
+                    );
+                  }
+                },
+              );
             }
           },
         ),

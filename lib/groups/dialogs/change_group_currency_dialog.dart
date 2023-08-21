@@ -1,13 +1,12 @@
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/essentials/widgets/currency_picker_dropdown.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../essentials/widgets/currency_picker_dropdown.dart';
-import '../main_group_page.dart';
 
 class ChangeGroupCurrencyDialog extends StatefulWidget {
   @override
@@ -18,7 +17,7 @@ class ChangeGroupCurrencyDialog extends StatefulWidget {
 class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
   late String _currencyCode;
 
-  Future<bool> _updateGroupCurrency(String currency) async {
+  Future<BoolFutureOutput> _updateGroupCurrency(String currency) async {
     try {
       Map<String, dynamic> body = {"currency": currency};
 
@@ -29,19 +28,10 @@ class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
       );
       context.read<AppStateProvider>().setGroupCurrency(currency);
 
-      Future.delayed(delayTime()).then((value) => _onUpdateGroupCurrency());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  Future<void> _onUpdateGroupCurrency() async {
-    await clearGroupCache(context);
-    await deleteCache(uri: generateUri(GetUriKeys.groups, context));
-    await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, context));
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
   }
 
   @override
@@ -84,16 +74,18 @@ class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
                 GradientButton(
                   onPressed: () {
                     FocusScope.of(context).unfocus();
-                    showDialog(
-                        builder: (context) => FutureSuccessDialog(
-                              future: _updateGroupCurrency(_currencyCode),
-                              dataTrueText: 'currency_scf',
-                              onDataTrue: () {
-                                _onUpdateGroupCurrency();
-                              },
-                            ),
-                        barrierDismissible: false,
-                        context: context);
+                    showFutureOutputDialog(
+                      context: context,
+                      future: _updateGroupCurrency(_currencyCode),
+                      outputCallbacks: {
+                        BoolFutureOutput.True: () async {
+                          await clearGroupCache(context);
+                          await deleteCache(uri: generateUri(GetUriKeys.groups, context)); // TODO: event bus?
+                          await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, context));
+                          Navigator.of(context).pop();
+                        }
+                      }
+                    );
                   },
                   child: Icon(Icons.check),
                 ),

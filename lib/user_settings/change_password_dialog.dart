@@ -21,7 +21,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   int _index = 0;
   List<TextFormField> textFields = <TextFormField>[];
 
-  Future<bool> _updatePassword(
+  Future<BoolFutureOutput> _updatePassword(
       String oldPassword, String newPassword) async {
     try {
       Map<String, dynamic> body = {
@@ -32,16 +32,10 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       };
 
       await Http.put(uri: '/user', body: body);
-      Future.delayed(delayTime()).then((value) => _onUpdatePassword());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onUpdatePassword() {
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => MainPage()), (route) => false);
   }
 
   void initTextFields() {
@@ -87,8 +81,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           minimalLength(value, 4),
         ]),
         decoration: InputDecoration(
-          hintText:
-              'new_pin_confirm'.tr(),
+          hintText: 'new_pin_confirm'.tr(),
           prefixIcon: Icon(
             Icons.password,
           ),
@@ -154,18 +147,21 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                             _index++;
                           });
                         } else {
-                          showDialog(
-                              builder: (context) => FutureSuccessDialog(
-                                    future: _updatePassword(
-                                        _oldPinController.text,
-                                        _newPinController.text,
-                                      ),
-                                    onDataTrue: () {
-                                      _onUpdatePassword();
-                                    },
-                                  ),
-                              barrierDismissible: false,
-                              context: context);
+                          showFutureOutputDialog(
+                            context: context,
+                            future: _updatePassword(
+                              _oldPinController.text,
+                              _newPinController.text,
+                            ),
+                            outputCallbacks: {
+                              BoolFutureOutput.True: () {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(builder: (context) => MainPage()),
+                                  (route) => false,
+                                );
+                              }
+                            },
+                          );
                         }
                       }
                     },

@@ -37,20 +37,13 @@ class _BoostGroupState extends State<BoostGroup> {
     }
   }
 
-  Future<bool> _postBoost() async {
+  Future<BoolFutureOutput> _postBoost() async {
     try {
       await Http.post(uri: '/groups/' + context.read<AppStateProvider>().user!.group!.id.toString() + '/boost');
-      Future.delayed(delayTime()).then((value) => _onPostBoost());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  Future<void> _onPostBoost() async {
-    await clearGroupCache(context);
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
   }
 
   @override
@@ -135,17 +128,19 @@ class _BoostGroupState extends State<BoostGroup> {
                                           context: context)
                                       .then((value) {
                                     if (value ?? false) {
-                                      showDialog(
-                                          builder: (context) =>
-                                              FutureSuccessDialog(
-                                                future: _postBoost(),
-                                                dataTrueText: 'boost_scf',
-                                                onDataTrue: () {
-                                                  _onPostBoost();
-                                                },
-                                              ),
-                                          barrierDismissible: false,
-                                          context: context);
+                                      showFutureOutputDialog(
+                                        future: _postBoost(),
+                                        context: context,
+                                        outputCallbacks: {
+                                          BoolFutureOutput.True: () async {
+                                            await clearGroupCache(context);
+                                            Navigator.of(context).pushAndRemoveUntil(
+                                                MaterialPageRoute(builder: (context) => MainPage()), 
+                                                (r) => false,
+                                            );
+                                          }
+                                        }
+                                      );
                                     }
                                   });
                                 }

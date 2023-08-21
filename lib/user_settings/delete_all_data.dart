@@ -15,28 +15,19 @@ class DeleteAllData extends StatefulWidget {
 }
 
 class _DeleteAllDataState extends State<DeleteAllData> {
-  Future<bool> _deleteAllData() async {
+  Future<BoolFutureOutput> _deleteAllData() async {
     try {
       await Http.delete(uri: '/user');
-      clearAllCache();
+      await clearAllCache();
       AppStateProvider userProvider = context.read<AppStateProvider>();
       userProvider.setGroup(null);
       userProvider.setGroups([]);
       userProvider.setUser(null);
-      Future.delayed(delayTime()).then((value) => _onDeleteAllData());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
   }
-
-  void _onDeleteAllData() {
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
-        (r) => false);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -79,15 +70,17 @@ class _DeleteAllDataState extends State<DeleteAllData> {
                             context: context)
                         .then((value) {
                       if (value ?? false) {
-                        showDialog(
-                            builder: (context) => FutureSuccessDialog(
-                                  future: _deleteAllData(),
-                                  dataTrueText: 'user_delete_scf',
-                                  onDataTrue: () {
-                                    _onDeleteAllData();
-                                  },
+                        showFutureOutputDialog(
+                          context: context,
+                          future: _deleteAllData(),
+                          outputCallbacks: {
+                            BoolFutureOutput.True: () =>
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
+                                  (r) => false,
                                 ),
-                            context: context);
+                          },
+                        );
                       }
                     });
                   },

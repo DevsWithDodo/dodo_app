@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import '../essentials/http.dart';
 import '../essentials/widgets/future_success_dialog.dart';
 
 class QRScannerPage extends StatefulWidget {
@@ -56,13 +55,16 @@ class _QRScannerPageState extends State<QRScannerPage> {
                         return;
                       }
                       code = code.replaceAll('dodo://', '');
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return FutureSuccessDialog(
-                              future: _qrRead(code),
-                            );
-                          });
+                      showFutureOutputDialog(
+                        context: context,
+                        future: _qrRead(),
+                        outputCallbacks: {
+                          BoolFutureOutput.True: () {
+                            Navigator.pop(context);
+                            Navigator.pop(context, code);
+                          }
+                        },
+                      );
                     }
                   },
                 ),
@@ -106,14 +108,8 @@ class _QRScannerPageState extends State<QRScannerPage> {
     );
   }
 
-  Future<bool> _qrRead(String? code) async {
+  Future<BoolFutureOutput> _qrRead() async {
     await Future.delayed(Duration(milliseconds: 400));
-    Future.delayed(delayTime()).then((value) => _onQRRead(code));
-    return Future.value(true);
-  }
-
-  void _onQRRead(code) {
-    Navigator.pop(context);
-    Navigator.pop(context, code);
+    return BoolFutureOutput.True;
   }
 }

@@ -12,42 +12,31 @@ class DownloadExportDialog extends StatefulWidget {
 }
 
 class _DownloadExportDialogState extends State<DownloadExportDialog> {
+  late String url;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  Future<bool> _downloadPdf() async {
+  Future<BoolFutureOutput> _downloadPdf() async {
     try {
       Response response =
           await Http.get(uri: generateUri(GetUriKeys.groupExportPdf, context));
-      String url = response.body;
-      Future.delayed(delayTime()).then((value) => _onDownloadPdf(url));
-      return true;
+      url = response.body;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
   }
 
-  Future<bool> _downloadXls() async {
+  Future<BoolFutureOutput> _downloadXls() async {
     try {
       Response response =
           await Http.get(uri: generateUri(GetUriKeys.groupExportXls, context));
-      String url = response.body;
-      Future.delayed(delayTime()).then((value) => _onDownloadXls(url));
-      return true;
+      url = response.body;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
   }
 
-  void _onDownloadPdf(String url) {
-    Navigator.pop(context);
-    launchUrlString(url, mode: LaunchMode.externalApplication);
-  }
-
-  void _onDownloadXls(String url) {
+  void _onDownloadComplete(String url) {
     Navigator.pop(context);
     launchUrlString(url, mode: LaunchMode.externalApplication);
   }
@@ -89,13 +78,12 @@ class _DownloadExportDialogState extends State<DownloadExportDialog> {
             GradientButton(
               child: Icon(Icons.table_chart),
               onPressed: () {
-                showDialog(
+                showFutureOutputDialog(
                   context: context,
-                  builder: (context) {
-                    return FutureSuccessDialog(
-                      future: _downloadXls(),
-                    );
-                  },
+                  future: _downloadXls(),
+                  outputCallbacks: {
+                    BoolFutureOutput.True: () => _onDownloadComplete(this.url) // TODO: test
+                  }
                 );
               },
             ),
@@ -117,13 +105,12 @@ class _DownloadExportDialogState extends State<DownloadExportDialog> {
                 SizedBox(height: 10),
                 GradientButton(
                   onPressed: () {
-                    showDialog(
+                    showFutureOutputDialog(
                       context: context,
-                      builder: (context) {
-                        return FutureSuccessDialog(
-                          future: _downloadPdf(),
-                        );
-                      },
+                      future: _downloadPdf(),
+                      outputCallbacks: {
+                        BoolFutureOutput.True: () => _onDownloadComplete(this.url) // TODO: test
+                      }
                     );
                   },
                   child: Icon(Icons.picture_as_pdf),

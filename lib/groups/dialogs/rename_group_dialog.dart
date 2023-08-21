@@ -11,7 +11,6 @@ import '../../essentials/http.dart';
 import '../../essentials/validation_rules.dart';
 import '../../essentials/widgets/future_success_dialog.dart';
 import '../../essentials/widgets/gradient_button.dart';
-import '../main_group_page.dart';
 
 class RenameGroupDialog extends StatefulWidget {
   @override
@@ -22,30 +21,22 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
   var _groupNameFormKey = GlobalKey<FormState>();
   var _groupNameController = TextEditingController();
 
-  Future<bool> _updateGroupName(String groupName) async {
+  Future<BoolFutureOutput> _updateGroupName(String groupName) async {
     try {
       Map<String, dynamic> body = {"name": groupName};
 
       http.Response response = await Http.put(
-            uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString(),
-            body: body,
-          );
+        uri: '/groups/' +
+            context.read<AppStateProvider>().currentGroup!.id.toString(),
+        body: body,
+      );
 
       Map<String, dynamic> decoded = jsonDecode(response.body);
       context.read<AppStateProvider>().setGroupName(decoded['group_name']);
-      Future.delayed(delayTime()).then((value) => _onUpdateGroupName());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onUpdateGroupName() {
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
-    _groupNameController.text = '';
-    clearGroupCache(context);
-    deleteCache(uri: generateUri(GetUriKeys.groups, context));
   }
 
   @override
@@ -109,16 +100,18 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
     if (_groupNameFormKey.currentState!.validate()) {
       FocusScope.of(context).unfocus();
       String groupName = _groupNameController.text;
-      showDialog(
-          builder: (context) => FutureSuccessDialog(
-                future: _updateGroupName(groupName),
-                dataTrueText: 'nickname_scf',
-                onDataTrue: () {
-                  _onUpdateGroupName();
-                },
-              ),
-          barrierDismissible: false,
-          context: context);
+      showFutureOutputDialog(
+        context: context,
+        future: _updateGroupName(groupName),
+        outputCallbacks: {
+          BoolFutureOutput.True: () async {
+            _groupNameController.text = '';
+            await clearGroupCache(context);
+            await deleteCache(uri: generateUri(GetUriKeys.groups, context)); // TODO: event bus?
+            Navigator.of(context).pop();
+          }
+        }
+      );
     }
   }
 }

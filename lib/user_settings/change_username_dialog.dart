@@ -8,7 +8,6 @@ import '../essentials/http.dart';
 import '../essentials/validation_rules.dart';
 import '../essentials/widgets/future_success_dialog.dart';
 import '../essentials/widgets/gradient_button.dart';
-import '../groups/main_group_page.dart';
 
 class ChangeUsernameDialog extends StatefulWidget {
   @override
@@ -19,24 +18,16 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
   var _usernameFormKey = GlobalKey<FormState>();
   var _usernameController = TextEditingController();
 
-  Future<bool> _updateUsername(String newUsername) async {
+  Future<BoolFutureOutput> _updateUsername(String newUsername) async {
     try {
       Map<String, dynamic> body = {'username': newUsername};
 
       await Http.put(uri: '/user', body: body);
       context.read<AppStateProvider>().setUsername(newUsername);
-      Future.delayed(delayTime()).then((value) => _onUpdateUsername());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onUpdateUsername() {
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
-    _usernameController.text = '';
-    // clearAllCache();
   }
 
   @override
@@ -90,16 +81,10 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
                       if (_usernameFormKey.currentState!.validate()) {
                         FocusScope.of(context).unfocus();
                         String username = _usernameController.text;
-                        showDialog(
-                            builder: (context) => FutureSuccessDialog(
-                                  future: _updateUsername(username),
-                                  dataTrueText: 'nickname_scf',
-                                  onDataTrue: () {
-                                    _onUpdateUsername();
-                                  },
-                                ),
-                            barrierDismissible: false,
-                            context: context);
+                        showFutureOutputDialog(
+                          context: context,
+                          future: _updateUsername(username),
+                        );
                       }
                     },
                     child: Icon(Icons.check),

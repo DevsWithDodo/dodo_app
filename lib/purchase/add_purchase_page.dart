@@ -34,25 +34,16 @@ class _AddPurchasePageState extends State<AddPurchasePage>
   GlobalKey _calculatorKey = GlobalKey();
   GlobalKey _receiversKey = GlobalKey();
 
-  Future<bool> _postPurchase(List<Member> members, double amount, String name,
-      BuildContext context) async {
+  Future<BoolFutureOutput> _postPurchase(List<Member> members, double amount,
+      String name, BuildContext context) async {
     try {
       Map<String, dynamic> body = generateBody(name, amount, members, context);
 
       await Http.post(uri: '/purchases', body: body);
-      Future.delayed(delayTime()).then((value) => _onPostPurchase(context));
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onPostPurchase(BuildContext context) {
-    Navigator.pop(context);
-    Navigator.pop(context);
-    final bus = EventBus.instance;
-    bus.fire(EventBus.refreshBalances);
-    bus.fire(EventBus.refreshPurchases);
   }
 
   @override
@@ -314,12 +305,19 @@ class _AddPurchasePageState extends State<AddPurchasePage>
       membersMap.forEach((Member key, bool value) {
         if (value) members.add(key);
       });
-      showDialog(
-          builder: (context) => FutureSuccessDialog(
-                future: _postPurchase(members, amount, name, context),
-              ),
-          barrierDismissible: false,
-          context: context);
+      showFutureOutputDialog(
+        context: context,
+        future: _postPurchase(members, amount, name, context),
+        outputCallbacks: {
+          BoolFutureOutput.True: () {
+            Navigator.pop(context);
+            Navigator.pop(context);
+            final bus = EventBus.instance;
+            bus.fire(EventBus.refreshBalances);
+            bus.fire(EventBus.refreshPurchases);
+          }
+        },
+      );
     }
   }
 }

@@ -1,5 +1,7 @@
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
+import 'package:csocsort_szamla/groups/join_group.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -96,16 +98,25 @@ class _PersonalisedAdsPageState extends State<PersonalisedAdsPage> {
                       GradientButton(
                         child: Icon(Icons.send),
                         onPressed: () {
-                          showDialog(
+                          showFutureOutputDialog(
                             context: context,
-                            builder: (context) => FutureSuccessDialog(
-                              future: context.read<AppStateProvider>().register(
-                                  widget.username,
-                                  widget.pin,
-                                  widget.defaultCurrency,
-                                  _personalisedAds,
-                                  context),
-                            ),
+                            future: context.read<AppStateProvider>().register(
+                                widget.username,
+                                widget.pin,
+                                widget.defaultCurrency,
+                                _personalisedAds,
+                                context),
+                            outputCallbacks: {
+                              BoolFutureOutput.True: () => Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(builder: (context) => JoinGroup(
+                                    fromAuth: true,
+                                    inviteURL: context
+                                        .read<InviteUrlProvider>()
+                                        .inviteUrl,
+                                  )),
+                                  (r) => false
+                                ),
+                            },
                           );
                         },
                       ),

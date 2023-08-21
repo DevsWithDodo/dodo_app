@@ -2,7 +2,6 @@ import 'package:csocsort_szamla/auth/login/forgot_password_dialog.dart';
 import 'package:csocsort_szamla/auth/login/login_pin_page.dart';
 import 'package:csocsort_szamla/auth/registration/register_pin_page.dart';
 import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:expandable/expandable.dart';
@@ -264,12 +263,25 @@ class _NamePageState extends State<NamePage> {
       _usernameTaken = false;
       _showPrivacyPolicyValidation = false;
       if (_formKey.currentState!.validate() && _privacyPolicy) {
-        showDialog(
+        showFutureOutputDialog(
           context: context,
-          builder: (context) => FutureSuccessDialog(
-            future: _checkUsernameTaken(),
-            dataFalseText: 'username_taken',
-          ),
+          future: _checkUsernameTaken(),
+          outputTexts: {
+            BoolFutureOutput.False: 'username_taken'
+          },
+          outputCallbacks: {
+            BoolFutureOutput.True:() {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RegisterPinPage(
+                    username: _usernameController.text,
+                  ),
+                ),
+              );
+            }
+          }
         );
       } else if (!_privacyPolicy) {
         setState(() {
@@ -279,7 +291,7 @@ class _NamePageState extends State<NamePage> {
     }
   }
 
-  Future<bool> _checkUsernameTaken() async {
+  Future<BoolFutureOutput> _checkUsernameTaken() async {
     http.Response response = await http.post(
       Uri.parse((useTest ? TEST_URL : APP_URL) + '/validate_username'),
       body: {
@@ -287,24 +299,11 @@ class _NamePageState extends State<NamePage> {
       },
     );
     if (response.statusCode == 204) {
-      Future.delayed(delayTime()).then((value) => _onCheckUsernameTaken());
-      return true;
+      return BoolFutureOutput.True;
     } else {
       _usernameTaken = true;
       _formKey.currentState!.validate();
-      return false;
+      return BoolFutureOutput.False;
     }
-  }
-
-  void _onCheckUsernameTaken() {
-    Navigator.pop(context);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RegisterPinPage(
-          username: _usernameController.text,
-        ),
-      ),
-    );
   }
 }

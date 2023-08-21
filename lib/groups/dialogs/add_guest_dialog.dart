@@ -8,7 +8,6 @@ import '../../essentials/http.dart';
 import '../../essentials/validation_rules.dart';
 import '../../essentials/widgets/future_success_dialog.dart';
 import '../../essentials/widgets/gradient_button.dart';
-import '../main_group_page.dart';
 
 class AddGuestDialog extends StatefulWidget {
   AddGuestDialog();
@@ -20,7 +19,7 @@ class AddGuestDialog extends StatefulWidget {
 class _AddGuestDialogState extends State<AddGuestDialog> {
   TextEditingController _nicknameController = TextEditingController();
   var _nicknameFormKey = GlobalKey<FormState>();
-  Future<bool> _addGuest(String username) async {
+  Future<BoolFutureOutput> _addGuest(String username) async {
     try {
       Map<String, dynamic> body = {
         "language": context.locale.languageCode,
@@ -30,17 +29,10 @@ class _AddGuestDialogState extends State<AddGuestDialog> {
             uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString() + '/add_guest',
             body: body,
           );
-      Future.delayed(delayTime()).then((value) => _onAddGuest());
-      return true;
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  Future<void> _onAddGuest() async {
-    await clearGroupCache(context);
-    Navigator.pushAndRemoveUntil(context,
-        MaterialPageRoute(builder: (context) => MainPage()), (route) => false);
   }
 
   @override
@@ -109,16 +101,16 @@ class _AddGuestDialogState extends State<AddGuestDialog> {
   void _buttonPush() {
     if (_nicknameFormKey.currentState!.validate()) {
       FocusScope.of(context).requestFocus(FocusNode());
-      showDialog(
-          builder: (context) => FutureSuccessDialog(
-                future: _addGuest(_nicknameController.text),
-                onDataTrue: () async {
-                  _onAddGuest();
-                },
-                dataTrueText: 'add_guest_scf',
-              ),
-          barrierDismissible: false,
-          context: context);
+      showFutureOutputDialog(
+          context: context,
+          future: _addGuest(_nicknameController.text),
+          outputCallbacks: {
+            BoolFutureOutput.True: () async {
+              await clearGroupCache(context);
+              Navigator.of(context).pop();
+            }
+          }
+      );
     }
   }
 }

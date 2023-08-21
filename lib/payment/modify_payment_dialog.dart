@@ -20,25 +20,19 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog>
 
   int _index = 0;
 
-  Future<bool> _updatePayment(
+  Future<BoolFutureOutput> _updatePayment(
       double amount, String note, Member toMember, int? paymentId) async {
     try {
       Map<String, dynamic> body = generateBody(note, amount, toMember, context);
 
       await Http.put(
-            uri: '/payments/' + paymentId.toString(),
-            body: body,
-          );
-      Future.delayed(delayTime()).then((value) => _onUpdatePayment());
-      return true;
+        uri: '/payments/' + paymentId.toString(),
+        body: body,
+      );
+      return BoolFutureOutput.True;
     } catch (_) {
       throw _;
     }
-  }
-
-  void _onUpdatePayment() {
-    Navigator.pop(context);
-    Navigator.pop(context, true);
   }
 
   @override
@@ -146,15 +140,17 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog>
                           double amount = double.parse(
                               amountController.text.replaceAll(',', '.'));
                           String note = noteController.text;
-                          showDialog(
-                              builder: (context) => FutureSuccessDialog(
-                                    future: _updatePayment(
-                                        amount,
-                                        note,
-                                        selectedMember!,
-                                        widget.savedPayment!.id),
-                                  ),
-                              context: context);
+                          showFutureOutputDialog(
+                            future: _updatePayment(amount, note,
+                                selectedMember!, widget.savedPayment!.id),
+                            context: context,
+                            outputCallbacks: {
+                              BoolFutureOutput.True: () {
+                                Navigator.pop(context);
+                                Navigator.pop(context, true);
+                              }
+                            },
+                          );
                         }
                       }
                     },
