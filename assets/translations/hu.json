@@ -468,5 +468,7 @@
     "payment-method.name.hint": "pl. Számlaszám",
     "member.payment-methods.title": "Fizetési módok",
     "member.payment-methods.subtitle": "A kiválasztott tagnak így lehet fizetni",
-    "member.payment-methods.none": "A tag még nem adott meg fizetési módot"
+    "member.payment-methods.none": "A tag még nem adott meg fizetési módot",
+
+    "clipboard.cop-successful": "A vágólapra másolva"
 }

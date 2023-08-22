@@ -32,78 +32,83 @@ class _NecessaryPaymentsDialogState extends State<NecessaryPaymentsDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'payments_needed'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Text(
-              'payments_needed_explanation'.tr(),
-              textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Flexible(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: _generatePaymentEntries(),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: 500,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'payments_needed'.tr(),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: Theme.of(context).colorScheme.onSurface),
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Text(
+                'payments_needed_explanation'.tr(),
+                textAlign: TextAlign.center,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall!
+                    .copyWith(color: Theme.of(context).colorScheme.onSurface),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: _generatePaymentEntries(),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                GradientButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('back'.tr()),
-                ),
-                GradientButton(
-                  child: Icon(Icons.copy),
-                  onPressed: () {
-                    String currency =
-                        context.read<AppStateProvider>().currentGroup!.currency;
-                    int longestPayerNick = _payments
-                        .map((e) => e.payerNickname.length)
-                        .reduce((value, element) =>
-                            value > element ? value : element);
-                    int longestTakerNick = _payments
-                        .map((e) => e.takerNickname.length)
-                        .reduce((value, element) =>
-                            value > element ? value : element);
-                    Clipboard.setData(ClipboardData(
-                      text: _payments.map((payment) {
-                        String firstSpaces = ' ' *
-                            (longestPayerNick - payment.payerNickname.length);
-                        String secondSpaces = ' ' *
-                            (longestTakerNick - payment.takerNickname.length);
-                        return "${payment.payerNickname}${firstSpaces}\t➡️\t${payment.takerNickname}:${secondSpaces}\t${payment.amount.toMoneyString(currency, withSymbol: true)}";
-                      }).join('\n'),
-                    ));
-                  },
-                )
-              ],
-            )
-          ],
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  GradientButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('back'.tr()),
+                  ),
+                  GradientButton(
+                    child: Icon(Icons.copy),
+                    onPressed: () {
+                      String currency =
+                          context.read<AppStateProvider>().currentGroup!.currency;
+                      int longestPayerNick = _payments
+                          .map((e) => e.payerNickname.length)
+                          .reduce((value, element) =>
+                              value > element ? value : element);
+                      int longestTakerNick = _payments
+                          .map((e) => e.takerNickname.length)
+                          .reduce((value, element) =>
+                              value > element ? value : element);
+                      Clipboard.setData(ClipboardData(
+                        text: _payments.map((payment) {
+                          String firstSpaces = ' ' *
+                              (longestPayerNick - payment.payerNickname.length);
+                          String secondSpaces = ' ' *
+                              (longestTakerNick - payment.takerNickname.length);
+                          return "${payment.payerNickname}${firstSpaces}\t➡️\t${payment.takerNickname}:${secondSpaces}\t${payment.amount.toMoneyString(currency, withSymbol: true)}";
+                        }).join('\n'),
+                      ));
+                    },
+                  )
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

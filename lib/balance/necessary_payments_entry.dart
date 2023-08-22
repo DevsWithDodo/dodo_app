@@ -33,7 +33,7 @@ class NecessaryPaymentsEntry extends StatelessWidget {
                   0: FlexColumnWidth(1),
                   1: FractionColumnWidth(0.1),
                   2: FlexColumnWidth(1),
-                  3: FractionColumnWidth(0.1),
+                  3: FixedColumnWidth(40),
                 },
                 children: payments
                     .mapIndexed(
@@ -59,7 +59,9 @@ class NecessaryPaymentsEntry extends StatelessWidget {
                               Text(
                                 payment.takerNickname,
                                 textAlign: TextAlign.end,
-                                style: Theme.of(context).textTheme.bodyLarge,
+                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                  height: 0.95,
+                                ),
                               ),
                               Text(
                                 payment.amount.toMoneyString(
@@ -90,12 +92,11 @@ class NecessaryPaymentsEntry extends StatelessWidget {
                                     );
                                   });
                             },
-                            icon: Icon(Icons.search),
+                            icon: Icon(Icons.payment),
                           ),
                         ],
                       ),
-                    )
-                    .toList(),
+                    ).toList(),
               ),
             ),
           );

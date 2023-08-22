@@ -470,5 +470,7 @@
     "payment-method.name.hint": "eg. IBAN",
     "member.payment-methods.title": "Payment methods",
     "member.payment-methods.subtitle": "The chosen member can be paid via the following methods",
-    "member.payment-methods.none": "The member hasn't added any payment methods yet"
+    "member.payment-methods.none": "The member hasn't added any payment methods yet",
+
+    "clipboard.cop-successful": "Copied successfully"
 }
