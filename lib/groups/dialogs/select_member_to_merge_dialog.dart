@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
@@ -150,8 +151,10 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
                               future: _mergeGuest(),
                               outputCallbacks: {
                                 BoolFutureOutput.True: () async {
-                                  await clearGroupCache(context);
-                                  await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, context)); // TODO: event bus?
+                                  EventBus.instance.fire(EventBus.refreshBalances);
+                                  EventBus.instance.fire(EventBus.refreshPurchases);
+                                  EventBus.instance.fire(EventBus.refreshPayments);
+                                  EventBus.instance.fire(EventBus.refreshShopping);
                                   Navigator.of(context).pop();
                                 }
                               }

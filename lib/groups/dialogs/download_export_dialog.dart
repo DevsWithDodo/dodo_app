@@ -82,7 +82,7 @@ class _DownloadExportDialogState extends State<DownloadExportDialog> {
                   context: context,
                   future: _downloadXls(),
                   outputCallbacks: {
-                    BoolFutureOutput.True: () => _onDownloadComplete(this.url) // TODO: test
+                    BoolFutureOutput.True: () => _onDownloadComplete(this.url)
                   }
                 );
               },
@@ -109,7 +109,7 @@ class _DownloadExportDialogState extends State<DownloadExportDialog> {
                       context: context,
                       future: _downloadPdf(),
                       outputCallbacks: {
-                        BoolFutureOutput.True: () => _onDownloadComplete(this.url) // TODO: test
+                        BoolFutureOutput.True: () => _onDownloadComplete(this.url),
                       }
                     );
                   },

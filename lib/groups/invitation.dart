@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
@@ -534,7 +535,7 @@ class _ApproveMemberState extends State<ApproveMember> {
       future: _postApproveMember(widget.member!.id, approve),
       outputCallbacks: {
         BoolFutureOutput.True: () async {
-          await clearGroupCache(context); // TODO: event bus?
+          EventBus.instance.fire(EventBus.refreshBalances);
           Navigator.pop(context);
           Navigator.pop(context, true);
         }

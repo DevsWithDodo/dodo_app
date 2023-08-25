@@ -1,3 +1,4 @@
+import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/currency_picker_dropdown.dart';
@@ -80,8 +81,7 @@ class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
                       outputCallbacks: {
                         BoolFutureOutput.True: () async {
                           await clearGroupCache(context);
-                          await deleteCache(uri: generateUri(GetUriKeys.groups, context)); // TODO: event bus?
-                          await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, context));
+                          EventBus.instance.fire(EventBus.refreshBalances);
                           Navigator.of(context).pop();
                         }
                       }

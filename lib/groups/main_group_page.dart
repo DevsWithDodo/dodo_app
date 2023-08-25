@@ -202,12 +202,6 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     }
   }
 
-  Future clearRelevantCache() async {
-    await clearGroupCache(context);
-    await deleteCache(uri: generateUri(GetUriKeys.groups, context));
-    await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, context));
-  }
-
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -376,7 +370,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           bus.fire(EventBus.refreshShopping);
           bus.fire(EventBus.refreshStatistics);
           bus.fire(EventBus.refreshMainDialog);
-          if (isOnline) await clearRelevantCache();
+          if (isOnline) await clearGroupCache(context);
           _sumBalance = _getSumBalance();
           _groups =
               _getGroups(); // setState not needed, refreshBalances will set state

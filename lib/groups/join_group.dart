@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 
 import 'package:csocsort_szamla/auth/login_or_register_page.dart';
 import 'package:csocsort_szamla/essentials/ad_management.dart';
+import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
@@ -447,7 +448,7 @@ class _JoinGroupState extends State<JoinGroup> {
                         future: _joinGroup(token, nickname),
                         outputCallbacks: {
                           BoolFutureOutput.True: () async {
-                            await clearAllCache(); // TODO: event bus?
+                            EventBus.instance.fire(EventBus.refreshGroups);
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(builder: (context) => MainPage()), 
                               (r) => false,

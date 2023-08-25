@@ -196,7 +196,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                 future: _removeMember(widget.member!.id),
                                 outputCallbacks: {
                                   BoolFutureOutput.True: () async {
-                                    await clearGroupCache(context); // TODO: event bus
+                                    EventBus.instance.fire(EventBus.refreshBalances);
                                     Navigator.of(context).pop();
                                   }
                                 }
@@ -265,7 +265,6 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                   future: _removeMember(null),
                                   outputCallbacks: {
                                     BoolFutureOutput.True: () async {
-                                      await clearAllCache(); // TODO: event bus
                                       if (context.read<AppStateProvider>().currentGroup != null) {
                                         Navigator.of(context).pushAndRemoveUntil(
                                           MaterialPageRoute(builder: (context) => MainPage()), 
@@ -280,6 +279,12 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                           (r) => false,
                                         );
                                       }
+                                      EventBus.instance.fire(EventBus.refreshBalances);
+                                      EventBus.instance.fire(EventBus.refreshGroups);
+                                      EventBus.instance.fire(EventBus.refreshPurchases);
+                                      EventBus.instance.fire(EventBus.refreshPayments);
+                                      EventBus.instance.fire(EventBus.refreshShopping);
+                                      EventBus.instance.fire(EventBus.refreshStatistics);
                                     },
                                   }
                                 );

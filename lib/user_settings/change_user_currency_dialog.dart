@@ -1,3 +1,4 @@
+import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
@@ -75,9 +76,10 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
                         future: _updateGroupCurrency(_currencyCode),
                         outputCallbacks: {
                           BoolFutureOutput.True: () async {
-                            await clearGroupCache(context);
-                            await deleteCache(uri: generateUri(GetUriKeys.groups, context));
-                            await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, context)); // TODO: event bus?
+                            EventBus.instance.fire(EventBus.refreshBalances);
+                            EventBus.instance.fire(EventBus.refreshPurchases);
+                            EventBus.instance.fire(EventBus.refreshPayments);
+                            EventBus.instance.fire(EventBus.refreshStatistics);
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(builder: (context) => MainPage()),
                               (r) => false,

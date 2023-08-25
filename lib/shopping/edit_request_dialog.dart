@@ -2,14 +2,12 @@ import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
 import '../essentials/validation_rules.dart';
 
@@ -53,19 +51,6 @@ class _EditRequestDialogState extends State<EditRequestDialog> {
           future: _updateRequest(newRequest),
           outputCallbacks: {
             BoolFutureOutput.True: () async {
-              await deleteCache( // TODO: event bus?
-                uri: generateUri(
-                  GetUriKeys.requests,
-                  context,
-                  queryParams: {
-                    'group': context
-                        .read<AppStateProvider>()
-                        .currentGroup!
-                        .id
-                        .toString()
-                  },
-                ),
-              );
               Navigator.pop(context);
               Navigator.pop(context, _updatedReqest);
             }

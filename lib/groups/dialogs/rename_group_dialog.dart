@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -106,8 +107,7 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
         outputCallbacks: {
           BoolFutureOutput.True: () async {
             _groupNameController.text = '';
-            await clearGroupCache(context);
-            await deleteCache(uri: generateUri(GetUriKeys.groups, context)); // TODO: event bus?
+            EventBus.instance.fire(EventBus.refreshGroups);
             Navigator.of(context).pop();
           }
         }

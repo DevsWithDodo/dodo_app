@@ -1,3 +1,4 @@
+import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
@@ -73,6 +74,7 @@ class _MergeOnJoinPageState extends State<MergeOnJoinPage> {
                       future: _mergeWithGuest(),
                       outputCallbacks: {
                         BoolFutureOutput.True: () {
+                          EventBus.instance.fire(EventBus.refreshBalances);
                           Navigator.pop(context);
                           Navigator.pop(context);
                         }
