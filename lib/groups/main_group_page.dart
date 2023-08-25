@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
-import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:connectivity_widget/connectivity_widget.dart';
@@ -14,6 +13,7 @@ import 'package:csocsort_szamla/groups/group_settings_page.dart';
 import 'package:csocsort_szamla/groups/join_group.dart';
 import 'package:csocsort_szamla/history/history.dart';
 import 'package:csocsort_szamla/main/in_app_purchase_page.dart';
+import 'package:csocsort_szamla/main/main_dialog_builder.dart';
 import 'package:csocsort_szamla/main/statistics_export_card.dart';
 import 'package:csocsort_szamla/shopping/shopping_list.dart';
 import 'package:csocsort_szamla/user_settings/user_settings_page.dart';
@@ -32,10 +32,9 @@ import '../essentials/currencies.dart';
 import '../essentials/http.dart';
 import '../essentials/models.dart';
 import '../essentials/widgets/error_message.dart';
-import '../main/iapp_not_supported_dialog.dart';
-import '../main/like_app_dialog.dart';
+import '../main/dialogs/iapp_not_supported_dialog.dart';
 import '../main/main_speed_dial.dart';
-import '../main/trial_version_dialog.dart';
+import '../main/dialogs/trial_version_dialog.dart';
 
 class IsOnlineProvider extends ChangeNotifier {
   late bool _isOnline;
@@ -56,8 +55,7 @@ class MainPage extends StatefulWidget {
   final int selectedIndex;
   final String? scrollTo;
 
-  MainPage(
-      {this.selectedHistoryIndex = 0, this.selectedIndex = 0, this.scrollTo});
+  MainPage({this.selectedHistoryIndex = 0, this.selectedIndex = 0, this.scrollTo});
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -210,27 +208,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     await deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, context));
   }
 
-  Future handleReturn() async {
-    User user = context.read<AppStateProvider>().user!;
-    if (!kIsWeb && !user.ratedApp && !user.trialVersion) {
-      double r = Random().nextDouble();
-      if (r < 0.15) {
-        showDialog(context: context, builder: (context) => LikeTheAppDialog());
-        // Don't show the dialog multiple times in one session. Value is not saved in the memory
-        user.ratedApp = true;
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((timeStamp) {
-      //TODO: for new version: save version code in storage, if version code is newer than the one in the storage, show dialog with news
-      // if (trialJustEnded) { // TODO: needs backend to implement trialJustEnded
-      //   showDialog(context: context, builder: (context) => TrialEndedDialog());
-      //   trialJustEnded = false;
-      // }
-    });
     double width = MediaQuery.of(context).size.width;
     bool bigScreen = width > tabletViewWidth;
     if (bigScreen && _selectedIndex > 1) {
@@ -238,79 +217,84 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       _tabController!.animateTo(_selectedIndex);
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
     }
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        leading: bigScreen
-            ? IconButton(
-                onPressed: () {
-                  _handleDrawer(bigScreen);
-                },
-                icon: Icon(Icons.menu),
-              )
-            : null,
-        centerTitle: true,
-        title: Text(
-          context.watch<AppStateProvider>().user!.group!.name,
-          style: TextStyle(letterSpacing: 0.25, fontSize: 24),
-        ),
-      ),
-      bottomNavigationBar: bigScreen
-          ? null
-          : NavigationBar(
-              onDestinationSelected: (_index) {
-                if (_index != 3) {
-                  setState(() {
-                    _selectedIndex = _index;
-                    _tabController!.animateTo(_index);
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  });
-                } else {
-                  _handleDrawer(bigScreen);
-                }
-              },
-              selectedIndex: _selectedIndex,
-              destinations: _bottomNavbarItems(),
+    return Stack(
+      children: [
+        Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            leading: bigScreen
+                ? IconButton(
+                    onPressed: () {
+                      _handleDrawer(bigScreen);
+                    },
+                    icon: Icon(Icons.menu),
+                  )
+                : null,
+            centerTitle: true,
+            title: Text(
+              context.watch<AppStateProvider>().user!.group!.name,
+              style: TextStyle(letterSpacing: 0.25, fontSize: 24),
             ),
-      drawer: bigScreen
-          ? Drawer(
-              child: _drawer(),
-            )
-          : null,
-      endDrawer: !bigScreen
-          ? Drawer(
-              child: _drawer(),
-            )
-          : null,
-      floatingActionButton: Visibility(
-        visible: _selectedIndex == 0,
-        child: MainPageSpeedDial(
-          onReturn: this.handleReturn,
-        ),
-      ),
-      body: kIsWeb
-          ? _body(true, bigScreen)
-          : ConnectivityWidget(
-              offlineBanner: Container(
-                padding: EdgeInsets.all(8),
-                width: double.infinity,
-                color: Theme.of(context).colorScheme.error,
-                child: Text(
-                  'no_connection'.tr(),
-                  style: TextStyle(
-                      fontSize: 16,
-                      color: Theme.of(context).colorScheme.onError,
-                      fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
+          ),
+          bottomNavigationBar: bigScreen
+              ? null
+              : NavigationBar(
+                  onDestinationSelected: (_index) {
+                    if (_index != 3) {
+                      setState(() {
+                        _selectedIndex = _index;
+                        _tabController!.animateTo(_index);
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                      });
+                    } else {
+                      _handleDrawer(bigScreen);
+                    }
+                  },
+                  selectedIndex: _selectedIndex,
+                  destinations: _bottomNavbarItems(),
                 ),
-              ),
-              builder: (context, isOnline) {
-                return ChangeNotifierProvider(
-                  create: (_) => IsOnlineProvider(isOnline: isOnline),
-                  child: _body(isOnline, bigScreen),
-                );
-              },
+          drawer: bigScreen
+              ? Drawer(
+                  child: _drawer(),
+                )
+              : null,
+          endDrawer: !bigScreen
+              ? Drawer(
+                  child: _drawer(),
+                )
+              : null,
+          floatingActionButton: Visibility(
+            visible: _selectedIndex == 0,
+            child: MainPageSpeedDial(
+              onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
             ),
+          ),
+          body: kIsWeb
+              ? _body(true, bigScreen)
+              : ConnectivityWidget(
+                  offlineBanner: Container(
+                    padding: EdgeInsets.all(8),
+                    width: double.infinity,
+                    color: Theme.of(context).colorScheme.error,
+                    child: Text(
+                      'no_connection'.tr(),
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onError,
+                          fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  builder: (context, isOnline) {
+                    return ChangeNotifierProvider(
+                      create: (_) => IsOnlineProvider(isOnline: isOnline),
+                      child: _body(isOnline, bigScreen),
+                    );
+                  },
+                ),
+        ),
+        MainDialogBuilder(context: context, bigScreen: bigScreen),
+      ],
     );
   }
 
@@ -391,6 +375,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           bus.fire(EventBus.refreshPurchases);
           bus.fire(EventBus.refreshShopping);
           bus.fire(EventBus.refreshStatistics);
+          bus.fire(EventBus.refreshMainDialog);
           if (isOnline) await clearRelevantCache();
           _sumBalance = _getSumBalance();
           _groups =

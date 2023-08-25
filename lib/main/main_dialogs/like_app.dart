@@ -1,10 +1,19 @@
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
-import 'package:csocsort_szamla/main/custom_alert_dialog.dart';
-import 'package:csocsort_szamla/main/rate_app_dialog.dart';
+import 'package:csocsort_szamla/main/dialogs/custom_alert_dialog.dart';
+import 'package:csocsort_szamla/main/main_dialogs/main_dialog.dart';
+import 'package:csocsort_szamla/main/dialogs/rate_app_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-class LikeTheAppDialog extends StatelessWidget {
+class LikeTheAppMainDialog extends MainDialog {
+
+  const LikeTheAppMainDialog({
+    required super.canShow,
+    required super.showTime,
+    required super.type,
+    super.onDismiss,
+  });
+
   @override
   Widget build(BuildContext context) {
     return CustomAlertDialog(
@@ -19,14 +28,16 @@ class LikeTheAppDialog extends StatelessWidget {
           GradientButton(
             useSecondary: true,
             child: Text('no'.tr()),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => super.onDismiss?.call(context),
           ),
           GradientButton(
             child: Text('yes'.tr()),
             onPressed: () {
-              Navigator.pop(context);
+              super.onDismiss?.call(context);
               showDialog(
-                  context: context, builder: (context) => RateAppDialog());
+                context: context, 
+                builder: (context) => RateAppDialog(),
+              );
             },
           ),
         ],

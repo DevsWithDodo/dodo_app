@@ -16,12 +16,14 @@ class User {
   bool personalisedAds;
   bool trialVersion;
   List<PaymentMethod> paymentMethods;
+  UserStatus userStatus;
 
   User({
     required this.apiToken,
     required this.username,
     required this.id,
     required this.currency,
+    required this.userStatus,
     this.group,
     this.groups = const [],
     this.ratedApp = false,
@@ -31,6 +33,59 @@ class User {
     this.trialVersion = false,
     this.paymentMethods = const [],
   });
+}
+
+enum TrialStatus {
+  trial,
+  expired,
+  seen;
+
+  const TrialStatus();
+
+  static TrialStatus fromString(String trialStatus) {
+    switch (trialStatus) {
+      case 'trial':
+        return TrialStatus.trial;
+      case 'expired':
+        return TrialStatus.expired;
+      case 'seen':
+        return TrialStatus.seen;
+      default:
+        return TrialStatus.seen;
+    }
+  }
+}
+
+class UserStatus {
+  TrialStatus trialStatus;
+  DateTime pinVerifiedAt;
+  int pinVerificationCount;
+
+  UserStatus({
+    required this.trialStatus,
+    required this.pinVerifiedAt,
+    required this.pinVerificationCount,
+  });
+
+  factory UserStatus.fromJson(Map<String, dynamic> json) {
+    return UserStatus(
+      trialStatus: TrialStatus.fromString(json['trial_status']),
+      pinVerifiedAt: DateTime.parse(json['pin_verified_at']).toLocal(),
+      pinVerificationCount: json['pin_verification_count'],
+    );
+  }
+
+  UserStatus copyWith({
+    TrialStatus? trialStatus,
+    DateTime? pinVerifiedAt,
+    int? pinVerificationCount,
+  }) {
+    return UserStatus(
+      trialStatus: trialStatus ?? this.trialStatus,
+      pinVerifiedAt: pinVerifiedAt ?? this.pinVerifiedAt,
+      pinVerificationCount: pinVerificationCount ?? this.pinVerificationCount,
+    );
+  }
 }
 
 class PaymentMethod {

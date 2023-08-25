@@ -428,9 +428,9 @@
     "new_pin_confirm": "Új pin megerősítése",
     "change_pin_scf": "A pin megváltoztatása sikeres volt.",
 
-    "trial_ended": "A próbaidő lejárt",
-    "trial_ended_explanation": "Mostantól látni fogsz az alkalmazásban reklámokat és csak az egyszínű témákat használhatod, emellett a csoport statisztikáit sem láthatod.",
-    "trial_ended_explanation_2": "Ha mégis használni szeretnéd ezeket a funkciókat (vagy támogatni szeretnél minket), vedd meg őketa a Dodó boltban.",
+    "trial-ended.dialog.title": "A próbaidő lejárt",
+    "trial-ended.dialog.subtitle": "Mostantól látni fogsz az alkalmazásban reklámokat és csak az egyszínű témákat használhatod, emellett a csoport statisztikáit sem láthatod.",
+    "trial-ended.dialog.shop": "Ha mégis használni szeretnéd ezeket a funkciókat (vagy támogatni szeretnél minket), vedd meg őketa a Dodó boltban.",
 
     "filter_statistics": "Stisztikák szűrése",
     "filter_statistics_explanation": "Szűrd az adatokat dátum és kategória szerint",
@@ -453,10 +453,10 @@
 
     "payments_needed_explanation": "A tagok egyenlegének kiegyenlítéséhez szükséges fizetések",
 
-    "pin-practice.title": "Pin gyakorlása",
-    "pin-practice.description": "Hogy megbizonyosodjunk róla, hogy nem felejtetted el a pin kódod, néha rákérdezünk.",
-    "pin-practice.check": "Ellenőrzés",
-    "pin-practice.forgot-pin": "Elfelejtett pin",
+    "pin-verification.title": "Pin ellenőrzése",
+    "pin-verification.description": "Írd be a pin kódod és bizonyosodj meg róla, hogy nem felejtetted el.",
+    "pin-verification.check": "Ellenőrzés",
+    "pin-verificatioj.forgot-pin": "Elfelejtett pin",
     
     "join-group.first-hint": "A Dodoban 🦤 csoportok segítségével követheted a kiadásaid. Csatlakozz egy csoporthoz vagy hozz létre egy újat!",
 
@@ -466,9 +466,21 @@
     "payment-methods.subtitle": "Add meg a módokat, amelyeken keresztül a többiek fizethetnek neked",
     "payment-method.value.hint": "pl. 1234567-891011",
     "payment-method.name.hint": "pl. Számlaszám",
-    "member.payment-methods.title": "Fizetési módok",
-    "member.payment-methods.subtitle": "A kiválasztott tagnak így lehet fizetni",
-    "member.payment-methods.none": "A tag még nem adott meg fizetési módot",
+    "payment-methods.dialog.title": "Fizetési módok",
+    "payment-methods.dialog.subtitle": "A kiválasztott tagnak így lehet fizetni",
+    "payment-methods.dialog.none": "A tag még nem adott meg fizetési módot",
 
-    "clipboard.cop-successful": "A vágólapra másolva"
+    "clipboard.copy-successful": "A vágólapra másolva",
+
+    "main-dialog.themes.title": "Fedezd fel az appot",
+    "main-dialog.themes.subtitle": "Próbáld ki a Dodót más színekkel",
+    "main-dialog.themes.button": "Ugrás a beállításokhoz",
+
+    "main-dialog.pin-verification.title": "Ellenőrizd a pined",
+    "main-dialog.pin-verification.subtitle": "Időnként kérni fogjuk, hogy erősítsd meg a PIN kódodat, hogy ne felejtsd el.",
+    "main-dialog.pin-verification.button": "Most ellenőrizd",
+
+    "main-dialog.payment-methods.title": "Állítsd be a fizetési módjaid",
+    "main-dialog.payment-methods.subtitle": "Így más tagok láthatják, hova szeretnéd fogadni a pénzt",
+    "main-dialog.payment-methods.button": "Ugrás a beállításokhoz"
 }

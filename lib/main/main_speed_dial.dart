@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class MainPageSpeedDial extends StatefulWidget {
-  final Function onReturn;
-  MainPageSpeedDial({required this.onReturn});
+  final Function?onReturn;
+  MainPageSpeedDial({this.onReturn});
   @override
   _MainPageSpeedDialState createState() => _MainPageSpeedDialState();
 }
@@ -67,7 +67,7 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
           onTap: () {
             Navigator.push(context,
                     MaterialPageRoute(builder: (context) => AddPaymentPage()))
-                .then((value) => widget.onReturn());
+                .then((value) => widget.onReturn?.call());
           },
         ),
         SpeedDialChild(
@@ -118,7 +118,7 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
                     type: PurchaseType.newPurchase,
                   ),
                 ),
-              ).then((value) => widget.onReturn());
+              ).then((value) => widget.onReturn?.call());
             }),
       ],
     );

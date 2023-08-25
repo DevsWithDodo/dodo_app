@@ -5,11 +5,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-import '../essentials/widgets/gradient_button.dart';
+import '../../essentials/widgets/gradient_button.dart';
 import 'custom_alert_dialog.dart';
 import 'package:flutter/material.dart';
 
 class RateAppDialog extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return CustomAlertDialog(

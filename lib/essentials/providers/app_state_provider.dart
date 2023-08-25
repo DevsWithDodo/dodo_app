@@ -63,7 +63,12 @@ class AppStateProvider extends ChangeNotifier {
             .values
             .toList(),
         ratedApp: preferences.getBool('rated_app') ?? false,
-        paymentMethods: [], // TODO
+        paymentMethods: [],
+        userStatus: UserStatus(
+          pinVerificationCount: 100,
+          pinVerifiedAt: DateTime.now(),
+          trialStatus: TrialStatus.seen,
+        ) 
       );
       _fetchUserData();
     }
@@ -77,6 +82,7 @@ class AppStateProvider extends ChangeNotifier {
         "Authorization": "Bearer ${user!.apiToken}"
       });
       var decoded = jsonDecode(response.body);
+      print(decoded);
       setShownAds(decoded['data']['ad_free'] == 0);
       setUseGradients(decoded['data']['gradients_enabled'] == 1);
       setPersonalisedAds(decoded['data']['personalised_ads'] == 1);
@@ -85,6 +91,8 @@ class AppStateProvider extends ChangeNotifier {
         setPaymentMethods((jsonDecode(decoded['data']['payment_details']) as List).map((e) => PaymentMethod.fromJson(e))
             .toList());
       }
+      setUserStatus(UserStatus.fromJson(decoded['data']['status']));
+      print(user!.userStatus.trialStatus);
       if (currentGroup == null &&
           decoded['data']['last_active_group'] != null) {
         Group? group = user!.groups.firstWhereOrNull(
@@ -148,6 +156,7 @@ class AppStateProvider extends ChangeNotifier {
           paymentMethods: decoded['data']['payment_details'] != null ? 
             (jsonDecode(decoded['data']['payment_details']) as List).map((e) => PaymentMethod.fromJson(e)).toList() 
             : [],
+          userStatus: UserStatus.fromJson(decoded['data']['user_status']),
         );
         setUser(user, notify: false);
 
@@ -229,6 +238,7 @@ class AppStateProvider extends ChangeNotifier {
           personalisedAds: personalisedAds,
           trialVersion: true,
           paymentMethods: [],
+          userStatus: UserStatus.fromJson(decoded['user_status']),
         ));
         await clearAllCache();
         return BoolFutureOutput.True;
@@ -405,6 +415,13 @@ class AppStateProvider extends ChangeNotifier {
   void setPaymentMethods(List<PaymentMethod> paymentMethods,
       {bool notify = true}) {
     user!.paymentMethods = paymentMethods;
+    if (notify) {
+      notifyListeners();
+    }
+  }
+
+  void setUserStatus(UserStatus userStatus, {bool notify = true}) {
+    user!.userStatus = userStatus;
     if (notify) {
       notifyListeners();
     }

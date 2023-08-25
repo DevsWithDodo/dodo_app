@@ -9,6 +9,8 @@ class EventBus {
   static _RefreshShopping refreshShopping = _RefreshShopping();
   static _RefreshStatistics refreshStatistics = _RefreshStatistics();
   static _RefreshGroups refreshGroups = _RefreshGroups();
+  static _RefreshMainDialog refreshMainDialog = _RefreshMainDialog();
+  static _HideMainDialog hideMainDialog = _HideMainDialog();
 
   static final EventBus _instance = EventBus();
 
@@ -67,6 +69,10 @@ abstract class _EmptyEvent extends _Event {}
 abstract class _AppEvent extends _Event {
   void onEvent();
 }
+
+class _HideMainDialog extends _EmptyEvent {}
+
+class _RefreshMainDialog extends _EmptyEvent {}
 
 class _RefreshBalances extends _AppEvent {
   @override

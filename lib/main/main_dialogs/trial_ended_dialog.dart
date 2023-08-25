@@ -1,8 +1,16 @@
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
+import 'package:csocsort_szamla/main/main_dialogs/main_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-class TrialEndedDialog extends StatelessWidget {
+class TrialEndedDialog extends MainDialog {
+  const TrialEndedDialog({
+    required super.canShow,
+    required super.showTime,
+    required super.type,
+    super.onDismiss,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -12,7 +20,7 @@ class TrialEndedDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              'trial_ended'.tr(),
+              'trial-ended.dialog.title'.tr(),
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
@@ -21,7 +29,7 @@ class TrialEndedDialog extends StatelessWidget {
               height: 10,
             ),
             Text(
-              'trial_ended_explanation'.tr(),
+              'trial-ended.dialog.subtitle'.tr(),
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
@@ -30,16 +38,14 @@ class TrialEndedDialog extends StatelessWidget {
               height: 10,
             ),
             GradientButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => super.onDismiss?.call(context),
               child: Icon(Icons.check),
             ),
             SizedBox(
               height: 10,
             ),
             Text(
-              'trial_ended_explanation_2'.tr(),
+              'trial-ended.dialog.shop'.tr(),
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
@@ -51,13 +57,12 @@ class TrialEndedDialog extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 GradientButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+                  onPressed: () => super.onDismiss?.call(context),
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
-                        Theme.of(context).colorScheme.onPrimary,
-                        BlendMode.srcIn),
+                      Theme.of(context).colorScheme.onPrimary,
+                      BlendMode.srcIn,
+                    ),
                     child: Image.asset(
                       'assets/dodo.png',
                       width: 25,

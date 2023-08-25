@@ -431,9 +431,9 @@
     "new_pin_confirm": "Neue Pin bestätigen",
     "change_pin_scf": "Pin erfolgreich geändert.",
 
-    "trial_ended": "Probezeit zuende",
-    "trial_ended_explanation": "Von nun an wirst du in der App Werbung sehen und kannst nur noch die einfachen Farbthemen verwenden.",
-    "trial_ended_explanation_2": "Wenn du diese Funktionen weiter nutzen (und uns unterstützen) möchtest, kannst du sie im Dodo-Shop kaufen.",
+    "trial-ended.dialog.title": "Probezeit zuende",
+    "trial-ended.dialog.subtitle": "Von nun an wirst du in der App Werbung sehen und kannst nur noch die einfachen Farbthemen verwenden.",
+    "trial-ended.dialog.shop": "Wenn du diese Funktionen weiter nutzen (oder uns unterstützen) möchtest, kannst du sie im Dodo-Shop kaufen.",
 
     "filter_statistics": "Statistik Filter",
     "filter_statistics_explanation": "Filter nach Datumsbereich und Kategorie",
@@ -456,10 +456,10 @@
 
     "payments_needed_explanation": "Die nötigen Zahlungen damit alle wieder auf 0 kommen",
 
-    "pin-practice.title": "Pin üben",
-    "pin-practice.description": "Wir werden dir von Zeit zu Zeit dieses Popup zeigen, um sicherzustellen, dass du deinen Pin nicht vergessen hast. Du kannst es jederzeit überspringen.",
-    "pin-practice.check": "Überprüfen",
-    "pin-practice.forgot-pin": "Pin vergessen",
+    "pin-verification.title": "Pin bestätigen",
+    "pin-verification.description": "Gib deinen Pin an und gehe sicher dass du es noch weißt",
+    "pin-verification.check": "Überprüfen",
+    "pin-verification.forgot-pin": "Pin vergessen",
     
     "join-group.first-hint": "In Dodo 🦤 kannst du deine Ausgaben mit Hilfe von Gruppen verfolgen. Trete einer Gruppe bei oder erstelle eine neue um loszulegen!",
 
@@ -469,9 +469,26 @@
     "payment-methods.subtitle": "Füge die Methoden hinzu, mit denen andere dir Geld schicken können",
     "payment-method.value.hint": "zB. 1234567-891011",
     "payment-method.name.hint": "zB. IBAN",    
-    "member.payment-methods.title": "Zahlungsmethoden",
-    "member.payment-methods.subtitle": "Das ausgewählte Mitglied kann über diese Methoden bezahlt werden",
-    "member.payment-methods.none": "Das Mitglied hat noch keine Zahlungsmethoden hinzugefügt",
+    "payment-methods.dialog.title": "Zahlungsmethoden",
+    "payment-methods.dialog.subtitle": "Das ausgewählte Mitglied kann über diese Methoden bezahlt werden",
+    "payment-methods.dialog.none": "Das Mitglied hat noch keine Zahlungsmethoden hinzugefügt",
 
-    "clipboard.cop-successful": "Kopiert"
+    "clipboard.copy-successful": "Kopiert",
+
+    "main-dialog.themes.title": "Es gibt noch mehr zu entdecken!",
+    "main-dialog.themes.subtitle": "Vergiss nicht, andere Farbthemen auszuprobieren",
+    "main-dialog.themes.button": "Gehe zu den Einstellungen",
+
+    "main-dialog.pin-verification.title": "Verifiziere deine PIN",
+    "main-dialog.pin-verification.subtitle": "Gelegentlich werden wir dich bitten, deine PIN zu verifizieren, damit du sie nicht vergisst.",
+    "main-dialog.pin-verification.button": "Jetzt verifizieren",
+
+    "main-dialog.payment-methods.title": "Stelle deine Zahlungsmethoden ein",
+    "main-dialog.payment-methods.subtitle": "Damit andere Mitglieder sehen können, wie du Geld erhalten möchtest",
+    "main-dialog.payment-methods.button": "Gehe zu den Einstellungen"
+
+
+
+
+
 }

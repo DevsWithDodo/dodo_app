@@ -430,9 +430,9 @@
     "new_pin_confirm": "Confirm new pin",
     "change_pin_scf": "Changed pin successfully.",
 
-    "trial_ended": "Trial time ended",
-    "trial_ended_explanation": "From now on you will see ads and you will only be able to use the simple color themes.",
-    "trial_ended_explanation_2": "If you want to keep using these functions (and support us) you can buy them in the Dodo shop.",
+    "trial-ended.dialog.title": "Trial has ended",
+    "trial-ended.dialog.subtitle": "Starting now, you'll see ads and have access only to simple color themes.",
+    "trial-ended.dialog.shop": "If you'd like to keep using these features (or simply show some love for what we do), you can grab them from the Dodo shop.",
 
     "filter_statistics": "Filter statistics",
     "filter_statistics_explanation": "Filter by date range and category",
@@ -455,10 +455,10 @@
 
     "payments_needed_explanation": "The necessary payments for everyone to break even",
 
-    "pin-practice.title": "Practice pin",
-    "pin-practice.description": "We show this dialog once a while to make sure you remember your pin. You can skip it if you want.",
-    "pin-practice.check": "Check",
-    "pin-practice.forgot-pin": "Forgot pin",
+    "pin-verification.title": "Verify pin",
+    "pin-verification.description": "Type your pin below and verify your knowledge",
+    "pin-verification.check": "Check",
+    "pin-verification.forgot-pin": "Forgot pin",
     
     "join-group.first-hint": "In Dodo 🦤 expenses are managed via groups. Join or create a group to start!",
 
@@ -468,9 +468,21 @@
     "payment-methods.subtitle": "List the methods other members can pay you with",
     "payment-method.value.hint": "eg. 1234567-891011",
     "payment-method.name.hint": "eg. IBAN",
-    "member.payment-methods.title": "Payment methods",
-    "member.payment-methods.subtitle": "The chosen member can be paid via the following methods",
-    "member.payment-methods.none": "The member hasn't added any payment methods yet",
+    "payment-methods.dialog.title": "Payment methods",
+    "payment-methods.dialog.subtitle": "The chosen member can be paid via the following methods",
+    "payment-methods.dialog.none": "The member hasn't added any payment methods yet",
 
-    "clipboard.cop-successful": "Copied successfully"
+    "clipboard.copy-successful": "Copied successfully",
+
+    "main-dialog.themes.title": "There is more to explore!",
+    "main-dialog.themes.subtitle": "Don't forget to check out other color themes",
+    "main-dialog.themes.button": "Go to the settings",
+
+    "main-dialog.pin-verification.title": "Verify your pin",
+    "main-dialog.pin-verification.subtitle": "We'll occasionally ask you to verify your pin so that you don't forget it.",
+    "main-dialog.pin-verification.button": "Verify now",
+
+    "main-dialog.payment-methods.title": "Set yor payment methods",
+    "main-dialog.payment-methods.subtitle": "So other members can see where you want to receive money",
+    "main-dialog.payment-methods.button": "Go to the settings"
 }

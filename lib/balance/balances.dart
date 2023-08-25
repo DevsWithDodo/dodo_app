@@ -38,7 +38,6 @@ class _BalancesState extends State<Balances>
         context.read<AppStateProvider>().user!.group!.id.toString()
       ]));
       Map<String, dynamic> decoded = jsonDecode(response.body);
-      print(decoded);
       List<Member> members = [];
       for (var member in decoded['data']['members']) {
         members.add(Member.fromJson(member));

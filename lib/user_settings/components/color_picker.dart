@@ -2,7 +2,7 @@ import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/app_theme.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
-import 'package:csocsort_szamla/main/iapp_not_supported_dialog.dart';
+import 'package:csocsort_szamla/main/dialogs/iapp_not_supported_dialog.dart';
 import 'package:csocsort_szamla/main/in_app_purchase_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';

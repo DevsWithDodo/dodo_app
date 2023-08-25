@@ -27,10 +27,6 @@ class PaymentMethodList extends StatelessWidget {
         builder: (context, _) {
           return Consumer<PaymentMethodProvider>(
             builder: (context, provider, _) {
-              print(provider.paymentMethods
-                  .sorted((a, b) => a.priority ? -1 : 1)
-                  .map((e) => "${e.name} ${e.value} ${e.priority}")
-                  .toList());
               return Column(
                 children: [
                   Column(

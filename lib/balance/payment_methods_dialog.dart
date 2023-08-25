@@ -4,7 +4,6 @@ import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class PaymentMethodsDialog extends StatelessWidget {
   final Member member;
@@ -20,12 +19,12 @@ class PaymentMethodsDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'member.payment-methods.title'.tr(),
+                'payment-methods.dialog.title'.tr(),
                 style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
               Text(
-                'member.payment-methods.subtitle'.tr(),
+                'payment-methods.dialog.subtitle'.tr(),
                 style: Theme.of(context).textTheme.titleSmall,
                 textAlign: TextAlign.center,
               ),
@@ -95,7 +94,7 @@ class PaymentMethodsDialog extends StatelessWidget {
                                 ),
                           ))
                           .toList() ??
-                      [Text('member.payment-methods.none'.tr())],
+                      [Text('payment-methods.dialog.none'.tr())],
                 ),
               )
             ],
