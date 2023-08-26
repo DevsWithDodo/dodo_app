@@ -53,9 +53,10 @@ class AddModifyPayment {
       noteController.text = savedPayment.note;
       amountController.text = savedPayment.amountOriginalCurrency
           .toMoneyString(savedPayment.originalCurrency);
+      payerId = savedPayment.payerId;
     }
     members = getMembers(context);
-    payerId = user.id;
+    payerId = payerId ?? user.id;
   }
 
   Future<List<Member>> getMembers(BuildContext context, {bool overwriteCache = false}) async {

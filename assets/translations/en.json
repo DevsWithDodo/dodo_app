@@ -484,5 +484,28 @@
 
     "main-dialog.payment-methods.title": "Set yor payment methods",
     "main-dialog.payment-methods.subtitle": "So other members can see where you want to receive money",
-    "main-dialog.payment-methods.button": "Go to the settings"
+    "main-dialog.payment-methods.button": "Go to the settings",
+
+    "purchase-info.title": "Purchase: \"{note}\"",
+    "purchase-info.table.buyer": "Buyer",
+    "purchase-info.table.receivers": "Receiver(s)",
+    "purchase-info.table.per": "per",
+    "purchase-info.category": "Category",
+    "purchase-info.total": "Total",
+    "info.date": "Date",
+    "info.purchase-currency": "Currency of purchase ({currency})",
+    "info.group-currency": "Group's currency ({currency})",
+    "payment-info.title": "Payment: \"{note}\"",
+    "payment-info.table.payer": "Payer",
+    "payment-info.table.receiver": "Receiver",
+    "payment-info.table.amount": "Amount",
+
+    "categories.food": "Food",
+    "categories.groceries": "Groceries",
+    "categories.transport": "Transport",
+    "categories.entertainment": "Entertainment",
+    "categories.shopping": "Shopping",
+    "categories.health": "Health",
+    "categories.bills": "Bills",
+    "categories.other": "Other"
 }

@@ -2,6 +2,7 @@ import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
+import 'package:csocsort_szamla/essentials/widgets/transaction_receivers.dart';
 import 'package:csocsort_szamla/purchase/modify_purchase_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -12,7 +13,7 @@ import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:provider/provider.dart';
 
 class PurchaseAllInfo extends StatefulWidget {
-  final Purchase? purchase;
+  final Purchase purchase;
   final int? selectedMemberId;
 
   PurchaseAllInfo(this.purchase, this.selectedMemberId);
@@ -22,6 +23,14 @@ class PurchaseAllInfo extends StatefulWidget {
 }
 
 class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
+  late String displayCurrency;
+
+  @override
+  void initState() {
+    super.initState();
+    displayCurrency = widget.purchase.originalCurrency;
+  }
+
   Future<BoolFutureOutput> _deleteElement(int id) async {
     try {
       await Http.delete(uri: '/purchases/' + id.toString());
@@ -31,182 +40,216 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     String note = '';
-    if (widget.purchase!.name == '') {
+    if (widget.purchase.name == '') {
       note = 'no_note'.tr();
     } else {
-      note = widget.purchase!.name[0].toUpperCase() +
-          widget.purchase!.name.substring(1);
+      note = widget.purchase.name[0].toUpperCase() +
+          widget.purchase.name.substring(1);
     }
-    return Selector<AppStateProvider, User>(
-        selector: (context, provider) => provider.user!,
-        builder: (context, user, _) {
-          return Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Icon(Icons.note,
-                        color: Theme.of(context).colorScheme.secondary),
-                    Flexible(
-                        child: Text(
-                      ' - ' + note,
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface),
-                    )),
-                  ],
+
+    TextStyle titleStyle = Theme.of(context).textTheme.titleMedium!.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        );
+
+    String groupCurrency = context.select<AppStateProvider, String>(
+        (provider) => provider.currentGroup!.currency);
+
+    return DefaultTextStyle(
+      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: Text(
+                    'purchase-info.title'.tr(namedArgs: {
+                      'note': note,
+                    }),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: <Widget>[
-                    Icon(Icons.account_circle,
-                        color: Theme.of(context).colorScheme.secondary),
-                    Flexible(
-                        child: Text(
-                      ' - ' + widget.purchase!.buyerNickname,
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface),
-                    )),
-                  ],
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Icon(Icons.people,
-                        color: Theme.of(context).colorScheme.secondary),
-                    Flexible(
-                        child: Text(
-                      ' - ' + widget.purchase!.receivers.join(', '),
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface),
-                    )),
-                  ],
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: <Widget>[
-                    Icon(Icons.attach_money,
-                        color: Theme.of(context).colorScheme.secondary),
-                    Flexible(
-                        child: Selector<AppStateProvider, String>(
-                            selector: (context, provider) =>
-                                provider.currentGroup!.currency,
-                            builder: (context, currentGroupCurrency, _) {
-                              return Text(
-                                  ' - ' +
-                                      (widget.purchase!.buyerId == widget.selectedMemberId
-                                          ? (widget.purchase!.totalAmount
-                                                  .toMoneyString(currentGroupCurrency,
-                                                      withSymbol: true) +
-                                              (widget.purchase!.originalCurrency != currentGroupCurrency
-                                                  ? (' (' +
-                                                      widget.purchase!.totalAmountOriginalCurrency.toMoneyString(widget.purchase!.originalCurrency,
-                                                          withSymbol: true) +
-                                                      ')')
-                                                  : ''))
-                                          : (widget.purchase!.receivers.firstWhere((element) => element.id == user.id).balance.toMoneyString(
-                                                  currentGroupCurrency,
-                                                  withSymbol: true) +
-                                              (widget.purchase!.originalCurrency !=
-                                                      currentGroupCurrency
-                                                  ? (' (' +
-                                                      widget.purchase!.receivers
-                                                          .firstWhere((element) => element.id == user.id)
-                                                          .balanceOriginalCurrency
-                                                          .toMoneyString(widget.purchase!.originalCurrency, withSymbol: true) +
-                                                      ')')
-                                                  : ''))),
-                                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface));
-                            })),
-                  ],
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: <Widget>[
-                    Icon(
-                      Icons.date_range,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                    Flexible(
-                        child: Text(
-                            ' - ' +
-                                DateFormat('yyyy/MM/dd - HH:mm')
-                                    .format(widget.purchase!.updatedAt),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge!
-                                .copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface))),
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    GradientButton.icon(
-                      onPressed: () {
-                        showDialog(
-                          builder: (context) => ModifyPurchaseDialog(
-                            savedPurchase: widget.purchase,
-                          ),
-                          context: context,
-                        ).then((value) {
-                          if (value ?? false) {
-                            Navigator.pop(context, 'deleted');
-                          }
-                        });
-                      },
-                      icon: Icon(Icons.edit),
-                      label: Text('modify'.tr()),
-                    ),
-                    GradientButton.icon(
-                      onPressed: () {
-                        showDialog(
-                                builder: (context) => ConfirmChoiceDialog(
-                                      choice: 'want_delete',
-                                    ),
-                                context: context)
-                            .then((value) {
-                          if (value != null && value) {
-                            showFutureOutputDialog(
-                              context: context,
-                              future: _deleteElement(widget.purchase!.id),
-                              outputCallbacks: {
-                                BoolFutureOutput.True: () {
-                                  Navigator.pop(context);
-                                  Navigator.pop(context, 'deleted');
-                                }
-                              }
-                            );
-                          }
-                        });
-                      },
-                      icon: Icon(Icons.delete),
-                      label: Text('delete'.tr()),
-                    ),
-                  ],
-                )
               ],
             ),
-          );
-        });
+            SizedBox(height: 10),
+            Visibility(
+              visible: widget.purchase.category != null,
+              child: Row(
+                children: [
+                  Text(
+                    "${'purchase-info.category'.tr()} - ",
+                    style: titleStyle,
+                  ),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 2),
+                      child: Text(
+                        widget.purchase.category?.tr() ?? "",
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    widget.purchase.category?.icon,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    size: 20,
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Text(
+                  "${'info.date'.tr()} - ",
+                  style: titleStyle,
+                ),
+                Flexible(
+                  child: Text(
+                    DateFormat.yMd().add_Hm().format(widget.purchase.updatedAt),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Text(
+                  "${'purchase-info.total'.tr()} - ",
+                  style: titleStyle,
+                ),
+                Flexible(
+                  child: Text(
+                    (displayCurrency == widget.purchase.originalCurrency
+                            ? widget.purchase.totalAmountOriginalCurrency
+                            : widget.purchase.totalAmount)
+                        .toMoneyString(
+                      displayCurrency,
+                      withSymbol: true,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Visibility(
+              visible: widget.purchase.originalCurrency != groupCurrency,
+              child: Table(
+                  columnWidths: {
+                    0: FlexColumnWidth(1),
+                    1: FixedColumnWidth(60),
+                    2: FlexColumnWidth(1),
+                  },
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  children: [
+                    TableRow(
+                      children: [
+                        Center(
+                          child: Text(
+                            'info.purchase-currency'.tr(namedArgs: {
+                              "currency": widget.purchase.originalCurrency
+                            }),
+                            style: titleStyle,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Center(
+                          child: Switch(
+                            value: displayCurrency == groupCurrency,
+                            onChanged: (value) => setState(() {
+                              displayCurrency = value
+                                  ? groupCurrency
+                                  : widget.purchase.originalCurrency;
+                            }),
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            'info.group-currency'.tr(
+                              namedArgs: {"currency": groupCurrency},
+                            ),
+                            style: titleStyle,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ]),
+            ),
+            SizedBox(height: 15),
+            Builder(builder: (context) {
+              Map<double, List<Member>> groupedReceivers = {};
+              widget.purchase.receivers.forEach((receiver) {
+                if (!groupedReceivers.containsKey(receiver.balance)) {
+                  groupedReceivers[receiver.balance] = [];
+                }
+                groupedReceivers[receiver.balance]!.add(receiver);
+              });
+              return TransactionReceivers(
+                type: TransactionType.purchase,
+                groupedReceivers: groupedReceivers,
+                buyerNickname: widget.purchase.buyerNickname,
+                displayCurrency: displayCurrency,
+              );
+            }),
+            SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                GradientButton.icon(
+                  onPressed: () {
+                    showDialog(
+                      builder: (context) => ModifyPurchaseDialog(
+                        savedPurchase: widget.purchase,
+                      ),
+                      context: context,
+                    ).then((value) {
+                      if (value ?? false) {
+                        Navigator.pop(context, 'deleted');
+                      }
+                    });
+                  },
+                  icon: Icon(Icons.edit),
+                  label: Text('modify'.tr()),
+                ),
+                GradientButton.icon(
+                  onPressed: () {
+                    showDialog(
+                            builder: (context) => ConfirmChoiceDialog(
+                                  choice: 'want_delete',
+                                ),
+                            context: context)
+                        .then((value) {
+                      if (value != null && value) {
+                        showFutureOutputDialog(
+                            context: context,
+                            future: _deleteElement(widget.purchase.id),
+                            outputCallbacks: {
+                              BoolFutureOutput.True: () {
+                                Navigator.pop(context);
+                                Navigator.pop(context, 'deleted');
+                              }
+                            });
+                      }
+                    });
+                  },
+                  icon: Icon(Icons.delete),
+                  label: Text('delete'.tr()),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

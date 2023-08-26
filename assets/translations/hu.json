@@ -482,5 +482,28 @@
 
     "main-dialog.payment-methods.title": "Állítsd be a fizetési módjaid",
     "main-dialog.payment-methods.subtitle": "Így más tagok láthatják, hova szeretnéd fogadni a pénzt",
-    "main-dialog.payment-methods.button": "Ugrás a beállításokhoz"
+    "main-dialog.payment-methods.button": "Ugrás a beállításokhoz",
+
+    "purchase-info.title": "Vásárlás: \"{note}\"",
+    "purchase-info.table.buyer": "Vevő",
+    "purchase-info.table.receivers": "Kedvezményezett(ek)",
+    "purchase-info.table.per": "per",
+    "purchase-info.category": "Kategória",
+    "purchase-info.total": "Összesen",
+    "info.date": "Dátum",
+    "info.purchase-currency": "Vásárlás pénzneme ({currency})",
+    "info.group-currency": "Csoport pénzneme ({currency})",
+    "payment-info.title": "Fizetés: \"{note}\"",
+    "payment-info.table.payer": "Fizető",
+    "payment-info.table.receiver": "Fogadó",
+    "payment-info.table.amount": "Összeg",
+
+    "categories.food": "Étel",
+    "categories.groceries": "Bevásárlás",
+    "categories.transport": "Közlekedés",
+    "categories.entertainment": "Szórakozás",
+    "categories.shopping": "Vásárlás",
+    "categories.health": "Egészség",
+    "categories.bills": "Számlák",
+    "categories.other": "Egyéb"
 }

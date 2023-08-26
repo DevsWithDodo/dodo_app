@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class User {
@@ -342,6 +343,10 @@ class Category {
   String text;
   Category({required this.type, required this.icon, required this.text});
 
+  String tr() {
+    return "categories.$text".tr();
+  }
+
   static Category? fromName(String? categoryName) {
     return Category.categories
         .firstWhereOrNull((category) => category.text == categoryName);
@@ -355,25 +360,29 @@ class Category {
   static List<Category> categories = [
     Category(type: CategoryType.food, icon: Icons.fastfood, text: 'food'),
     Category(
-        type: CategoryType.groceries,
-        icon: Icons.shopping_basket,
-        text: 'groceries'),
+      type: CategoryType.groceries,
+      icon: Icons.shopping_basket,
+      text: 'groceries',
+    ),
     Category(
         type: CategoryType.transport, icon: Icons.train, text: 'transport'),
     Category(
-        type: CategoryType.entertainment,
-        icon: Icons.movie_filter,
-        text: 'entertainment'),
+      type: CategoryType.entertainment,
+      icon: Icons.movie_filter,
+      text: 'entertainment',
+    ),
     Category(
-        type: CategoryType.shopping,
-        icon: Icons.shopping_bag,
-        text: 'shopping'),
+      type: CategoryType.shopping,
+      icon: Icons.shopping_bag,
+      text: 'shopping',
+    ),
     Category(
-        type: CategoryType.health,
-        icon: Icons.health_and_safety,
-        text: 'health'),
+      type: CategoryType.health,
+      icon: Icons.health_and_safety,
+      text: 'health',
+    ),
     Category(type: CategoryType.bills, icon: Icons.house, text: 'bills'),
-    Category(type: CategoryType.other, icon: Icons.more_horiz, text: 'other'),
+    Category(type: CategoryType.other, icon: Icons.category, text: 'other'),
   ];
 }
 

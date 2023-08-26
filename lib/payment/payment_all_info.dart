@@ -1,27 +1,29 @@
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
+import 'package:csocsort_szamla/essentials/widgets/transaction_receivers.dart';
 import 'package:csocsort_szamla/payment/modify_payment_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
-import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:provider/provider.dart';
 
 import '../essentials/models.dart';
 
 class PaymentAllInfo extends StatefulWidget {
-  final Payment? data;
+  final Payment payment;
 
-  PaymentAllInfo(this.data);
+  PaymentAllInfo(this.payment);
 
   @override
   _PaymentAllInfoState createState() => _PaymentAllInfoState();
 }
 
 class _PaymentAllInfoState extends State<PaymentAllInfo> {
+  late String displayCurrency;
+
   Future<BoolFutureOutput> _deletePayment(int id) async {
     try {
       await Http.delete(uri: '/payments/' + id.toString());
@@ -32,171 +34,175 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    displayCurrency = widget.payment.originalCurrency;
+  }
+
+  @override
   Widget build(BuildContext context) {
     String note = '';
-    if (widget.data!.note == '') {
+    if (widget.payment.note == '') {
       note = 'no_note'.tr();
     } else {
-      note =
-          widget.data!.note[0].toUpperCase() + widget.data!.note.substring(1);
+      note = widget.payment.note[0].toUpperCase() +
+          widget.payment.note.substring(1);
     }
-    return Padding(
-      padding: const EdgeInsets.all(15),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Icon(Icons.note, color: Theme.of(context).colorScheme.secondary),
-              Flexible(
-                  child: Text(
-                ' - ' + note,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurface),
-              )),
-            ],
+
+    TextStyle titleStyle = Theme.of(context).textTheme.titleMedium!.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        );
+
+    String groupCurrency = context.select<AppStateProvider, String>(
+        (provider) => provider.currentGroup!.currency);
+
+    return DefaultTextStyle(
+      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
-          SizedBox(
-            height: 5,
-          ),
-          Row(
-            children: <Widget>[
-              Icon(Icons.account_circle,
-                  color: Theme.of(context).colorScheme.secondary),
-              Flexible(
-                  child: Text(
-                ' - ' + widget.data!.payerNickname,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurface),
-              )),
-            ],
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Icon(Icons.account_box,
-                  color: Theme.of(context).colorScheme.secondary),
-              Flexible(
-                  child: Text(
-                ' - ' + widget.data!.takerNickname,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurface),
-              )),
-            ],
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Row(
-            children: <Widget>[
-              Icon(Icons.attach_money,
-                  color: Theme.of(context).colorScheme.secondary),
-              Flexible(
-                  child: Selector<AppStateProvider, String>(
-                      selector: (context, userProvider) =>
-                          userProvider.currentGroup!.currency,
-                      builder: (context, currentGroupCurrency, _) {
-                        return Text(
-                            ' - ' +
-                                widget.data!.amount.toMoneyString(
-                                    currentGroupCurrency,
-                                    withSymbol: true) +
-                                (widget.data!.originalCurrency !=
-                                        currentGroupCurrency
-                                    ? (' (' +
-                                        widget.data!.amountOriginalCurrency
-                                            .toMoneyString(
-                                                widget.data!.originalCurrency,
-                                                withSymbol: true) +
-                                        ')')
-                                    : ''),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge!
-                                .copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface));
-                      })),
-            ],
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Row(
-            children: <Widget>[
-              Icon(
-                Icons.date_range,
-                color: Theme.of(context).colorScheme.secondary,
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Center(
+              child: Text(
+                'payment-info.title'.tr(namedArgs: {
+                  'note': note,
+                }),
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-              Flexible(
+            ),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Text(
+                  "${'info.date'.tr()} - ",
+                  style: titleStyle,
+                ),
+                Flexible(
                   child: Text(
-                      ' - ' +
-                          DateFormat('yyyy/MM/dd - HH:mm')
-                              .format(widget.data!.updatedAt),
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface))),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              GradientButton.icon(
-                onPressed: () {
-                  showDialog(
-                          builder: (context) => ModifyPaymentDialog(
-                                savedPayment: widget.data,
-                              ),
-                          context: context)
-                      .then((value) {
-                    if (value ?? false) {
-                      Navigator.pop(context, 'deleted');
-                    }
-                  });
-                },
-                icon: Icon(Icons.edit),
-                label: Text('modify'.tr()),
-              ),
-              GradientButton.icon(
-                onPressed: () {
-                  showDialog(
-                    builder: (context) => ConfirmChoiceDialog(
-                      choice: 'want_delete',
+                    DateFormat.yMd().add_Hm().format(widget.payment.updatedAt),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Visibility(
+              visible: widget.payment.originalCurrency != groupCurrency,
+              child: Table(
+                  columnWidths: {
+                    0: FlexColumnWidth(1),
+                    1: FixedColumnWidth(60),
+                    2: FlexColumnWidth(1),
+                  },
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  children: [
+                    TableRow(
+                      children: [
+                        Center(
+                          child: Text(
+                            'info.purchase-currency'.tr(namedArgs: {
+                              "currency": widget.payment.originalCurrency
+                            }),
+                            style: titleStyle,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        Center(
+                          child: Switch(
+                            value: displayCurrency == groupCurrency,
+                            onChanged: (value) => setState(() {
+                              displayCurrency = value
+                                  ? groupCurrency
+                                  : widget.payment.originalCurrency;
+                            }),
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            'info.group-currency'.tr(
+                              namedArgs: {"currency": groupCurrency},
+                            ),
+                            style: titleStyle,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
                     ),
-                    context: context,
-                  ).then((value) {
-                    if (value ?? false) {
-                      showFutureOutputDialog(
-                        context: context,
-                        future: _deletePayment(widget.data!.id),
-                        outputCallbacks: {
-                          BoolFutureOutput.True: () {
-                            Navigator.pop(context);
-                            Navigator.pop(context, 'deleted');
-                          }
-                        },
-                      );
-                    }
-                  });
-                },
-                icon: Icon(Icons.delete),
-                label: Text('delete'.tr()),
-              )
-            ],
-          ),
-        ],
+                  ]),
+            ),
+            SizedBox(height: 15),
+            Builder(
+              builder: (context) {
+                return TransactionReceivers(
+                  type: TransactionType.payment,
+                  buyerNickname: widget.payment.payerNickname,
+                  groupedReceivers: {
+                    widget.payment.amount: [
+                      Member(
+                        id: -1,
+                        nickname: widget.payment.takerNickname,
+                        username: widget.payment.takerUsername,
+                        balance: widget.payment.amount,
+                        balanceOriginalCurrency:
+                            widget.payment.amountOriginalCurrency,
+                      )
+                    ]
+                  },
+                  displayCurrency: displayCurrency,
+                );
+              },
+            ),
+            SizedBox(height: 25),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                GradientButton.icon(
+                  onPressed: () {
+                    showDialog(
+                            builder: (context) => ModifyPaymentDialog(
+                                  savedPayment: widget.payment,
+                                ),
+                            context: context)
+                        .then((value) {
+                      if (value ?? false) {
+                        Navigator.pop(context, 'deleted');
+                      }
+                    });
+                  },
+                  icon: Icon(Icons.edit),
+                  label: Text('modify'.tr()),
+                ),
+                GradientButton.icon(
+                  onPressed: () {
+                    showDialog(
+                      builder: (context) => ConfirmChoiceDialog(
+                        choice: 'want_delete',
+                      ),
+                      context: context,
+                    ).then((value) {
+                      if (value ?? false) {
+                        showFutureOutputDialog(
+                          context: context,
+                          future: _deletePayment(widget.payment.id),
+                          outputCallbacks: {
+                            BoolFutureOutput.True: () {
+                              Navigator.pop(context);
+                              Navigator.pop(context, 'deleted');
+                            }
+                          },
+                        );
+                      }
+                    });
+                  },
+                  icon: Icon(Icons.delete),
+                  label: Text('delete'.tr()),
+                )
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -485,10 +485,29 @@
 
     "main-dialog.payment-methods.title": "Stelle deine Zahlungsmethoden ein",
     "main-dialog.payment-methods.subtitle": "Damit andere Mitglieder sehen können, wie du Geld erhalten möchtest",
-    "main-dialog.payment-methods.button": "Gehe zu den Einstellungen"
+    "main-dialog.payment-methods.button": "Gehe zu den Einstellungen",
 
+    "purchase-info.title": "Einkauf: \"{note}\"",
+    "purchase-info.table.buyer": "Käufer",
+    "purchase-info.table.receivers": "Empfänger",
+    "purchase-info.table.per": "pro",
+    "purchase-info.category": "Kategorie",
+    "purchase-info.total": "Gesamt",
+    "info.date": "Datum",
+    "info.purchase-currency": "Währung des Einkaufs ({currency})",
+    "info.group-currency": "Gruppenwährung ({currency})",
+    "payment-info.title": "Zahlung: \"{note}\"",
+    "payment-info.table.payer": "Zahler",
+    "payment-info.table.receiver": "Empfänger",
+    "payment-info.table.amount": "Betrag",
 
-
-
+    "categories.food": "Essen",
+    "categories.groceries": "Lebensmittel",
+    "categories.transport": "Transport",
+    "categories.entertainment": "Unterhaltung",
+    "categories.shopping": "Einkaufen",
+    "categories.health": "Gesundheit",
+    "categories.bills": "Rechnungen",
+    "categories.other": "Sonstiges"
 
 }
