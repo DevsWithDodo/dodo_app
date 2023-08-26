@@ -8,7 +8,7 @@ class CustomChoiceChip extends StatefulWidget {
   final Color notSelectedColor;
   final Color selectedFontColor;
   final Color notSelectedFontColor;
-  final Function(bool) onChipClicked;
+  final Function(bool) onSelected;
   final bool selected;
   final Function? onLongPress;
   final double fillRatio;
@@ -22,7 +22,7 @@ class CustomChoiceChip extends StatefulWidget {
     required this.notSelectedColor,
     required this.selectedFontColor,
     required this.notSelectedFontColor,
-    required this.onChipClicked,
+    required this.onSelected,
     required this.fillRatio,
     this.onLongPress,
     this.enabled = true,
@@ -135,7 +135,7 @@ class _CustomChoiceChipState extends State<CustomChoiceChip>
             ? () {
                 FocusScope.of(context).unfocus();
                 bool selected = !widget.selected;
-                widget.onChipClicked(selected);
+                widget.onSelected(selected);
                 animateColor(selected);
               }
             : null,

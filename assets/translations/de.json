@@ -355,14 +355,17 @@
     "iapp_not_supported_explanation": "Du kannst die Gegendstände (z.B. keine Anzeigen, Farbthemen) zur Zeit nur über der Android oder iOS App kaufen.\nFalls dies für dich nicht Lösbar ist, schreib eine E-Mail an developer@dodoapp.net.",
     "no_camera_access": "Die App hat keine Berechtigung zur Kamera.",
 
-    "custom_amount_hint": "Hinweis: Wenn du auf ein Mitglied lange drückst kannst du auswählen wie viel er/sie gezahlt hat.",
+    "custom_amount_hint": "Hinweis: Wenn du auf ein Mitglied lange drückst kannst du auswählen wie viel er/sie gezahlt hat. Du musst mindestens zwei Mitglieder auswählen.",
     "add_purchase_explanation": "Strandartmäßig wird die angegebene Summe gleich zwischen den ausgewählten Mitgliedern verteilt.",
 
-    "first_give_amount_toast": "Gib zuerst eine Summe ein!",
-    "cant_add_custom_amount_toast": "Der zu zahlende Betrag kann für dieses Mitglied nicht geändert werden.",
-    "no_money_left_toast": "Du hast schon die ganze Summe verteilt.",
-    "custom_above_amount_toast": "Die Summe ist unter den individuellen Betrag gesunken.",
-    "sum_above_amount_toast": "Die Summe der individuellen Beträge war größer als die ganze Summe.",
+    "purchase.page.custom-amount.toast.no-amount-given": "Gib zuerst den Betrag ein!",
+    "purchase-page-custom-amount-toast-cannot-customize": {
+        "one": "Wähle mindestens zwei Mitglieder aus um die Beiträge einzustellen!",
+        "other": "Alle anderen Mitgliedern wurden schon Beiträge zugewiesen, deshalb wird dieser Mitglied den übrigen Betrag bekommen."
+    },
+    "purchase.page.custom-amount.toast.no-amount-left": "Du hast schon den ganzen Betrag verteilt.",
+    "purchase.page.custom-amount.toast.custom-larger-than-amount": "Der gesetzte Hauptbetrag war kleiner als einer der individuellen Beträge.",
+    "purchase.page.custom-amount.toast.sum-larger-than-amount": "Der gesetzte Hauptbetrag war kleiner als die Summe der individuellen Beträgen.",
 
     "custom_amount": "Individueller Betrag",
     "custom_amount_explanation": "Setze fest wie viel das Mitglied zahlen soll.",

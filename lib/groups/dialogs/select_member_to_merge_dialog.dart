@@ -32,7 +32,9 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
       'guest_id': widget.guestId
     };
     await Http.post(
-        uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString() + '/merge_guest',
+        uri: '/groups/' +
+            context.read<AppStateProvider>().currentGroup!.id.toString() +
+            '/merge_guest',
         body: body);
     return BoolFutureOutput.True;
   }
@@ -40,8 +42,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
   Future<List<Member>> _getAllMembers() async {
     try {
       Response response = await Http.get(
-          uri: generateUri(GetUriKeys.groupCurrent, context),
-          useCache: false);
+          uri: generateUri(GetUriKeys.groupCurrent, context), useCache: false);
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = [];
       for (var memberJson in decoded['data']['members']) {
@@ -98,12 +99,14 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
                         ),
                         Center(
                           child: MemberChips(
-                            allowMultipleSelected: false,
+                            multiple: false,
                             allMembers: snapshot.data!
                                 .where((element) => !element.isGuest!)
                                 .toList(),
-                            chosenMembersChanged: (newMembers) {
-                              _selectedMember = newMembers[0];
+                            setChosenMembers: (newMembers) {
+                              setState(() {
+                                _selectedMember = newMembers.firstOrNull;
+                              });
                             },
                             chosenMembers: _selectedMember == null
                                 ? []
@@ -147,18 +150,21 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
                         (value) {
                           if (value ?? false == true) {
                             showFutureOutputDialog(
-                              context: context,
-                              future: _mergeGuest(),
-                              outputCallbacks: {
-                                BoolFutureOutput.True: () async {
-                                  EventBus.instance.fire(EventBus.refreshBalances);
-                                  EventBus.instance.fire(EventBus.refreshPurchases);
-                                  EventBus.instance.fire(EventBus.refreshPayments);
-                                  EventBus.instance.fire(EventBus.refreshShopping);
-                                  Navigator.of(context).pop();
-                                }
-                              }
-                            );
+                                context: context,
+                                future: _mergeGuest(),
+                                outputCallbacks: {
+                                  BoolFutureOutput.True: () async {
+                                    EventBus.instance
+                                        .fire(EventBus.refreshBalances);
+                                    EventBus.instance
+                                        .fire(EventBus.refreshPurchases);
+                                    EventBus.instance
+                                        .fire(EventBus.refreshPayments);
+                                    EventBus.instance
+                                        .fire(EventBus.refreshShopping);
+                                    Navigator.of(context).pop();
+                                  }
+                                });
                           }
                         },
                       );

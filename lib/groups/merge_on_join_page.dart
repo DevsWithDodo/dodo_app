@@ -46,9 +46,9 @@ class _MergeOnJoinPageState extends State<MergeOnJoinPage> {
             SizedBox(height: 10),
             MemberChips(
               showAnimation: false,
-              allowMultipleSelected: false,
+              multiple: false,
               allMembers: widget.guests,
-              chosenMembersChanged: (newMembers) {
+              setChosenMembers: (newMembers) {
                 setState(() {
                   _selectedMember =
                       newMembers.isEmpty ? null : newMembers.first;

@@ -354,11 +354,14 @@
     "custom_amount_hint": "Tipp: nyomj hosszan egy névre, hogy megadd, hogy mennyit fizetett.",
     "add_purchase_explanation": "Alapértelmezetten a megadott összeg egyenlően lesz szétosztva a kiválasztott tagok között.",
 
-    "first_give_amount_toast": "Előbb írj be egy összeget!",
-    "cant_add_custom_amount_toast": "A tag által fizetendő összeget nem tudod megváltoztatni.",
-    "no_money_left_toast": "Már az összes pénzt szétosztottad!",
-    "custom_above_amount_toast": "A teljes összeg a korábban választott rögzítések alá csökkent.",
-    "sum_above_amount_toast": "A rögzített értékek összege a teljes összeg felett volt.",
+    "purchase.page.custom-amount.toast.no-amount-given": "Előbb írd be az összeget!",
+    "purchase-page-custom-amount-toast-cannot-customize": {
+        "one": "Válassz ki legalább 2 csoporttagot, hogy megadhasd a ráeső összeget!",
+        "other": "Az összes többi tagnak be van állítva a ráeső összeg, így ez a tag a fennmaradó összeget fogja kapni."
+    },
+    "purchase.page.custom-amount.toast.no-amount-left": "Már a teljes összeget szétosztottad.",
+    "purchase.page.custom-amount.toast.custom-larger-than-amount": "A most beállított teljes összeg az egyik egyéni összegnél kisebb volt.",
+    "purchase.page.custom-amount.toast.sum-larger-than-amount": "A most beállított teljes összeg az egyéni összegek összegénél kisebb volt.",
 
     "custom_amount": "Ráeső pénz",
     "custom_amount_explanation": "Add meg, hogy a kiválasztott ember mennyit fizessen a teljes összegből.",

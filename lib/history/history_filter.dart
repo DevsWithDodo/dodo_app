@@ -174,7 +174,7 @@ class _HistoryFilterState extends State<HistoryFilter> {
                     return MemberChips(
                       allMembers: snapshot.data!,
                       chosenMembers: _membersChosen!,
-                      chosenMembersChanged: (newMembersChosen) {
+                      setChosenMembers: (newMembersChosen) {
                         setState(() {
                           if (newMembersChosen.isEmpty) {
                             _membersChosen = [
@@ -186,7 +186,7 @@ class _HistoryFilterState extends State<HistoryFilter> {
                           }
                         });
                       },
-                      allowMultipleSelected: false,
+                      multiple: false,
                       showAnimation: false,
                     );
                   }),

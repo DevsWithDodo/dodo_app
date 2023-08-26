@@ -83,7 +83,7 @@ class PaymentMethodsDialog extends StatelessWidget {
                                         IconButton.filledTonal(
                                           onPressed: () {
                                             Clipboard.setData(ClipboardData(text: paymentMethod.value));
-                                            showToast(context, 'clipboard.copy-successful'.tr());
+                                            showToast('clipboard.copy-successful'.tr());
                                             Navigator.pop(context);
                                           }, 
                                           icon: Icon(Icons.copy),

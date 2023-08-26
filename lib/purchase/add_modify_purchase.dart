@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/category_picker_icon_button.dart';
@@ -74,7 +75,34 @@ class AddModifyPurchase {
     }
     members = getMembers(context);
     focusNode.addListener(() {
-      _setState(() {});
+      _setState(() {
+        if (membersMap.entries.where((entry) => entry.value).length == 0 &&
+            customAmountMap.length != 0) {
+          customAmountMap = {};
+        }
+        double maxAmount = double.tryParse(amountController.text) ?? 0.0;
+        int oldLength = customAmountMap.length;
+        customAmountMap.removeWhere((key, value) => value > maxAmount);
+        if (customAmountMap.length < oldLength) {
+          showToast(
+            'purchase.page.custom-amount.toast.custom-larger-than-amount'.tr(),
+            useWidgetToast: true,
+            error: true,
+            toastDuration: Duration(seconds: 4),
+          );
+        }
+        double sumCustom = 0;
+        customAmountMap.values.forEach((element) => sumCustom += element);
+        if (sumCustom > maxAmount) {
+          customAmountMap = {};
+          showToast(
+            'purchase.page.custom-amount.toast.sum-larger-than-amount'.tr(),
+            useWidgetToast: true,
+            error: true,
+            toastDuration: Duration(seconds: 4),
+          );
+        }
+      });
     });
     purchaserId = purchaserId ?? user.id;
   }
@@ -99,7 +127,8 @@ class AddModifyPurchase {
     };
   }
 
-  Future<List<Member>> getMembers(BuildContext context, {bool overwriteCache = false}) async {
+  Future<List<Member>> getMembers(BuildContext context,
+      {bool overwriteCache = false}) async {
     try {
       Response response = await Http.get(
         uri: generateUri(GetUriKeys.groupCurrent, context),
@@ -310,17 +339,17 @@ class AddModifyPurchase {
                               fillRatio: 1,
                               member: snapshot.data!.firstWhere(
                                   (element) => element.id == purchaserId),
-                              onChipClicked: (chosen) {},
+                              onSelected: (chosen) {},
                             ),
                           ),
                           secondChild: MemberChips(
                             allMembers: snapshot.data!,
-                            allowMultipleSelected: false,
+                            multiple: false,
                             showAnimation: false,
                             chosenMembers: snapshot.data!
                                 .where((element) => element.id == purchaserId)
                                 .toList(),
-                            chosenMembersChanged: (newMembers) {
+                            setChosenMembers: (newMembers) {
                               _setState(() {
                                 purchaserSelector = CrossFadeState.showFirst;
                                 if (newMembers.isNotEmpty) {
@@ -369,8 +398,7 @@ class AddModifyPurchase {
         ),
       );
 
-  Center receiverChooser({GlobalKey? showcaseKey = null}) =>
-      Center(
+  Center receiverChooser({GlobalKey? showcaseKey = null}) => Center(
         child: FutureBuilder(
           future: members,
           builder: (context, AsyncSnapshot<List<Member>> snapshot) {
@@ -399,26 +427,26 @@ class AddModifyPurchase {
                 }
                 Widget memberChips = MemberChips(
                   selectedCurrency: selectedCurrency,
-                  allowMultipleSelected: true,
+                  multiple: true,
                   allMembers: snapshot.data!,
                   chosenMembers: snapshot.data!
                       .where((member) => membersMap[member]!)
                       .toList(),
                   customAmounts: customAmountMap,
-                  chosenMembersChanged: (members) {
+                  setChosenMembers: (members) {
                     _setState(() {
                       for (Member member in snapshot.data!) {
                         membersMap[member] = members.contains(member);
                       }
                     });
                   },
-                  customAmountsChanged: (Map<Member, double> amounts) {
+                  setCustomAmounts: (Map<Member, double> amounts) {
                     _setState(() {
                       customAmountMap = amounts;
                     });
                   },
                   allowCustomAmounts: true,
-                  getMaxAmount: () =>
+                  getFullAmount: () =>
                       double.tryParse(amountController.text) ?? 0.0,
                 );
                 return showcaseKey != null
@@ -426,8 +454,7 @@ class AddModifyPurchase {
                         key: showcaseKey,
                         targetPadding: EdgeInsets.all(10),
                         targetBorderRadius: BorderRadius.circular(10),
-                        description:
-                            "choose_custom_amount".tr(),
+                        description: "choose_custom_amount".tr(),
                         showArrow: false,
                         child: memberChips,
                         scaleAnimationDuration: Duration(milliseconds: 200),

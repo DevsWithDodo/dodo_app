@@ -161,22 +161,22 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                                                   .onSurface,
                                             ),
                                       ),
-                                      SizedBox(height: 10),
-                                      Text(
-                                        'custom_amount_hint'.tr(),
-                                        textAlign: TextAlign.center,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall!
-                                            .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurface,
-                                            ),
-                                      ),
                                     ],
                                   ),
                                 ),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                'purchase.page.custom-amount-hint'.tr(),
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface,
+                                    ),
                               ),
                               SizedBox(height: 15),
                               receiverChooser(showcaseKey: _receiversKey),

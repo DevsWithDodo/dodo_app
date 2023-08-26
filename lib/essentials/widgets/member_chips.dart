@@ -1,122 +1,80 @@
+import 'package:collection/collection.dart';
+import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/essentials/widgets/custom_choice_chip.dart';
 import 'package:csocsort_szamla/essentials/widgets/custom_amount_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
 import '../models.dart';
 
-class MemberChips extends StatefulWidget {
-  final bool allowMultipleSelected;
+class MemberChips extends StatelessWidget {
+  final bool multiple;
   final List<Member> allMembers;
   final List<Member> chosenMembers;
-  final ValueChanged<List<Member>> chosenMembersChanged;
+  final ValueChanged<List<Member>> setChosenMembers;
   final bool allowCustomAmounts;
-  final Map<Member, double>? customAmounts;
-  final ValueChanged<Map<Member, double>>? customAmountsChanged;
-  final double Function()? getMaxAmount;
+  final Map<Member, double> customAmounts;
+  final ValueChanged<Map<Member, double>>? setCustomAmounts;
+  final double Function()? getFullAmount;
   final String? selectedCurrency;
   final bool showAnimation;
-  const MemberChips({
-    required this.allowMultipleSelected,
+
+  MemberChips({
+    required this.multiple,
     required this.allMembers,
     required this.chosenMembers,
-    required this.chosenMembersChanged,
+    required this.setChosenMembers,
     this.allowCustomAmounts = false,
-    this.customAmounts,
-    this.customAmountsChanged,
-    this.getMaxAmount,
+    this.customAmounts = const {},
+    this.setCustomAmounts,
+    this.getFullAmount,
     this.showAnimation = true,
     this.selectedCurrency,
-  });
+  }) {
+    assert(!allowCustomAmounts ||
+        (setCustomAmounts != null && getFullAmount != null));
+  }
 
-  @override
-  State<MemberChips> createState() => _MemberChipsState();
-}
-
-class _MemberChipsState extends State<MemberChips> {
-  List<Member> membersChosen = [];
-  Map<Member, double> customAmounts = {};
-
-  double getInitialAmount(Member member, double maxMoney) {
+  double getInitialAmount(Member member, double maxAmount) {
     if (customAmounts.containsKey(member)) {
       return customAmounts[member]!;
     } else {
       double sumCustom = 0;
       customAmounts.values.forEach((element) => sumCustom += element);
-      return (maxMoney - sumCustom) /
-          (membersChosen.length - customAmounts.length);
+      return (maxAmount - sumCustom) /
+          (chosenMembers.length - customAmounts.length);
     }
   }
 
-  double getMaxAmountWithoutCustom(Member member, double maxMoney) {
+  double getMaxAmountWithoutCustom(Member member, double maxAmount) {
     double sumCustom = 0;
     customAmounts.values.forEach((element) => sumCustom += element);
     if (customAmounts.containsKey(member)) {
-      return maxMoney - sumCustom + customAmounts[member]!;
+      return maxAmount - sumCustom + customAmounts[member]!;
     }
-    return maxMoney - sumCustom;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    membersChosen = widget.chosenMembers;
-    customAmounts = widget.customAmounts ?? {};
-  }
-
-  @override
-  void didUpdateWidget(covariant MemberChips oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    membersChosen = widget.chosenMembers;
-    customAmounts = widget.customAmounts ?? {};
+    return maxAmount - sumCustom;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.allowCustomAmounts) {
-      if (membersChosen.length == 0) {
-        customAmounts.clear();
-      }
-      double maxMoney = widget.getMaxAmount!() * 1.0;
-      bool customAmountRemoved = false;
-      for (Member? member in membersChosen) {
-        if (customAmounts.containsKey(member) &&
-            customAmounts[member]! > maxMoney) {
-          customAmounts.remove(member);
-          customAmountRemoved = true;
-        }
-      }
-      if (customAmountRemoved) {
-        Fluttertoast.showToast(msg: 'custom_above_amount_toast'.tr());
-      }
-      double sumCustom = 0;
-      customAmounts.values.forEach((element) => sumCustom += element);
-      if (sumCustom > maxMoney) {
-        customAmounts.clear();
-        Fluttertoast.showToast(msg: 'sum_above_amount_toast'.tr());
-      }
-    }
-
     return Wrap(
       alignment: WrapAlignment.center,
       spacing: 10,
       runSpacing: 10,
-      children: widget.allMembers.map<Widget>(
+      children: allMembers.map<Widget>(
         (Member member) {
           double chipFillRatio;
           Color selectedColor =
               Theme.of(context).colorScheme.secondaryContainer;
           Color selectedFontColor =
               Theme.of(context).colorScheme.onSecondaryContainer;
-          if (widget.allowCustomAmounts) {
-            if (!membersChosen.contains(member)) {
+          if (allowCustomAmounts) {
+            if (!chosenMembers.contains(member)) {
               chipFillRatio = 0;
             } else {
-              double maxAmount = widget.getMaxAmount!();
+              double maxAmount = getFullAmount!();
               if (maxAmount == 0) {
                 chipFillRatio =
-                    1 / (membersChosen.length == 0 ? 1 : membersChosen.length);
+                    1 / (chosenMembers.length == 0 ? 1 : chosenMembers.length);
               } else {
                 chipFillRatio = getInitialAmount(member, maxAmount) / maxAmount;
               }
@@ -131,76 +89,87 @@ class _MemberChipsState extends State<MemberChips> {
               }
             }
           } else {
-            chipFillRatio = membersChosen.contains(member) ? 1 : 0;
+            chipFillRatio = chosenMembers.contains(member) ? 1 : 0;
           }
           return CustomChoiceChip(
             member: member,
-            selected: membersChosen.contains(member),
+            selected: chosenMembers.contains(member),
             selectedColor: selectedColor,
             selectedFontColor: selectedFontColor,
             notSelectedColor: Theme.of(context).colorScheme.surface,
             notSelectedFontColor: Theme.of(context).colorScheme.onSurface,
             fillRatio: chipFillRatio * 1.0,
-            showAnimation: widget.showAnimation,
-            onChipClicked: (selected) {
-              setState(() {
-                if (widget.allowMultipleSelected) {
-                  if (selected) {
-                    membersChosen.add(member);
-                  } else {
-                    membersChosen.remove(member);
-                    customAmounts.remove(member);
-                    if (customAmounts.length == membersChosen.length) {
-                      customAmounts.clear();
-                    }
-                  }
+            showAnimation: showAnimation,
+            onSelected: (selected) {
+              if (multiple) {
+                if (selected) {
+                  setChosenMembers([...chosenMembers, member]);
                 } else {
-                  if (selected) {
-                    membersChosen.clear();
-                    membersChosen.add(member);
+                  setChosenMembers(chosenMembers
+                      .whereNot((m) => m.id == member.id)
+                      .toList());
+                  if (customAmounts.length == 1 && chosenMembers.length == 2) {
+                    setCustomAmounts?.call({});
                   } else {
-                    membersChosen.clear();
-                    customAmounts.clear();
+                    setCustomAmounts
+                        ?.call(removeFromMap(customAmounts, member));
                   }
                 }
-                widget.chosenMembersChanged(membersChosen);
-              });
-              if (widget.customAmountsChanged != null) {
-                widget.customAmountsChanged!(customAmounts);
+              } else {
+                if (selected) {
+                  setChosenMembers([member]);
+                } else {
+                  setChosenMembers([]);
+                  setCustomAmounts?.call({});
+                }
               }
             },
-            onLongPress: widget.allowCustomAmounts
+            onLongPress: allowCustomAmounts
                 ? () {
-                    if (!membersChosen.contains(member)) {
-                      setState(() {
-                        membersChosen.add(member);
-                        widget.chosenMembersChanged(membersChosen);
-                      });
+                    bool memberAdded = false;
+                    if (!chosenMembers.contains(member)) {
+                      setChosenMembers([...chosenMembers, member]);
+                      memberAdded = true;
                     }
-                    double maxMoney = widget.getMaxAmount!() * 1.0;
+                    double maxMoney = getFullAmount!() * 1.0;
                     if (maxMoney == 0) {
-                      Fluttertoast.showToast(
-                          msg: 'first_give_amount_toast'.tr());
+                      showToast(
+                          'purchase.page.custom-amount.toast.no-amount-given'
+                              .tr(),
+                          useWidgetToast: true);
                       return;
                     }
                     if (!customAmounts.containsKey(member) &&
-                        membersChosen.length - customAmounts.length == 1) {
-                      Fluttertoast.showToast(
-                          msg: 'cant_add_custom_amount_toast'.tr());
+                        ((
+                          !memberAdded && 
+                          chosenMembers.length - customAmounts.length == 1
+                          ) || (
+                            memberAdded &&
+                            chosenMembers.length == customAmounts.length
+                          )
+                        )) {
+                      showToast(
+                        'purchase-page-custom-amount-toast-cannot-customize'
+                            .plural(chosenMembers.length + (memberAdded ? 1 : 0)),
+                        useWidgetToast: true,
+                      );
                       return;
                     }
-                    double? initialValue = getInitialAmount(member, maxMoney);
+                    double initialValue = getInitialAmount(member, maxMoney);
                     double maxValue =
                         getMaxAmountWithoutCustom(member, maxMoney);
                     if (maxValue == 0) {
-                      Fluttertoast.showToast(msg: 'no_money_left_toast'.tr());
+                      showToast(
+                          'purchase.page.custom-amount.toast.no-amount-left'
+                              .tr(),
+                          useWidgetToast: true);
                       return;
                     }
                     showDialog(
                       context: context,
                       builder: (context) {
                         return CustomAmountDialog(
-                          currency: widget.selectedCurrency,
+                          currency: selectedCurrency,
                           alreadyCustom: customAmounts.containsKey(member),
                           maxMoney: maxMoney,
                           initialValue: initialValue,
@@ -208,23 +177,26 @@ class _MemberChipsState extends State<MemberChips> {
                         );
                       },
                     ).then((value) {
-                      setState(() {
-                        if (value != null) {
-                          if (value == -1) {
-                            customAmounts.remove(member);
-                            return;
-                          }
-                          customAmounts[member] = value;
-                        }
-                      });
-                      widget.customAmountsChanged!(customAmounts);
+                      if (value != null) {
+                        setCustomAmounts!(value != -1
+                            ? {
+                                ...customAmounts,
+                                member: value,
+                              }
+                            : removeFromMap(customAmounts, member));
+                      }
                     });
-                    widget.customAmountsChanged!(customAmounts);
                   }
                 : null,
           );
         },
       ).toList(),
     );
+  }
+
+  Map<T, U> removeFromMap<T, U>(Map<T, U> map, T key) {
+    Map<T, U> newMap = Map.from(map);
+    newMap.remove(key);
+    return newMap;
   }
 }

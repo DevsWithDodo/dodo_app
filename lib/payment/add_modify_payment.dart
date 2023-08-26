@@ -206,17 +206,17 @@ class AddModifyPayment {
                               fillRatio: 1,
                               member: snapshot.data!.firstWhere(
                                   (element) => element.id == payerId),
-                              onChipClicked: (chosen) {},
+                              onSelected: (chosen) {},
                             ),
                           ),
                           secondChild: MemberChips(
                             allMembers: snapshot.data!,
-                            allowMultipleSelected: false,
+                            multiple: false,
                             showAnimation: false,
                             chosenMembers: snapshot.data!
                                 .where((element) => element.id == payerId)
                                 .toList(),
-                            chosenMembersChanged: (newMembers) {
+                            setChosenMembers: (newMembers) {
                               _setState(() {
                                 purchaserSelector = CrossFadeState.showFirst;
                                 if (newMembers.isNotEmpty) {
@@ -283,11 +283,11 @@ class AddModifyPayment {
                   _alreadyInitializedSave = true;
                 }
                 return MemberChips(
-                  allowMultipleSelected: false,
+                  multiple: false,
                   allMembers: snapshot.data!
                       .where((element) => element.id != payerId)
                       .toList(),
-                  chosenMembersChanged: (members) {
+                  setChosenMembers: (members) {
                     _setState(() {
                       selectedMember = members.isEmpty ? null : members[0];
                     });
