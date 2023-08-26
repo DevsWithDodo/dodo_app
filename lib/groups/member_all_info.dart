@@ -7,7 +7,9 @@ import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
+import 'package:csocsort_szamla/essentials/widgets/member_payment_methods.dart';
 import 'package:csocsort_szamla/groups/dialogs/select_member_to_merge_dialog.dart';
+import 'package:csocsort_szamla/history/all_history_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -20,8 +22,8 @@ import 'join_group.dart';
 import 'main_group_page.dart';
 
 class MemberAllInfo extends StatefulWidget {
-  final Member? member;
-  final bool? isCurrentUserAdmin;
+  final Member member;
+  final bool isCurrentUserAdmin;
 
   MemberAllInfo({required this.member, required this.isCurrentUserAdmin});
 
@@ -30,7 +32,6 @@ class MemberAllInfo extends StatefulWidget {
 }
 
 class _MemberAllInfoState extends State<MemberAllInfo> {
-
   Future<BoolFutureOutput> _changeAdmin(int? memberId, bool isAdmin) async {
     try {
       Map<String, dynamic> body = {"member_id": memberId, "admin": isAdmin};
@@ -50,248 +51,279 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<AppStateProvider, User>(
-        selector: (context, provider) => provider.user!,
-        builder: (context, user, _) {
-          return Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Icon(Icons.account_circle,
-                        color: Theme.of(context).colorScheme.secondary),
-                    Flexible(
-                        child: Text(
-                      ' - ' + widget.member!.username,
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color:
-                              Theme.of(context).colorScheme.onSurfaceVariant),
-                    )),
-                  ],
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Row(
-                  children: <Widget>[
-                    Icon(Icons.account_box,
-                        color: Theme.of(context).colorScheme.secondary),
-                    Flexible(
-                        child: Text(
-                      ' - ' + widget.member!.nickname,
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color:
-                              Theme.of(context).colorScheme.onSurfaceVariant),
-                    )),
-                  ],
-                ),
-                Visibility(
-                  visible:
-                      widget.member!.isAdmin! && !widget.isCurrentUserAdmin!,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 5),
-                      child: Text(
-                        'Admin',
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant),
+    return DefaultTextStyle(
+      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+      child: Selector<AppStateProvider, User>(
+          selector: (context, provider) => provider.user!,
+          builder: (context, user, _) {
+            return Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        "${'member-info.username'.tr()} - ",
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
+                      Flexible(
+                        child: Text(widget.member.username),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "${'member-info.nickname'.tr()} - ",
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Flexible(
+                        child: Text(widget.member.nickname),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Text('member-info.payment-methods'.tr(), style: Theme.of(context).textTheme.titleMedium,),
+                  SizedBox(height: 5),
+                  Center(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 400),
+                      child: MemberPaymentMethods(member: widget.member),
                     ),
                   ),
-                ),
-                Visibility(
-                  visible:
-                      widget.isCurrentUserAdmin! && !widget.member!.isGuest!,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(
+                  Visibility(
+                    visible:
+                        widget.member.isAdmin! && !widget.isCurrentUserAdmin,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Text(
                           'Admin',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant),
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
-                        Switch(
-                          value: widget.member!.isAdmin!,
-                          activeColor: Theme.of(context).colorScheme.secondary,
-                          onChanged: (value) {
-                            showFutureOutputDialog(
-                                context: context,
-                                future: _changeAdmin(widget.member!.id, value),
-                                outputCallbacks: {
-                                  BoolFutureOutput.True: () {
-                                    Navigator.pop(context);
-                                    Navigator.pop(context, 'madeAdmin');
-                                  }
-                                });
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Visibility(
-                  visible: widget.isCurrentUserAdmin! ||
-                      widget.member!.id == user.id,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Center(
-                      child: GradientButton.icon(
-                        onPressed: () {
-                          showDialog(
-                                  builder: (context) => ChangeNicknameDialog(
-                                        username: widget.member!.username,
-                                        memberId: widget.member!.id,
-                                      ),
-                                  context: context)
-                              .then((value) {
-                            if (value != null && value == 'madeAdmin')
-                              Navigator.pop(context, 'madeAdmin');
-                          });
-                        },
-                        icon: Icon(Icons.edit),
-                        label: Text('edit_nickname'.tr()),
                       ),
                     ),
                   ),
-                ),
-                Visibility(
-                  visible: widget.isCurrentUserAdmin! &&
-                      widget.member!.id != user.id,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Center(
-                      child: GradientButton.icon(
-                        onPressed: () {
-                          showDialog<bool>(
-                            builder: (context) => ConfirmLeaveDialog(
-                              title: 'kick_member',
-                              choice: 'really_kick',
-                            ),
-                            context: context,
-                          ).then((value) {
-                            if (value ?? false) {
+                  Visibility(
+                    visible:
+                        widget.isCurrentUserAdmin && !widget.member.isGuest!,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text('Admin',
+                              style: Theme.of(context).textTheme.titleMedium),
+                          Switch(
+                            value: widget.member.isAdmin!,
+                            activeColor:
+                                Theme.of(context).colorScheme.secondary,
+                            onChanged: (value) {
                               showFutureOutputDialog(
-                                context: context,
-                                future: _removeMember(widget.member!.id),
-                                outputCallbacks: {
-                                  BoolFutureOutput.True: () async {
-                                    EventBus.instance.fire(EventBus.refreshBalances);
-                                    Navigator.of(context).pop();
-                                    Navigator.of(context).pop('madeAdmin');
-                                  }
-                                }
-                              );
-                            }
-                          });
-                        },
-                        icon: Icon(Icons.person_outline),
-                        label: Text('kick_member'.tr()),
+                                  context: context,
+                                  future:
+                                      _changeAdmin(widget.member.id, value),
+                                  outputCallbacks: {
+                                    BoolFutureOutput.True: () {
+                                      Navigator.pop(context);
+                                      Navigator.pop(context, 'madeAdmin');
+                                    }
+                                  });
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ),
-                Visibility(
-                  visible:
-                      widget.member!.isGuest! && widget.isCurrentUserAdmin!,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Center(
-                      child: GradientButton.icon(
-                        icon: Icon(Icons.merge),
-                        label: Text('merge_guest'.tr()),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => MergeGuestDialog(
-                              guestId: widget.member!.id,
-                            ),
-                          );
-                        },
+                  SizedBox(height: 10),
+                  Center(
+                    child: TextButton(
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => AllHistoryPage(selectedMemberId: widget.member.id))
                       ),
+                      child: Text('member-info.transactions'.tr(), textAlign: TextAlign.center),
                     ),
                   ),
-                ),
-                Visibility(
-                  visible: widget.member!.id == user.id,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Center(
-                      child: GradientButton.icon(
-                        onPressed: () {
-                          double currencyThreshold = threshold(context
-                              .read<AppStateProvider>()
-                              .currentGroup!
-                              .currency);
-                          if (widget.member!.balance <= -currencyThreshold) {
-                            FToast ft = FToast();
-                            ft.init(context);
-                            ft.showToast(
-                                child:
-                                    errorToast('balance_at_least_0', context),
-                                toastDuration: Duration(seconds: 2),
-                                gravity: ToastGravity.BOTTOM);
-                            return;
-                          } else {
+                  Visibility(
+                    visible: widget.isCurrentUserAdmin ||
+                        widget.member.id == user.id,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Center(
+                        child: GradientButton.icon(
+                          onPressed: () {
                             showDialog(
-                                    builder: (context) => ConfirmLeaveDialog(
-                                          title: 'leave_group',
-                                          choice: 'really_leave',
-                                        ),
-                                    context: context)
-                                .then((value) {
-                              if (value != null && value) {
+                              context: context,
+                              builder: (context) => ChangeNicknameDialog(
+                                username: widget.member.username,
+                                memberId: widget.member.id,
+                              ),
+                            ).then((value) {
+                              if (value ?? false) {
+                                Navigator.of(context).pop();
+                              }
+                            });
+                          },
+                          icon: Icon(Icons.edit),
+                          label: Text('edit_nickname'.tr()),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: widget.isCurrentUserAdmin &&
+                        widget.member.id != user.id,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Center(
+                        child: GradientButton.icon(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => ConfirmLeaveDialog(
+                                title: 'kick_member',
+                                choice: 'really_kick',
+                              ),
+                            ).then((value) {
+                              if (value ?? false) {
                                 showFutureOutputDialog(
                                   context: context,
-                                  future: _removeMember(null),
+                                  future: _removeMember(widget.member.id),
                                   outputCallbacks: {
                                     BoolFutureOutput.True: () async {
-                                      if (context.read<AppStateProvider>().currentGroup != null) {
-                                        Navigator.of(context).pushAndRemoveUntil(
-                                          MaterialPageRoute(builder: (context) => MainPage()), 
-                                          (r) => false,
-                                        );
-                                      } else {
-                                        EventBus.instance.fire(EventBus.refreshGroups);
-                                        Navigator.of(context).pushAndRemoveUntil(
-                                          MaterialPageRoute(builder: (context) => JoinGroup(
-                                              fromAuth: true,
-                                            )),
-                                          (r) => false,
-                                        );
-                                      }
-                                      EventBus.instance.fire(EventBus.refreshBalances);
-                                      EventBus.instance.fire(EventBus.refreshGroups);
-                                      EventBus.instance.fire(EventBus.refreshPurchases);
-                                      EventBus.instance.fire(EventBus.refreshPayments);
-                                      EventBus.instance.fire(EventBus.refreshShopping);
-                                      EventBus.instance.fire(EventBus.refreshStatistics);
-                                    },
-                                  }
+                                      EventBus.instance
+                                          .fire(EventBus.refreshBalances);
+                                      EventBus.instance
+                                          .fire(EventBus.refreshGroupMembers);
+                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pop();
+                                    }
+                                  },
                                 );
                               }
                             });
-                          }
-                        },
-                        icon: Icon(Icons.arrow_back),
-                        label: Text('leave_group'.tr()),
+                          },
+                          icon: Icon(Icons.person_outline),
+                          label: Text('kick_member'.tr()),
+                        ),
                       ),
                     ),
                   ),
-                )
-              ],
-            ),
-          );
-        });
+                  Visibility(
+                    visible:
+                        widget.member.isGuest! && widget.isCurrentUserAdmin,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Center(
+                        child: GradientButton.icon(
+                          icon: Icon(Icons.merge),
+                          label: Text('merge_guest'.tr()),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => MergeGuestDialog(
+                                guestId: widget.member.id,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  Visibility(
+                    visible: widget.member.id == user.id,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Center(
+                        child: GradientButton.icon(
+                          onPressed: () {
+                            double currencyThreshold = threshold(context
+                                .read<AppStateProvider>()
+                                .currentGroup!
+                                .currency);
+                            if (widget.member.balance <= -currencyThreshold) {
+                              FToast ft = FToast();
+                              ft.init(context);
+                              ft.showToast(
+                                  child:
+                                      errorToast('balance_at_least_0', context),
+                                  toastDuration: Duration(seconds: 2),
+                                  gravity: ToastGravity.BOTTOM);
+                              return;
+                            } else {
+                              showDialog(
+                                context: context,
+                                builder: (context) => ConfirmLeaveDialog(
+                                  title: 'leave_group',
+                                  choice: 'really_leave',
+                                ),
+                              ).then(
+                                (value) {
+                                  if (value ?? false) {
+                                    showFutureOutputDialog(
+                                      context: context,
+                                      future: _removeMember(null),
+                                      outputCallbacks: {
+                                        BoolFutureOutput.True: () async {
+                                          if (context
+                                                  .read<AppStateProvider>()
+                                                  .currentGroup !=
+                                              null) {
+                                            Navigator.of(context)
+                                                .pushAndRemoveUntil(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      MainPage()),
+                                              (r) => false,
+                                            );
+                                          } else {
+                                            EventBus.instance
+                                                .fire(EventBus.refreshGroups);
+                                            Navigator.of(context)
+                                                .pushAndRemoveUntil(
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      JoinGroup(
+                                                        fromAuth: true,
+                                                      )),
+                                              (r) => false,
+                                            );
+                                          }
+                                          EventBus.instance
+                                              .fire(EventBus.refreshBalances);
+                                          EventBus.instance
+                                              .fire(EventBus.refreshGroups);
+                                          EventBus.instance
+                                              .fire(EventBus.refreshPurchases);
+                                          EventBus.instance
+                                              .fire(EventBus.refreshPayments);
+                                          EventBus.instance
+                                              .fire(EventBus.refreshShopping);
+                                        },
+                                      },
+                                    );
+                                  }
+                                },
+                              );
+                            }
+                          },
+                          icon: Icon(Icons.arrow_back),
+                          label: Text('leave_group'.tr()),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            );
+          }),
+    );
   }
 
   Future<BoolFutureOutput> _removeMember(int? memberId) async {

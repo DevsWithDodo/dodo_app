@@ -474,7 +474,7 @@
     "payment-method.name.hint": "zB. IBAN",    
     "payment-methods.dialog.title": "Zahlungsmethoden",
     "payment-methods.dialog.subtitle": "Das ausgewählte Mitglied kann über diese Methoden bezahlt werden",
-    "payment-methods.dialog.none": "Das Mitglied hat noch keine Zahlungsmethoden hinzugefügt",
+    "payment-methods.no-payment-method": "Das Mitglied hat noch keine Zahlungsmethoden hinzugefügt",
 
     "clipboard.copy-successful": "Kopiert",
 
@@ -511,6 +511,10 @@
     "categories.shopping": "Einkaufen",
     "categories.health": "Gesundheit",
     "categories.bills": "Rechnungen",
-    "categories.other": "Sonstiges"
+    "categories.other": "Sonstiges",
 
+    "member-info.username": "Nutzername",
+    "member-info.nickname": "Spitzname",
+    "member-info.transactions": "Einkäufe und Zahlungen des Nutzern anzeigen",
+    "member-info.payment-methods": "Wie der Mitglied Geld empfangen möchte"
 }

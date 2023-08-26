@@ -1,9 +1,7 @@
-import 'package:collection/collection.dart';
-import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/widgets/member_payment_methods.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class PaymentMethodsDialog extends StatelessWidget {
   final Member member;
@@ -31,72 +29,8 @@ class PaymentMethodsDialog extends StatelessWidget {
               SizedBox(height: 25),
               ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: 350),
-                child: Column(
-                  children: member.paymentMethods
-                          ?.sorted((a, b) => a.priority ? -1 : 1)
-                          .map((paymentMethod) => Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Flexible(
-                                      child: Row(
-                                        children: [
-                                          Icon(Icons.payment),
-                                          SizedBox(width: 5),
-                                          Flexible(
-                                            child: DefaultTextStyle(
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge!,
-                                              child: Row(
-                                                children: [
-                                                  Text("${paymentMethod.name}: "),
-                                                  Flexible(
-                                                    child: Text(
-                                                      "${paymentMethod.value}",
-                                                      style: TextStyle(fontWeight:FontWeight.w600),
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        SizedBox(width: 5),
-                                        paymentMethod.priority
-                                        ? Padding(
-                                          padding: const EdgeInsets.only(right: 8.0),
-                                          child: Icon(
-                                              Icons.star,
-                                              color: Colors.amber,
-                                              size: 20,
-                                            ),
-                                        )
-                                        : SizedBox(),
-                                        IconButton.filledTonal(
-                                          onPressed: () {
-                                            Clipboard.setData(ClipboardData(text: paymentMethod.value));
-                                            showToast('clipboard.copy-successful'.tr());
-                                            Navigator.pop(context);
-                                          }, 
-                                          icon: Icon(Icons.copy),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                          ))
-                          .toList() ??
-                      [Text('payment-methods.dialog.none'.tr())],
-                ),
-              )
+                child: MemberPaymentMethods(member: member),
+              ),
             ],
           ),
         ),

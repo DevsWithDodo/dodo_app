@@ -471,7 +471,7 @@
     "payment-method.name.hint": "pl. Számlaszám",
     "payment-methods.dialog.title": "Fizetési módok",
     "payment-methods.dialog.subtitle": "A kiválasztott tagnak így lehet fizetni",
-    "payment-methods.dialog.none": "A tag még nem adott meg fizetési módot",
+    "payment-methods.no-payment-method": "A tag még nem adott meg fizetési módot",
 
     "clipboard.copy-successful": "A vágólapra másolva",
 
@@ -508,5 +508,10 @@
     "categories.shopping": "Vásárlás",
     "categories.health": "Egészség",
     "categories.bills": "Számlák",
-    "categories.other": "Egyéb"
+    "categories.other": "Egyéb",
+
+    "member-info.username": "Felhasználónév",
+    "member-info.nickname": "Becenév",
+    "member-info.transactions": "Ugrás a tag vásárlásaihoz és fizetéseihez",
+    "member-info.payment-methods": "Módok, ahogyan a tag pénzt fogad"
 }

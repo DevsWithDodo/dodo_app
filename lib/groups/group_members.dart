@@ -174,7 +174,7 @@ class _GroupMembersState extends State<GroupMembers> {
     return members.map((member) {
       return MemberEntry(
         member: member,
-        isCurrentUserAdmin: currentMember!.isAdmin,
+        isCurrentUserAdmin: currentMember!.isAdmin!,
         onChangedMember: this.refreshMembers,
       );
     }).toList();
@@ -184,11 +184,11 @@ class _GroupMembersState extends State<GroupMembers> {
 class MemberEntry extends StatefulWidget {
   final VoidCallback onChangedMember;
   final Member member;
-  final bool? isCurrentUserAdmin;
+  final bool isCurrentUserAdmin;
 
   MemberEntry({
     required this.member,
-    this.isCurrentUserAdmin,
+    required this.isCurrentUserAdmin,
     required this.onChangedMember,
   });
 

@@ -1,3 +1,4 @@
+import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -106,9 +107,13 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
         outputCallbacks: {
           BoolFutureOutput.True: () async {
             _nicknameController.text = '';
-            await clearGroupCache(context);
             Navigator.pop(context);
-            Navigator.pop(context, 'madeAdmin');
+            Navigator.pop(context, true);
+            EventBus.instance.fire(EventBus.refreshBalances);
+            EventBus.instance.fire(EventBus.refreshGroupMembers);
+            EventBus.instance.fire(EventBus.refreshPurchases);
+            EventBus.instance.fire(EventBus.refreshPayments);
+            EventBus.instance.fire(EventBus.refreshShopping);
           }
         }
       );

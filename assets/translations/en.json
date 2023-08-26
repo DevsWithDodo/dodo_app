@@ -473,7 +473,7 @@
     "payment-method.name.hint": "eg. IBAN",
     "payment-methods.dialog.title": "Payment methods",
     "payment-methods.dialog.subtitle": "The chosen member can be paid via the following methods",
-    "payment-methods.dialog.none": "The member hasn't added any payment methods yet",
+    "payment-methods.no-payment-method": "The member hasn't added any payment methods yet",
 
     "clipboard.copy-successful": "Copied successfully",
 
@@ -510,5 +510,10 @@
     "categories.shopping": "Shopping",
     "categories.health": "Health",
     "categories.bills": "Bills",
-    "categories.other": "Other"
+    "categories.other": "Other",
+
+    "member-info.username": "Username",
+    "member-info.nickname": "Nickname",
+    "member-info.transactions": "Show member's purchases and payments",
+    "member-info.payment-methods": "Ways the member accepts payments"
 }

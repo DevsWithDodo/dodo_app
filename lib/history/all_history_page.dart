@@ -16,17 +16,21 @@ import 'package:provider/provider.dart';
 import '../essentials/models.dart';
 import 'history_filter.dart';
 
-class AllHistoryRoute extends StatefulWidget {
+class AllHistoryPage extends StatefulWidget {
   ///Defines whether to show purchases (0) or payments (1)
   final int? startingIndex;
+  final int? selectedMemberId;
 
-  AllHistoryRoute({required this.startingIndex});
+  AllHistoryPage({
+    this.startingIndex,
+    this.selectedMemberId,  
+  });
 
   @override
-  _AllHistoryRouteState createState() => _AllHistoryRouteState();
+  _AllHistoryPageState createState() => _AllHistoryPageState();
 }
 
-class _AllHistoryRouteState extends State<AllHistoryRoute>
+class _AllHistoryPageState extends State<AllHistoryPage>
     with TickerProviderStateMixin {    
   DateTime? _startDate;
   DateTime? _endDate;
@@ -37,7 +41,7 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
   ScrollController _purchaseScrollController = ScrollController();
   ScrollController _paymentScrollController = ScrollController();
   TabController? _tabController;
-  int? _selectedIndex = 0;
+  late int _selectedIndex;
   bool _showFilter = false;
   late int _selectedMemberId;
 
@@ -156,10 +160,10 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
   @override
   void initState() {
     super.initState();
-    _selectedMemberId = context.read<AppStateProvider>().user!.id;
+    _selectedMemberId = widget.selectedMemberId ?? context.read<AppStateProvider>().user!.id;
     _tabController = TabController(
-        length: 2, vsync: this, initialIndex: widget.startingIndex!);
-    _selectedIndex = widget.startingIndex;
+        length: 2, vsync: this, initialIndex: widget.startingIndex ?? 0);
+    _selectedIndex = widget.startingIndex ?? 0;
 
     _purchases = null;
     _purchases = _getPurchases();
@@ -220,7 +224,7 @@ class _AllHistoryRouteState extends State<AllHistoryRoute>
                   _tabController!.animateTo(_index);
                 });
               },
-              selectedIndex: _selectedIndex!,
+              selectedIndex: _selectedIndex,
               destinations: [
                 NavigationDestination(
                   icon: Icon(Icons.shopping_cart),

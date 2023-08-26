@@ -79,7 +79,6 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
                             EventBus.instance.fire(EventBus.refreshBalances);
                             EventBus.instance.fire(EventBus.refreshPurchases);
                             EventBus.instance.fire(EventBus.refreshPayments);
-                            EventBus.instance.fire(EventBus.refreshStatistics);
                             Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(builder: (context) => MainPage()),
                               (r) => false,

@@ -299,7 +299,7 @@ class _HistoryState extends State<History> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => AllHistoryRoute(
+                                      builder: (context) => AllHistoryPage(
                                           startingIndex: _selectedIndex),
                                     ),
                                   );
@@ -365,7 +365,7 @@ class _HistoryState extends State<History> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => AllHistoryRoute(
+                                      builder: (context) => AllHistoryPage(
                                         startingIndex: _selectedIndex,
                                       ),
                                     ),
