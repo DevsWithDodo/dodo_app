@@ -30,7 +30,6 @@ class MemberAllInfo extends StatefulWidget {
 }
 
 class _MemberAllInfoState extends State<MemberAllInfo> {
-  FocusNode _nicknameFocus = FocusNode();
 
   Future<BoolFutureOutput> _changeAdmin(int? memberId, bool isAdmin) async {
     try {
@@ -47,16 +46,6 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
     } catch (_) {
       throw _;
     }
-  }
-
-  @override
-  void initState() {
-    _nicknameFocus.addListener(() {
-      if (_nicknameFocus.hasFocus) {
-        setState(() {});
-      }
-    });
-    super.initState();
   }
 
   @override
@@ -198,6 +187,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                   BoolFutureOutput.True: () async {
                                     EventBus.instance.fire(EventBus.refreshBalances);
                                     Navigator.of(context).pop();
+                                    Navigator.of(context).pop('madeAdmin');
                                   }
                                 }
                               );

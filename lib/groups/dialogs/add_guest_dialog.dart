@@ -9,6 +9,8 @@ import '../../essentials/validation_rules.dart';
 import '../../essentials/widgets/future_success_dialog.dart';
 import '../../essentials/widgets/gradient_button.dart';
 
+import 'package:csocsort_szamla/essentials/event_bus.dart';
+
 class AddGuestDialog extends StatefulWidget {
   AddGuestDialog();
 
@@ -106,7 +108,9 @@ class _AddGuestDialogState extends State<AddGuestDialog> {
           future: _addGuest(_nicknameController.text),
           outputCallbacks: {
             BoolFutureOutput.True: () async {
-              await clearGroupCache(context);
+              EventBus.instance.fire(EventBus.refreshBalances);
+              EventBus.instance.fire(EventBus.refreshGroupMembers);
+              Navigator.of(context).pop();
               Navigator.of(context).pop();
             }
           }

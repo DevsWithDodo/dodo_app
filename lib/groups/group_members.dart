@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
@@ -47,14 +48,18 @@ class _GroupMembersState extends State<GroupMembers> {
 
   @override
   void initState() {
-    _members = null;
-    _members = _getMembers();
     super.initState();
+    _members = _getMembers();
+    EventBus.instance.register(EventBus.refreshGroupMembers, refreshMembers);
   }
 
-  void callback() {
+  void dispose() {
+    EventBus.instance.unregister(EventBus.refreshGroupMembers, refreshMembers);
+    super.dispose();
+  }
+
+  void refreshMembers() {
     setState(() {
-      _members = null;
       _members = _getMembers();
     });
   }
@@ -170,21 +175,21 @@ class _GroupMembersState extends State<GroupMembers> {
       return MemberEntry(
         member: member,
         isCurrentUserAdmin: currentMember!.isAdmin,
-        callback: this.callback,
+        onChangedMember: this.refreshMembers,
       );
     }).toList();
   }
 }
 
 class MemberEntry extends StatefulWidget {
-  final Function? callback;
+  final VoidCallback onChangedMember;
   final Member member;
   final bool? isCurrentUserAdmin;
 
   MemberEntry({
     required this.member,
     this.isCurrentUserAdmin,
-    this.callback,
+    required this.onChangedMember,
   });
 
   @override
@@ -250,7 +255,7 @@ class _MemberEntryState extends State<MemberEntry> {
                         isCurrentUserAdmin: widget.isCurrentUserAdmin,
                       ),
                     )).then((val) {
-              if (val == 'madeAdmin') widget.callback!();
+              if (val == 'madeAdmin') widget.onChangedMember();
             });
           },
           borderRadius: BorderRadius.circular(15),

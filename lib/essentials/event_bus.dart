@@ -2,7 +2,8 @@ import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/navigator_service.dart';
 import 'package:csocsort_szamla/main.dart';
 
-class EventBus {  
+class EventBus {
+  static _RefreshGroupMembers refreshGroupMembers = _RefreshGroupMembers();
   static _RefreshBalances refreshBalances = _RefreshBalances();
   static _RefreshPurchases refreshPurchases = _RefreshPurchases();
   static _RefreshPayments refreshPayments = _RefreshPayments();
@@ -73,6 +74,16 @@ abstract class _AppEvent extends _Event {
 class _HideMainDialog extends _EmptyEvent {}
 
 class _RefreshMainDialog extends _EmptyEvent {}
+
+class _RefreshGroupMembers extends _AppEvent {
+  @override
+  void onEvent() {
+    deleteCache(
+      uri: generateUri(GetUriKeys.groupCurrent,
+          getIt.get<NavigationService>().navigatorKey.currentContext!),
+    );
+  }
+}
 
 class _RefreshBalances extends _AppEvent {
   @override
