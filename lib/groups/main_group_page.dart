@@ -5,9 +5,9 @@ import 'dart:io' show Platform;
 import 'package:collection/collection.dart';
 import 'package:connectivity_widget/connectivity_widget.dart';
 import 'package:csocsort_szamla/auth/login_or_register_page.dart';
-import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/groups/create_group.dart';
 import 'package:csocsort_szamla/groups/group_settings_page.dart';
 import 'package:csocsort_szamla/groups/join_group.dart';
@@ -27,7 +27,7 @@ import 'package:provider/provider.dart';
 
 import '../balance/balances.dart';
 import '../config.dart';
-import '../essentials/ad_management.dart';
+import '../essentials/ad_unit.dart';
 import '../essentials/currencies.dart';
 import '../essentials/http.dart';
 import '../essentials/models.dart';
@@ -55,7 +55,8 @@ class MainPage extends StatefulWidget {
   final int selectedIndex;
   final String? scrollTo;
 
-  MainPage({this.selectedHistoryIndex = 0, this.selectedIndex = 0, this.scrollTo});
+  MainPage(
+      {this.selectedHistoryIndex = 0, this.selectedIndex = 0, this.scrollTo});
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -194,8 +195,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void _handleDrawer(bool bigScreen) {
-    if (!bigScreen) {
+  void _handleDrawer() {
+    if (context.read<ScreenWidth>().isMobile) {
       _scaffoldKey.currentState!.openEndDrawer();
     } else {
       _scaffoldKey.currentState!.openDrawer();
@@ -204,9 +205,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    bool bigScreen = width > tabletViewWidth;
-    if (bigScreen && _selectedIndex > 1) {
+    bool isMobile = context.watch<ScreenWidth>().isMobile;
+    if (!isMobile && _selectedIndex > 1) {
       _selectedIndex = 0;
       _tabController!.animateTo(_selectedIndex);
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
@@ -216,11 +216,9 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
-            leading: bigScreen
+            leading: !isMobile
                 ? IconButton(
-                    onPressed: () {
-                      _handleDrawer(bigScreen);
-                    },
+                    onPressed: _handleDrawer,
                     icon: Icon(Icons.menu),
                   )
                 : null,
@@ -230,7 +228,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               style: TextStyle(letterSpacing: 0.25, fontSize: 24),
             ),
           ),
-          bottomNavigationBar: bigScreen
+          bottomNavigationBar: !isMobile
               ? null
               : NavigationBar(
                   onDestinationSelected: (_index) {
@@ -241,18 +239,18 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                         ScaffoldMessenger.of(context).removeCurrentSnackBar();
                       });
                     } else {
-                      _handleDrawer(bigScreen);
+                      _handleDrawer();
                     }
                   },
                   selectedIndex: _selectedIndex,
                   destinations: _bottomNavbarItems(),
                 ),
-          drawer: bigScreen
+          drawer: !isMobile
               ? Drawer(
                   child: _drawer(),
                 )
               : null,
-          endDrawer: !bigScreen
+          endDrawer: isMobile
               ? Drawer(
                   child: _drawer(),
                 )
@@ -260,11 +258,12 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           floatingActionButton: Visibility(
             visible: _selectedIndex == 0,
             child: MainPageSpeedDial(
-              onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
+              onReturn: () =>
+                  EventBus.instance.fire(EventBus.refreshMainDialog),
             ),
           ),
           body: kIsWeb
-              ? _body(true, bigScreen)
+              ? _body(true)
               : ConnectivityWidget(
                   offlineBanner: Container(
                     padding: EdgeInsets.all(8),
@@ -282,40 +281,35 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   builder: (context, isOnline) {
                     return ChangeNotifierProvider(
                       create: (_) => IsOnlineProvider(isOnline: isOnline),
-                      child: _body(isOnline, bigScreen),
+                      child: _body(isOnline),
                     );
                   },
                 ),
         ),
-        MainDialogBuilder(context: context, bigScreen: bigScreen),
+        MainDialogBuilder(context: context),
       ],
     );
   }
 
-  Widget _body(bool isOnline, bool bigScreen) {
-    double width = MediaQuery.of(context).size.width - (bigScreen ? 80 : 0);
-    double height = MediaQuery.of(context).size.height -
-        MediaQuery.of(context).padding.top -
-        56 - //appbar
-        (bigScreen ? 0 : 56) - //bottomNavbar
-        adHeight(context);
-    List<Widget> tabWidgets = _tabWidgets(isOnline, bigScreen, height, width);
+  Widget _body(bool isOnline) {
+    ScreenWidth screenWidth = context.watch<ScreenWidth>();
+    bool bigScreen = !screenWidth.isMobile;
+    List<Widget> tabWidgets = _tabWidgets(isOnline);
     return Row(
       children: [
-        bigScreen
-            ? NavigationRail(
-                labelType: NavigationRailLabelType.all,
-                destinations: _navigationRailItems(),
-                onDestinationSelected: (_index) {
-                  // print(_selectedIndex);
-                  setState(() {
-                    _selectedIndex = _index;
-                    _tabController!.animateTo(_index);
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                  });
-                },
-                selectedIndex: _selectedIndex)
-            : Container(),
+        if (bigScreen)
+          NavigationRail(
+            labelType: NavigationRailLabelType.all,
+            destinations: _navigationRailItems(),
+            onDestinationSelected: (_index) => setState(() {
+              _selectedIndex = _index;
+              _tabController!.animateTo(_index);
+              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+            }),
+            selectedIndex: _selectedIndex,
+          )
+        else
+          Container(),
         Expanded(
           child: Column(
             children: [
@@ -326,31 +320,18 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   children: !bigScreen
                       ? tabWidgets
                       : [
-                          Table(
-                            columnWidths: {
-                              0: FractionColumnWidth(1 / 2),
-                              1: FractionColumnWidth(1 / 2),
-                            },
-                            children: [
-                              TableRow(
-                                children: tabWidgets
-                                    .take(2)
-                                    .map(
-                                      (e) => AspectRatio(
-                                        aspectRatio: width / 2 / height,
-                                        child: e,
-                                      ),
-                                    )
-                                    .toList(),
-                              )
-                            ],
+                          Row(
+                            children: tabWidgets
+                                .take(2)
+                                .map((child) => Expanded(child: child))
+                                .toList(),
                           ),
                           tabWidgets.reversed.first,
                           Container(),
                         ],
                 ),
               ),
-              AdUnitForSite(site: 'home_screen'),
+              AdUnit(site: 'home_screen'),
             ],
           ),
         ),
@@ -358,8 +339,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     );
   }
 
-  List<Widget> _tabWidgets(
-      bool isOnline, bool bigScreen, double height, double width) {
+  List<Widget> _tabWidgets(bool isOnline) {
     return [
       RefreshIndicator(
         onRefresh: () async {
@@ -370,10 +350,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           bus.fire(EventBus.refreshShopping);
           bus.fire(EventBus.refreshStatistics);
           bus.fire(EventBus.refreshMainDialog);
+          bus.fire(EventBus.refreshGroups);
           if (isOnline) await clearGroupCache(context);
-          _sumBalance = _getSumBalance();
-          _groups =
-              _getGroups(); // setState not needed, refreshBalances will set state
         },
         child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
@@ -386,18 +364,16 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 selectedIndex: widget.selectedHistoryIndex,
               ),
               StatisticsDataExport(),
-              SizedBox(height: 70), // So the floating button doesn't block info
+              Visibility(
+                visible: context.watch<ScreenWidth>().isMobile,
+                child: SizedBox(height: 70),
+              ), // So the floating button doesn't block info
             ],
           ),
         ),
       ),
       ShoppingList(),
-      GroupSettings(
-        scrollTo: scrollTo,
-        bigScreen: bigScreen,
-        height: height,
-        width: width,
-      ),
+      GroupSettings(scrollTo: scrollTo),
     ];
   }
 
@@ -776,26 +752,26 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       NavigationDestination(
           icon: Icon(Icons.receipt_long), label: 'shopping_list'.tr()),
       NavigationDestination(
-          icon: Stack(
-            children: [
-              Container(
-                margin: EdgeInsets.only(right: 5),
-                child: Icon(
-                  Icons.group,
-                  size: 22,
-                ),
+        icon: Stack(
+          children: [
+            Container(
+              margin: EdgeInsets.only(right: 5),
+              child: Icon(
+                Icons.group,
+                size: 22,
               ),
-              Container(
-                margin: EdgeInsets.only(left: 17),
-                child: Icon(
-                  Icons.settings,
-                  size: 12,
-                ),
+            ),
+            Container(
+              margin: EdgeInsets.only(left: 17),
+              child: Icon(
+                Icons.settings,
+                size: 12,
               ),
-            ],
-          ),
-          label: 'group'.tr(),
+            ),
+          ],
         ),
+        label: 'group'.tr(),
+      ),
     ];
   }
 }

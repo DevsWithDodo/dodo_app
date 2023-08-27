@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/essentials/ad_management.dart';
+import 'package:csocsort_szamla/essentials/ad_unit.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
@@ -271,7 +271,7 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                 ),
                 Visibility(
                   visible: MediaQuery.of(context).viewInsets.bottom == 0,
-                  child: AdUnitForSite(site: 'purchase'),
+                  child: AdUnit(site: 'purchase'),
                 ),
               ],
             ),

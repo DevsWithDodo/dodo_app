@@ -5,6 +5,7 @@ import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/navigator_service.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/main.dart';
 import 'package:csocsort_szamla/main/main_dialogs/like_app.dart';
 import 'package:csocsort_szamla/main/main_dialogs/main_dialog.dart';
@@ -18,11 +19,10 @@ import 'package:provider/provider.dart';
 class MainDialogBuilder extends StatefulWidget {
   late final List<MainDialog> dialogs;
   late final MainDialog? chosenDialog;
-  final bool bigScreen;
   final BuildContext context;
 
   MainDialogBuilder(
-      {required this.context, required this.bigScreen, super.key}) {
+      {required this.context, super.key}) {
     dialogs = [
       TrialEndedDialog(
         canShow: (context) => 
@@ -183,7 +183,7 @@ class _MainDialogBuilderState extends State<MainDialogBuilder> {
                   ? Alignment.center
                   : Alignment.bottomCenter,
               child: Padding(
-                padding: EdgeInsets.only(bottom: widget.bigScreen ? 15 : 95),
+                padding: EdgeInsets.only(bottom: context.watch<ScreenWidth>().isMobile ? 95 : 15),
                 child: Provider.value(
                   value: () => setState(() => visible = false),
                   builder: (context, _) {

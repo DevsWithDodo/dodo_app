@@ -1,7 +1,6 @@
-import 'package:csocsort_szamla/common.dart';
-import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/ad_management.dart';
+import 'package:csocsort_szamla/essentials/ad_unit.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/user_settings/change_password.dart';
 import 'package:csocsort_szamla/user_settings/change_user_currency.dart';
 import 'package:csocsort_szamla/user_settings/delete_all_data.dart';
@@ -25,11 +24,7 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height -
-        MediaQuery.of(context).padding.top -
-        56 - //appbar
-        adHeight(context); //Height without status bar and appbar
+    print('asdasdasd');
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -38,53 +33,42 @@ class _SettingsState extends State<Settings> {
       ),
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
-        onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Column(
           children: [
-            width < tabletViewWidth
-                ? Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: _settings(),
+            if (context.watch<ScreenWidth>().isMobile)
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: _settings(),
+                  ),
+                ),
+              )
+            else
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        controller: ScrollController(),
+                        children: _settings().take(3).toList(),
                       ),
                     ),
-                  )
-                : Expanded(
-                    child: Table(
-                      columnWidths: {
-                        0: FractionColumnWidth(0.5),
-                        1: FractionColumnWidth(0.5)
-                      },
-                      children: [
-                        TableRow(
-                          children: [
-                            AspectRatio(
-                              aspectRatio: width / 2 / height,
-                              child: ListView(
-                                controller: ScrollController(),
-                                children: _settings().take(3).toList(),
-                              ),
-                            ),
-                            AspectRatio(
-                              aspectRatio: width / 2 / height,
-                              child: ListView(
-                                controller: ScrollController(),
-                                children: _settings()
-                                    .reversed
-                                    .take(7)
-                                    .toList()
-                                    .reversed
-                                    .toList(),
-                              ),
-                            )
-                          ],
-                        )
-                      ],
+                    Expanded(
+                      child: ListView(
+                        controller: ScrollController(),
+                        children: _settings()
+                            .reversed
+                            .take(7)
+                            .toList()
+                            .reversed
+                            .toList(),
+                      ),
                     ),
-                  ),
-            AdUnitForSite(site: 'settings'),
+                  ],
+                ),
+              ),
+            AdUnit(site: 'settings'),
           ],
         ),
       ),

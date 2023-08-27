@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/essentials/ad_management.dart';
+import 'package:csocsort_szamla/essentials/ad_unit.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
@@ -132,7 +132,7 @@ class _ReportABugPageState extends State<ReportABugPage> {
               ),
               Visibility(
                 visible: MediaQuery.of(context).viewInsets.bottom == 0,
-                child: AdUnitForSite(site: 'report_bug'),
+                child: AdUnit(site: 'report_bug'),
               ),
             ],
           ),

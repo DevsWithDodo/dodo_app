@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 
 import 'package:csocsort_szamla/auth/login_or_register_page.dart';
-import 'package:csocsort_szamla/essentials/ad_management.dart';
+import 'package:csocsort_szamla/essentials/ad_unit.dart';
 import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
@@ -424,7 +424,7 @@ class _JoinGroupState extends State<JoinGroup> {
                               ),
                             ),
                           ),
-                          AdUnitForSite(site: 'join_group'),
+                          AdUnit(site: 'join_group'),
                         ],
                       ),
                     );

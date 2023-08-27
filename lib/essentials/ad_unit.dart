@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
-class AdUnitForSite extends StatefulWidget {
+class AdUnit extends StatefulWidget {
   final String site;
-  AdUnitForSite({required this.site});
+  AdUnit({required this.site});
 
   @override
-  State<AdUnitForSite> createState() => _AdUnitForSiteState();
+  State<AdUnit> createState() => _AdUnitState();
 }
 
-class _AdUnitForSiteState extends State<AdUnitForSite> {
+class _AdUnitState extends State<AdUnit> {
   late BannerAd ad;
   @override
   void initState() {

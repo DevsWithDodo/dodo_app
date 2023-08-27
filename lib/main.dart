@@ -10,6 +10,7 @@ import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/version_not_supported_page.dart';
 import 'package:csocsort_szamla/groups/join_group.dart';
 import 'package:csocsort_szamla/main/in_app_purchase_page.dart';
@@ -153,7 +154,7 @@ void main() async {
               create: (context) => InviteUrlProvider(inviteURL)),
         ],
         child: EasyLocalization(
-          child: LenderApp(),
+          child: ScreenWidthProvider(child: LenderApp()),
           supportedLocales: [
             Locale('en'),
             Locale('de'),

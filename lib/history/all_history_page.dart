@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/essentials/ad_management.dart';
+import 'package:csocsort_szamla/essentials/ad_unit.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
@@ -296,7 +296,7 @@ class _AllHistoryPageState extends State<AllHistoryPage>
                 ),
           Visibility(
             visible: MediaQuery.of(context).viewInsets.bottom == 0,
-            child: AdUnitForSite(site: 'history'),
+            child: AdUnit(site: 'history'),
           ),
         ],
       ),

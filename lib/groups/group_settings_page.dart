@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/groups/dialogs/change_group_currency_dialog.dart';
 import 'package:csocsort_szamla/groups/dialogs/rename_group_dialog.dart';
@@ -16,12 +17,8 @@ import 'group_members.dart';
 import 'invitation.dart';
 
 class GroupSettings extends StatefulWidget {
-  final bool bigScreen;
-  final double? height;
-  final double? width;
   final String? scrollTo;
-  GroupSettings(
-      {this.scrollTo, this.bigScreen = false, this.height, this.width});
+  GroupSettings({this.scrollTo});
   @override
   _GroupSettingState createState() => _GroupSettingState();
 }
@@ -34,8 +31,9 @@ class _GroupSettingState extends State<GroupSettings> {
   Future<bool> _getHasGuests() async {
     try {
       Response response = await Http.get(
-        uri: generateUri(GetUriKeys.groupHasGuests, context,
-            params: [context.read<AppStateProvider>().user!.group!.id.toString()]),
+        uri: generateUri(GetUriKeys.groupHasGuests, context, params: [
+          context.read<AppStateProvider>().user!.group!.id.toString()
+        ]),
       );
       Map<String, dynamic> decoded = jsonDecode(response.body);
       // print(decoded);
@@ -78,8 +76,9 @@ class _GroupSettingState extends State<GroupSettings> {
 
   @override
   Widget build(BuildContext context) {
-    double width = widget.width ?? MediaQuery.of(context).size.width;
-    double height = widget.height ?? MediaQuery.of(context).size.height;
+    bool bigScreen = !context
+        .select<ScreenWidth, bool>((screenWidth) => screenWidth.isMobile);
+
     return RefreshIndicator(
       onRefresh: () async {
         await deleteCache(uri: '/groups');
@@ -93,75 +92,57 @@ class _GroupSettingState extends State<GroupSettings> {
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
         },
-        child: SingleChildScrollView(
-          physics: widget.bigScreen
-              ? NeverScrollableScrollPhysics()
-              : AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: <Widget>[
-              FutureBuilder(
-                  future: _isUserAdmin,
-                  builder: (context, AsyncSnapshot<bool> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done) {
-                      if (snapshot.hasData) {
-                        List<Widget> columnWidgets = _columnWidgets(snapshot);
-                        if (widget.bigScreen) {
-                          return Table(
-                            columnWidths: {
-                              0: FractionColumnWidth(0.5),
-                              1: FractionColumnWidth(0.5),
-                            },
-                            children: [
-                              TableRow(children: [
-                                AspectRatio(
-                                  aspectRatio: width / 2 / height,
-                                  child: ListView(
-                                    controller: ScrollController(),
-                                    children: columnWidgets.take(2).toList(),
-                                  ),
-                                ),
-                                AspectRatio(
-                                  aspectRatio: width / 2 / height,
-                                  child: ListView(
-                                    controller: ScrollController(),
-                                    children: columnWidgets.reversed
-                                        .take(4)
-                                        .toList()
-                                        .reversed
-                                        .toList(),
-                                  ),
-                                ),
-                              ])
-                            ],
-                          );
-                        }
-                        return SingleChildScrollView(
-                          physics: NeverScrollableScrollPhysics(),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: columnWidgets,
+        child: FutureBuilder(
+            future: _isUserAdmin,
+            builder: (context, AsyncSnapshot<bool> snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData) {
+                  List<Widget> columnWidgets = _columnWidgets(snapshot);
+                  if (bigScreen) {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: ListView(
+                            controller: ScrollController(),
+                            children: columnWidgets.take(2).toList(),
                           ),
-                        );
-                      } else {
-                        return ErrorMessage(
-                          error: snapshot.error.toString(),
-                          errorLocation: 'is_user_admin',
-                          onTap: () {
-                            setState(() {
-                              _isUserAdmin = null;
-                              _isUserAdmin = _getIsUserAdmin();
-                            });
-                          },
-                        );
-                      }
-                    }
-                    return LinearProgressIndicator(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
+                        ),
+                        Expanded(
+                          child: ListView(
+                            controller: ScrollController(),
+                            children: columnWidgets.reversed
+                                .take(4)
+                                .toList()
+                                .reversed
+                                .toList(),
+                          ),
+                        ),
+                      ],
                     );
-                  }),
-            ],
-          ),
-        ),
+                  }
+                  return SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: columnWidgets,
+                    ),
+                  );
+                } else {
+                  return ErrorMessage(
+                    error: snapshot.error.toString(),
+                    errorLocation: 'is_user_admin',
+                    onTap: () {
+                      setState(() {
+                        _isUserAdmin = null;
+                        _isUserAdmin = _getIsUserAdmin();
+                      });
+                    },
+                  );
+                }
+              }
+              return LinearProgressIndicator(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+              );
+            }),
       ),
     );
   }
@@ -269,7 +250,6 @@ class _GroupSettingState extends State<GroupSettings> {
         ),
       ),
       GroupMembers(),
-      SizedBox(height: 80)
     ];
   }
 }

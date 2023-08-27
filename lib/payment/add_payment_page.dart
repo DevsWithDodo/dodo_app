@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/essentials/ad_management.dart';
+import 'package:csocsort_szamla/essentials/ad_unit.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/event_bus.dart';
@@ -130,7 +130,7 @@ class _AddPaymentPageState extends State<AddPaymentPage>
                 ),
                 Visibility(
                   visible: MediaQuery.of(context).viewInsets.bottom == 0,
-                  child: AdUnitForSite(site: 'payment'),
+                  child: AdUnit(site: 'payment'),
                 ),
               ],
             ),
