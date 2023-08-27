@@ -457,7 +457,7 @@
     "payments_needed_explanation": "A tagok egyenlegének kiegyenlítéséhez szükséges fizetések",
 
     "pin-verification.title": "Pin ellenőrzése",
-    "pin-verification.description": "Írd be a pin kódod és bizonyosodj meg róla, hogy nem felejtetted el.",
+    "pin-verification.description": "Írd be a pin kódod és bizonyosodj meg róla, hogy nem felejtetted el. Nem tudjuk visszaállítani, ha elfelejted.",
     "pin-verification.check": "Ellenőrzés",
     "pin-verificatioj.forgot-pin": "Elfelejtett pin",
     

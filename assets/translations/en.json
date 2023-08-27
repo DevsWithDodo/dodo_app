@@ -482,7 +482,7 @@
     "main-dialog.themes.button": "Go to the settings",
 
     "main-dialog.pin-verification.title": "Verify your pin",
-    "main-dialog.pin-verification.subtitle": "We'll occasionally ask you to verify your pin so that you don't forget it.",
+    "main-dialog.pin-verification.subtitle": "We'll occasionally ask you to verify your pin so that you don't forget it. We cannot restore it for you if you do.",
     "main-dialog.pin-verification.button": "Verify now",
 
     "main-dialog.payment-methods.title": "Set yor payment methods",

@@ -483,7 +483,7 @@
     "main-dialog.themes.button": "Gehe zu den Einstellungen",
 
     "main-dialog.pin-verification.title": "Verifiziere deine PIN",
-    "main-dialog.pin-verification.subtitle": "Gelegentlich werden wir dich bitten, deine PIN zu verifizieren, damit du sie nicht vergisst.",
+    "main-dialog.pin-verification.subtitle": "Gelegentlich werden wir dich bitten, deine PIN zu verifizieren, damit du sie nicht vergisst. Wir können sie nicht wiederherstellen, falls du sie vergissst.",
     "main-dialog.pin-verification.button": "Jetzt verifizieren",
 
     "main-dialog.payment-methods.title": "Stelle deine Zahlungsmethoden ein",

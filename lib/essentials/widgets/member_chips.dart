@@ -152,6 +152,7 @@ class MemberChips extends StatelessWidget {
                         'purchase-page-custom-amount-toast-cannot-customize'
                             .plural(chosenMembers.length + (memberAdded ? 1 : 0)),
                         useWidgetToast: true,
+                        toastDuration: Duration(seconds: 4),
                       );
                       return;
                     }
