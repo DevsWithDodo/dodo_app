@@ -12,13 +12,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class PaymentEntry extends StatefulWidget {
-  final bool isTappable;
   final Payment payment;
   final int? selectedMemberId;
   PaymentEntry({
     required this.payment,
     this.selectedMemberId,
-    this.isTappable = true,
   });
 
   @override
@@ -26,15 +24,6 @@ class PaymentEntry extends StatefulWidget {
 }
 
 class _PaymentEntryState extends State<PaymentEntry> {
-  late Icon icon;
-  TextStyle? mainTextStyle;
-  TextStyle? subTextStyle;
-  BoxDecoration? boxDecoration;
-  String? date;
-  late String note;
-  String? takerName;
-  String? amount;
-
   void handleSendReaction(String reaction) {
     User user = context.read<AppStateProvider>().user!;
     Reaction? oldReaction = widget.payment.reactions!
@@ -69,69 +58,69 @@ class _PaymentEntryState extends State<PaymentEntry> {
   Widget build(BuildContext context) {
     String themeName = context.watch<AppStateProvider>().themeName;
     return Selector<AppStateProvider, User>(
-      selector: (context, userProvider) => userProvider.user!,
-      builder: (context, user, _) {
-      int selectedMemberId = widget.selectedMemberId ?? user.id;
-      date = DateFormat('yyyy/MM/dd - HH:mm').format(widget.payment.updatedAt);
-      note = (widget.payment.note == '')
-          ? 'no_note'.tr()
-          : widget.payment.note[0].toUpperCase() +
-              widget.payment.note.substring(1);
-      if (widget.payment.payerId == selectedMemberId) {
-        takerName = widget.payment.takerNickname;
-        amount = widget.payment.amountOriginalCurrency
-            .toMoneyString(widget.payment.originalCurrency, withSymbol: true);
-        icon = Icon(Icons.call_made,
-            color: themeName.contains('Gradient')
-                ? Theme.of(context).colorScheme.onPrimary
-                : Theme.of(context).colorScheme.onPrimaryContainer);
-        boxDecoration = BoxDecoration(
-          gradient: AppTheme.gradientFromTheme(themeName,
-              usePrimaryContainer: true),
-          borderRadius: BorderRadius.circular(15),
-        );
-        mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-            color: themeName.contains('Gradient')
-                ? Theme.of(context).colorScheme.onPrimary
-                : Theme.of(context).colorScheme.onPrimaryContainer);
-        subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
-            color: themeName.contains('Gradient')
-                ? Theme.of(context).colorScheme.onPrimary
-                : Theme.of(context).colorScheme.onPrimaryContainer);
-      } else {
-        icon = Icon(Icons.call_received,
-            color: Theme.of(context).colorScheme.onSurfaceVariant);
+        selector: (context, userProvider) => userProvider.user!,
+        builder: (context, user, _) {
+          int selectedMemberId = widget.selectedMemberId ?? user.id;
+          bool paid = widget.payment.payerId == selectedMemberId;
+          Color textColor = paid
+              ? themeName.contains('Gradient')
+                  ? Theme.of(context).colorScheme.onPrimary
+                  : Theme.of(context).colorScheme.onPrimaryContainer
+              : Theme.of(context).colorScheme.onSurfaceVariant;
+          String note = (widget.payment.note == '')
+              ? 'no_note'.tr()
+              : widget.payment.note[0].toUpperCase() +
+                  widget.payment.note.substring(1);
+          String takerName = paid
+              ? widget.payment.takerNickname
+              : widget.payment.payerNickname;
+          String amount = (paid ? '' : '-') +
+              widget.payment.amountOriginalCurrency.toMoneyString(
+                  widget.payment.originalCurrency,
+                  withSymbol: true);
+          BoxDecoration boxDecoration = paid
+              ? BoxDecoration(
+                  gradient: AppTheme.gradientFromTheme(themeName,
+                      usePrimaryContainer: true),
+                  borderRadius: BorderRadius.circular(15),
+                )
+              : BoxDecoration();
 
-        mainTextStyle = Theme.of(context)
-            .textTheme
-            .bodyLarge!
-            .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
-        subTextStyle = Theme.of(context)
-            .textTheme
-            .bodySmall!
-            .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant);
-        takerName = widget.payment.payerNickname;
-        amount = (-widget.payment.amountOriginalCurrency)
-            .toMoneyString(widget.payment.originalCurrency, withSymbol: true);
-        boxDecoration = BoxDecoration();
-      }
-      return Stack(
-        children: [
-          Container(
-            height: 80,
-            width: MediaQuery.of(context).size.width,
-            decoration: boxDecoration,
-            margin: EdgeInsets.only(
-                top: widget.payment.reactions!.length == 0 ? 0 : 14,
-                bottom: 4,
-                left: 4,
-                right: 4),
-            child: Material(
-              type: MaterialType.transparency,
-              child: InkWell(
-                onLongPress: !widget.isTappable
-                    ? null
-                    : selectedMemberId != user.id
+          TextStyle mainTextStyle =
+              Theme.of(context).textTheme.bodyLarge!.copyWith(color: textColor);
+          TextStyle subTextStyle =
+              Theme.of(context).textTheme.bodySmall!.copyWith(color: textColor);
+          Widget buyer = Row(
+            children: [
+              Icon(
+                paid ? Icons.call_made : Icons.call_received,
+                color: textColor,
+                size: 11,
+              ),
+              SizedBox(width: 2),
+              Text(
+                paid ? 'payment-entry.paid'.tr() : 'payment-entry.received'.tr(),
+                style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                      color: textColor,
+                      fontSize: 9.5,
+                    ),
+              ),
+            ],
+          );
+          return Stack(
+            children: [
+              Container(
+                decoration: boxDecoration,
+                margin: EdgeInsets.only(
+                  top: widget.payment.reactions!.length == 0 ? 0 : 14,
+                  bottom: 4,
+                  left: 4,
+                  right: 4,
+                ),
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: InkWell(
+                    onLongPress: selectedMemberId != user.id
                         ? null
                         : () {
                             showDialog(
@@ -143,78 +132,72 @@ class _PaymentEntryState extends State<PaymentEntry> {
                                     ),
                                 context: context);
                           },
-                onTap: !widget.isTappable
-                    ? null
-                    : () async {
-                        showModalBottomSheet<String>(
-                                context: context,
-                                isScrollControlled: true,
-                                builder: (context) => SingleChildScrollView(
-                                    child: PaymentAllInfo(widget.payment)))
-                            .then((returnValue) {
-                          if (returnValue == 'deleted') {
+                    onTap: () async {
+                      showModalBottomSheet<String>(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (context) => SingleChildScrollView(
+                              child: PaymentAllInfo(widget.payment))).then(
+                        (value) {
+                          if (value == 'deleted') {
                             final bus = EventBus.instance;
                             bus.fire(EventBus.refreshPayments);
                             bus.fire(EventBus.refreshBalances);
                           }
-                        });
-                      },
-                borderRadius: BorderRadius.circular(15),
-                child: Padding(
-                  padding: EdgeInsets.all(15),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Flexible(
-                        child: Row(
-                          children: <Widget>[
-                            icon,
-                            SizedBox(
-                              width: 20,
-                            ),
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text(
-                                    takerName!,
+                        },
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(15),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                buyer,
+                                Flexible(
+                                  child: Text(
+                                    takerName,
                                     style: mainTextStyle,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  Text(
+                                ),
+                                Flexible(
+                                  child: Text(
                                     note,
                                     style: subTextStyle,
                                     overflow: TextOverflow.ellipsis,
-                                  )
-                                ],
-                              ),
+                                  ),
+                                )
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                          Text(
+                            amount,
+                            style: mainTextStyle,
+                          ),
+                        ],
                       ),
-                      Text(
-                        amount!,
-                        style: mainTextStyle,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
-          Visibility(
-            visible: selectedMemberId == user.id,
-            child: PastReactionContainer(
-              reactedToId: widget.payment.id,
-              reactions: widget.payment.reactions!,
-              onSendReaction: this.handleSendReaction,
-              isSecondaryColor: widget.payment.payerId == user.id,
-              type: 'payments',
-            ),
-          )
-        ],
-      );
-    });
+              Visibility(
+                visible: selectedMemberId == user.id,
+                child: PastReactionContainer(
+                  reactedToId: widget.payment.id,
+                  reactions: widget.payment.reactions!,
+                  onSendReaction: this.handleSendReaction,
+                  isSecondaryColor: widget.payment.payerId == user.id,
+                  type: 'payments',
+                ),
+              )
+            ],
+          );
+        });
   }
 }

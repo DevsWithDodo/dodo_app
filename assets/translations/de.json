@@ -192,7 +192,7 @@
     "remove_ads": "Werbefreies Erlebnis",
     "remove_ads_explanation": "Erlebe Dodo ohne Unterbrechungen.\nEntferne die Anzeigen.",
     "group_boost": "Gruppenboostende Dodos",
-    "group_boost_explanation": "Booste den Limit für Gruppenmitglieder auf 30 und schalte die Statistiken für die Gruppe frei.\nDas Paket enthält genug Dodos für 2 Gruppen.",
+    "group_boost_explanation": "Schalte die Statistiken für die Gruppe frei.\nDas Paket enthält genug Dodos für 2 Gruppen.",
     "ad_gradient_bundle": "Basic Dodo Paket",
     "ad_gradient_bundle_2": "Basic Dodo Paket",
     "ad_gradient_bundle_explanation":"Genieße ein nahtloses Dodo-Erlebnis.\nEntferne Anzeigen und Schalte farbübergängige und dual-tone Themen frei.",
@@ -206,7 +206,7 @@
     "buy": "Kaufen",
 
     "boost_group": "Booste die Gruppe",
-    "boost_group_explanation": "Booste den Limit für Gruppenmitglieder auf 30 und sehe dir die Statistiken an.",
+    "boost_group_explanation": "Sehe dir die Statistiken an.",
     "available": "Anzahl der Gruppenboostenden Dodos: {}",
 
     "sure_boost": "Bist du sicher, dass du die Gruppe boosten möchtest?",
@@ -339,7 +339,7 @@
     "group_needs_approval": "Admin Genehmigung",
     "group_needs_approval_explanation": "Entscheide ob eine Genehmigung eines Admins nötig ist um der Gruppe beizutreten",
 
-    "boost_group_boosted_explanation": "Diese Gruppe wurde schon geboostet 😎. Das heißt, dass du dir die Statistiken ansehen kannst und dass die maximale Mitgliedszahl 30 ist.",
+    "boost_group_boosted_explanation": "Diese Gruppe wurde schon geboostet 😎. Das heißt, dass du dir die Statistiken ansehen kannst.",
 
     "share": "Teile die Gruppe",
     "share_url": "Oder lade deine Freunde mit einer Message ein",
@@ -516,5 +516,11 @@
     "member-info.username": "Nutzername",
     "member-info.nickname": "Spitzname",
     "member-info.transactions": "Einkäufe und Zahlungen des Nutzern anzeigen",
-    "member-info.payment-methods": "Wie der Mitglied Geld empfangen möchte"
+    "member-info.payment-methods": "Wie der Mitglied Geld empfangen möchte",
+
+    "purchase-entry.bought": "Gekauft",
+    "purchase-entry.received": "Bekommen",
+
+    "payment-entry.paid": "Gezahlt",
+    "payment-entry.received": "Bekommen"
 }

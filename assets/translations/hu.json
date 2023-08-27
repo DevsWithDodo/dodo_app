@@ -91,7 +91,7 @@
     "modify": "Módosítás",
     "invitation_explanation": "Hívj meg valakit a csoportba",
     "rename_group_explanation": "Ha nem tetszik a neve",
-    "history_explanation": "Kövesd nyomon, vond vissza és módosítsd korábbi tranzakcióid",
+    "history_explanation": "Nyomd meg a bejegyzést a szerkesztéshez és a részletek megjelenítéséhez. Tartsd nyomva a reagáláshoz.",
 
     "pay": "Fizetés",
     "who_to_pay": "Kinek fizessek?",
@@ -192,7 +192,7 @@
     "remove_ads": "Reklámmentes Dodo",
     "remove_ads_explanation": "Élvezd a Dodot megszakítások nélkül.\nTávolítsd el a reklámokat.",
     "group_boost": "Csoportfejlesztő Dodók",
-    "group_boost_explanation": "Növeld meg a csoport létszámát 30 főre, és kövessétek nyomon a statisztikáit.\nA csomag 2 csoporthoz elegendő Dodót tartalmaz.",
+    "group_boost_explanation": "Kövessd nyomon a csoport statisztikáit.\nA csomag 2 csoporthoz elegendő Dodót tartalmaz.",
     "ad_gradient_bundle": "Alap Dodo csomag",
     "ad_gradient_bundle_2": "Alap Dodo csomag",
     "ad_gradient_bundle_explanation":"Élvezd a zökkenőmentes Dodo élményt.\nTávolítsd el a reklámokat, engedélyezd a színátmenetes és kéttónusú témákat.",
@@ -206,7 +206,7 @@
     "buy": "Vásárlás",
 
     "boost_group": "Csoport fejlesztése",
-    "boost_group_explanation": "Növeld meg a csoport létszámát 30 főre, és kövessétek nyomon a statisztikáit.",
+    "boost_group_explanation": "Kövesd nyomon a csoport statisztikáit.",
     "available": "Csoportfejlesztő Dodóid száma: {}",
 
     "sure_boost": "Biztosan fejleszteni szeretnéd a csoportot?",
@@ -335,7 +335,7 @@
     "group_needs_approval": "Admin beleegyezés",
     "group_needs_approval_explanation": "Döntsd el, hogy a csoportba való csatlakozáshoz szükséges-e az adminok beleegyezése",
 
-    "boost_group_boosted_explanation": "Ezt a csoportot már felfejlesztették \uD83D\uDE0E. Így elérhetőek a statisztikák, valamint 30 főre emelkedett a maximális létszám.",
+    "boost_group_boosted_explanation": "Ezt a csoportot már felfejlesztették \uD83D\uDE0E. Így elérhetőek a statisztikák.",
 
     "share": "Oszd meg a csoportot",
     "share_url": "Vagy hívd meg a barátaid üzenetben",
@@ -513,5 +513,11 @@
     "member-info.username": "Felhasználónév",
     "member-info.nickname": "Becenév",
     "member-info.transactions": "Ugrás a tag vásárlásaihoz és fizetéseihez",
-    "member-info.payment-methods": "Módok, ahogyan a tag pénzt fogad"
+    "member-info.payment-methods": "Módok, ahogyan a tag pénzt fogad",
+
+    "purchase-entry.bought": "Te vetted",
+    "purchase-entry.received": "Te kaptad",
+
+    "payment-entry.paid": "Te fizettél",
+    "payment-entry.received": "Neked fizettek"
 }

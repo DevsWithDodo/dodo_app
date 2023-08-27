@@ -82,7 +82,6 @@ class AppStateProvider extends ChangeNotifier {
         "Authorization": "Bearer ${user!.apiToken}"
       });
       var decoded = jsonDecode(response.body);
-      print(decoded);
       setShownAds(decoded['data']['ad_free'] == 0);
       setUseGradients(decoded['data']['gradients_enabled'] == 1);
       setPersonalisedAds(decoded['data']['personalised_ads'] == 1);
@@ -92,7 +91,6 @@ class AppStateProvider extends ChangeNotifier {
             .toList());
       }
       setUserStatus(UserStatus.fromJson(decoded['data']['status']));
-      print(user!.userStatus.trialStatus);
       if (currentGroup == null &&
           decoded['data']['last_active_group'] != null) {
         Group? group = user!.groups.firstWhereOrNull(
