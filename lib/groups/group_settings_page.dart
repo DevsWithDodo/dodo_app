@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/http.dart';
+import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:csocsort_szamla/groups/dialogs/change_group_currency_dialog.dart';
+import 'package:csocsort_szamla/groups/dialogs/change_nickname_dialog.dart';
 import 'package:csocsort_szamla/groups/dialogs/rename_group_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -149,39 +151,21 @@ class _GroupSettingState extends State<GroupSettings> {
 
   List<Widget> _columnWidgets(AsyncSnapshot<bool> snapshot) {
     return [
-      Visibility(
-        visible: snapshot.data!,
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              children: <Widget>[
-                Center(
-                  child: Text(
-                    'rename_group'.tr(),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Center(
-                    child: Text(
-                  'rename_group_explanation'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleSmall!
-                      .copyWith(color: Theme.of(context).colorScheme.onSurface),
-                  textAlign: TextAlign.center,
-                )),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+      Card(
+        child: Padding(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            children: [
+              Visibility(
+                visible: snapshot.data!,
+                child: Column(
                   children: [
+                    Text(
+                      'rename_group'.tr(),
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface),
+                    ),
+                    SizedBox(height: 10),
                     GradientButton(
                       useSecondary: true,
                       child: Icon(Icons.edit),
@@ -191,10 +175,38 @@ class _GroupSettingState extends State<GroupSettings> {
                             context: context);
                       },
                     ),
+                    SizedBox(height: 10),
                   ],
-                )
-              ],
-            ),
+                ),
+              ),
+              Text(
+                'group-settings.change-nickname'.tr(),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: Theme.of(context).colorScheme.onSurface),
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GradientButton(
+                    useSecondary: true,
+                    child: Icon(Icons.edit),
+                    onPressed: () {
+                      User user = context.read<AppStateProvider>().user!;
+                      showDialog(
+                        context: context,
+                        builder: (context) => ChangeNicknameDialog(
+                          memberId: user.id,
+                          username: user.username,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              )
+            ],
           ),
         ),
       ),

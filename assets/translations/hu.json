@@ -519,5 +519,7 @@
     "purchase-entry.received": "Te kaptad",
 
     "payment-entry.paid": "Te fizettél",
-    "payment-entry.received": "Neked fizettek"
+    "payment-entry.received": "Neked fizettek",
+
+    "group-settings.change-nickname": "Becenév megváltoztatása"
 }

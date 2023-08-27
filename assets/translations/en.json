@@ -521,5 +521,7 @@
     "purchase-entry.received": "You received",
 
     "payment-entry.paid": "You paid",
-    "payment-entry.received": "You received"
+    "payment-entry.received": "You received",
+
+    "group-settings.change-nickname": "Change nickname"
 }

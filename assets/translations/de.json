@@ -522,5 +522,7 @@
     "purchase-entry.received": "Bekommen",
 
     "payment-entry.paid": "Gezahlt",
-    "payment-entry.received": "Bekommen"
+    "payment-entry.received": "Bekommen",
+
+    "group-settings.change-nickname": "Spitznamen ändern"
 }
