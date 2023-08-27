@@ -149,7 +149,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
                     },
                     borderRadius: BorderRadius.circular(15),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
