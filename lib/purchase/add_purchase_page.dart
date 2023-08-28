@@ -82,9 +82,7 @@ class _AddPurchasePageState extends State<AddPurchasePage>
         ),
         body: GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: RefreshIndicator(
             onRefresh: () async {
               members = null;
