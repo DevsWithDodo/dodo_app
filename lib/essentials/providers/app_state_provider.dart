@@ -143,7 +143,7 @@ class AppStateProvider extends ChangeNotifier {
 
         Map<String, dynamic> decoded = jsonDecode(response.body);
         int? lastActiveGroup = decoded['data']['last_active_group'];
-
+        print(decoded);
         user = User(
           apiToken: decoded['data']['api_token'],
           username: decoded['data']['username'],
@@ -161,8 +161,8 @@ class AppStateProvider extends ChangeNotifier {
                   .map((e) => PaymentMethod.fromJson(e))
                   .toList()
               : [],
-          userStatus: decoded['data']['user_status'] != null
-              ? UserStatus.fromJson(decoded['data']['user_status'])
+          userStatus: decoded['data']['status'] != null
+              ? UserStatus.fromJson(decoded['data']['status'])
               : UserStatus(
                   trialStatus: TrialStatus.seen,
                   pinVerifiedAt: DateTime.now(),
@@ -251,7 +251,7 @@ class AppStateProvider extends ChangeNotifier {
           personalisedAds: personalisedAds,
           trialVersion: true,
           paymentMethods: [],
-          userStatus: UserStatus.fromJson(decoded['user_status']),
+          userStatus: UserStatus.fromJson(decoded['status']),
         ));
         await clearAllCache();
         return BoolFutureOutput.True;
