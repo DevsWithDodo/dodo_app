@@ -5,18 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:collection/collection.dart';
 
-
 class MemberPaymentMethods extends StatelessWidget {
   final Member member;
-  
+
   const MemberPaymentMethods({super.key, required this.member});
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: member.paymentMethods
-              ?.sorted((a, b) => a.priority ? -1 : 1)
-              .map((paymentMethod) => Padding(
+      children: [
+        ...member.paymentMethods
+                ?.sorted((a, b) => a.priority ? -1 : 1)
+                .map(
+                  (paymentMethod) => Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -28,8 +29,7 @@ class MemberPaymentMethods extends StatelessWidget {
                               SizedBox(width: 5),
                               Flexible(
                                 child: DefaultTextStyle(
-                                  style:
-                                      Theme.of(context).textTheme.bodyLarge!,
+                                  style: Theme.of(context).textTheme.bodyLarge!,
                                   child: Row(
                                     children: [
                                       Text("${paymentMethod.name}: "),
@@ -53,8 +53,7 @@ class MemberPaymentMethods extends StatelessWidget {
                             SizedBox(width: 5),
                             paymentMethod.priority
                                 ? Padding(
-                                    padding:
-                                        const EdgeInsets.only(right: 8.0),
+                                    padding: const EdgeInsets.only(right: 8.0),
                                     child: Icon(
                                       Icons.star,
                                       color: Colors.amber,
@@ -75,9 +74,20 @@ class MemberPaymentMethods extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ))
-              .toList() ??
-          [Text('payment-methods.no-payment-method'.tr())],
+                  ),
+                )
+                .toList() ??
+            [Text('payment-methods.no-payment-method'.tr())],
+        ...member.paymentMethods?.isEmpty ?? true
+            ? [
+              SizedBox(height: 10),
+                Text(
+                  'payment-methods.no-payment-method'.tr(),
+                  textAlign: TextAlign.center,
+                ),
+            ]
+            : [],
+      ],
     );
   }
 }

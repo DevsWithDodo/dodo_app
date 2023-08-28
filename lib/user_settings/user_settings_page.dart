@@ -36,7 +36,7 @@ class _SettingsState extends State<Settings> {
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
         child: Column(
           children: [
-            if (context.watch<ScreenWidth>().isMobile)
+            if (context.select<ScreenWidth, bool>((screenWidth) => screenWidth.isMobile))
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(

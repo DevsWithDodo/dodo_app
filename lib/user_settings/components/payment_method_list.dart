@@ -11,19 +11,19 @@ class PaymentMethodList extends StatelessWidget {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   PaymentMethodList({super.key, required this.onSubmit});
 
-
   @override
   Widget build(BuildContext context) {
     return Form(
       key: formKey,
       child: ChangeNotifierProvider(
         create: (context) => PaymentMethodProvider(
-            paymentMethods: context
-                .read<AppStateProvider>()
-                .user!
-                .paymentMethods
-                .map((paymentMethod) => paymentMethod.clone())
-                .toList()),
+          paymentMethods: context
+              .read<AppStateProvider>()
+              .user!
+              .paymentMethods
+              .map((paymentMethod) => paymentMethod.clone())
+              .toList(),
+        ),
         builder: (context, _) {
           return Consumer<PaymentMethodProvider>(
             builder: (context, provider, _) {
@@ -41,9 +41,12 @@ class PaymentMethodList extends StatelessWidget {
                             ))
                         .toList(),
                   ),
-                  PaymentMethodListItem(),
+                  PaymentMethodListItem(
+                    key: UniqueKey(),
+                  ),
                   Visibility(
-                    visible: provider.paymentMethods.length > 0,
+                    visible: provider.paymentMethods.isNotEmpty ||
+                        context.read<AppStateProvider>().user!.paymentMethods.isNotEmpty,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: GradientButton(

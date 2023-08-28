@@ -30,6 +30,7 @@ class _PaymentMethodListItemState extends State<PaymentMethodListItem> {
 
   @override
   Widget build(BuildContext context) {
+    print('payment method list item build');
     bool priority = widget.paymentMethod?.priority ?? _priority;
     return Theme(
       data: Theme.of(context).copyWith(
@@ -60,7 +61,6 @@ class _PaymentMethodListItemState extends State<PaymentMethodListItem> {
               secondChild: Icon(Icons.star_border),
             ),
           ),
-          SizedBox(width: 10),
           Flexible(
             flex: 2,
             child: TextFormField(
@@ -76,7 +76,7 @@ class _PaymentMethodListItemState extends State<PaymentMethodListItem> {
               },
             ),
           ),
-          SizedBox(width: 20),
+          SizedBox(width: 10),
           Flexible(
             flex: 3,
             child: TextFormField(
@@ -92,7 +92,6 @@ class _PaymentMethodListItemState extends State<PaymentMethodListItem> {
               },
             ),
           ),
-          SizedBox(width: 10),
           IconButton(
             icon: Icon(
                 widget.paymentMethod == null ? Icons.add : Icons.delete),

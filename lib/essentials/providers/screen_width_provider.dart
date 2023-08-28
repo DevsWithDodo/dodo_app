@@ -54,6 +54,7 @@ class ScreenWidth extends ChangeNotifier {
     width = newWidth;
     height = newHeight;
     isMobile = newIsMobile;
+    print('screen width');
     if (notify) {
       notifyListeners();
     }

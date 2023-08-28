@@ -21,6 +21,7 @@ class PaymentMethodsDialog extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
+              SizedBox(height: 5),
               Text(
                 'payment-methods.dialog.subtitle'.tr(),
                 style: Theme.of(context).textTheme.titleSmall,
