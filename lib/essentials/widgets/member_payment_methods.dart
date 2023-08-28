@@ -77,15 +77,21 @@ class MemberPaymentMethods extends StatelessWidget {
                   ),
                 )
                 .toList() ??
-            [Text('payment-methods.no-payment-method'.tr())],
-        ...member.paymentMethods?.isEmpty ?? true
-            ? [
+            [
               SizedBox(height: 10),
+              Text(
+                'payment-methods.no-payment-method'.tr(),
+                textAlign: TextAlign.center,
+              ),
+            ],
+        ...member.paymentMethods?.isEmpty ?? false
+            ? [
+                SizedBox(height: 10),
                 Text(
                   'payment-methods.no-payment-method'.tr(),
                   textAlign: TextAlign.center,
                 ),
-            ]
+              ]
             : [],
       ],
     );
