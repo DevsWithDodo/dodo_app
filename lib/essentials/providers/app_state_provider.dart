@@ -40,36 +40,37 @@ class AppStateProvider extends ChangeNotifier {
       List<String> usersGroupCurrencies =
           preferences.getStringList('users_group_currencies') ?? [];
       user = User(
-        apiToken: preferences.getString('api_token')!,
-        username: preferences.getString('current_username')!,
-        id: preferences.getInt('current_user_id')!,
-        currency: preferences.getString('current_user_currency') ?? 'EUR',
-        group: preferences.containsKey('current_group_id')
-            ? Group(
-                id: preferences.getInt('current_group_id')!,
-                name: preferences.getString('current_group_name')!,
-                currency: preferences.getString('current_group_currency')!,
-              )
-            : null,
-        groups: usersGroupNames
-            .asMap()
-            .map((index, value) => MapEntry(
-                index,
-                Group(
-                  id: usersGroupIds[index],
-                  name: value,
-                  currency: usersGroupCurrencies.length > index ? usersGroupCurrencies[index] : 'EUR',
-                )))
-            .values
-            .toList(),
-        ratedApp: preferences.getBool('rated_app') ?? false,
-        paymentMethods: [],
-        userStatus: UserStatus(
-          pinVerificationCount: 100,
-          pinVerifiedAt: DateTime.now(),
-          trialStatus: TrialStatus.seen,
-        ) 
-      );
+          apiToken: preferences.getString('api_token')!,
+          username: preferences.getString('current_username')!,
+          id: preferences.getInt('current_user_id')!,
+          currency: preferences.getString('current_user_currency') ?? 'EUR',
+          group: preferences.containsKey('current_group_id')
+              ? Group(
+                  id: preferences.getInt('current_group_id')!,
+                  name: preferences.getString('current_group_name')!,
+                  currency: preferences.getString('current_group_currency')!,
+                )
+              : null,
+          groups: usersGroupNames
+              .asMap()
+              .map((index, value) => MapEntry(
+                  index,
+                  Group(
+                    id: usersGroupIds[index],
+                    name: value,
+                    currency: usersGroupCurrencies.length > index
+                        ? usersGroupCurrencies[index]
+                        : 'EUR',
+                  )))
+              .values
+              .toList(),
+          ratedApp: preferences.getBool('rated_app') ?? false,
+          paymentMethods: [],
+          userStatus: UserStatus(
+            pinVerificationCount: 100,
+            pinVerifiedAt: DateTime.now(),
+            trialStatus: TrialStatus.seen,
+          ));
       _fetchUserData();
     }
   }
@@ -86,11 +87,15 @@ class AppStateProvider extends ChangeNotifier {
       setUseGradients(decoded['data']['gradients_enabled'] == 1);
       setPersonalisedAds(decoded['data']['personalised_ads'] == 1);
       setTrialVersion(decoded['data']['trial'] == 1);
-      if(decoded['data']['payment_details'] != null) {
-        setPaymentMethods((jsonDecode(decoded['data']['payment_details']) as List).map((e) => PaymentMethod.fromJson(e))
-            .toList());
+      if (decoded['data']['payment_details'] != null) {
+        setPaymentMethods(
+            (jsonDecode(decoded['data']['payment_details']) as List)
+                .map((e) => PaymentMethod.fromJson(e))
+                .toList());
       }
-      setUserStatus(UserStatus.fromJson(decoded['data']['status']));
+      if (decoded['data']['status'] != null) {
+        setUserStatus(UserStatus.fromJson(decoded['data']['status']));
+      }
       if (currentGroup == null &&
           decoded['data']['last_active_group'] != null) {
         Group? group = user!.groups.firstWhereOrNull(
@@ -151,10 +156,18 @@ class AppStateProvider extends ChangeNotifier {
           showAds: decoded['data']['ad_free'] == 0,
           useGradients: decoded['data']['gradients_enabled'] == 1,
           trialVersion: decoded['data']['trial'] == 1,
-          paymentMethods: decoded['data']['payment_details'] != null ? 
-            (jsonDecode(decoded['data']['payment_details']) as List).map((e) => PaymentMethod.fromJson(e)).toList() 
-            : [],
-          userStatus: UserStatus.fromJson(decoded['data']['user_status']),
+          paymentMethods: decoded['data']['payment_details'] != null
+              ? (jsonDecode(decoded['data']['payment_details']) as List)
+                  .map((e) => PaymentMethod.fromJson(e))
+                  .toList()
+              : [],
+          userStatus: decoded['data']['user_status'] != null
+              ? UserStatus.fromJson(decoded['data']['user_status'])
+              : UserStatus(
+                  trialStatus: TrialStatus.seen,
+                  pinVerifiedAt: DateTime.now(),
+                  pinVerificationCount: 100,
+                ),
         );
         setUser(user, notify: false);
 
@@ -180,7 +193,9 @@ class AppStateProvider extends ChangeNotifier {
             orElse: () => groups[0]);
         setGroup(currentGroup, notify: false);
 
-        return inviteUrl == null ? LoginFutureOutputs.main : LoginFutureOutputs.joinGroup;
+        return inviteUrl == null
+            ? LoginFutureOutputs.main
+            : LoginFutureOutputs.joinGroup;
       } else {
         Map<String, dynamic> error = jsonDecode(response.body);
         throw error['error'];
@@ -194,8 +209,8 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  Future<BoolFutureOutput> register(String username, String password, String currency,
-      bool personalisedAds, BuildContext context) async {
+  Future<BoolFutureOutput> register(String username, String password,
+      String currency, bool personalisedAds, BuildContext context) async {
     try {
       String? token;
       if (isFirebasePlatformEnabled) {
@@ -429,7 +444,8 @@ class AppStateProvider extends ChangeNotifier {
 class LoginFutureOutputs extends FutureOutput {
   static const main = LoginFutureOutputs(true, 'main');
   static const joinGroup = LoginFutureOutputs(true, 'joinGroup');
-  static const joinGroupFromAuth = LoginFutureOutputs(true, 'joinGroupFromAuth');
+  static const joinGroupFromAuth =
+      LoginFutureOutputs(true, 'joinGroupFromAuth');
 
   const LoginFutureOutputs(super.value, super.name);
 }
