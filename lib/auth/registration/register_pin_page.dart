@@ -50,7 +50,7 @@ class _RegisterPinPageState extends State<RegisterPinPage> {
                           validationText: _validationText,
                           onValidationTextChanged: (newText) =>
                               setState(() => _validationText = newText),
-                          showConfirm: false,
+                          pinLabel: 'registration.set-pin'.tr(),
                         ),
                       ],
                     ),

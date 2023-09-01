@@ -37,9 +37,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
       Map<String, dynamic> body = {"member_id": memberId, "admin": isAdmin};
 
       await Http.put(
-        uri: '/groups/' +
-            context.read<AppStateProvider>().currentGroup!.id.toString() +
-            '/admins',
+        uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString() + '/admins',
         body: body,
       );
 
@@ -89,7 +87,10 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                     ],
                   ),
                   SizedBox(height: 10),
-                  Text('member-info.payment-methods'.tr(), style: Theme.of(context).textTheme.titleMedium,),
+                  Text(
+                    'member-info.payment-methods'.tr(),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   SizedBox(height: 5),
                   Center(
                     child: ConstrainedBox(
@@ -98,8 +99,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                     ),
                   ),
                   Visibility(
-                    visible:
-                        widget.member.isAdmin! && !widget.isCurrentUserAdmin,
+                    visible: widget.member.isAdmin! && !widget.isCurrentUserAdmin,
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.only(top: 10),
@@ -111,24 +111,20 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                     ),
                   ),
                   Visibility(
-                    visible:
-                        widget.isCurrentUserAdmin && !widget.member.isGuest!,
+                    visible: widget.isCurrentUserAdmin && !widget.member.isGuest!,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Text('Admin',
-                              style: Theme.of(context).textTheme.titleMedium),
+                          Text('Admin', style: Theme.of(context).textTheme.titleMedium),
                           Switch(
                             value: widget.member.isAdmin!,
-                            activeColor:
-                                Theme.of(context).colorScheme.secondary,
+                            activeColor: Theme.of(context).colorScheme.secondary,
                             onChanged: (value) {
                               showFutureOutputDialog(
                                   context: context,
-                                  future:
-                                      _changeAdmin(widget.member.id, value),
+                                  future: _changeAdmin(widget.member.id, value),
                                   outputCallbacks: {
                                     BoolFutureOutput.True: () {
                                       Navigator.pop(context);
@@ -145,14 +141,12 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                   Center(
                     child: TextButton(
                       onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => AllHistoryPage(selectedMemberId: widget.member.id))
-                      ),
+                          MaterialPageRoute(builder: (context) => AllHistoryPage(selectedMemberId: widget.member.id))),
                       child: Text('member-info.transactions'.tr(), textAlign: TextAlign.center),
                     ),
                   ),
                   Visibility(
-                    visible: widget.isCurrentUserAdmin ||
-                        widget.member.id == user.id,
+                    visible: widget.isCurrentUserAdmin || widget.member.id == user.id,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Center(
@@ -177,8 +171,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                     ),
                   ),
                   Visibility(
-                    visible: widget.isCurrentUserAdmin &&
-                        widget.member.id != user.id,
+                    visible: widget.isCurrentUserAdmin && widget.member.id != user.id,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Center(
@@ -197,10 +190,8 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                   future: _removeMember(widget.member.id),
                                   outputCallbacks: {
                                     BoolFutureOutput.True: () async {
-                                      EventBus.instance
-                                          .fire(EventBus.refreshBalances);
-                                      EventBus.instance
-                                          .fire(EventBus.refreshGroupMembers);
+                                      EventBus.instance.fire(EventBus.refreshBalances);
+                                      EventBus.instance.fire(EventBus.refreshGroupMembers);
                                       Navigator.of(context).pop();
                                       Navigator.of(context).pop();
                                     }
@@ -216,8 +207,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                     ),
                   ),
                   Visibility(
-                    visible:
-                        widget.member.isGuest! && widget.isCurrentUserAdmin,
+                    visible: widget.member.isGuest! && widget.isCurrentUserAdmin,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Center(
@@ -243,16 +233,13 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                       child: Center(
                         child: GradientButton.icon(
                           onPressed: () {
-                            double currencyThreshold = threshold(context
-                                .read<AppStateProvider>()
-                                .currentGroup!
-                                .currency);
+                            double currencyThreshold =
+                                Currency.threshold(context.read<AppStateProvider>().currentGroup!.currency);
                             if (widget.member.balance <= -currencyThreshold) {
                               FToast ft = FToast();
                               ft.init(context);
                               ft.showToast(
-                                  child:
-                                      errorToast('balance_at_least_0', context),
+                                  child: errorToast('balance_at_least_0', context),
                                   toastDuration: Duration(seconds: 2),
                                   gravity: ToastGravity.BOTTOM);
                               return;
@@ -271,40 +258,26 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                       future: _removeMember(null),
                                       outputCallbacks: {
                                         BoolFutureOutput.True: () async {
-                                          if (context
-                                                  .read<AppStateProvider>()
-                                                  .currentGroup !=
-                                              null) {
-                                            Navigator.of(context)
-                                                .pushAndRemoveUntil(
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      MainPage()),
+                                          if (context.read<AppStateProvider>().currentGroup != null) {
+                                            await Navigator.of(context).pushAndRemoveUntil(
+                                              MaterialPageRoute(builder: (context) => MainPage()),
                                               (r) => false,
                                             );
                                           } else {
-                                            EventBus.instance
-                                                .fire(EventBus.refreshGroups);
-                                            Navigator.of(context)
-                                                .pushAndRemoveUntil(
+                                            EventBus.instance.fire(EventBus.refreshGroups);
+                                            await Navigator.of(context).pushAndRemoveUntil(
                                               MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      JoinGroup(
+                                                  builder: (context) => JoinGroup(
                                                         fromAuth: true,
                                                       )),
                                               (r) => false,
                                             );
                                           }
-                                          EventBus.instance
-                                              .fire(EventBus.refreshBalances);
-                                          EventBus.instance
-                                              .fire(EventBus.refreshGroups);
-                                          EventBus.instance
-                                              .fire(EventBus.refreshPurchases);
-                                          EventBus.instance
-                                              .fire(EventBus.refreshPayments);
-                                          EventBus.instance
-                                              .fire(EventBus.refreshShopping);
+                                          EventBus.instance.fire(EventBus.refreshBalances);
+                                          EventBus.instance.fire(EventBus.refreshGroups);
+                                          EventBus.instance.fire(EventBus.refreshPurchases);
+                                          EventBus.instance.fire(EventBus.refreshPayments);
+                                          EventBus.instance.fire(EventBus.refreshShopping);
                                         },
                                       },
                                     );
@@ -329,14 +302,11 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
   Future<BoolFutureOutput> _removeMember(int? memberId) async {
     Map<String, dynamic> body = {
       "member_id": memberId ?? context.read<AppStateProvider>().user!.id,
-      "threshold":
-          threshold(context.read<AppStateProvider>().currentGroup!.currency),
+      "threshold": Currency.threshold(context.read<AppStateProvider>().currentGroup!.currency),
     };
 
     Response response = await Http.post(
-      uri: '/groups/' +
-          context.read<AppStateProvider>().currentGroup!.id.toString() +
-          '/members/delete',
+      uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString() + '/members/delete',
       body: body,
     );
     // The member leaves on his own

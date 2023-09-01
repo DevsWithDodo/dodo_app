@@ -86,8 +86,10 @@
     "payment_explanation": "You paid someone",
     "purchase_explanation": "You bought something",
 
-    "members_explanation": "See the members of the group and modify your nickname",
-    "members_explanation_admin": "Manage member permissions and nicknames",
+    "members.subtitle": "See payment methods and other details of group members or leave the group.",
+    "members.hint": "Tap on a member to see their details.",
+    "members.admin.hint": "Tap on a member to see their details, make them admin or kick them from the group.",
+
     "modify": "Modify",
     "invitation_explanation": "Invite someone to the group",
     "rename_group_explanation": "If you don't like the name",
@@ -205,9 +207,11 @@
     "price": "Price: ",
     "buy": "Buy",
 
-    "boost_group": "Boost group",
-    "boost_group_explanation": "Keep track of the group's statistics.",
-    "available": "Number of group-boosting Dodos: {}",
+    "boost-group": "Boost group",
+    "boost-group.subtitle": "In a boosted group the statistics inside the app are available. You can buy group-boosting Dodos in the store.",
+    "boost-group.boosted.subtitle": "This group has already been boosted \uD83D\uDE0E. This means, that you can use the group's statistics inside the app.",
+    "boost-group.boosts-available": "Number of available group-boosting Dodos: {}",
+    "boost-group.hint": "The functionality of boosted groups is available for everyone in the group.",
 
     "sure_boost": "Are you sure you want to boost the group?",
     "already_boosted": "This group has already been boosted!",
@@ -338,8 +342,6 @@
     "group_needs_approval": "Admin approval",
     "group_needs_approval_explanation": "Decide whether it needs an admin's approval to join the group",
 
-    "boost_group_boosted_explanation": "This group has already been boosted \uD83D\uDE0E. This means, that you are able to see the group's statistics.",
-
     "share": "Share the group",
     "share_url": "Or invite your friends with a message",
     "scan_code": "Join a group by reading its QR code",
@@ -367,7 +369,9 @@
     "purchase.page.custom-amount.toast.sum-larger-than-amount": "The amount set was smaller than the sum of the custom values.",
 
     "custom_amount": "Custom amount",
-    "custom_amount_explanation": "Set how much the chosen member should pay.",
+    "custom-amount.dialog.subtitle": "Set how much the chosen member should pay.",
+    "custom-amount.dialog.hint": "Use the textfield or the slider below to set the amount.",
+
     "reset": "Reset",
     "chosen_amount": "Chosen amount",
 
@@ -456,7 +460,8 @@
     "use_calculator": "Use the calculator",
     "choose_custom_amount": "Long press on user to choose custom amount",
 
-    "payments_needed_explanation": "The necessary payments for everyone to break even",
+    "payments_needed.dialog.subtitle": "The necessary payments for everyone to break even.",
+    "payments_needed.dialog.hint": "Tap on the icon at the end of each row to see the possible payment methods.",
 
     "pin-verification.title": "Verify pin",
     "pin-verification.description": "Type your pin below and verify your knowledge",
@@ -473,7 +478,9 @@
     "payment-method.name.hint": "eg. IBAN",
     "payment-methods.dialog.title": "Payment methods",
     "payment-methods.dialog.subtitle": "The chosen member can be paid via the following methods",
-    "payment-methods.no-payment-method": "The member hasn't added any payment methods yet",
+    "payment-methods.no-payment-method": "{name} hasn't added any payment methods yet",
+    "payment-methods.dialog.modify.title": "Set payment methods",
+    "payment-methods.dialog.modify.subtitle": "Every member will be able to see these methods",
 
     "clipboard.copy-successful": "Copied successfully",
 
@@ -485,7 +492,7 @@
     "main-dialog.pin-verification.subtitle": "We'll occasionally ask you to verify your pin so that you don't forget it. We cannot restore it for you if you do.",
     "main-dialog.pin-verification.button": "Verify now",
 
-    "main-dialog.payment-methods.title": "Set yor payment methods",
+    "main-dialog.payment-methods.title": "Set your payment methods",
     "main-dialog.payment-methods.subtitle": "So other members can see where you want to receive money",
     "main-dialog.payment-methods.button": "Go to the settings",
 
@@ -523,5 +530,7 @@
     "payment-entry.paid": "You paid",
     "payment-entry.received": "You received",
 
-    "group-settings.change-nickname": "Change nickname"
+    "group-settings.change-nickname": "Change nickname",
+
+    "registration.set-pin": "Set pin"
 }

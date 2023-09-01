@@ -11,7 +11,6 @@ Future<R?> showFutureOutputDialog<R, T extends FutureOutput>({
   Map<T, Widget>? outputChildren,
   Map<T, VoidCallback>? outputCallbacks,
   Map<T, String>? outputTexts,
-  String dataFalseText = 'error',
   bool barrierDismissible = false,
   Color? barrierColor = Colors.black54,
   String? barrierLabel,

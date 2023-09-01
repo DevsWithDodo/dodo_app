@@ -30,8 +30,7 @@ class MemberChips extends StatelessWidget {
     this.showAnimation = true,
     this.selectedCurrency,
   }) {
-    assert(!allowCustomAmounts ||
-        (setCustomAmounts != null && getFullAmount != null));
+    assert(!allowCustomAmounts || (setCustomAmounts != null && getFullAmount != null));
   }
 
   double getInitialAmount(Member member, double maxAmount) {
@@ -40,8 +39,7 @@ class MemberChips extends StatelessWidget {
     } else {
       double sumCustom = 0;
       customAmounts.values.forEach((element) => sumCustom += element);
-      return (maxAmount - sumCustom) /
-          (chosenMembers.length - customAmounts.length);
+      return (maxAmount - sumCustom) / (chosenMembers.length - customAmounts.length);
     }
   }
 
@@ -63,18 +61,15 @@ class MemberChips extends StatelessWidget {
       children: allMembers.map<Widget>(
         (Member member) {
           double chipFillRatio;
-          Color selectedColor =
-              Theme.of(context).colorScheme.secondaryContainer;
-          Color selectedFontColor =
-              Theme.of(context).colorScheme.onSecondaryContainer;
+          Color selectedColor = Theme.of(context).colorScheme.secondaryContainer;
+          Color selectedFontColor = Theme.of(context).colorScheme.onSecondaryContainer;
           if (allowCustomAmounts) {
             if (!chosenMembers.contains(member)) {
               chipFillRatio = 0;
             } else {
               double maxAmount = getFullAmount!();
               if (maxAmount == 0) {
-                chipFillRatio =
-                    1 / (chosenMembers.length == 0 ? 1 : chosenMembers.length);
+                chipFillRatio = 1 / (chosenMembers.length == 0 ? 1 : chosenMembers.length);
               } else {
                 chipFillRatio = getInitialAmount(member, maxAmount) / maxAmount;
               }
@@ -84,8 +79,7 @@ class MemberChips extends StatelessWidget {
 
               if (customAmounts.containsKey(member)) {
                 selectedColor = Theme.of(context).colorScheme.tertiaryContainer;
-                selectedFontColor =
-                    Theme.of(context).colorScheme.onTertiaryContainer;
+                selectedFontColor = Theme.of(context).colorScheme.onTertiaryContainer;
               }
             }
           } else {
@@ -105,14 +99,11 @@ class MemberChips extends StatelessWidget {
                 if (selected) {
                   setChosenMembers([...chosenMembers, member]);
                 } else {
-                  setChosenMembers(chosenMembers
-                      .whereNot((m) => m.id == member.id)
-                      .toList());
+                  setChosenMembers(chosenMembers.whereNot((m) => m.id == member.id).toList());
                   if (customAmounts.length == 1 && chosenMembers.length == 2) {
                     setCustomAmounts?.call({});
                   } else {
-                    setCustomAmounts
-                        ?.call(removeFromMap(customAmounts, member));
+                    setCustomAmounts?.call(removeFromMap(customAmounts, member));
                   }
                 }
               } else {
@@ -133,37 +124,28 @@ class MemberChips extends StatelessWidget {
                     }
                     double maxMoney = getFullAmount!() * 1.0;
                     if (maxMoney == 0) {
-                      showToast(
-                          'purchase.page.custom-amount.toast.no-amount-given'
-                              .tr(),
-                          useWidgetToast: true);
+                      showToast('purchase.page.custom-amount.toast.no-amount-given'.tr(), useWidgetToast: true);
                       return;
                     }
                     if (!customAmounts.containsKey(member) &&
-                        ((
-                          !memberAdded && 
-                          chosenMembers.length - customAmounts.length == 1
-                          ) || (
-                            memberAdded &&
-                            chosenMembers.length == customAmounts.length
-                          )
-                        )) {
+                        ((!memberAdded && chosenMembers.length - customAmounts.length == 1) ||
+                            (memberAdded && chosenMembers.length == customAmounts.length))) {
                       showToast(
-                        'purchase-page-custom-amount-toast-cannot-customize'
-                            .plural(chosenMembers.length + (memberAdded ? 1 : 0)),
+                        'purchase-page-custom-amount-toast-cannot-customize'.plural(
+                          chosenMembers.length + (memberAdded ? 1 : 0),
+                        ),
                         useWidgetToast: true,
                         toastDuration: Duration(seconds: 4),
                       );
                       return;
                     }
                     double initialValue = getInitialAmount(member, maxMoney);
-                    double maxValue =
-                        getMaxAmountWithoutCustom(member, maxMoney);
+                    double maxValue = getMaxAmountWithoutCustom(member, maxMoney);
                     if (maxValue == 0) {
                       showToast(
-                          'purchase.page.custom-amount.toast.no-amount-left'
-                              .tr(),
-                          useWidgetToast: true);
+                        'purchase.page.custom-amount.toast.no-amount-left'.tr(),
+                        useWidgetToast: true,
+                      );
                       return;
                     }
                     showDialog(

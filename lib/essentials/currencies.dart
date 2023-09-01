@@ -4,7 +4,7 @@ extension Money on double? {
   String toMoneyString(String code, {withSymbol = false}) {
     if (!withSymbol) {
       double? d = this;
-      if (this! > -threshold(code) && this! < 0) {
+      if (this! > -Currency.threshold(code) && this! < 0) {
         d = -this!;
       }
       return currencies[code]!["subunit"] == 1
@@ -36,22 +36,24 @@ extension Money on double? {
   }
 }
 
-double threshold(String code) {
-  return (currencies[code]!['subunit'] == 1 ? 0.01 : 1) / 2;
-}
+class Currency {
+  static double threshold(String code) {
+    return (currencies[code]!['subunit'] == 1 ? 0.01 : 1) / 2;
+  }
 
-bool hasSubunit(String code) {
-  return currencies[code]!["subunit"] == 1;
-}
+  static bool hasSubunit(String code) {
+    return currencies[code]!["subunit"] == 1;
+  }
 
-String? getSymbol(String code) {
-  return currencies[code]!["symbol"];
-}
+  static String getSymbol(String code) {
+    return currencies[code]!["symbol"];
+  }
 
-List<String> enumerateCurrencies() {
-  return currencies.keys
-      .map((key) => key + ";" + currencies[key]!["symbol"])
-      .toList();
+  static List<String> enumerateCurrencies() {
+    return currencies.keys
+        .map((key) => key + ";" + currencies[key]!["symbol"])
+        .toList();
+  }
 }
 
 Map<String, Map<String, dynamic>> currencies =

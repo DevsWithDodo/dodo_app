@@ -11,6 +11,7 @@ class QRScannerPage extends StatefulWidget {
 
 class _QRScannerPageState extends State<QRScannerPage> {
   bool _torchEnabled = false;
+  String? code = null;
   MobileScannerController _controller = MobileScannerController(
     torchEnabled: false,
     facing: CameraFacing.back,
@@ -38,12 +39,15 @@ class _QRScannerPageState extends State<QRScannerPage> {
                 MobileScanner(
                   controller: _controller,
                   onDetect: (barcodeCapture) {
+                    if (code != null) {
+                      return;
+                    }
                     if (barcodeCapture.barcodes.isEmpty ||
                         barcodeCapture.barcodes
                             .every((element) => element.rawValue == null)) {
                       debugPrint('Failed to scan Barcode');
                     } else {
-                      String? code = barcodeCapture.barcodes
+                      code = barcodeCapture.barcodes
                           .firstWhere(
                               (element) =>
                                   element.rawValue!.startsWith('dodo://'),
@@ -54,7 +58,7 @@ class _QRScannerPageState extends State<QRScannerPage> {
                       if (code == null) {
                         return;
                       }
-                      code = code.replaceAll('dodo://', '');
+                      code = code!.replaceAll('dodo://', '');
                       showFutureOutputDialog(
                         context: context,
                         future: _qrRead(),

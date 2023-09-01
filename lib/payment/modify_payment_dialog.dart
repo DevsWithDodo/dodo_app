@@ -73,7 +73,6 @@ class _ModifyPaymentDialogState extends State<ModifyPaymentDialog>
               SizedBox(
                 height: 10,
               ),
-              warningText(context),
               Visibility(
                 visible: _index == 0,
                 child: noteTextField(context),

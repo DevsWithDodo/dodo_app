@@ -224,7 +224,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 : null,
             centerTitle: true,
             title: Text(
-              context.watch<AppStateProvider>().user!.group!.name,
+              context.watch<AppStateProvider>().user!.group?.name ?? '',
               style: TextStyle(letterSpacing: 0.25, fontSize: 24),
             ),
           ),

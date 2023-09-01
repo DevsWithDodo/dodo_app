@@ -7,12 +7,14 @@ class CurrencyPickerDropdown extends StatefulWidget {
   final bool showSymbol;
   final Color? dropdownColor;
   final Color? textColor;
+  final Color? backgroundColor;
   CurrencyPickerDropdown({
     required this.defaultCurrencyValue,
     required this.currencyChanged,
     this.showSymbol = true,
     this.textColor,
     this.dropdownColor,
+    this.backgroundColor,
   });
 
   @override
@@ -31,16 +33,13 @@ class _CurrencyPickerDropdownState extends State<CurrencyPickerDropdown> {
   @override
   Widget build(BuildContext context) {
     _defaultCurrencyValue = widget.defaultCurrencyValue;
-    return ButtonTheme(
-      alignedDropdown: true,
-      highlightColor: Colors.transparent,
-      focusColor: Colors.transparent,
-      hoverColor: Colors.transparent,
-      buttonColor: Colors.transparent,
-      splashColor: Colors.transparent,
+    return Ink(
+      decoration: BoxDecoration(
+        color: widget.backgroundColor ?? Theme.of(context).colorScheme.surfaceVariant,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: EdgeInsets.only(right: 5),
       child: DropdownButton(
-        focusColor: Colors.transparent,
-        elevation: 0,
         isExpanded: true,
         iconEnabledColor:
             widget.textColor ?? Theme.of(context).colorScheme.onSurfaceVariant,
@@ -57,20 +56,19 @@ class _CurrencyPickerDropdownState extends State<CurrencyPickerDropdown> {
         borderRadius: BorderRadius.circular(12),
         underline: Container(),
         dropdownColor:
-            widget.dropdownColor ?? Theme.of(context).colorScheme.surface,
+            widget.dropdownColor ?? ElevationOverlay.applySurfaceTint(Theme.of(context).colorScheme.surface, Theme.of(context).colorScheme.surfaceTint, 10),
         style: Theme.of(context).textTheme.labelLarge!.copyWith(
             color: widget.textColor ??
                 Theme.of(context).colorScheme.onSurfaceVariant),
         menuMaxHeight: 500,
-        items: enumerateCurrencies()
+        items: Currency.enumerateCurrencies()
             .map((currency) => DropdownMenuItem(
-                  child: Center(
-                    child: Text(
-                      currency.split(';')[0].trim() +
-                          (widget.showSymbol
-                              ? (" (" + currency.split(';')[1].trim() + ")")
-                              : ""),
-                    ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    currency.split(';')[0].trim() +
+                        (widget.showSymbol
+                            ? (" (${currency.split(';')[1].trim()})")
+                            : ""),
                   ),
                   value: currency.split(';')[0].trim(),
                   onTap: () {},

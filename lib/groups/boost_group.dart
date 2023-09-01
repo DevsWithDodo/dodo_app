@@ -67,18 +67,31 @@ class _BoostGroupState extends State<BoostGroup> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'boost_group'.tr(),
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface),
+                        'boost-group'.tr(),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(color: Theme.of(context).colorScheme.onSurface),
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 10),
                       Text(
                         snapshot.data!['is_boosted'] == 0
-                            ? 'boost_group_explanation'.tr()
-                            : 'boost_group_boosted_explanation'.tr(),
-                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface),
+                            ? 'boost-group.subtitle'.tr()
+                            : 'boost-group.boosted.subtitle'.tr(),
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleSmall!
+                            .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        'boost-group.hint'.tr(),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall!
+                            .copyWith(color: Theme.of(context).colorScheme.onSurface),
                         textAlign: TextAlign.center,
                       ),
                       Visibility(
@@ -87,16 +100,11 @@ class _BoostGroupState extends State<BoostGroup> {
                           children: [
                             SizedBox(height: 20),
                             Text(
-                              'available'.tr(args: [
-                                snapshot.data!['available_boosts'].toString()
-                              ]),
+                              'boost-group.boosts-available'.tr(args: [snapshot.data!['available_boosts'].toString()]),
                               style: Theme.of(context)
                                   .textTheme
                                   .titleSmall!
-                                  .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface),
+                                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
                             ),
                             SizedBox(height: 10),
                             GradientButton(
@@ -106,41 +114,30 @@ class _BoostGroupState extends State<BoostGroup> {
                                 if (snapshot.data!['available_boosts'] == 0) {
                                   if (isIAPPlatformEnabled) {
                                     Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    InAppPurchasePage()))
+                                            context, MaterialPageRoute(builder: (context) => InAppPurchasePage()))
                                         .then((value) {
                                       setState(() {});
                                     });
                                   } else {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            IAPPNotSupportedDialog());
+                                    showDialog(context: context, builder: (context) => IAPPNotSupportedDialog());
                                   }
                                 } else {
                                   showDialog(
-                                          builder: (context) =>
-                                              ConfirmChoiceDialog(
+                                          builder: (context) => ConfirmChoiceDialog(
                                                 choice: 'sure_boost',
                                               ),
                                           context: context)
                                       .then((value) {
                                     if (value ?? false) {
-                                      showFutureOutputDialog(
-                                        future: _postBoost(),
-                                        context: context,
-                                        outputCallbacks: {
-                                          BoolFutureOutput.True: () async {
-                                            await clearGroupCache(context);
-                                            Navigator.of(context).pushAndRemoveUntil(
-                                                MaterialPageRoute(builder: (context) => MainPage()), 
-                                                (r) => false,
-                                            );
-                                          }
+                                      showFutureOutputDialog(future: _postBoost(), context: context, outputCallbacks: {
+                                        BoolFutureOutput.True: () async {
+                                          await clearGroupCache(context);
+                                          Navigator.of(context).pushAndRemoveUntil(
+                                            MaterialPageRoute(builder: (context) => MainPage()),
+                                            (r) => false,
+                                          );
                                         }
-                                      );
+                                      });
                                     }
                                   });
                                 }

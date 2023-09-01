@@ -69,8 +69,7 @@ class _AddPaymentPageState extends State<AddPaymentPage>
                         if (snapshot.hasData) {
                           return RecommendedPayments(
                             members: snapshot.data!,
-                            onChange: (payment, selected) {
-                              setState(() {
+                            onChange: (payment, selected) => setState(() {
                                 if (selected) {
                                   amountController.text =
                                       payment.amount.toString();
@@ -80,8 +79,7 @@ class _AddPaymentPageState extends State<AddPaymentPage>
                                   amountController.text = "";
                                   selectedMember = null;
                                 }
-                              });
-                            },
+                              }),
                           );
                         }
                         return LinearProgressIndicator();
@@ -100,7 +98,6 @@ class _AddPaymentPageState extends State<AddPaymentPage>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              warningText(context),
                               noteTextField(context),
                               SizedBox(
                                 height: 20,

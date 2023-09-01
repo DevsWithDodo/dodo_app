@@ -5,15 +5,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PaymentMethodListItem extends StatefulWidget {
+class EnterPaymentMethodListItem extends StatefulWidget {
   final PaymentMethod? paymentMethod;
-  const PaymentMethodListItem({super.key, this.paymentMethod});
+  const EnterPaymentMethodListItem({super.key, this.paymentMethod});
 
   @override
-  State<PaymentMethodListItem> createState() => _PaymentMethodListItemState();
+  State<EnterPaymentMethodListItem> createState() => _EnterPaymentMethodListItemState();
 }
 
-class _PaymentMethodListItemState extends State<PaymentMethodListItem> {
+class _EnterPaymentMethodListItemState extends State<EnterPaymentMethodListItem> {
   late TextEditingController nameController;
   late TextEditingController valueController;
   bool _priority = false;
@@ -76,7 +76,7 @@ class _PaymentMethodListItemState extends State<PaymentMethodListItem> {
               },
             ),
           ),
-          SizedBox(width: 10),
+          SizedBox(width: 5),
           Flexible(
             flex: 3,
             child: TextFormField(

@@ -24,27 +24,19 @@ class TransactionReceivers extends StatelessWidget {
 
   TableRow gapRow(double gap) {
     return TableRow(
-      children: [
-        SizedBox(height: gap),
-        SizedBox(height: gap),
-        SizedBox(height: gap),
-        SizedBox(height: gap)
-      ],
+      children: [SizedBox(height: gap), SizedBox(height: gap), SizedBox(height: gap), SizedBox(height: gap)],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    String groupCurrency = context.select<AppStateProvider, String>(
-        (provider) => provider.currentGroup!.currency);
+    String groupCurrency = context.select<AppStateProvider, String>((provider) => provider.currentGroup!.currency);
     TextStyle titleStyle = Theme.of(context).textTheme.titleMedium!.copyWith(
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         );
-    String type =
-        this.type == TransactionType.purchase ? 'purchase' : 'payment';
+    String type = this.type == TransactionType.purchase ? 'purchase' : 'payment';
     String buyer = this.type == TransactionType.purchase ? 'buyer' : 'payer';
-    String receiver =
-        this.type == TransactionType.purchase ? 'receivers' : 'receiver';
+    String receiver = this.type == TransactionType.purchase ? 'receivers' : 'receiver';
     String per = this.type == TransactionType.purchase ? 'per' : 'amount';
     return DefaultTextStyle(
       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -56,7 +48,7 @@ class TransactionReceivers extends StatelessWidget {
           0: FlexColumnWidth(2),
           1: FixedColumnWidth(30),
           2: FlexColumnWidth(2),
-          3: FlexColumnWidth(1)
+          3: FlexColumnWidth(1),
         },
         children: [
           TableRow(
@@ -98,10 +90,9 @@ class TransactionReceivers extends StatelessWidget {
           ...groupedReceivers.keys
               .mapIndexed((index, amount) {
                 Member receiver = groupedReceivers[amount]!.first;
-                String amountString = (displayCurrency == groupCurrency
-                        ? receiver.balance
-                        : receiver.balanceOriginalCurrency)
-                    .toMoneyString(
+                String amountString =
+                    (displayCurrency == groupCurrency ? receiver.balance : receiver.balanceOriginalCurrency)
+                        .toMoneyString(
                   displayCurrency,
                   withSymbol: true,
                 );
@@ -114,8 +105,7 @@ class TransactionReceivers extends StatelessWidget {
                     ),
                     children: [
                       Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 5, horizontal: 2),
+                        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 2),
                         child: Center(child: Text(buyerNickname)),
                       ),
                       Padding(
@@ -123,8 +113,7 @@ class TransactionReceivers extends StatelessWidget {
                         child: Icon(Icons.arrow_right_alt_rounded),
                       ),
                       Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 5, horizontal: 2),
+                        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 2),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -148,8 +137,7 @@ class TransactionReceivers extends StatelessWidget {
                       ),
                       Center(
                         child: Padding(
-                          padding:
-                              EdgeInsets.symmetric(vertical: 5, horizontal: 2),
+                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 2),
                           child: Text(amountString),
                         ),
                       ),

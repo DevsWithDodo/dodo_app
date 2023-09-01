@@ -52,7 +52,6 @@ class _LoginPinPageState extends State<LoginPinPage> {
                           validationText: _validationText,
                           onValidationTextChanged: (newText) =>
                               setState(() => _validationText = newText),
-                          showConfirm: false,
                         ),
                       ],
                     ),

@@ -22,8 +22,7 @@ class AddPurchasePage extends StatefulWidget {
   _AddPurchasePageState createState() => _AddPurchasePageState();
 }
 
-class _AddPurchasePageState extends State<AddPurchasePage>
-    with AddModifyPurchase {
+class _AddPurchasePageState extends State<AddPurchasePage> with AddModifyPurchase {
   _AddPurchasePageState() : super();
 
   var _formKey = GlobalKey<FormState>();
@@ -34,8 +33,7 @@ class _AddPurchasePageState extends State<AddPurchasePage>
   GlobalKey _calculatorKey = GlobalKey();
   GlobalKey _receiversKey = GlobalKey();
 
-  Future<BoolFutureOutput> _postPurchase(List<Member> members, double amount,
-      String name, BuildContext context) async {
+  Future<BoolFutureOutput> _postPurchase(List<Member> members, double amount, String name, BuildContext context) async {
     try {
       Map<String, dynamic> body = generateBody(name, amount, members, context);
 
@@ -59,12 +57,10 @@ class _AddPurchasePageState extends State<AddPurchasePage>
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       var prefs = await SharedPreferences.getInstance();
-      if (prefs.containsKey('showcase_add_purchase') &&
-          prefs.getBool('showcase_add_purchase')!) {
+      if (prefs.containsKey('showcase_add_purchase') && prefs.getBool('showcase_add_purchase')!) {
         return;
       }
-      ShowCaseWidget.of(context).startShowCase(
-          [_noteKey, _currencyKey, _calculatorKey, _receiversKey]);
+      ShowCaseWidget.of(context).startShowCase([_noteKey, _currencyKey, _calculatorKey, _receiversKey]);
       prefs.setBool('showcase_add_purchase', true);
     });
   }
@@ -105,37 +101,28 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                             children: <Widget>[
                               noteTextField(context, showcaseKey: _noteKey),
                               SizedBox(height: 20),
-                              amountTextField(context,
-                                  calculatorKey: _calculatorKey,
-                                  currencyKey: _currencyKey),
+                              amountTextField(context, calculatorKey: _calculatorKey, currencyKey: _currencyKey),
                               SizedBox(height: 20),
                               purchaserChooser(),
                               SizedBox(height: 20),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'to_who'.plural(2),
-                                    style:
-                                        Theme.of(context).textTheme.labelLarge,
+                                    style: Theme.of(context).textTheme.labelLarge,
                                   ),
                                   IconButton(
                                     onPressed: () {
                                       setState(() {
-                                        _expandableController.expanded =
-                                            !_expandableController.expanded;
+                                        _expandableController.expanded = !_expandableController.expanded;
                                       });
                                     },
                                     icon: Icon(
                                       Icons.info_outline,
                                       color: _expandableController.expanded
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .primary
-                                          : Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant,
+                                          ? Theme.of(context).colorScheme.primary
+                                          : Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
@@ -150,13 +137,8 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                                       Text(
                                         'add_purchase_explanation'.tr(),
                                         textAlign: TextAlign.center,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall!
-                                            .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurface,
+                                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                              color: Theme.of(context).colorScheme.onSurface,
                                             ),
                                       ),
                                     ],
@@ -167,75 +149,50 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                               Text(
                                 'purchase.page.custom-amount-hint'.tr(),
                                 textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall!
-                                    .copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
+                                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                      color: Theme.of(context).colorScheme.onSurface,
                                     ),
                               ),
                               SizedBox(height: 15),
                               receiverChooser(showcaseKey: _receiversKey),
                               SizedBox(height: 20),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   IconButton(
                                     onPressed: () {
                                       FocusScope.of(context).unfocus();
                                       setState(() {
                                         for (Member member in membersMap.keys) {
-                                          membersMap[member] =
-                                              !membersMap[member]!;
+                                          membersMap[member] = !membersMap[member]!;
                                         }
                                       });
                                     },
                                     icon: Icon(
                                       Icons.swap_horiz,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                   Visibility(
-                                    visible: amountController.text != "" &&
-                                        membersMap.containsValue(true),
+                                    visible: amountController.text != "" && membersMap.containsValue(true),
                                     child: Column(
                                       children: [
                                         Text(
                                           'per_person'.tr(args: [
-                                            amountForNonCustom().toMoneyString(
-                                                selectedCurrency,
-                                                withSymbol: true)
+                                            amountForNonCustom().toMoneyString(selectedCurrency, withSymbol: true)
                                           ]),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .copyWith(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .tertiary,
+                                          style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                                color: Theme.of(context).colorScheme.tertiary,
                                               ),
                                         ),
-                                        ...(customAmountMap.keys
-                                            .map<Widget>((member) {
+                                        ...(customAmountMap.keys.map<Widget>((member) {
                                           return Text(
                                             member.nickname +
                                                 ': ' +
                                                 customAmountMap[member]
-                                                    .toMoneyString(
-                                                        selectedCurrency,
-                                                        withSymbol: true),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!
-                                                .copyWith(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .tertiary,
+                                                    .toMoneyString(selectedCurrency, withSymbol: true),
+                                            style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                                  color: Theme.of(context).colorScheme.tertiary,
                                                 ),
                                           );
                                         }).toList())
@@ -253,9 +210,7 @@ class _AddPurchasePageState extends State<AddPurchasePage>
                                     },
                                     icon: Icon(
                                       Icons.delete,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                                   )
                                 ],
@@ -277,8 +232,7 @@ class _AddPurchasePageState extends State<AddPurchasePage>
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.tertiary,
-          child:
-              Icon(Icons.send, color: Theme.of(context).colorScheme.onTertiary),
+          child: Icon(Icons.send, color: Theme.of(context).colorScheme.onTertiary),
           onPressed: () => buttonPush(context),
         ),
       ),

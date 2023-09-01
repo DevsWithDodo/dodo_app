@@ -6,10 +6,10 @@ import 'package:csocsort_szamla/user_settings/components/payment_method_list_ite
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PaymentMethodList extends StatelessWidget {
+class EnterPaymentMethodList extends StatelessWidget {
   final void Function(List<PaymentMethod>) onSubmit;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  PaymentMethodList({super.key, required this.onSubmit});
+  EnterPaymentMethodList({super.key, required this.onSubmit});
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +35,13 @@ class PaymentMethodList extends StatelessWidget {
                         .map((paymentMethod) => Padding(
                               key: UniqueKey(),
                               padding: const EdgeInsets.only(bottom: 10),
-                              child: PaymentMethodListItem(
+                              child: EnterPaymentMethodListItem(
                                 paymentMethod: paymentMethod,
                               ),
                             ))
                         .toList(),
                   ),
-                  PaymentMethodListItem(
+                  EnterPaymentMethodListItem(
                     key: UniqueKey(),
                   ),
                   Visibility(

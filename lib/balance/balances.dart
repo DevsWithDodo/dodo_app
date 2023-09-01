@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/balance/necessary_payment_dialog.dart';
+import 'package:csocsort_szamla/balance/necessary_payments_dialog.dart';
 import 'package:csocsort_szamla/balance/select_balance_currency.dart';
 import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
@@ -23,8 +23,7 @@ class Balances extends StatefulWidget {
   _BalancesState createState() => _BalancesState();
 }
 
-class _BalancesState extends State<Balances>
-    with AutomaticKeepAliveClientMixin {
+class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin {
   @override
   get wantKeepAlive => true;
 
@@ -34,16 +33,14 @@ class _BalancesState extends State<Balances>
   Future<List<Member>> _getMembers() async {
     try {
       Response response = await Http.get(
-          uri: generateUri(GetUriKeys.groupCurrent, context, params: [
-        context.read<AppStateProvider>().user!.group!.id.toString()
-      ]));
+          uri: generateUri(GetUriKeys.groupCurrent, context,
+              params: [context.read<AppStateProvider>().user!.group!.id.toString()]));
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = [];
       for (var member in decoded['data']['members']) {
         members.add(Member.fromJson(member));
       }
-      members.sort(
-          (member1, member2) => member2.balance.compareTo(member1.balance));
+      members.sort((member1, member2) => member2.balance.compareTo(member1.balance));
       return members;
     } catch (_) {
       throw _;
@@ -81,6 +78,7 @@ class _BalancesState extends State<Balances>
 
   @override
   Widget build(BuildContext context) {
+    String groupCurrency = context.select<AppStateProvider, String>((provider) => provider.currentGroup!.currency);
     super.build(context);
     return Card(
       child: Padding(
@@ -93,8 +91,10 @@ class _BalancesState extends State<Balances>
                 Center(
                   child: Text(
                     'balances'.tr(),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
                 SizedBox(height: 40),
@@ -107,36 +107,25 @@ class _BalancesState extends State<Balances>
                           children: [
                             Column(children: _generateBalances(snapshot.data!)),
                             Visibility(
-                                visible: snapshot.data!.length < 2,
-                                child: _oneMemberWidget()),
+                              visible: snapshot.data!.length < 2,
+                              child: _oneMemberWidget(),
+                            ),
                             Visibility(
-                              visible: snapshot.data!.where((element) => element.balance < 0).length > 0,
-                              child: Column(
-                                children: [
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        barrierDismissible: true,
-                                        builder: (context) =>
-                                            NecessaryPaymentsDialog(members: snapshot.data!),
-                                      );
-                                    },
-                                    child: Text(
-                                      'payments_needed'.tr(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelLarge!
-                                          .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary),
+                              visible: snapshot.data!
+                                  .where((member) => member.balance < Currency.threshold(groupCurrency))
+                                  .isNotEmpty,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: TextButton(
+                                  onPressed: () => showDialog(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (context) => NecessaryPaymentsDialog(
+                                      members: snapshot.data!,
                                     ),
                                   ),
-                                ],
+                                  child: Text('payments_needed'.tr()),
+                                ),
                               ),
                             )
                           ],
@@ -159,13 +148,17 @@ class _BalancesState extends State<Balances>
                 )
               ],
             ),
-            SelectBalanceCurrency(
-              selectedCurrency: _selectedCurrency,
-              onCurrencyChange: (selectedCurrency) {
-                setState(() {
-                  _selectedCurrency = selectedCurrency;
-                });
-              },
+            Positioned(
+              right: 0,
+              width: 90,
+              child: SelectBalanceCurrency(
+                selectedCurrency: _selectedCurrency,
+                onCurrencyChange: (selectedCurrency) {
+                  setState(() {
+                    _selectedCurrency = selectedCurrency;
+                  });
+                },
+              ),
             ),
           ],
         ),
@@ -199,36 +192,34 @@ class _BalancesState extends State<Balances>
                   : Theme.of(context).colorScheme.onSecondary
               : Theme.of(context).colorScheme.onSurface);
       return Container(
-          padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-          decoration: member.id == context.read<AppStateProvider>().user!.id
-              ? BoxDecoration(
-                  gradient:
-                      AppTheme.gradientFromTheme(themeName, useSecondary: true),
-                  borderRadius: BorderRadius.circular(15),
-                )
-              : null,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                member.nickname,
+        padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+        decoration: member.id == context.read<AppStateProvider>().user!.id
+            ? BoxDecoration(
+                gradient: AppTheme.gradientFromTheme(themeName, useSecondary: true),
+                borderRadius: BorderRadius.circular(15),
+              )
+            : null,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              member.nickname,
+              style: textStyle,
+            ),
+            AnimatedCrossFade(
+              duration: Duration(milliseconds: 300),
+              firstChild: Container(),
+              secondChild: Text(
+                member.balance
+                    .exchange(context.watch<AppStateProvider>().currentGroup!.currency, _selectedCurrency)
+                    .toMoneyString(_selectedCurrency),
                 style: textStyle,
               ),
-              AnimatedCrossFade(
-                duration: Duration(milliseconds: 300),
-                firstChild: Container(),
-                secondChild: Text(
-                  member.balance
-                      .exchange(
-                          context.watch<AppStateProvider>().currentGroup!.currency,
-                          _selectedCurrency)
-                      .toMoneyString(_selectedCurrency),
-                  style: textStyle,
-                ),
-                crossFadeState: CrossFadeState.showSecond,
-              ),
-            ],
-          ));
+              crossFadeState: CrossFadeState.showSecond,
+            ),
+          ],
+        ),
+      );
     }).toList();
   }
 
@@ -238,17 +229,11 @@ class _BalancesState extends State<Balances>
         SizedBox(height: 20),
         Text(
           'you_seem_lonely'.tr(),
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(color: Theme.of(context).colorScheme.onSurface),
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
         ),
         SizedBox(height: 10),
         Text('invite_friends'.tr(),
-            style: Theme.of(context)
-                .textTheme
-                .titleSmall!
-                .copyWith(color: Theme.of(context).colorScheme.onSurface)),
+            style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurface)),
         SizedBox(height: 5),
         FutureBuilder(
           future: _getInvitation(),
@@ -264,8 +249,7 @@ class _BalancesState extends State<Balances>
                           showDialog(
                               context: context,
                               builder: (context) {
-                                return ShareGroupDialog(
-                                    inviteCode: snapshot.data!);
+                                return ShareGroupDialog(inviteCode: snapshot.data!);
                               });
                         },
                         child: Icon(Icons.share),
@@ -288,10 +272,7 @@ class _BalancesState extends State<Balances>
         ),
         SizedBox(height: 10),
         Text('add_guests_offline'.tr(),
-            style: Theme.of(context)
-                .textTheme
-                .titleSmall!
-                .copyWith(color: Theme.of(context).colorScheme.onSurface)),
+            style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurface)),
         SizedBox(height: 5),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -300,10 +281,11 @@ class _BalancesState extends State<Balances>
               child: Icon(Icons.person_add),
               onPressed: () {
                 showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AddGuestDialog();
-                    });
+                  context: context,
+                  builder: (context) {
+                    return AddGuestDialog();
+                  },
+                );
               },
             ),
           ],
@@ -311,10 +293,7 @@ class _BalancesState extends State<Balances>
         SizedBox(height: 10),
         Text(
           'you_seem_lonely_explanation'.tr(),
-          style: Theme.of(context)
-              .textTheme
-              .titleSmall!
-              .copyWith(color: Theme.of(context).colorScheme.onSurface),
+          style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurface),
           textAlign: TextAlign.center,
         )
       ],

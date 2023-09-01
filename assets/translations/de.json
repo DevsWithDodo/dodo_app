@@ -85,9 +85,11 @@
     "edit_nickname": "Neuer Spitzname",
     "payment_explanation": "Du hast an jemanden Geld gezahlt",
     "purchase_explanation": "Du hast etwas gekauft",
-    
-    "members_explanation": "Siehe dir die Gruppenmitglieder an und ändere deinen Spitznamen",
-    "members_explanation_admin": "Verwalte die Genehmigungen und Spitznamen der Mitglieder",
+
+    "members.subtitle": "Sehe dir die Zahlungsmethoden und andere Details der Mitglieder an, oder verlasse die Gruppe.",
+    "members.hint": "Tippe auf ein Mitglied um die Details zu sehen.",
+    "members.admin.hint": "Tippe auf ein Mitdlied um die Details zu sehen, sie zu einem Admin zu machen oder zu entfernen.",
+
     "modify": "Ändern",
     "invitation_explanation": "Lade jemanden in die Gruppe ein",
     "rename_group_explanation": "Wenn dir der Name nicht gefällt",
@@ -140,8 +142,8 @@
 
     "leave_group": "Die Gruppe verlassen",
     "balance_at_least_0": "Dein Konto muss positiv sein",
-    "kick_member": "Mitglied rausschmeisen",
-    "really_kick": "Möchtest du das Mitglied wirklich rausschmeisen?",
+    "kick_member": "Mitglied entfernen",
+    "really_kick": "Möchtest du das Mitglied wirklich entfernen?",
     "really_leave": "Möchtest du die Gruppe wirklich verlassen?",
 
     "auto_payment": "Automatische Zahlung",
@@ -205,9 +207,12 @@
     "price": "Preis: ",
     "buy": "Kaufen",
 
-    "boost_group": "Booste die Gruppe",
-    "boost_group_explanation": "Sehe dir die Statistiken an.",
-    "available": "Anzahl der Gruppenboostenden Dodos: {}",
+    "boost-group": "Booste die Gruppe",
+    "boost-group.subtitle": "In einer geboosteten Gruppe sind die Statistiken in der App verfügbar. Du kannst Gruppenboosts im Shop kaufen.",
+    "boost-group.boosted.subtitle": "Diese Gruppe wurde bereits geboostet \uD83D\uDE0E. Das bedeutet, dass du die Statistiken der Gruppe in der App nutzen kannst.",
+    "boost-group.boosts-available": "Anzahl der verfügbaren Gruppenboostenden Dodos: {}",
+    "boost-group.hint": "Die Funktionen von geboosteten Gruppen stehen allen Mitgliedern der Gruppe zur Verfügung.",
+
 
     "sure_boost": "Bist du sicher, dass du die Gruppe boosten möchtest?",
     "already_boosted": "Diese Gruppe wurde schon geboostet!",
@@ -343,7 +348,7 @@
 
     "share": "Teile die Gruppe",
     "share_url": "Oder lade deine Freunde mit einer Message ein",
-    "scan_code": "Lese den QR-Code einer Gruppe um ihr beizutreten",
+    "scan_code": "Lese den QR-Code einer Gruppe ein um ihr beizutreten",
     "paste_code": "oder füge den Einladungscode ein:",
 
     "gradient_themes" : "Farbübergängige Themen",
@@ -368,7 +373,8 @@
     "purchase.page.custom-amount.toast.sum-larger-than-amount": "Der gesetzte Hauptbetrag war kleiner als die Summe der individuellen Beträgen.",
 
     "custom_amount": "Individueller Betrag",
-    "custom_amount_explanation": "Setze fest wie viel das Mitglied zahlen soll.",
+    "custom-amount.dialog.subtitle": "Setze fest wie viel das Mitglied zahlen soll.",
+    "custom-amount.dialog.hint": "Nutze das Eingabefeld oder den Slider um den Betrag einzustellen.",
     "reset": "Zurücksetzen",
     "chosen_amount": "Ausgewählter Betrag: ",
 
@@ -457,7 +463,8 @@
     "use_calculator": "Benutze den Taschenrechner",
     "choose_custom_amount": "Drücke lange auf einen der Nutzer um einen individuellen Betrag zu wählen",
 
-    "payments_needed_explanation": "Die nötigen Zahlungen damit alle wieder auf 0 kommen",
+    "payments_needed.dialog.subtitle": "Die nötigen Zahlungen damit alle wieder auf 0 kommen.",
+    "payments_needed.dialog.hint": "Tippe auf das Icon am Ende jeder Zeile um die möglichen Zahlungsmethoden zu sehen.",
 
     "pin-verification.title": "Pin bestätigen",
     "pin-verification.description": "Gib deinen Pin an und gehe sicher dass du es noch weißt",
@@ -474,7 +481,9 @@
     "payment-method.name.hint": "zB. IBAN",    
     "payment-methods.dialog.title": "Zahlungsmethoden",
     "payment-methods.dialog.subtitle": "Das ausgewählte Mitglied kann über diese Methoden bezahlt werden",
-    "payment-methods.no-payment-method": "Das Mitglied hat noch keine Zahlungsmethoden hinzugefügt",
+    "payment-methods.no-payment-method": "{name} hat noch keine Zahlungsmethoden hinzugefügt",
+    "payment-methods.dialog.modify.title": "Setze deine Zahlungsmethoden",
+    "payment-methods.dialog.modify.subtitle": "Alle Mitglieder können sehen, wie du bezahlt werden möchtest",
 
     "clipboard.copy-successful": "Kopiert",
 
@@ -524,5 +533,7 @@
     "payment-entry.paid": "Gezahlt",
     "payment-entry.received": "Bekommen",
 
-    "group-settings.change-nickname": "Spitznamen ändern"
+    "group-settings.change-nickname": "Spitznamen ändern",
+
+    "registration.set-pin": "Pin festlegen"
 }

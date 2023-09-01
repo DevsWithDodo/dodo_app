@@ -52,7 +52,7 @@ class _CurrencyPickerIconButtonState extends State<CurrencyPickerIconButton> {
         child: FittedBox(
           fit: BoxFit.fitWidth,
           child: Text(
-            getSymbol(widget.selectedCurrency!)!,
+            Currency.getSymbol(widget.selectedCurrency!),
             style: Theme.of(context).textTheme.labelLarge!.copyWith(
                 color: widget.selectedCurrency == context.watch<AppStateProvider>().currentGroup!.currency
                     ? Theme.of(context).colorScheme.primary

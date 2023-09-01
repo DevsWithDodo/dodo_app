@@ -86,8 +86,10 @@
     "payment_explanation": "Fizettél valakinek",
     "purchase_explanation": "Vettél valamit",
 
-    "members_explanation": "Nézd meg a csoport tagjait és változtasd meg a beceneved",
-    "members_explanation_admin": "Kezeld a tagok jogosultságát, becenevét",
+    "members.subtitle": "Nézd meg a tagok fizetési módjait és egyéb információit, vagy hagyd el a csoportot.",
+    "members.hint": "Koppints egy tagra a részletes információkért.",
+    "members.admin.hint": "Koppints egy tagra, hogy lásd a részletes információit, adminná tedd vagy hogy eltávolítsd a csoportból.",
+
     "modify": "Módosítás",
     "invitation_explanation": "Hívj meg valakit a csoportba",
     "rename_group_explanation": "Ha nem tetszik a neve",
@@ -206,8 +208,10 @@
     "buy": "Vásárlás",
 
     "boost_group": "Csoport fejlesztése",
-    "boost_group_explanation": "Kövesd nyomon a csoport statisztikáit.",
-    "available": "Csoportfejlesztő Dodóid száma: {}",
+    "boost-group.subtitle": "Egy fejlesztett csoportban láthatod a statisztikákat az alkalmazáson belül.",
+    "boost-group.boosted.subtitle": "Ezt a csoportot már felfejlesztették \uD83D\uDE0E. Így elérhetőek a statisztikák az alkalmazáson belül.",
+    "boost-group.boosts-available": "Csoportfejlesztő Dodóid száma: {}",
+    "boost-group.hint": "A csoport fejlesztésével járó előnyöket az összes csoporttag eléri.",
 
     "sure_boost": "Biztosan fejleszteni szeretnéd a csoportot?",
     "already_boosted": "A csoportot már felfejlesztették!",
@@ -335,8 +339,6 @@
     "group_needs_approval": "Admin beleegyezés",
     "group_needs_approval_explanation": "Döntsd el, hogy a csoportba való csatlakozáshoz szükséges-e az adminok beleegyezése",
 
-    "boost_group_boosted_explanation": "Ezt a csoportot már felfejlesztették \uD83D\uDE0E. Így elérhetőek a statisztikák.",
-
     "share": "Oszd meg a csoportot",
     "share_url": "Vagy hívd meg a barátaid üzenetben",
     "scan_code": "Csoporthoz való csatlakozáshoz olvasd be a csoport QR kódját",
@@ -364,7 +366,9 @@
     "purchase.page.custom-amount.toast.sum-larger-than-amount": "A most beállított teljes összeg az egyéni összegek összegénél kisebb volt.",
 
     "custom_amount": "Ráeső pénz",
-    "custom_amount_explanation": "Add meg, hogy a kiválasztott ember mennyit fizessen a teljes összegből.",
+    "custom-amount.dialog.subtitle": "Add meg, hogy a kiválasztott ember mennyit fizessen a teljes összegből.",
+    "custom-amount.dialog.hint": "Használd a szövegdobozt vagy a csúszkát a beállításhoz.",
+
     "reset": "Visszaállítás",
     "chosen_amount": "Választott összeg: ",
 
@@ -454,7 +458,8 @@
     "use_calculator": "Használd a számológépet",
     "choose_custom_amount": "Nyomj hosszan egy tagra, hogy kiválaszd a hozzá tartozó összeget",
 
-    "payments_needed_explanation": "A tagok egyenlegének kiegyenlítéséhez szükséges fizetések",
+    "payments_needed.dialog.subtitle": "A tagok egyenlegének kiegyenlítéséhez szükséges fizetések",
+    "payments_needed.dialog.hint": "Nyomj a sor végén lévő gombra, hogy lásd az elérhető fizetési módokat.",
 
     "pin-verification.title": "Pin ellenőrzése",
     "pin-verification.description": "Írd be a pin kódod és bizonyosodj meg róla, hogy nem felejtetted el. Nem tudjuk visszaállítani, ha elfelejted.",
@@ -471,7 +476,9 @@
     "payment-method.name.hint": "pl. Számlaszám",
     "payment-methods.dialog.title": "Fizetési módok",
     "payment-methods.dialog.subtitle": "A kiválasztott tagnak így lehet fizetni",
-    "payment-methods.no-payment-method": "A tag még nem adott meg fizetési módot",
+    "payment-methods.no-payment-method": "{name} még nem adott meg fizetési módot",
+    "payment-methods.dialog.modify.title": "Add meg a fizetési módokat",
+    "payment-methods.dialog.modify.subtitle": "Minden tag láthatja a fizetési módokat, amiket megadsz.",
 
     "clipboard.copy-successful": "A vágólapra másolva",
 
@@ -521,5 +528,7 @@
     "payment-entry.paid": "Te fizettél",
     "payment-entry.received": "Neked fizettek",
 
-    "group-settings.change-nickname": "Becenév megváltoztatása"
+    "group-settings.change-nickname": "Becenév megváltoztatása",
+
+    "registration.set-pin": "Pin beállítása"
 }

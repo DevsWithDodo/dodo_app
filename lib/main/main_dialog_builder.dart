@@ -51,10 +51,7 @@ class MainDialogBuilder extends StatefulWidget {
           UserStatus status = context.read<AppStateProvider>().user!.userStatus;
           int verificationCount = status.pinVerificationCount;
           Duration difference = status.pinVerifiedAt.difference(DateTime.now());
-          if(verificationCount == 0) {
-            return true;
-          }
-          if (verificationCount == 1 && difference.inDays >= 1) {
+          if (verificationCount <= 1 && difference.inDays >= 1) {
             return true;
           }
           if (verificationCount == 2 && difference.inDays >= 3) {
@@ -88,7 +85,7 @@ class MainDialogBuilder extends StatefulWidget {
         canShow: (context) {
           User? user = context.read<AppStateProvider>().user;
           return user != null &&
-              user.paymentMethods.length == 0 &&
+              user.paymentMethods.isEmpty &&
               Random().nextDouble() <= 0.15;
         },
         type: DialogType.bottom,
@@ -183,7 +180,7 @@ class _MainDialogBuilderState extends State<MainDialogBuilder> {
                   ? Alignment.center
                   : Alignment.bottomCenter,
               child: Padding(
-                padding: EdgeInsets.only(bottom: context.watch<ScreenWidth>().isMobile ? 95 : 15),
+                padding: EdgeInsets.only(bottom: _dialog?.type == DialogType.bottom ? (context.watch<ScreenWidth>().isMobile ? 95 : 15) : 0),
                 child: Provider.value(
                   value: () => setState(() => visible = false),
                   builder: (context, _) {

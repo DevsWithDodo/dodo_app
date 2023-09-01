@@ -193,7 +193,7 @@ class _CreateGroupState extends State<CreateGroup> {
                 context: context,
                 outputCallbacks: {
                   BoolFutureOutput.True: () async {
-                    await clearAllCache();
+                    await clearAllCache(); // TODO: EventBus
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) => MainPage()),
                       (r) => false,

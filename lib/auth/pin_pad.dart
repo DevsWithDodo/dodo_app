@@ -9,10 +9,12 @@ class PinPad extends StatefulWidget {
   final bool isPinInput;
   final ValueChanged<String> onPinChanged;
   final ValueChanged<String>? onPinConfirmChanged;
-  final bool showConfirm;
   final String? validationText;
   final ValueChanged<String?>? onValidationTextChanged;
   final double? maxWidth;
+  final String? pinLabel;
+  final String? pinConfirmLabel;
+
   PinPad({
     required String this.pin,
     this.pinConfirm,
@@ -21,8 +23,9 @@ class PinPad extends StatefulWidget {
     this.onPinConfirmChanged,
     this.validationText,
     this.onValidationTextChanged,
-    this.showConfirm = true,
     this.maxWidth,
+    this.pinLabel,
+    this.pinConfirmLabel,
   });
 
   @override
@@ -53,14 +56,14 @@ class _PinPadState extends State<PinPad> {
                   child: Builder(builder: (context) {
                     String? textToShow = widget.pin;
                     if (textToShow == '') {
-                      textToShow = 'pin'.tr();
+                      textToShow = widget.pinLabel ?? 'pin'.tr();
                     } else {
                       textToShow = '•' * textToShow.length;
                     }
                     if (!widget.isPinInput) {
                       textToShow = widget.pinConfirm;
                       if (widget.pinConfirm == '') {
-                        textToShow = 'confirm_pin'.tr();
+                        textToShow = widget.pinConfirmLabel ?? 'confirm_pin'.tr();
                       } else {
                         textToShow = '•' * textToShow!.length;
                       }

@@ -313,28 +313,4 @@ class AddModifyPayment {
           },
         ),
       );
-
-  AnimatedCrossFade warningText(BuildContext context) {
-    bool isVisible =
-        (selectedMember != null && selectedMember!.id != user.id) &&
-            payerId != user.id;
-    CrossFadeState state =
-        isVisible ? CrossFadeState.showSecond : CrossFadeState.showFirst;
-    return AnimatedCrossFade(
-      duration: Duration(milliseconds: 100),
-      crossFadeState: state,
-      firstChild: Container(),
-      secondChild: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: Center(
-          child: Text(
-            'warning_wont_see'.tr(),
-            style: Theme.of(context).textTheme.titleMedium!
-                .copyWith(color: Theme.of(context).colorScheme.error),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-    );
-  }
 }

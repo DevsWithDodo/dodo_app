@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
+import 'package:csocsort_szamla/auth/login_or_register_page.dart';
 import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/essentials/app_theme.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
@@ -83,6 +84,21 @@ class AppStateProvider extends ChangeNotifier {
         "Authorization": "Bearer ${user!.apiToken}"
       });
       var decoded = jsonDecode(response.body);
+      if (response.statusCode > 299 || response.statusCode < 200) {
+        if (response.statusCode == 401) {
+          await logout(withoutRequest: true);
+          BuildContext? context =
+              getIt.get<NavigationService>().navigatorKey.currentContext;
+          if (context == null) return;
+          Navigator.of(
+                  getIt.get<NavigationService>().navigatorKey.currentContext!)
+              .pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
+            (route) => false,
+          );
+          return;
+        }
+      }
       setShownAds(decoded['data']['ad_free'] == 0);
       setUseGradients(decoded['data']['gradients_enabled'] == 1);
       setPersonalisedAds(decoded['data']['personalised_ads'] == 1);
