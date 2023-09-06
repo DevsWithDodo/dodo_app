@@ -131,7 +131,7 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
                         Theme.of(context).colorScheme.primary,
-                        context.watch<AppStateProvider>().themeName.toLowerCase().contains('dodo') &&
+                        context.watch<AppStateProvider>().themeName.isDodo() &&
                                 !kIsWeb
                             ? BlendMode.dst
                             : BlendMode.srcIn),

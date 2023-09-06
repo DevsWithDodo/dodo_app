@@ -51,10 +51,8 @@ class AddModifyPurchase {
     ShoppingRequest? shoppingRequest,
     Purchase? savedPurchase,
   }) {
-    assert((purchaseType == PurchaseType.fromShopping &&
-            shoppingRequest != null) ||
-        (purchaseType == PurchaseType.modifyPurchase &&
-            savedPurchase != null) ||
+    assert((purchaseType == PurchaseType.fromShopping && shoppingRequest != null) ||
+        (purchaseType == PurchaseType.modifyPurchase && savedPurchase != null) ||
         (purchaseType == PurchaseType.newPurchase));
     this.purchaseType = purchaseType;
     this.shoppingRequest = shoppingRequest;
@@ -66,18 +64,17 @@ class AddModifyPurchase {
     if (purchaseType == PurchaseType.fromShopping) {
       noteController.text = shoppingRequest!.name;
     } else if (purchaseType == PurchaseType.modifyPurchase) {
-      selectedCurrency = savedPurchase!.originalCurrency;
+      selectedCategory = savedPurchase!.category;
+      selectedCurrency = savedPurchase.originalCurrency;
       noteController.text = savedPurchase.name;
-      amountController.text = savedPurchase.totalAmountOriginalCurrency
-          .toMoneyString(savedPurchase.originalCurrency);
+      amountController.text = savedPurchase.totalAmountOriginalCurrency.toMoneyString(savedPurchase.originalCurrency);
       purchaserId = savedPurchase.buyerId;
       //Note: the receivers are set after the list of members is received from the server.
     }
     members = getMembers(context);
     focusNode.addListener(() {
       _setState(() {
-        if (membersMap.entries.where((entry) => entry.value).length == 0 &&
-            customAmountMap.length != 0) {
+        if (membersMap.entries.where((entry) => entry.value).length == 0 && customAmountMap.length != 0) {
           customAmountMap = {};
         }
         double maxAmount = double.tryParse(amountController.text) ?? 0.0;
@@ -107,8 +104,7 @@ class AddModifyPurchase {
     purchaserId = purchaserId ?? user.id;
   }
 
-  Map<String, dynamic> generateBody(
-      String name, double amount, List<Member> members, BuildContext context) {
+  Map<String, dynamic> generateBody(String name, double amount, List<Member> members, BuildContext context) {
     return {
       "name": name,
       "group": context.read<AppStateProvider>().currentGroup!.id,
@@ -119,16 +115,13 @@ class AddModifyPurchase {
       "receivers": members
           .map((member) => {
                 "user_id": member.id,
-                "amount": customAmountMap.containsKey(member)
-                    ? customAmountMap[member]
-                    : null,
+                "amount": customAmountMap.containsKey(member) ? customAmountMap[member] : null,
               })
           .toList()
     };
   }
 
-  Future<List<Member>> getMembers(BuildContext context,
-      {bool overwriteCache = false}) async {
+  Future<List<Member>> getMembers(BuildContext context, {bool overwriteCache = false}) async {
     try {
       Response response = await Http.get(
         uri: generateUri(GetUriKeys.groupCurrent, context),
@@ -153,9 +146,7 @@ class AddModifyPurchase {
   double amountForNonCustom() {
     double sumCustom = 0;
     customAmountMap.values.forEach((element) => sumCustom += element);
-    double amount =
-        (double.tryParse(amountController.text.replaceAll(',', '.')) ?? 0.0) -
-            sumCustom;
+    double amount = (double.tryParse(amountController.text.replaceAll(',', '.')) ?? 0.0) - sumCustom;
     int membersChosen = 0;
     for (bool isChosen in membersMap.values) {
       if (isChosen) {
@@ -165,130 +156,142 @@ class AddModifyPurchase {
     return amount / (membersChosen - customAmountMap.length);
   }
 
-  CategoryPickerIconButton _categoryPickerIconButton() =>
-      CategoryPickerIconButton(
-        selectedCategory: selectedCategory,
-        onCategoryChanged: (newCategory) {
-          _setState(() {
-            if (selectedCategory?.type == newCategory?.type) {
-              selectedCategory = null;
-            } else {
-              selectedCategory = newCategory;
-            }
-          });
-        },
-      );
-
-  TextFormField noteTextField(BuildContext context, {GlobalKey? showcaseKey}) =>
-      TextFormField(
-        key: _noteKey,
-        validator: (value) => validateTextField([
-          isEmpty(value),
-          minimalLength(value, 3),
-        ]),
-        decoration: InputDecoration(
-          hintText: 'note'.tr(),
-          prefixIcon: Icon(
-            Icons.note,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-          suffixIcon: showcaseKey != null
-              ? Showcase(
-                  key: showcaseKey,
-                  showArrow: false,
-                  targetBorderRadius: BorderRadius.circular(10),
-                  targetPadding: EdgeInsets.all(0),
-                  description: "pick_category".tr(),
-                  child: _categoryPickerIconButton(),
-                  scaleAnimationDuration: Duration(milliseconds: 200),
-                )
-              : _categoryPickerIconButton(),
+  Widget _categoryPickerIconButton() => Padding(
+        padding: EdgeInsets.only(left: 5),
+        child: CategoryPickerIconButton(
+          selectedCategory: selectedCategory,
+          onCategoryChanged: (newCategory) {
+            _setState(() {
+              if (selectedCategory?.type == newCategory?.type) {
+                selectedCategory = null;
+              } else {
+                selectedCategory = newCategory;
+              }
+            });
+          },
         ),
-        inputFormatters: [LengthLimitingTextInputFormatter(50)],
-        controller: noteController,
-        onFieldSubmitted: (value) => buttonPush(context),
       );
 
-  CurrencyPickerIconButton _currencyPickerIconButton() =>
-      CurrencyPickerIconButton(
-        selectedCurrency: selectedCurrency,
-        onCurrencyChanged: (newCurrency) {
-          _setState(() {
-            selectedCurrency = newCurrency ?? selectedCurrency;
-          });
-        },
+  Widget noteTextField(BuildContext context, {GlobalKey? showcaseKey}) => Row(
+        children: [
+          Expanded(
+            child: TextFormField(
+              key: _noteKey,
+              validator: (value) => validateTextField([
+                isEmpty(value),
+                minimalLength(value, 3),
+              ]),
+              decoration: InputDecoration(
+                hintText: 'note'.tr(),
+                prefixIcon: Icon(
+                  Icons.note,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+              inputFormatters: [LengthLimitingTextInputFormatter(50)],
+              controller: noteController,
+              onFieldSubmitted: (value) => buttonPush(context),
+            ),
+          ),
+          if (showcaseKey != null)
+            Showcase(
+              key: showcaseKey,
+              showArrow: false,
+              targetBorderRadius: BorderRadius.circular(10),
+              targetPadding: EdgeInsets.all(0),
+              description: "pick_category".tr(),
+              child: _categoryPickerIconButton(),
+              scaleAnimationDuration: Duration(milliseconds: 200),
+            )
+          else
+            _categoryPickerIconButton(),
+        ],
+      );
+
+  Widget _currencyPickerIconButton() => Padding(
+        padding: EdgeInsets.only(right: 5),
+        child: CurrencyPickerIconButton(
+          selectedCurrency: selectedCurrency,
+          onCurrencyChanged: (newCurrency) {
+            _setState(() {
+              selectedCurrency = newCurrency ?? selectedCurrency;
+            });
+          },
+        ),
       );
 
   Icon _calculatorIcon(BuildContext context) => Icon(
         Icons.calculate,
-        color: Theme.of(context).colorScheme.primary,
+        // color: Theme.of(context).colorScheme.primary,
       );
 
-  TextFormField amountTextField(
-    BuildContext context, {
-    GlobalKey? currencyKey = null,
-    GlobalKey? calculatorKey = null,
-  }) =>
-      TextFormField(
-        validator: (value) => validateTextField([
-          isEmpty(value),
-          notValidNumber(value!.replaceAll(',', '.')),
-        ]),
-        focusNode: focusNode,
-        decoration: InputDecoration(
-          hintText: 'full_amount'.tr(),
-          prefixIcon: currencyKey != null
-              ? Showcase(
-                  key: currencyKey,
-                  showArrow: false,
-                  targetBorderRadius: BorderRadius.circular(10),
-                  targetPadding: EdgeInsets.all(0),
-                  description: "pick_currency".tr(),
-                  child: _currencyPickerIconButton(),
-                  scaleAnimationDuration: Duration(milliseconds: 200),
-                )
-              : _currencyPickerIconButton(),
-          suffixIcon: IconButton(
-            onPressed: () {
-              showModalBottomSheet(
-                isScrollControlled: true,
-                context: context,
-                builder: (context) {
-                  return SingleChildScrollView(
-                    child: Calculator(
-                      selectedCurrency: selectedCurrency,
-                      initialNumber: amountController.text,
-                      onCalculationReady: (String fromCalc) {
-                        _setState(() {
-                          amountController.text =
-                              (double.tryParse(fromCalc) ?? 0.0)
-                                  .toMoneyString(selectedCurrency);
-                        });
-                      },
-                    ),
-                  );
-                },
-              );
-            },
-            icon: calculatorKey != null
-                ? Showcase(
-                    key: calculatorKey,
-                    showArrow: false,
-                    targetBorderRadius: BorderRadius.circular(10),
-                    targetPadding: EdgeInsets.all(10),
-                    description: "use_calculator".tr(),
-                    child: _calculatorIcon(context),
-                    scaleAnimationDuration: Duration(milliseconds: 200),
-                  )
-                : _calculatorIcon(context),
+  Widget amountTextField(BuildContext context, {GlobalKey? currencyKey = null, GlobalKey? calculatorKey = null}) => Row(
+        children: [
+          if (currencyKey != null)
+            Showcase(
+              key: currencyKey,
+              showArrow: false,
+              targetBorderRadius: BorderRadius.circular(10),
+              targetPadding: EdgeInsets.all(0),
+              description: "pick_currency".tr(),
+              child: _currencyPickerIconButton(),
+              scaleAnimationDuration: Duration(milliseconds: 200),
+            )
+          else
+            _currencyPickerIconButton(),
+          Expanded(
+            child: TextFormField(
+              validator: (value) => validateTextField([
+                isEmpty(value),
+                notValidNumber(value!.replaceAll(',', '.')),
+              ]),
+              focusNode: focusNode,
+              decoration: InputDecoration(
+                hintText: 'full_amount'.tr(),
+              ),
+              controller: amountController,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))],
+              onFieldSubmitted: (value) => buttonPush(context),
+            ),
           ),
-        ),
-        controller: amountController,
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))
+          Padding(
+            padding: EdgeInsets.only(left: 5),
+            child: IconButton.filledTonal(
+              isSelected: false,
+              onPressed: () {
+                showModalBottomSheet(
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (context) {
+                    return SingleChildScrollView(
+                      child: Calculator(
+                        selectedCurrency: selectedCurrency,
+                        initialNumber: amountController.text,
+                        onCalculationReady: (String fromCalc) {
+                          _setState(() {
+                            amountController.text = (double.tryParse(fromCalc) ?? 0.0).toMoneyString(selectedCurrency);
+                          });
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
+              icon: calculatorKey != null
+                  ? Showcase(
+                      key: calculatorKey,
+                      showArrow: false,
+                      targetBorderRadius: BorderRadius.circular(10),
+                      targetPadding: EdgeInsets.all(10),
+                      description: "use_calculator".tr(),
+                      child: _calculatorIcon(context),
+                      scaleAnimationDuration: Duration(milliseconds: 200),
+                    )
+                  : _calculatorIcon(context),
+            ),
+          ),
         ],
-        onFieldSubmitted: (value) => buttonPush(context),
       );
 
   Center purchaserChooser() => Center(
@@ -319,26 +322,18 @@ class AddModifyPurchase {
                           reverseDuration: Duration(seconds: 0),
                           crossFadeState: purchaserSelector,
                           firstChild: Visibility(
-                            visible:
-                                purchaserSelector == CrossFadeState.showFirst,
+                            visible: purchaserSelector == CrossFadeState.showFirst,
                             child: CustomChoiceChip(
                               enabled: false,
                               selected: true,
                               showCheck: false,
                               showAnimation: true,
-                              selectedColor: Theme.of(context)
-                                  .colorScheme
-                                  .secondaryContainer,
-                              selectedFontColor: Theme.of(context)
-                                  .colorScheme
-                                  .onSecondaryContainer,
-                              notSelectedColor:
-                                  Theme.of(context).colorScheme.surface,
-                              notSelectedFontColor:
-                                  Theme.of(context).colorScheme.onSurface,
+                              selectedColor: Theme.of(context).colorScheme.secondaryContainer,
+                              selectedFontColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                              notSelectedColor: Theme.of(context).colorScheme.surface,
+                              notSelectedFontColor: Theme.of(context).colorScheme.onSurface,
                               fillRatio: 1,
-                              member: snapshot.data!.firstWhere(
-                                  (element) => element.id == purchaserId),
+                              member: snapshot.data!.firstWhere((element) => element.id == purchaserId),
                               onSelected: (chosen) {},
                             ),
                           ),
@@ -346,9 +341,7 @@ class AddModifyPurchase {
                             allMembers: snapshot.data!,
                             multiple: false,
                             showAnimation: false,
-                            chosenMembers: snapshot.data!
-                                .where((element) => element.id == purchaserId)
-                                .toList(),
+                            chosenMembers: snapshot.data!.where((element) => element.id == purchaserId).toList(),
                             setChosenMembers: (newMembers) {
                               _setState(() {
                                 purchaserSelector = CrossFadeState.showFirst;
@@ -372,9 +365,7 @@ class AddModifyPurchase {
                           });
                         },
                         icon: Icon(
-                          purchaserSelector == CrossFadeState.showSecond
-                              ? Icons.arrow_drop_up
-                              : Icons.arrow_drop_down,
+                          purchaserSelector == CrossFadeState.showSecond ? Icons.arrow_drop_up : Icons.arrow_drop_down,
                           color: purchaserSelector == CrossFadeState.showSecond
                               ? Theme.of(context).colorScheme.primary
                               : Theme.of(context).colorScheme.onSurfaceVariant,
@@ -410,17 +401,13 @@ class AddModifyPurchase {
                   }
                 }
                 if (purchaseType == PurchaseType.fromShopping) {
-                  membersMap[snapshot.data!.firstWhere((member) =>
-                      member.id == shoppingRequest!.requesterId)] = true;
-                } else if (purchaseType == PurchaseType.modifyPurchase &&
-                    !alreadyInitializedSave) {
+                  membersMap[snapshot.data!.firstWhere((member) => member.id == shoppingRequest!.requesterId)] = true;
+                } else if (purchaseType == PurchaseType.modifyPurchase && !alreadyInitializedSave) {
                   for (Member member in savedPurchase!.receivers) {
-                    Member memberInMap = membersMap.keys
-                        .firstWhere((element) => element.id == member.id);
+                    Member memberInMap = membersMap.keys.firstWhere((element) => element.id == member.id);
                     membersMap[memberInMap] = true;
                     if (member.isCustomAmount ?? false) {
-                      customAmountMap[memberInMap] =
-                          member.balanceOriginalCurrency;
+                      customAmountMap[memberInMap] = member.balanceOriginalCurrency;
                     }
                   }
                   alreadyInitializedSave = true;
@@ -429,9 +416,7 @@ class AddModifyPurchase {
                   selectedCurrency: selectedCurrency,
                   multiple: true,
                   allMembers: snapshot.data!,
-                  chosenMembers: snapshot.data!
-                      .where((member) => membersMap[member]!)
-                      .toList(),
+                  chosenMembers: snapshot.data!.where((member) => membersMap[member]!).toList(),
                   customAmounts: customAmountMap,
                   setChosenMembers: (members) {
                     _setState(() {
@@ -446,8 +431,7 @@ class AddModifyPurchase {
                     });
                   },
                   allowCustomAmounts: true,
-                  getFullAmount: () =>
-                      double.tryParse(amountController.text) ?? 0.0,
+                  getFullAmount: () => double.tryParse(amountController.text) ?? 0.0,
                 );
                 return showcaseKey != null
                     ? Showcase(

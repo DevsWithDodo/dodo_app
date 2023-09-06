@@ -26,9 +26,7 @@ class _ScreenWidthProviderState extends State<ScreenWidthProvider> {
         MediaQueryData mediaQuery = MediaQuery.of(context);
         _screenWidth.updateValues(
           constraints.maxWidth,
-          constraints.maxHeight -
-              mediaQuery.padding.top -
-              mediaQuery.padding.bottom,
+          constraints.maxHeight - mediaQuery.padding.top - mediaQuery.padding.bottom,
           constraints.maxWidth < tabletViewWidth,
         );
 
@@ -46,16 +44,14 @@ class ScreenWidth extends ChangeNotifier {
   double height;
   bool isMobile;
 
-  ScreenWidth(
-      {required this.width, required this.height, required this.isMobile});
+  ScreenWidth({required this.width, required this.height, required this.isMobile});
 
-  void updateValues(double newWidth, double newHeight, bool newIsMobile,
-      {bool notify = true}) {
+  void updateValues(double newWidth, double newHeight, bool newIsMobile, {bool notify = true}) {
+    bool changed = width != newWidth || height != newHeight || isMobile != newIsMobile;
     width = newWidth;
     height = newHeight;
     isMobile = newIsMobile;
-    print('screen width');
-    if (notify) {
+    if (notify && changed) {
       notifyListeners();
     }
   }

@@ -54,7 +54,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
 
   @override
   Widget build(BuildContext context) {
-    String themeName = context.watch<AppStateProvider>().themeName;
+    ThemeName themeName = context.watch<AppStateProvider>().themeName;
     int? selectedMemberId = widget.selectedMemberId;
     String note = (widget.purchase.name == '')
         ? 'no_note'.tr()
@@ -66,7 +66,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
         .isNotEmpty;
 
     Color textColor = bought
-        ? themeName.contains('Gradient')
+        ? themeName.type == ThemeType.gradient
             ? Theme.of(context).colorScheme.onPrimary
             : received
                 ? Theme.of(context).colorScheme.onSecondaryContainer

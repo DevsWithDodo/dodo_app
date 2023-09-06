@@ -40,8 +40,8 @@ class AddModifyPayment {
     PaymentType? paymentType,
     Payment? savedPayment,
   }) {
-    assert((paymentType == PaymentType.newPayment) ||
-        (paymentType == PaymentType.modifyPayment && savedPayment != null));
+    assert(
+        (paymentType == PaymentType.newPayment) || (paymentType == PaymentType.modifyPayment && savedPayment != null));
     this._setState = setState;
     this._paymentType = paymentType;
     this._buttonPush = buttonPush ?? (context) {};
@@ -51,8 +51,7 @@ class AddModifyPayment {
       this._savedPayment = savedPayment;
       selectedCurrency = savedPayment!.originalCurrency;
       noteController.text = savedPayment.note;
-      amountController.text = savedPayment.amountOriginalCurrency
-          .toMoneyString(savedPayment.originalCurrency);
+      amountController.text = savedPayment.amountOriginalCurrency.toMoneyString(savedPayment.originalCurrency);
       payerId = savedPayment.payerId;
     }
     members = getMembers(context);
@@ -77,8 +76,7 @@ class AddModifyPayment {
     }
   }
 
-  Map<String, dynamic> generateBody(
-      String note, double amount, Member toMember, BuildContext context) {
+  Map<String, dynamic> generateBody(String note, double amount, Member toMember, BuildContext context) {
     return {
       'group': context.read<AppStateProvider>().currentGroup!.id,
       'currency': selectedCurrency,
@@ -102,20 +100,10 @@ class AddModifyPayment {
         onFieldSubmitted: (value) => _buttonPush(context),
       );
 
-  TextFormField amountTextField(BuildContext context) => TextFormField(
-        validator: (value) => validateTextField([
-          isEmpty(value!.trim()),
-          notValidNumber(value.replaceAll(',', '.')),
-        ]),
-        controller: amountController,
-        decoration: InputDecoration(
-          hintText: 'amount'.tr(),
-          prefixIcon: GestureDetector(
-            onDoubleTap: () {
-              _setState(() {
-                selectedCurrency = context.watch<AppStateProvider>().currentGroup!.currency;
-              });
-            },
+  Widget amountTextField(BuildContext context) => Row(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(right: 5),
             child: CurrencyPickerIconButton(
               selectedCurrency: selectedCurrency,
               onCurrencyChanged: (newCurrency) {
@@ -125,37 +113,50 @@ class AddModifyPayment {
               },
             ),
           ),
-          suffixIcon: IconButton(
-            icon: Icon(
-              Icons.calculate,
-              color: Theme.of(context).colorScheme.primary,
+          Expanded(
+            child: TextFormField(
+              validator: (value) => validateTextField([
+                isEmpty(value!.trim()),
+                notValidNumber(value.replaceAll(',', '.')),
+              ]),
+              controller: amountController,
+              decoration: InputDecoration(
+                hintText: 'amount'.tr(),
+              ),
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))],
+              onFieldSubmitted: (value) => _buttonPush(context),
             ),
-            onPressed: () {
-              showModalBottomSheet(
-                isScrollControlled: true,
-                context: context,
-                builder: (context) {
-                  return SingleChildScrollView(
-                    child: Calculator(
-                      selectedCurrency: selectedCurrency,
-                      initialNumber: amountController.text,
-                      onCalculationReady: (String fromCalc) {
-                        _setState(() {
-                          amountController.text = fromCalc;
-                        });
-                      },
-                    ),
-                  );
-                },
-              );
-            },
           ),
-        ),
-        keyboardType: TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))
+          Padding(
+            padding: const EdgeInsets.only(left: 5),
+            child: IconButton.filledTonal(
+              isSelected: false,
+              icon: Icon(
+                Icons.calculate,
+              ),
+              onPressed: () {
+                showModalBottomSheet(
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (context) {
+                    return SingleChildScrollView(
+                      child: Calculator(
+                        selectedCurrency: selectedCurrency,
+                        initialNumber: amountController.text,
+                        onCalculationReady: (String fromCalc) {
+                          _setState(() {
+                            amountController.text = fromCalc;
+                          });
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
         ],
-        onFieldSubmitted: (value) => _buttonPush(context),
       );
 
   Center payerChooser() => Center(
@@ -186,26 +187,18 @@ class AddModifyPayment {
                           reverseDuration: Duration(seconds: 0),
                           crossFadeState: purchaserSelector,
                           firstChild: Visibility(
-                            visible:
-                                purchaserSelector == CrossFadeState.showFirst,
+                            visible: purchaserSelector == CrossFadeState.showFirst,
                             child: CustomChoiceChip(
                               enabled: false,
                               selected: true,
                               showCheck: false,
                               showAnimation: true,
-                              selectedColor: Theme.of(context)
-                                  .colorScheme
-                                  .secondaryContainer,
-                              selectedFontColor: Theme.of(context)
-                                  .colorScheme
-                                  .onSecondaryContainer,
-                              notSelectedColor:
-                                  Theme.of(context).colorScheme.surface,
-                              notSelectedFontColor:
-                                  Theme.of(context).colorScheme.onSurface,
+                              selectedColor: Theme.of(context).colorScheme.secondaryContainer,
+                              selectedFontColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                              notSelectedColor: Theme.of(context).colorScheme.surface,
+                              notSelectedFontColor: Theme.of(context).colorScheme.onSurface,
                               fillRatio: 1,
-                              member: snapshot.data!.firstWhere(
-                                  (element) => element.id == payerId),
+                              member: snapshot.data!.firstWhere((element) => element.id == payerId),
                               onSelected: (chosen) {},
                             ),
                           ),
@@ -213,16 +206,13 @@ class AddModifyPayment {
                             allMembers: snapshot.data!,
                             multiple: false,
                             showAnimation: false,
-                            chosenMembers: snapshot.data!
-                                .where((element) => element.id == payerId)
-                                .toList(),
+                            chosenMembers: snapshot.data!.where((element) => element.id == payerId).toList(),
                             setChosenMembers: (newMembers) {
                               _setState(() {
                                 purchaserSelector = CrossFadeState.showFirst;
                                 if (newMembers.isNotEmpty) {
                                   payerId = newMembers.first.id;
-                                  if (selectedMember != null &&
-                                      selectedMember!.id == payerId) {
+                                  if (selectedMember != null && selectedMember!.id == payerId) {
                                     selectedMember = null;
                                   }
                                 }
@@ -243,9 +233,7 @@ class AddModifyPayment {
                           });
                         },
                         icon: Icon(
-                          purchaserSelector == CrossFadeState.showSecond
-                              ? Icons.arrow_drop_up
-                              : Icons.arrow_drop_down,
+                          purchaserSelector == CrossFadeState.showSecond ? Icons.arrow_drop_up : Icons.arrow_drop_down,
                           color: purchaserSelector == CrossFadeState.showSecond
                               ? Theme.of(context).colorScheme.primary
                               : Theme.of(context).colorScheme.onSurfaceVariant,
@@ -276,24 +264,20 @@ class AddModifyPayment {
             if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
                 if (_savedPayment != null && !_alreadyInitializedSave) {
-                  Member? selectedMember = snapshot.data!.firstWhereOrNull(
-                      (element) => element.id == _savedPayment!.takerId);
-                  if (selectedMember != null)
-                    this.selectedMember = selectedMember;
+                  Member? selectedMember =
+                      snapshot.data!.firstWhereOrNull((element) => element.id == _savedPayment!.takerId);
+                  if (selectedMember != null) this.selectedMember = selectedMember;
                   _alreadyInitializedSave = true;
                 }
                 return MemberChips(
                   multiple: false,
-                  allMembers: snapshot.data!
-                      .where((element) => element.id != payerId)
-                      .toList(),
+                  allMembers: snapshot.data!.where((element) => element.id != payerId).toList(),
                   setChosenMembers: (members) {
                     _setState(() {
                       selectedMember = members.isEmpty ? null : members[0];
                     });
                   },
-                  chosenMembers:
-                      selectedMember == null ? [] : [selectedMember!],
+                  chosenMembers: selectedMember == null ? [] : [selectedMember!],
                 );
               } else {
                 return ErrorMessage(

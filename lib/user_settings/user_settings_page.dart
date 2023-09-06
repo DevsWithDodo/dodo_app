@@ -57,12 +57,7 @@ class _SettingsState extends State<Settings> {
                     Expanded(
                       child: ListView(
                         controller: ScrollController(),
-                        children: _settings()
-                            .reversed
-                            .take(7)
-                            .toList()
-                            .reversed
-                            .toList(),
+                        children: _settings().reversed.take(7).toList().reversed.toList(),
                       ),
                     ),
                   ],
@@ -84,13 +79,12 @@ class _SettingsState extends State<Settings> {
       ChangeUserCurrency(),
       PaymentMethods(),
       Selector<AppStateProvider, bool>(
-          selector: (context, provider) => provider.user!.showAds,
-          builder: (context, showAds, child) {
-            return Visibility(
-              visible: showAds,
-              child: PersonalisedAds(),
-            );
-          }),
+        selector: (context, provider) => provider.user!.showAds,
+        builder: (context, showAds, child) => Visibility(
+          visible: showAds,
+          child: PersonalisedAds(),
+        ),
+      ),
       AboutUs(),
       DeleteAllData(),
       ReportBug(),

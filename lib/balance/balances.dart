@@ -183,11 +183,11 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
   }
 
   List<Widget> _generateBalances(List<Member> members) {
-    String themeName = context.watch<AppStateProvider>().themeName;
+    ThemeName themeName = context.watch<AppStateProvider>().themeName;
     return members.map<Widget>((Member member) {
       TextStyle textStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
           color: member.id == context.read<AppStateProvider>().user!.id
-              ? themeName.contains('Gradient')
+              ? themeName.type == ThemeType.gradient
                   ? Theme.of(context).colorScheme.onPrimary
                   : Theme.of(context).colorScheme.onSecondary
               : Theme.of(context).colorScheme.onSurface);

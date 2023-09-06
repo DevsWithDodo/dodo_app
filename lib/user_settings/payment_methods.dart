@@ -1,10 +1,31 @@
-import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
-import 'package:csocsort_szamla/user_settings/payment_methods_dialog.dart';
+import 'dart:convert';
+
+import 'package:csocsort_szamla/essentials/event_bus.dart';
+import 'package:csocsort_szamla/essentials/http.dart';
+import 'package:csocsort_szamla/essentials/models.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
+import 'package:csocsort_szamla/user_settings/components/payment_method_list.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PaymentMethods extends StatelessWidget {
   const PaymentMethods({super.key});
+
+  Future<BoolFutureOutput> _updatePaymentMethods(List<PaymentMethod> paymentMethods, BuildContext context) async {
+    try {
+      Map<String, dynamic> body = {"payment_details": jsonEncode(paymentMethods.map((e) => e.toJson()).toList())};
+
+      await Http.put(uri: '/user', body: body);
+      context.read<AppStateProvider>().setPaymentMethods(paymentMethods);
+      EventBus.instance.fire(EventBus.refreshBalances);
+      EventBus.instance.fire(EventBus.refreshGroupMembers);
+      return BoolFutureOutput.True;
+    } catch (_) {
+      throw _;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,13 +57,10 @@ class PaymentMethods extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10),
-            Center(
-              child: GradientButton(
-                child: Icon(Icons.payment),
-                onPressed: () => showDialog(
-                  context: context,
-                  builder: (context) => ModifyPaymentMethodsDialog(),
-                ),
+            EnterPaymentMethodList(
+              onSubmit: (paymentMethods) => showFutureOutputDialog(
+                context: context,
+                future: _updatePaymentMethods(paymentMethods, context),
               ),
             ),
           ],

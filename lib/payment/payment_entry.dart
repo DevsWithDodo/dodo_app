@@ -56,14 +56,14 @@ class _PaymentEntryState extends State<PaymentEntry> {
 
   @override
   Widget build(BuildContext context) {
-    String themeName = context.watch<AppStateProvider>().themeName;
+    ThemeName themeName = context.watch<AppStateProvider>().themeName;
     return Selector<AppStateProvider, User>(
         selector: (context, userProvider) => userProvider.user!,
         builder: (context, user, _) {
           int selectedMemberId = widget.selectedMemberId ?? user.id;
           bool paid = widget.payment.payerId == selectedMemberId;
           Color textColor = paid
-              ? themeName.contains('Gradient')
+              ? themeName.type == ThemeType.gradient
                   ? Theme.of(context).colorScheme.onPrimary
                   : Theme.of(context).colorScheme.onPrimaryContainer
               : Theme.of(context).colorScheme.onSurfaceVariant;

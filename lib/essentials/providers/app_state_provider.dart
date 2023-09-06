@@ -22,24 +22,20 @@ import 'package:http/http.dart' as http;
 
 class AppStateProvider extends ChangeNotifier {
   User? user;
-  late String themeName;
+  late ThemeName themeName;
 
   Group? get currentGroup => user?.group;
-  ThemeData get theme => AppTheme.themes[themeName]!;
+  ThemeData get theme {
+    return AppTheme.themes[themeName] ?? AppTheme.generateThemeData(ThemeName.greenLight, Colors.lightGreen).value;
+  }
 
-  AppStateProvider(BuildContext context, String themeName) {
+  AppStateProvider(BuildContext context, ThemeName themeName) {
     this.themeName = themeName;
     final preferences = context.read<SharedPreferences>();
     if (preferences.containsKey('api_token')) {
-      List<String> usersGroupNames =
-          preferences.getStringList('users_groups') ?? [];
-      List<int> usersGroupIds = preferences
-              .getStringList('users_group_ids')
-              ?.map((e) => int.parse(e))
-              .toList() ??
-          [];
-      List<String> usersGroupCurrencies =
-          preferences.getStringList('users_group_currencies') ?? [];
+      List<String> usersGroupNames = preferences.getStringList('users_groups') ?? [];
+      List<int> usersGroupIds = preferences.getStringList('users_group_ids')?.map((e) => int.parse(e)).toList() ?? [];
+      List<String> usersGroupCurrencies = preferences.getStringList('users_group_currencies') ?? [];
       user = User(
           apiToken: preferences.getString('api_token')!,
           username: preferences.getString('current_username')!,
@@ -59,9 +55,7 @@ class AppStateProvider extends ChangeNotifier {
                   Group(
                     id: usersGroupIds[index],
                     name: value,
-                    currency: usersGroupCurrencies.length > index
-                        ? usersGroupCurrencies[index]
-                        : 'EUR',
+                    currency: usersGroupCurrencies.length > index ? usersGroupCurrencies[index] : 'EUR',
                   )))
               .values
               .toList(),
@@ -78,21 +72,15 @@ class AppStateProvider extends ChangeNotifier {
 
   Future _fetchUserData() async {
     try {
-      http.Response response = await http
-          .get(Uri.parse((useTest ? TEST_URL : APP_URL) + '/user'), headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer ${user!.apiToken}"
-      });
+      http.Response response = await http.get(Uri.parse((useTest ? TEST_URL : APP_URL) + '/user'),
+          headers: {"Content-Type": "application/json", "Authorization": "Bearer ${user!.apiToken}"});
       var decoded = jsonDecode(response.body);
       if (response.statusCode > 299 || response.statusCode < 200) {
         if (response.statusCode == 401) {
           await logout(withoutRequest: true);
-          BuildContext? context =
-              getIt.get<NavigationService>().navigatorKey.currentContext;
+          BuildContext? context = getIt.get<NavigationService>().navigatorKey.currentContext;
           if (context == null) return;
-          Navigator.of(
-                  getIt.get<NavigationService>().navigatorKey.currentContext!)
-              .pushAndRemoveUntil(
+          Navigator.of(getIt.get<NavigationService>().navigatorKey.currentContext!).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
             (route) => false,
           );
@@ -105,17 +93,13 @@ class AppStateProvider extends ChangeNotifier {
       setTrialVersion(decoded['data']['trial'] == 1);
       if (decoded['data']['payment_details'] != null) {
         setPaymentMethods(
-            (jsonDecode(decoded['data']['payment_details']) as List)
-                .map((e) => PaymentMethod.fromJson(e))
-                .toList());
+            (jsonDecode(decoded['data']['payment_details']) as List).map((e) => PaymentMethod.fromJson(e)).toList());
       }
       if (decoded['data']['status'] != null) {
         setUserStatus(UserStatus.fromJson(decoded['data']['status']));
       }
-      if (currentGroup == null &&
-          decoded['data']['last_active_group'] != null) {
-        Group? group = user!.groups.firstWhereOrNull(
-            (element) => element.id == decoded['data']['last_active_group']);
+      if (currentGroup == null && decoded['data']['last_active_group'] != null) {
+        Group? group = user!.groups.firstWhereOrNull((element) => element.id == decoded['data']['last_active_group']);
         group ??= user!.groups.isNotEmpty ? user!.groups[0] : null;
         if (group != null) {
           setGroup(group);
@@ -124,36 +108,28 @@ class AppStateProvider extends ChangeNotifier {
               MaterialPageRoute(builder: (context) => MainPage()),
             );
       }
-      if (!user!.useGradients &&
-          !AppTheme.simpleColorThemes.contains(themeName)) {
-        themeName.contains('Dark')
-            ? setThemeName('greenDarkTheme')
-            : setThemeName('greenLightTheme');
+      if (!user!.useGradients && themeName.type != ThemeType.simpleColor) {
+        themeName.brightness == Brightness.dark
+            ? setThemeName(ThemeName.greenDark)
+            : setThemeName(ThemeName.greenLight);
       }
     } catch (_) {
       throw _;
     }
   }
 
-  Future<LoginFutureOutputs> login(
-      String username, String password, BuildContext context) async {
+  Future<LoginFutureOutputs> login(String username, String password, BuildContext context) async {
     try {
       String? token;
       if (isFirebasePlatformEnabled) {
         FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
         token = await _firebaseMessaging.getToken();
       }
-      Map<String, String?> body = {
-        "username": username,
-        "password": password,
-        "fcm_token": kIsWeb ? null : token
-      };
+      Map<String, String?> body = {"username": username, "password": password, "fcm_token": kIsWeb ? null : token};
       Map<String, String> header = {"Content-Type": "application/json"};
       String bodyEncoded = jsonEncode(body);
-      http.Response response = await http.post(
-          Uri.parse((useTest ? TEST_URL : APP_URL) + '/login'),
-          headers: header,
-          body: bodyEncoded);
+      http.Response response =
+          await http.post(Uri.parse((useTest ? TEST_URL : APP_URL) + '/login'), headers: header, body: bodyEncoded);
       if (response.statusCode == 200) {
         final preferences = context.read<SharedPreferences>();
 
@@ -173,9 +149,7 @@ class AppStateProvider extends ChangeNotifier {
           useGradients: decoded['data']['gradients_enabled'] == 1,
           trialVersion: decoded['data']['trial'] == 1,
           paymentMethods: decoded['data']['payment_details'] != null
-              ? (jsonDecode(decoded['data']['payment_details']) as List)
-                  .map((e) => PaymentMethod.fromJson(e))
-                  .toList()
+              ? (jsonDecode(decoded['data']['payment_details']) as List).map((e) => PaymentMethod.fromJson(e)).toList()
               : [],
           userStatus: decoded['data']['status'] != null
               ? UserStatus.fromJson(decoded['data']['status'])
@@ -187,8 +161,7 @@ class AppStateProvider extends ChangeNotifier {
         );
         setUser(user, notify: false);
 
-        http.Response groupResponse =
-            await Http.get(uri: generateUri(GetUriKeys.groups, context));
+        http.Response groupResponse = await Http.get(uri: generateUri(GetUriKeys.groups, context));
         Map<String, dynamic> groupDecoded = jsonDecode(groupResponse.body);
         List<Group> groups = [];
         for (var group in groupDecoded['data']) {
@@ -204,14 +177,10 @@ class AppStateProvider extends ChangeNotifier {
           return LoginFutureOutputs.joinGroupFromAuth;
         }
 
-        Group currentGroup = groups.firstWhere(
-            (group) => group.id == lastActiveGroup,
-            orElse: () => groups[0]);
+        Group currentGroup = groups.firstWhere((group) => group.id == lastActiveGroup, orElse: () => groups[0]);
         setGroup(currentGroup, notify: false);
 
-        return inviteUrl == null
-            ? LoginFutureOutputs.main
-            : LoginFutureOutputs.joinGroup;
+        return inviteUrl == null ? LoginFutureOutputs.main : LoginFutureOutputs.joinGroup;
       } else {
         Map<String, dynamic> error = jsonDecode(response.body);
         throw error['error'];
@@ -225,8 +194,8 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  Future<BoolFutureOutput> register(String username, String password,
-      String currency, bool personalisedAds, BuildContext context) async {
+  Future<BoolFutureOutput> register(
+      String username, String password, String currency, bool personalisedAds, BuildContext context) async {
     try {
       String? token;
       if (isFirebasePlatformEnabled) {
@@ -299,12 +268,9 @@ class AppStateProvider extends ChangeNotifier {
   void setGroups(List<Group> groups, {bool notify = true}) {
     user!.groups = groups;
     SharedPreferences.getInstance().then((preferences) {
-      preferences.setStringList(
-          'users_groups', groups.map((e) => e.name).toList());
-      preferences.setStringList(
-          'users_group_ids', groups.map((e) => e.id.toString()).toList());
-      preferences.setStringList(
-          'users_group_currencies', groups.map((e) => e.currency).toList());
+      preferences.setStringList('users_groups', groups.map((e) => e.name).toList());
+      preferences.setStringList('users_group_ids', groups.map((e) => e.id.toString()).toList());
+      preferences.setStringList('users_group_currencies', groups.map((e) => e.currency).toList());
     });
     if (notify) {
       notifyListeners();
@@ -431,18 +397,17 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  void setThemeName(String themeName, {bool notify = true}) {
+  void setThemeName(ThemeName themeName, {bool notify = true}) {
     this.themeName = themeName;
     SharedPreferences.getInstance().then((preferences) {
-      preferences.setString('theme', themeName);
+      preferences.setString('theme', themeName.storageName);
     });
     if (notify) {
       notifyListeners();
     }
   }
 
-  void setPaymentMethods(List<PaymentMethod> paymentMethods,
-      {bool notify = true}) {
+  void setPaymentMethods(List<PaymentMethod> paymentMethods, {bool notify = true}) {
     user!.paymentMethods = paymentMethods;
     if (notify) {
       notifyListeners();
@@ -460,8 +425,7 @@ class AppStateProvider extends ChangeNotifier {
 class LoginFutureOutputs extends FutureOutput {
   static const main = LoginFutureOutputs(true, 'main');
   static const joinGroup = LoginFutureOutputs(true, 'joinGroup');
-  static const joinGroupFromAuth =
-      LoginFutureOutputs(true, 'joinGroupFromAuth');
+  static const joinGroupFromAuth = LoginFutureOutputs(true, 'joinGroupFromAuth');
 
   const LoginFutureOutputs(super.value, super.name);
 }

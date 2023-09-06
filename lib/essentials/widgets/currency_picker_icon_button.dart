@@ -21,7 +21,9 @@ class CurrencyPickerIconButton extends StatefulWidget {
 class _CurrencyPickerIconButtonState extends State<CurrencyPickerIconButton> {
   @override
   Widget build(BuildContext context) {
-    return IconButton(
+    String groupCurrency = context.watch<AppStateProvider>().currentGroup!.currency;
+    return IconButton.filledTonal(
+      isSelected: widget.selectedCurrency != groupCurrency,
       onPressed: () {
         showDialog(
             context: context,
@@ -38,9 +40,15 @@ class _CurrencyPickerIconButtonState extends State<CurrencyPickerIconButton> {
                           Navigator.pop(context, newCurrency);
                         },
                       ),
-                      TextButton.icon(onPressed: () {
-                        Navigator.pop(context, context.read<AppStateProvider>().currentGroup!.currency);
-                      }, icon: Icon(Icons.undo), label: Text('reset'.tr()),)
+                      Visibility(
+                        visible: widget.selectedCurrency != groupCurrency,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: TextButton.icon(onPressed: () {
+                            Navigator.pop(context, groupCurrency);
+                          }, icon: Icon(Icons.undo), label: Text('reset'.tr()),),
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -54,9 +62,6 @@ class _CurrencyPickerIconButtonState extends State<CurrencyPickerIconButton> {
           child: Text(
             Currency.getSymbol(widget.selectedCurrency!),
             style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                color: widget.selectedCurrency == context.watch<AppStateProvider>().currentGroup!.currency
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.tertiary,
                 fontSize: 18),
           ),
         ),

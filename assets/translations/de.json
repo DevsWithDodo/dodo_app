@@ -360,7 +360,7 @@
     "iapp_not_supported_explanation": "Du kannst die Gegendstände (z.B. keine Anzeigen, Farbthemen) zur Zeit nur über der Android oder iOS App kaufen.\nFalls dies für dich nicht Lösbar ist, schreib eine E-Mail an developer@dodoapp.net.",
     "no_camera_access": "Die App hat keine Berechtigung zur Kamera.",
 
-    "purchase.page.custom-amount-hint": "Hinweis: Wenn du auf ein Mitglied lange drückst, kannst du auswählen wie viel er/sie gezahlt hat. Du musst mindestens zwei Mitglieder auswählen.",
+    "purchase.page.custom-amount-hint": "Wenn du auf ein Mitglied lange drückst, kannst du auswählen wie viel er/sie gezahlt hat. Du musst mindestens zwei Mitglieder auswählen.",
     "add_purchase_explanation": "Strandartmäßig wird die angegebene Summe gleich zwischen den ausgewählten Mitgliedern verteilt.",
 
     "purchase.page.custom-amount.toast.no-amount-given": "Gib zuerst den Betrag ein!",

@@ -15,12 +15,10 @@ class ColorPicker extends StatefulWidget {
 
 class _ColorPickerState extends State<ColorPicker> {
   List<Widget> _getDynamicColors({required bool enabled}) {
-    return AppTheme.themes.entries
-        .where((element) => element.key.contains('Dynamic'))
-        .map((entry) {
+    return ThemeName.getThemeNamesByType(ThemeType.dynamic).map((entry) {
       return ColorElement(
-        theme: entry.value,
-        themeName: entry.key,
+        theme: AppTheme.themes[entry],
+        themeName: entry,
         enabled: enabled,
         dualColor: true,
       );
@@ -28,7 +26,7 @@ class _ColorPickerState extends State<ColorPicker> {
   }
 
   List<Widget> _getSimpleColors() {
-    return AppTheme.simpleColorThemes.map((entry) {
+    return ThemeName.getThemeNamesByType(ThemeType.simpleColor).map((entry) {
       return ColorElement(
         theme: AppTheme.themes[entry],
         themeName: entry,
@@ -37,7 +35,7 @@ class _ColorPickerState extends State<ColorPicker> {
   }
 
   List<Widget> _getDualColors({required bool enabled}) {
-    return AppTheme.dualColorThemes.map((entry) {
+    return ThemeName.getThemeNamesByType(ThemeType.dualColor).map((entry) {
       return ColorElement(
         theme: AppTheme.themes[entry],
         themeName: entry,
@@ -48,7 +46,7 @@ class _ColorPickerState extends State<ColorPicker> {
   }
 
   List<Widget> _getGradientColors({required bool enabled}) {
-    return AppTheme.gradientColors.keys.map((entry) {
+    return ThemeName.getThemeNamesByType(ThemeType.gradient).map((entry) {
       return ColorElement(
         theme: AppTheme.themes[entry],
         themeName: entry,
@@ -138,7 +136,7 @@ class _ColorPickerState extends State<ColorPicker> {
                   ),
                 ),
                 Visibility(
-                  visible: AppTheme.themes.keys.contains('darkDynamic'),
+                  visible: AppTheme.themes.keys.where((element) => element.type == ThemeType.dynamic).isNotEmpty,
                   child: Column(
                     children: [
                       SizedBox(
@@ -189,7 +187,7 @@ class _ColorPickerState extends State<ColorPicker> {
 
 class ColorElement extends StatefulWidget {
   final ThemeData? theme;
-  final String themeName;
+  final ThemeName themeName;
   final bool enabled;
   final bool dualColor;
   const ColorElement({
@@ -211,7 +209,7 @@ class _ColorElementState extends State<ColorElement> {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<AppStateProvider, String>(
+    return Selector<AppStateProvider, ThemeName>(
       selector: (context, provider) => provider.themeName,
       builder: (context, themeName, _) {
         return Ink(
@@ -238,7 +236,7 @@ class _ColorElementState extends State<ColorElement> {
             onTap: () {
               if (widget.enabled) {
                 context.read<AppStateProvider>().setThemeName(widget.themeName);
-                _updateColor(widget.themeName);
+                _updateColor(widget.themeName.storageName);
               } else if (isIAPPlatformEnabled) {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => InAppPurchasePage()));

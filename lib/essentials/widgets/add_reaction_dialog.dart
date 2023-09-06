@@ -46,7 +46,7 @@ class _AddReactionDialogState extends State<AddReactionDialog> {
   }
 
   List<Widget> _generateReactions() {
-    String themeName = context.read<AppStateProvider>().themeName;
+    ThemeName themeName = context.read<AppStateProvider>().themeName;
     User user = context.read<AppStateProvider>().user!;
     return widget.reactions.map((e) {
       return Container(
@@ -68,7 +68,7 @@ class _AddReactionDialogState extends State<AddReactionDialog> {
                 e.nickname,
                 style: e.userId == user.id
                     ? Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: themeName.contains('Gradient')
+                        color: themeName.type == ThemeType.gradient
                             ? Theme.of(context).colorScheme.onPrimary
                             : Theme.of(context)
                                 .colorScheme

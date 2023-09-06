@@ -149,7 +149,7 @@ void main() async {
         providers: [
           Provider.value(value: preferences),
           ChangeNotifierProvider(
-              create: (context) => AppStateProvider(context, themeName)),
+              create: (context) => AppStateProvider(context, ThemeName.fromString(themeName))),
           ChangeNotifierProvider(
               create: (context) => InviteUrlProvider(inviteURL)),
         ],

@@ -353,7 +353,7 @@
     "iapp_not_supported_explanation": "Az alkalmazáson belüli termékeket (pl. reklámmentesség, színtémák) jelenleg csak az Android és az iOS appban tudod megvenni.\nHogyha ez nem megoldható számodra, írj egy e-mailt a developer@dodoapp.net címre.",
     "no_camera_access": "Az alkalmazásnak nincs joga hozzáférni a kamerához.",
 
-    "purchase.page.custom-amount-hint": "Tipp: nyomj hosszan egy névre, hogy megadd, hogy mennyit fizetett.",
+    "purchase.page.custom-amount-hint": "Nyomj hosszan egy névre, hogy megadd, hogy mennyit fizetett.",
     "add_purchase_explanation": "Alapértelmezetten a megadott összeg egyenlően lesz szétosztva a kiválasztott tagok között.",
 
     "purchase.page.custom-amount.toast.no-amount-given": "Előbb írd be az összeget!",

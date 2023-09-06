@@ -399,9 +399,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                           child: ColorFiltered(
                             colorFilter: ColorFilter.mode(
                                 Theme.of(context).colorScheme.primary,
-                                appStateProvider.themeName
-                                            .toLowerCase()
-                                            .contains('dodo') &&
+                                appStateProvider.themeName.isDodo() &&
                                         !kIsWeb
                                     ? BlendMode.dst
                                     : BlendMode.srcIn),

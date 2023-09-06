@@ -1,277 +1,206 @@
 import 'package:flutter/material.dart';
 
+enum ThemeType {
+  simpleColor(false),
+  dualColor(true),
+  gradient(true),
+  dynamic(true);
+
+  const ThemeType(this.premium);
+  final bool premium;
+}
+
+enum ThemeName {
+  pinkLight(Brightness.light, ThemeType.simpleColor, 'pinkLightTheme'),
+  pinkDark(Brightness.dark, ThemeType.simpleColor, 'pinkDarkTheme'),
+  seaBlueLight(Brightness.light, ThemeType.simpleColor, 'seaBlueLightTheme'),
+  seaBlueDark(Brightness.dark, ThemeType.simpleColor, 'seaBlueDarkTheme'),
+  greenLight(Brightness.light, ThemeType.simpleColor, 'greenLightTheme'),
+  greenDark(Brightness.dark, ThemeType.simpleColor, 'greenDarkTheme'),
+  amberLight(Brightness.light, ThemeType.simpleColor, 'amberLightTheme'),
+  amberDark(Brightness.dark, ThemeType.simpleColor, 'amberDarkTheme'),
+  orangeLight(Brightness.light, ThemeType.dualColor, 'orangeLightTheme'),
+  orangeDark(Brightness.dark, ThemeType.dualColor, 'orangeDarkTheme'),
+  dodoLight(Brightness.light, ThemeType.dualColor, 'dodoLightTheme'),
+  dodoDark(Brightness.dark, ThemeType.dualColor, 'dodoDarkTheme'),
+  endlessLight(Brightness.light, ThemeType.dualColor, 'endlessLightTheme'),
+  endlessDark(Brightness.dark, ThemeType.dualColor, 'endlessDarkTheme'),
+  celestialLight(Brightness.light, ThemeType.dualColor, 'celestialLightTheme'),
+  celestialDark(Brightness.dark, ThemeType.dualColor, 'celestialDarkTheme'),
+  roseannaGradientLight(Brightness.light, ThemeType.gradient, 'roseannaGradientLightTheme'),
+  roseannaGradientDark(Brightness.dark, ThemeType.gradient, 'roseannaGradientDarkTheme'),
+  passionateBedGradientLight(Brightness.light, ThemeType.gradient, 'passionateBedGradientLightTheme'),
+  passionateBedGradientDark(Brightness.dark, ThemeType.gradient, 'passionateBedGradientDarkTheme'),
+  plumGradientLight(Brightness.light, ThemeType.gradient, 'plumGradientLightTheme'),
+  plumGradientDark(Brightness.dark, ThemeType.gradient, 'plumGradientDarkTheme'),
+  sexyBlueGradientLight(Brightness.light, ThemeType.gradient, 'sexyBlueGradientLightTheme'),
+  sexyBlueGradientDark(Brightness.dark, ThemeType.gradient, 'sexyBlueGradientDarkTheme'),
+  endlessGradientLight(Brightness.light, ThemeType.gradient, 'endlessGradientLightTheme'),
+  endlessGradientDark(Brightness.dark, ThemeType.gradient, 'endlessGradientDarkTheme'),
+  greenGradientLight(Brightness.light, ThemeType.gradient, 'greenGradientLightTheme'),
+  greenGradientDark(Brightness.dark, ThemeType.gradient, 'greenGradientDarkTheme'),
+  yellowGradientLight(Brightness.light, ThemeType.gradient, 'yellowGradientLightTheme'),
+  yellowGradientDark(Brightness.dark, ThemeType.gradient, 'yellowGradientDarkTheme'),
+  orangeGradientLight(Brightness.light, ThemeType.gradient, 'orangeGradientLightTheme'),
+  orangeGradientDark(Brightness.dark, ThemeType.gradient, 'orangeGradientDarkTheme'),
+  blackGradientLight(Brightness.light, ThemeType.gradient, 'blackGradientLightTheme'),
+  whiteGradientDark(Brightness.dark, ThemeType.gradient, 'whiteGradientDarkTheme'),
+  rainbowGradientLight(Brightness.light, ThemeType.gradient, 'rainbowGradientLightTheme'),
+  rainbowGradientDark(Brightness.dark, ThemeType.gradient, 'rainbowGradientDarkTheme'),
+  lightDynamic(Brightness.light, ThemeType.dynamic, 'lightDynamic'),
+  darkDynamic(Brightness.dark, ThemeType.dynamic, 'darkDynamic');
+
+  const ThemeName(this.brightness, this.type, this.storageName);
+  final Brightness brightness;
+  final ThemeType type;
+  final String storageName;
+
+  static List<ThemeName> getThemeNamesByType(ThemeType type) {
+    return ThemeName.values.where((element) => element.type == type).toList();
+  }
+
+  static List<ThemeName> getThemeNamesByBrightness(Brightness brightness) {
+    return ThemeName.values.where((element) => element.brightness == brightness).toList();
+  }
+
+  static List<ThemeName> premiumThemes(bool premium) {
+    return ThemeName.values.where((element) => element.type.premium == premium).toList();
+  }
+
+  static ThemeName fromString(String themeName) {
+    return ThemeName.values.firstWhere((element) => element.storageName == themeName);
+  }
+
+  bool isDodo() {
+    return this == ThemeName.dodoLight || this == ThemeName.dodoDark;
+  }
+
+  bool isRainbow() {
+    return this == ThemeName.rainbowGradientLight || this == ThemeName.rainbowGradientDark;
+  }
+}
+
 class AppTheme {
+  static Map<ThemeName, ThemeData> themes = Map.fromEntries([
+    generateThemeData(ThemeName.pinkLight, Colors.purple[300]!),
+    generateThemeData(ThemeName.pinkDark, Colors.pink[300]!),
+    generateThemeData(ThemeName.seaBlueLight, Colors.blue[700]!),
+    generateThemeData(ThemeName.seaBlueDark, Colors.blue[400]!),
+    generateThemeData(ThemeName.greenLight, Colors.lightGreen),
+    generateThemeData(ThemeName.greenDark, Colors.green),
+    generateThemeData(ThemeName.amberLight, Colors.amber[700]!),
+    generateThemeData(ThemeName.amberDark, Colors.amber[600]!),
+    generateThemeData(ThemeName.orangeLight, Color(0xffFF9966)),
+    generateThemeData(ThemeName.orangeDark, Color(0xffFF9966)),
+    generateThemeData(ThemeName.dodoLight, Color.fromARGB(255, 19, 152, 181)),
+    generateThemeData(ThemeName.dodoDark, Color.fromARGB(255, 19, 152, 181)),
+    generateThemeData(ThemeName.endlessLight, Color(0xff006c51)),
+    generateThemeData(ThemeName.endlessDark, Color(0xff006c51)),
+    generateThemeData(ThemeName.celestialLight, Color(0xffaf2756)),
+    generateThemeData(ThemeName.celestialDark, Color(0xffaf2756)),
+    generateThemeData(ThemeName.roseannaGradientLight, Color.fromARGB(255, 255, 175, 189)),
+    generateThemeData(ThemeName.roseannaGradientDark, Color.fromARGB(255, 255, 175, 189)),
+    generateThemeData(ThemeName.passionateBedGradientLight, Color.fromARGB(255, 255, 117, 140)),
+    generateThemeData(ThemeName.passionateBedGradientDark, Color.fromARGB(255, 255, 117, 140)),
+    generateThemeData(ThemeName.plumGradientLight, Color.fromARGB(255, 152, 108, 240)),
+    generateThemeData(ThemeName.plumGradientDark, Color.fromARGB(255, 152, 108, 240)),
+    generateThemeData(ThemeName.sexyBlueGradientLight, Color.fromARGB(255, 33, 147, 176)),
+    generateThemeData(ThemeName.sexyBlueGradientDark, Color.fromARGB(255, 33, 147, 176)),
+    generateThemeData(ThemeName.endlessGradientLight, Color.fromARGB(255, 67, 206, 162)),
+    generateThemeData(ThemeName.endlessGradientDark, Color.fromARGB(255, 67, 206, 162)),
+    generateThemeData(ThemeName.greenGradientLight, Color.fromARGB(255, 24, 219, 56)),
+    generateThemeData(ThemeName.greenGradientDark, Color.fromARGB(255, 24, 219, 56)),
+    generateThemeData(ThemeName.yellowGradientLight, Color.fromARGB(255, 255, 208, 0)),
+    generateThemeData(ThemeName.yellowGradientDark, Color.fromARGB(255, 255, 208, 0)),
+    generateThemeData(ThemeName.orangeGradientLight, Color.fromARGB(255, 255, 153, 102)),
+    generateThemeData(ThemeName.orangeGradientDark, Color.fromARGB(255, 255, 153, 102)),
+    generateThemeData(ThemeName.blackGradientLight, Color.fromARGB(255, 67, 67, 67)),
+    generateThemeData(ThemeName.whiteGradientDark, Color.fromARGB(255, 253, 251, 251)),
+    generateThemeData(ThemeName.rainbowGradientLight, Colors.purple),
+    generateThemeData(ThemeName.rainbowGradientDark, Colors.purple),
+  ]);
 
-  static final Map<String, ThemeData> themes = {
-    'pinkLightTheme': generateThemeData(
-      Colors.purple[300]!,
-      Brightness.light,
-    ),
-    'pinkDarkTheme': generateThemeData(
-      Colors.pink[300]!,
-      Brightness.dark,
-    ),
-    'seaBlueLightTheme': generateThemeData(
-      Colors.blue[700]!,
-      Brightness.light,
-    ),
-    'seaBlueDarkTheme': generateThemeData(
-      Colors.blue[400]!,
-      Brightness.dark,
-    ),
-    'greenLightTheme': generateThemeData(
-      Colors.lightGreen,
-      Brightness.light,
-    ),
-    'greenDarkTheme': generateThemeData(
-      Colors.green,
-      Brightness.dark,
-    ),
-    'amberLightTheme': generateThemeData(
-      Colors.amber[700]!,
-      Brightness.light,
-    ),
-    'amberDarkTheme': generateThemeData(
-      Colors.amber[600]!,
-      Brightness.dark,
-    ),
-    'orangeLightTheme': generateThemeData(
-      Color(0xffFF9966),
-      Brightness.light,
-      themeName: 'orangeLightTheme',
-    ),
-    'orangeDarkTheme': generateThemeData(
-      Color(0xffFF9966),
-      Brightness.dark,
-      themeName: 'orangeDarkTheme',
-    ),
-    'dodoLightTheme': generateThemeData(
-      Color.fromARGB(255, 19, 152, 181),
-      Brightness.light,
-      themeName: 'dodoLightTheme',
-    ),
-    'dodoDarkTheme': generateThemeData(
-      Color.fromARGB(255, 19, 152, 181),
-      Brightness.dark,
-      themeName: 'dodoDarkTheme',
-    ),
-    'endlessLightTheme': generateThemeData(
-      Color(0xff006c51),
-      Brightness.light,
-      themeName: 'endlessLightTheme',
-    ),
-    'endlessDarkTheme': generateThemeData(
-      Color(0xff006c51),
-      Brightness.dark,
-      themeName: 'endlessDarkTheme',
-    ),
-    'celestialLightTheme': generateThemeData(
-      Color(0xffaf2756),
-      Brightness.light,
-      themeName: 'celestialLightTheme',
-    ),
-    'celestialDarkTheme': generateThemeData(
-      Color(0xffaf2756),
-      Brightness.dark,
-      themeName: 'celestialDarkTheme',
-    ),
-    'roseannaGradientLightTheme': generateThemeData(
-      Color.fromARGB(255, 255, 175, 189),
-      Brightness.light,
-    ),
-    'roseannaGradientDarkTheme': generateThemeData(
-      Color.fromARGB(255, 255, 175, 189),
-      Brightness.dark,
-      themeName: 'roseannaGradientDarkTheme',
-    ),
-    'passionateBedGradientLightTheme': generateThemeData(
-      Color.fromARGB(255, 255, 117, 140),
-      Brightness.light,
-    ),
-    'passionateBedGradientDarkTheme': generateThemeData(
-      Color.fromARGB(255, 255, 117, 140),
-      Brightness.dark,
-      themeName: 'passionateBedGradientDarkTheme',
-    ),
-    'plumGradientLightTheme': generateThemeData(
-      Color.fromARGB(255, 152, 108, 240),
-      Brightness.light,
-    ),
-    'plumGradientDarkTheme': generateThemeData(
-      Color.fromARGB(255, 152, 108, 240),
-      Brightness.dark,
-      themeName: 'plumGradientDarkTheme',
-    ),
-    'sexyBlueGradientLightTheme': generateThemeData(
-      Color.fromARGB(255, 33, 147, 176),
-      Brightness.light,
-    ),
-    'sexyBlueGradientDarkTheme': generateThemeData(
-      Color.fromARGB(255, 33, 147, 176),
-      Brightness.dark,
-      themeName: 'sexyBlueGradientDarkTheme',
-    ),
-    'endlessGradientLightTheme': generateThemeData(
-      Color.fromARGB(255, 67, 206, 162),
-      Brightness.light,
-    ),
-    'endlessGradientDarkTheme': generateThemeData(
-      Color.fromARGB(255, 67, 206, 162),
-      Brightness.dark,
-      themeName: 'endlessGradientDarkTheme',
-    ),
-    'greenGradientLightTheme': generateThemeData(
-      Color.fromARGB(255, 24, 219, 56),
-      Brightness.light,
-    ),
-    'greenGradientDarkTheme': generateThemeData(
-      // Color.fromARGB(255, 24, 219, 56),
-      Color(0xff6dde7a),
-      Brightness.dark,
-    ),
-    'yellowGradientLightTheme': generateThemeData(
-      Color.fromARGB(255, 255, 208, 0),
-      Brightness.light,
-    ),
-    'yellowGradientDarkTheme': generateThemeData(
-      Color.fromARGB(255, 255, 208, 0),
-      Brightness.dark,
-      themeName: 'yellowGradientDarkTheme',
-    ),
-    'orangeGradientLightTheme': generateThemeData(
-      Color.fromARGB(255, 255, 153, 102),
-      Brightness.light,
-    ),
-    'orangeGradientDarkTheme': generateThemeData(
-      Color.fromARGB(255, 255, 153, 102),
-      Brightness.dark,
-      themeName: 'orangeGradientDarkTheme',
-    ),
-    'blackGradientLightTheme': generateThemeData(
-      Color.fromARGB(255, 67, 67, 67),
-      Brightness.light,
-    ),
-    'whiteGradientDarkTheme':
-        generateThemeData(Color.fromARGB(255, 253, 251, 251), Brightness.dark),
-    'rainbowGradientLightTheme': generateThemeData(
-        Colors.purple, Brightness.light,
-        themeName: 'rainbowGradientLightTheme'),
-    'rainbowGradientDarkTheme': generateThemeData(
-        Colors.purple, Brightness.dark,
-        themeName: 'rainbowGradientDarkTheme'),
-  };
-
-  static List<String> simpleColorThemes = [
-    'pinkLightTheme',
-    'pinkDarkTheme',
-    'seaBlueLightTheme',
-    'seaBlueDarkTheme',
-    'greenLightTheme',
-    'greenDarkTheme',
-    'amberLightTheme',
-    'amberDarkTheme',
-  ];
-
-  static List<String> dualColorThemes = [
-    'orangeLightTheme',
-    'orangeDarkTheme',
-    'dodoLightTheme',
-    'dodoDarkTheme',
-    'endlessLightTheme',
-    'endlessDarkTheme',
-    'celestialLightTheme',
-    'celestialDarkTheme',
-  ];
-
-  static Map<String, List<Color>> gradientColors = {
-    'orangeGradientLightTheme': [
+  static Map<ThemeName, List<Color>> gradientColors = {
+    ThemeName.orangeGradientLight: [
       Color.fromARGB(255, 255, 153, 102),
       Color.fromARGB(255, 255, 94, 98),
     ],
-    'orangeGradientDarkTheme': [
+    ThemeName.orangeGradientDark: [
       Color.fromARGB(255, 255, 153, 102),
       Color.fromARGB(255, 255, 94, 98),
     ],
-    'whiteGradientDarkTheme': [
+    ThemeName.whiteGradientDark: [
       Color.fromARGB(255, 235, 237, 238),
       Color.fromARGB(255, 253, 251, 251),
     ],
-    'blackGradientLightTheme': [
+    ThemeName.blackGradientLight: [
       Color.fromARGB(255, 67, 67, 67),
       Color.fromARGB(255, 0, 0, 0),
     ],
-    'yellowGradientLightTheme': [
+    ThemeName.yellowGradientLight: [
       Color.fromARGB(255, 255, 208, 0),
       Color.fromARGB(255, 255, 179, 0),
     ],
-    'yellowGradientDarkTheme': [
+    ThemeName.yellowGradientDark: [
       Color.fromARGB(255, 255, 208, 0),
       Color.fromARGB(255, 255, 179, 0),
     ],
-    'roseannaGradientLightTheme': [
+    ThemeName.roseannaGradientLight: [
       Color.fromARGB(255, 255, 175, 189),
       Color.fromARGB(255, 255, 195, 160),
     ],
-    'roseannaGradientDarkTheme': [
+    ThemeName.roseannaGradientDark: [
       Color.fromARGB(255, 255, 175, 189),
       Color.fromARGB(255, 255, 195, 160),
     ],
-    'passionateBedGradientLightTheme': [
+    ThemeName.passionateBedGradientLight: [
       Color.fromARGB(255, 255, 117, 140),
       Color.fromARGB(255, 255, 148, 192),
     ],
-    'passionateBedGradientDarkTheme': [
+    ThemeName.passionateBedGradientDark: [
       Color.fromARGB(255, 255, 117, 140),
       Color.fromARGB(255, 255, 148, 192),
     ],
-    'plumGradientLightTheme': [
+    ThemeName.plumGradientLight: [
       Color.fromARGB(255, 152, 108, 240),
       Color.fromARGB(255, 118, 75, 162),
     ],
-    'plumGradientDarkTheme': [
+    ThemeName.plumGradientDark: [
       Color(0xffd3bbff),
       Color(0xffBEA8E5),
-      // Color.fromARGB(255, 152, 108, 240),
-      // Color.fromARGB(255, 126, 95, 158),
     ],
-    'sexyBlueGradientLightTheme': [
+    ThemeName.sexyBlueGradientLight: [
       Color.fromARGB(255, 33, 147, 176),
       Color.fromARGB(255, 109, 213, 237),
     ],
-    'sexyBlueGradientDarkTheme': [
-      // Color.fromARGB(255, 33, 147, 176),
+    ThemeName.sexyBlueGradientDark: [
       Color(0xff5ad5f9),
       Color(0xff71DEF7),
-      // Color.fromARGB(255, 109, 213, 237),
     ],
-    'endlessGradientLightTheme': [
+    ThemeName.endlessGradientLight: [
       Color.fromARGB(255, 67, 206, 162),
       Color.fromARGB(255, 24, 90, 157),
     ],
-    'endlessGradientDarkTheme': [
+    ThemeName.endlessGradientDark: [
       Color(0xff56ddb1),
       Color(0xffa4c8ff),
-      // Color.fromARGB(255, 24, 90, 157),
-      // Color.fromARGB(255, 67, 206, 162),
     ],
-    'greenGradientLightTheme': [
+    ThemeName.greenGradientLight: [
       Color.fromARGB(255, 24, 219, 56),
       Color.fromARGB(255, 62, 173, 81),
     ],
-    'greenGradientDarkTheme': [
+    ThemeName.greenGradientDark: [
       Color(0xff6dde7a),
       Color(0xff8FE097),
-      // Color.fromARGB(255, 24, 219, 56),
-      // Color.fromARGB(255, 62, 173, 81),
     ],
-    'rainbowGradientLightTheme': [
+    ThemeName.rainbowGradientLight: [
       Colors.purple,
       Colors.blue,
       Colors.green,
       Colors.yellow,
       Colors.orange,
     ],
-    'rainbowGradientDarkTheme': [
+    ThemeName.rainbowGradientDark: [
       Colors.purple,
       Colors.blue,
       Colors.green,
@@ -281,13 +210,13 @@ class AppTheme {
   };
 
   static Color textColorOnGradient(
-    String themeName, {
+    ThemeName themeName, {
     bool useSecondary = false,
     bool useTertiaryContainer = false,
     bool usePrimaryContainer = false,
     bool useSecondaryContainer = false,
   }) {
-    return gradientColors.keys.contains(themeName)
+    return themeName.type == ThemeType.gradient
         ? AppTheme.themes[themeName]!.colorScheme.onPrimary
         : useSecondary
             ? AppTheme.themes[themeName]!.colorScheme.onSecondary
@@ -296,20 +225,19 @@ class AppTheme {
                 : usePrimaryContainer
                     ? AppTheme.themes[themeName]!.colorScheme.onPrimaryContainer
                     : useSecondaryContainer
-                        ? AppTheme
-                            .themes[themeName]!.colorScheme.onSecondaryContainer
+                        ? AppTheme.themes[themeName]!.colorScheme.onSecondaryContainer
                         : AppTheme.themes[themeName]!.colorScheme.onPrimary;
   }
 
   static Gradient gradientFromTheme(
-    String? themeName, {
+    ThemeName themeName, {
     bool useSecondary = false,
     bool useTertiaryContainer = false,
     bool usePrimaryContainer = false,
     bool useSecondaryContainer = false,
   }) {
-    return gradientColors.keys.contains(themeName)
-        ? themeName!.contains('rainbow')
+    return themeName.type == ThemeType.gradient
+        ? themeName.isRainbow()
             ? LinearGradient(colors: [
                 AppTheme.gradientColors[themeName]![0],
                 AppTheme.gradientColors[themeName]![1],
@@ -317,10 +245,7 @@ class AppTheme {
                 AppTheme.gradientColors[themeName]![3],
                 AppTheme.gradientColors[themeName]![4],
               ])
-            : LinearGradient(colors: [
-                AppTheme.gradientColors[themeName]![0],
-                AppTheme.gradientColors[themeName]![1]
-              ])
+            : LinearGradient(colors: [AppTheme.gradientColors[themeName]![0], AppTheme.gradientColors[themeName]![1]])
         : useSecondary
             ? LinearGradient(colors: [
                 AppTheme.themes[themeName]!.colorScheme.secondary,
@@ -333,17 +258,13 @@ class AppTheme {
                   ])
                 : useSecondaryContainer
                     ? LinearGradient(colors: [
-                        AppTheme
-                            .themes[themeName]!.colorScheme.secondaryContainer,
-                        AppTheme
-                            .themes[themeName]!.colorScheme.secondaryContainer
+                        AppTheme.themes[themeName]!.colorScheme.secondaryContainer,
+                        AppTheme.themes[themeName]!.colorScheme.secondaryContainer
                       ])
                     : useTertiaryContainer
                         ? LinearGradient(colors: [
-                            AppTheme.themes[themeName]!.colorScheme
-                                .tertiaryContainer,
-                            AppTheme.themes[themeName]!.colorScheme
-                                .tertiaryContainer
+                            AppTheme.themes[themeName]!.colorScheme.tertiaryContainer,
+                            AppTheme.themes[themeName]!.colorScheme.tertiaryContainer
                           ])
                         : LinearGradient(colors: [
                             AppTheme.themes[themeName]!.colorScheme.primary,
@@ -351,142 +272,121 @@ class AppTheme {
                           ]);
   }
 
-  static ThemeData generateThemeData(Color seedColor, Brightness brightness,
-      {String themeName = ''}) {
+  // TODO: return MapEntry<ThemeName, ThemeData>, refactor
+
+  static MapEntry<ThemeName, ThemeData> generateThemeData(ThemeName themeName, Color seedColor) {
     ColorScheme colorScheme = ColorScheme.fromSeed(
       seedColor: seedColor,
-      brightness: brightness,
+      brightness: themeName.brightness,
     );
-    if (themeName != '') {
-      ColorScheme? newColorScheme;
-      switch (themeName) {
-        case 'plumGradientDarkTheme':
-          newColorScheme =
-              colorScheme.copyWith(onPrimary: Color.fromARGB(255, 40, 1, 92));
-          break;
-        case 'endlessGradientDarkTheme':
-          newColorScheme = colorScheme.copyWith(onPrimary: Color(0xff00241A));
-          break;
-        case 'sexyBlueGradientDarkTheme':
-          newColorScheme = colorScheme.copyWith(onPrimary: Color(0xff001D24));
-          break;
-        case 'roseannaGradientDarkTheme':
-          newColorScheme = colorScheme.copyWith(onPrimary: Color(0xff2B0713));
-          break;
-        case 'passionateBedGradientDarkTheme':
-          newColorScheme = colorScheme.copyWith(onPrimary: Color(0xff420015));
-          break;
-        case 'yellowGradientDarkTheme':
-          newColorScheme = colorScheme.copyWith(onPrimary: Color(0xff1C1600));
-          break;
-        case 'orangeGradientDarkTheme':
-          newColorScheme = colorScheme.copyWith(onPrimary: Color(0xff000000));
-          break;
-        case 'endlessLightTheme':
-          newColorScheme = colorScheme.copyWith(
-            secondary: Color(0xff1c60a5),
-            onSecondary: Color(0xffffffff),
-            secondaryContainer: Color(0xffd4e3ff),
-            onSecondaryContainer: Color(0xff001c3a),
-          );
-          break;
-        case 'endlessDarkTheme':
-          newColorScheme = colorScheme.copyWith(
-            secondary: Color(0xffa4c8ff),
-            onSecondary: Color(0xff00315d),
-            secondaryContainer: Color(0xff004784),
-            onSecondaryContainer: Color(0xffd4e3ff),
-          );
-          break;
-        case 'celestialLightTheme':
-          newColorScheme = colorScheme.copyWith(
-            secondary: Color(0xff4d57a9),
-            onSecondary: Color(0xffffffff),
-            secondaryContainer: Color(0xffdfe0ff),
-            onSecondaryContainer: Color(0xff000964),
-          );
-          break;
-        case 'celestialDarkTheme':
-          newColorScheme = colorScheme.copyWith(
-            secondary: Color(0xffbdc2ff),
-            onSecondary: Color(0xff1c2678),
-            secondaryContainer: Color(0xff353e90),
-            onSecondaryContainer: Color(0xffdfe0ff),
-          );
-          break;
-        case 'orangeLightTheme':
-          newColorScheme = colorScheme.copyWith(
-            primary: Color(0xffFF9966),
-            secondary: Color(0xffb32631),
-            onSecondary: Color(0xffffffff),
-            secondaryContainer: Color(0xffffdad8),
-            onSecondaryContainer: Color(0xff410007),
-          );
-          break;
-        case 'orangeDarkTheme':
-          newColorScheme = colorScheme.copyWith(
-            secondary: Color(0xffffb3b0),
-            onSecondary: Color(0xff680010),
-            secondaryContainer: Color(0xff91071c),
-            onSecondaryContainer: Color(0xffffdad8),
-          );
-          break;
-        case 'dodoLightTheme':
-          newColorScheme = colorScheme.copyWith(
-            primary: Color.fromARGB(255, 19, 152, 181),
-            secondary: Color.fromARGB(255, 247, 192, 0),
-            secondaryContainer: Color.fromARGB(255, 255, 223, 149),
-            onSecondaryContainer: Color.fromARGB(255, 37, 26, 0),
-          );
-          break;
-        case 'dodoDarkTheme':
-          newColorScheme = colorScheme.copyWith(
-            primary: Color.fromARGB(255, 88, 214, 247),
-            onPrimary: Color.fromARGB(255, 0, 54, 66),
-            primaryContainer: Color.fromARGB(255, 0, 78, 94),
-            onPrimaryContainer: Color.fromARGB(255, 177, 235, 255),
-            secondary: Color.fromARGB(255, 245, 191, 0),
-            onSecondary: Color.fromARGB(255, 62, 46, 0),
-            secondaryContainer: Color.fromARGB(255, 163, 121, 0),
-            onSecondaryContainer: Color.fromARGB(255, 255, 239, 184),
-            tertiary: Color.fromARGB(255, 253, 187, 59),
-            onTertiary: Color.fromARGB(255, 66, 44, 0),
-            background: Color.fromARGB(255, 25, 28, 29),
-            onBackground: Color.fromARGB(255, 225, 227, 228),
-            surface: Color.fromARGB(255, 25, 28, 29),
-            onSurface: Color.fromARGB(255, 225, 227, 228),
-            surfaceVariant: Color.fromARGB(255, 64, 72, 75),
-            onSurfaceVariant: Color.fromARGB(255, 191, 200, 204),
-          );
-      }
-      if (themeName.contains('rainbow')) {
-        newColorScheme = colorScheme.copyWith(onPrimary: Colors.white);
-      }
-      return ThemeData.from(colorScheme: colorScheme, useMaterial3: true)
-          .copyWith(
-            cardTheme: CardTheme(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-            ),
-            bottomSheetTheme: BottomSheetThemeData(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-              ),
-            ),
-            inputDecorationTheme: InputDecorationTheme(
-              filled: true,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          )
-          .copyWith(colorScheme: newColorScheme);
+    ColorScheme? newColorScheme;
+    switch (themeName) {
+      case ThemeName.plumGradientDark:
+        newColorScheme = colorScheme.copyWith(onPrimary: Color.fromARGB(255, 40, 1, 92));
+        break;
+      case ThemeName.endlessGradientDark:
+        newColorScheme = colorScheme.copyWith(onPrimary: Color(0xff00241A));
+        break;
+      case ThemeName.sexyBlueGradientDark:
+        newColorScheme = colorScheme.copyWith(onPrimary: Color(0xff001D24));
+        break;
+      case ThemeName.roseannaGradientDark:
+        newColorScheme = colorScheme.copyWith(onPrimary: Color(0xff2B0713));
+        break;
+      case ThemeName.passionateBedGradientDark:
+        newColorScheme = colorScheme.copyWith(onPrimary: Color(0xff420015));
+        break;
+      case ThemeName.yellowGradientDark:
+        newColorScheme = colorScheme.copyWith(onPrimary: Color(0xff1C1600));
+        break;
+      case ThemeName.orangeGradientDark:
+        newColorScheme = colorScheme.copyWith(onPrimary: Color(0xff000000));
+        break;
+      case ThemeName.endlessLight:
+        newColorScheme = colorScheme.copyWith(
+          secondary: Color(0xff1c60a5),
+          onSecondary: Color(0xffffffff),
+          secondaryContainer: Color(0xffd4e3ff),
+          onSecondaryContainer: Color(0xff001c3a),
+        );
+        break;
+      case ThemeName.endlessDark:
+        newColorScheme = colorScheme.copyWith(
+          secondary: Color(0xffa4c8ff),
+          onSecondary: Color(0xff00315d),
+          secondaryContainer: Color(0xff004784),
+          onSecondaryContainer: Color(0xffd4e3ff),
+        );
+        break;
+      case ThemeName.celestialLight:
+        newColorScheme = colorScheme.copyWith(
+          secondary: Color(0xff4d57a9),
+          onSecondary: Color(0xffffffff),
+          secondaryContainer: Color(0xffdfe0ff),
+          onSecondaryContainer: Color(0xff000964),
+        );
+        break;
+      case ThemeName.celestialDark:
+        newColorScheme = colorScheme.copyWith(
+          secondary: Color(0xffbdc2ff),
+          onSecondary: Color(0xff1c2678),
+          secondaryContainer: Color(0xff353e90),
+          onSecondaryContainer: Color(0xffdfe0ff),
+        );
+        break;
+      case ThemeName.orangeLight:
+        newColorScheme = colorScheme.copyWith(
+          primary: Color(0xffFF9966),
+          secondary: Color(0xffb32631),
+          onSecondary: Color(0xffffffff),
+          secondaryContainer: Color(0xffffdad8),
+          onSecondaryContainer: Color(0xff410007),
+        );
+        break;
+      case ThemeName.orangeDark:
+        newColorScheme = colorScheme.copyWith(
+          secondary: Color(0xffffb3b0),
+          onSecondary: Color(0xff680010),
+          secondaryContainer: Color(0xff91071c),
+          onSecondaryContainer: Color(0xffffdad8),
+        );
+        break;
+      case ThemeName.dodoLight:
+        newColorScheme = colorScheme.copyWith(
+          primary: Color.fromARGB(255, 19, 152, 181),
+          secondary: Color.fromARGB(255, 247, 192, 0),
+          secondaryContainer: Color.fromARGB(255, 255, 223, 149),
+          onSecondaryContainer: Color.fromARGB(255, 37, 26, 0),
+        );
+        break;
+      case ThemeName.dodoDark:
+        newColorScheme = colorScheme.copyWith(
+          primary: Color.fromARGB(255, 88, 214, 247),
+          onPrimary: Color.fromARGB(255, 0, 54, 66),
+          primaryContainer: Color.fromARGB(255, 0, 78, 94),
+          onPrimaryContainer: Color.fromARGB(255, 177, 235, 255),
+          secondary: Color.fromARGB(255, 245, 191, 0),
+          onSecondary: Color.fromARGB(255, 62, 46, 0),
+          secondaryContainer: Color.fromARGB(255, 163, 121, 0),
+          onSecondaryContainer: Color.fromARGB(255, 255, 239, 184),
+          tertiary: Color.fromARGB(255, 253, 187, 59),
+          onTertiary: Color.fromARGB(255, 66, 44, 0),
+          background: Color.fromARGB(255, 25, 28, 29),
+          onBackground: Color.fromARGB(255, 225, 227, 228),
+          surface: Color.fromARGB(255, 25, 28, 29),
+          onSurface: Color.fromARGB(255, 225, 227, 228),
+          surfaceVariant: Color.fromARGB(255, 64, 72, 75),
+          onSurfaceVariant: Color.fromARGB(255, 191, 200, 204),
+        );
+        break;
+      default:
+        break;
     }
-    return ThemeData.from(colorScheme: colorScheme, useMaterial3: true)
-        .copyWith(
+    if (themeName.isRainbow()) {
+      newColorScheme = colorScheme.copyWith(onPrimary: Colors.white);
+    }
+
+    ThemeData data = ThemeData.from(colorScheme: colorScheme, useMaterial3: true).copyWith(
       cardTheme: CardTheme(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
@@ -506,12 +406,15 @@ class AppTheme {
         ),
       ),
     );
+    if (newColorScheme != null) {
+      data = data.copyWith(colorScheme: newColorScheme);
+    }
+    return MapEntry(themeName, data);
   }
 
-  static void addDynamicThemes(
-      ColorScheme lightScheme, ColorScheme darkScheme) {
+  static void addDynamicThemes(ColorScheme lightScheme, ColorScheme darkScheme) {
     try {
-      AppTheme.themes['lightDynamic'] = ThemeData.from(
+      AppTheme.themes[ThemeName.lightDynamic] = ThemeData.from(
         colorScheme: lightScheme,
         useMaterial3: true,
       ).copyWith(
@@ -534,7 +437,7 @@ class AppTheme {
           ),
         ),
       );
-      AppTheme.themes['darkDynamic'] = ThemeData.from(
+      AppTheme.themes[ThemeName.darkDynamic] = ThemeData.from(
         colorScheme: darkScheme.copyWith(brightness: Brightness.dark),
         useMaterial3: true,
       ).copyWith(

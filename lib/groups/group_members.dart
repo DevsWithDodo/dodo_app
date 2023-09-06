@@ -181,17 +181,17 @@ class MemberEntry extends StatelessWidget {
     Color iconColor;
     AppStateProvider provider = context.watch<AppStateProvider>();
     User user = provider.user!;
-    String themeName = provider.themeName;
+    ThemeName themeName = provider.themeName;
     if (member.id == user.id) {
       mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          color: themeName.contains('Gradient')
+          color: themeName.type == ThemeType.gradient
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onTertiaryContainer);
       subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(
-          color: themeName.contains('Gradient')
+          color: themeName.type == ThemeType.gradient
               ? Theme.of(context).colorScheme.onPrimary
               : Theme.of(context).colorScheme.onTertiaryContainer);
-      iconColor = themeName.contains('Gradient')
+      iconColor = themeName.type == ThemeType.gradient
           ? Theme.of(context).colorScheme.onPrimary
           : Theme.of(context).colorScheme.onTertiaryContainer;
       boxDecoration = BoxDecoration(

@@ -146,12 +146,14 @@ class _AddPurchasePageState extends State<AddPurchasePage> with AddModifyPurchas
                                 ),
                               ),
                               SizedBox(height: 10),
-                              Text(
-                                'purchase.page.custom-amount-hint'.tr(),
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                      color: Theme.of(context).colorScheme.onSurface,
-                                    ),
+                              Center(
+                                child: Text(
+                                  'purchase.page.custom-amount-hint'.tr(),
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                        color: Theme.of(context).colorScheme.onSurface,
+                                      ),
+                                ),
                               ),
                               SizedBox(height: 15),
                               receiverChooser(showcaseKey: _receiversKey),
@@ -165,6 +167,7 @@ class _AddPurchasePageState extends State<AddPurchasePage> with AddModifyPurchas
                                       setState(() {
                                         for (Member member in membersMap.keys) {
                                           membersMap[member] = !membersMap[member]!;
+                                          customAmountMap[member] = 0;
                                         }
                                       });
                                     },
@@ -205,6 +208,7 @@ class _AddPurchasePageState extends State<AddPurchasePage> with AddModifyPurchas
                                       setState(() {
                                         for (Member member in membersMap.keys) {
                                           membersMap[member] = false;
+                                          customAmountMap[member] = 0;
                                         }
                                       });
                                     },

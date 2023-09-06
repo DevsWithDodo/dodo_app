@@ -15,7 +15,8 @@ class CategoryPickerIconButton extends StatefulWidget {
 class _CategoryPickerIconButton extends State<CategoryPickerIconButton> {
   @override
   Widget build(BuildContext context) {
-    return IconButton(
+    return IconButton.filledTonal(
+      isSelected: widget.selectedCategory != null,
       onPressed: () {
         showDialog(
             context: context,
@@ -35,9 +36,9 @@ class _CategoryPickerIconButton extends State<CategoryPickerIconButton> {
       },
       icon: Icon(
         widget.selectedCategory == null ? Icons.app_registration : widget.selectedCategory!.icon,
-        color: widget.selectedCategory == null
-            ? Theme.of(context).colorScheme.primary
-            : Theme.of(context).colorScheme.tertiary,
+        // color: widget.selectedCategory == null
+        //     ? Theme.of(context).colorScheme.primary
+        //     : Theme.of(context).colorScheme.tertiary,
       ),
     );
   }
