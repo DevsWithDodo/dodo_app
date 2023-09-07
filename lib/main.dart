@@ -44,8 +44,7 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }
 
@@ -67,8 +66,7 @@ Future onSelectNotification(String? payload, AppStateProvider userProvider) asyn
 
     if (userProvider.user != null) {
       if (groupId != null) {
-        userProvider.setGroup(
-            Group(id: groupId, name: groupName!, currency: groupCurrency!));
+        userProvider.setGroup(Group(id: groupId, name: groupName!, currency: groupCurrency!));
       }
       clearAllCache();
       if (page == 'home') {
@@ -76,20 +74,21 @@ Future onSelectNotification(String? payload, AppStateProvider userProvider) asyn
         if (details == 'payment') {
           selectedIndex = 1;
         }
-        getIt.get<NavigationService>().pushAndRemoveUntil(MaterialPageRoute(
-            builder: (context) =>
-                MainPage(selectedHistoryIndex: selectedIndex)));
+        getIt
+            .get<NavigationService>()
+            .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainPage(selectedHistoryIndex: selectedIndex)));
       } else if (page == 'shopping') {
         int selectedTab = 1;
-        getIt.get<NavigationService>().pushAndRemoveUntil(MaterialPageRoute(
-            builder: (context) => MainPage(selectedIndex: selectedTab)));
+        getIt
+            .get<NavigationService>()
+            .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainPage(selectedIndex: selectedTab)));
       } else if (page == 'store') {
-        getIt.get<NavigationService>().pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => InAppPurchasePage()));
+        getIt.get<NavigationService>().pushAndRemoveUntil(MaterialPageRoute(builder: (context) => InAppPurchasePage()));
       } else if (page == 'group_settings') {
         int selectedTab = 2;
-        getIt.get<NavigationService>().pushAndRemoveUntil(MaterialPageRoute(
-            builder: (context) => MainPage(selectedIndex: selectedTab)));
+        getIt
+            .get<NavigationService>()
+            .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainPage(selectedIndex: selectedTab)));
       }
     }
   } catch (e) {
@@ -123,8 +122,7 @@ void main() async {
   String themeName = '';
 
   if (!preferences.containsKey('theme')) {
-    if (SchedulerBinding.instance.window.platformBrightness ==
-        Brightness.light) {
+    if (SchedulerBinding.instance.window.platformBrightness == Brightness.light) {
       preferences.setString('theme', 'dodoLightTheme');
       themeName = 'dodoLightTheme';
     } else {
@@ -141,34 +139,29 @@ void main() async {
 
   runApp(
     DynamicColorBuilder(
-        builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-      if (lightDynamic != null) {
-        AppTheme.addDynamicThemes(lightDynamic, darkDynamic!);
-      }
-      return MultiProvider(
-        providers: [
-          Provider.value(value: preferences),
-          ChangeNotifierProvider(
-              create: (context) => AppStateProvider(context, ThemeName.fromString(themeName))),
-          ChangeNotifierProvider(
-              create: (context) => InviteUrlProvider(inviteURL)),
-        ],
-        child: EasyLocalization(
-          child: ScreenWidthProvider(child: LenderApp()),
-          supportedLocales: [
-            Locale('en'),
-            Locale('de'),
-            Locale('it'),
-            Locale('hu')
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        themeName = preferences.getString('theme')!;
+        if (lightDynamic != null) {
+          AppTheme.addDynamicThemes(lightDynamic, darkDynamic!);
+        }
+        return MultiProvider(
+          providers: [
+            Provider.value(value: preferences),
+            ChangeNotifierProvider(create: (context) => AppStateProvider(context, ThemeName.fromString(themeName))),
+            ChangeNotifierProvider(create: (context) => InviteUrlProvider(inviteURL)),
           ],
-          path: 'assets/translations',
-          fallbackLocale: Locale('en'),
-          useOnlyLangCode: true,
-          saveLocale: true,
-          useFallbackTranslations: true,
-        ),
-      );
-    }),
+          child: EasyLocalization(
+            child: ScreenWidthProvider(child: LenderApp()),
+            supportedLocales: [Locale('en'), Locale('de'), Locale('it'), Locale('hu')],
+            path: 'assets/translations',
+            fallbackLocale: Locale('en'),
+            useOnlyLangCode: true,
+            saveLocale: true,
+            useFallbackTranslations: true,
+          ),
+        );
+      },
+    ),
   );
 }
 
@@ -194,13 +187,9 @@ class _LenderAppState extends State<LenderApp> {
         if (context.read<AppStateProvider>().user?.id != null) {
           getIt.get<NavigationService>().push(MaterialPageRoute(
               builder: (context) => JoinGroup(
-                  inviteURL: _link,
-                  fromAuth: (context.read<AppStateProvider>().user?.group == null)
-                      ? true
-                      : false)));
+                  inviteURL: _link, fromAuth: (context.read<AppStateProvider>().user?.group == null) ? true : false)));
         } else {
-          getIt.get<NavigationService>().push(
-              MaterialPageRoute(builder: (context) => LoginOrRegisterPage()));
+          getIt.get<NavigationService>().push(MaterialPageRoute(builder: (context) => LoginOrRegisterPage()));
         }
       });
     }, onError: (err) {
@@ -208,20 +197,16 @@ class _LenderAppState extends State<LenderApp> {
     });
   }
 
-  void _createNotificationChannels(
-      String groupId, List<String> channels) async {
+  void _createNotificationChannels(String groupId, List<String> channels) async {
     AndroidNotificationChannelGroup androidNotificationChannelGroup =
-        AndroidNotificationChannelGroup(
-            groupId, (groupId + '_notification').tr());
+        AndroidNotificationChannelGroup(groupId, (groupId + '_notification').tr());
     flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()!
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!
         .createNotificationChannelGroup(androidNotificationChannelGroup);
 
     for (String channel in channels) {
       flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()!
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!
           .createNotificationChannel(AndroidNotificationChannel(
             channel,
             (channel + '_notification').tr(),
@@ -232,12 +217,10 @@ class _LenderAppState extends State<LenderApp> {
   }
 
   Future setupInitialMessage() async {
-    RemoteMessage? initialMessage =
-        await FirebaseMessaging.instance.getInitialMessage();
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
-      onSelectNotification(
-          initialMessage.data['payload'], context.read<AppStateProvider>());
+      onSelectNotification(initialMessage.data['payload'], context.read<AppStateProvider>());
     }
   }
 
@@ -297,33 +280,24 @@ class _LenderAppState extends State<LenderApp> {
     if (isFirebasePlatformEnabled) {
       initUniLinks();
       _link = context.read<InviteUrlProvider>().inviteUrl;
-      var initializationSettingsAndroid =
-          new AndroidInitializationSettings('@drawable/dodo');
-      final IOSInitializationSettings initializationSettingsIOS =
-          IOSInitializationSettings();
-      var initializationSettings = new InitializationSettings(
-          android: initializationSettingsAndroid,
-          iOS: initializationSettingsIOS);
+      var initializationSettingsAndroid = new AndroidInitializationSettings('@drawable/dodo');
+      final IOSInitializationSettings initializationSettingsIOS = IOSInitializationSettings();
+      var initializationSettings =
+          new InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
 
       flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
       flutterLocalNotificationsPlugin.initialize(initializationSettings,
-          onSelectNotification: (payload) =>
-              onSelectNotification(payload, userProvider));
+          onSelectNotification: (payload) => onSelectNotification(payload, userProvider));
 
       Future.delayed(Duration(seconds: 1)).then((value) {
         if (Platform.isAndroid) {
           Future.delayed(Duration(seconds: 2)).then((value) {
-            _createNotificationChannels(
-                'group_system', ['other', 'group_update']);
-            _createNotificationChannels('purchase',
-                ['purchase_created', 'purchase_modified', 'purchase_deleted']);
-            _createNotificationChannels('payment',
-                ['payment_created', 'payment_modified', 'payment_deleted']);
-            _createNotificationChannels('shopping',
-                ['shopping_created', 'shopping_fulfilled', 'shopping_shop']);
+            _createNotificationChannels('group_system', ['other', 'group_update']);
+            _createNotificationChannels('purchase', ['purchase_created', 'purchase_modified', 'purchase_deleted']);
+            _createNotificationChannels('payment', ['payment_created', 'payment_modified', 'payment_deleted']);
+            _createNotificationChannels('shopping', ['shopping_created', 'shopping_fulfilled', 'shopping_shop']);
             flutterLocalNotificationsPlugin
-                .resolvePlatformSpecificImplementation<
-                    AndroidFlutterLocalNotificationsPlugin>()!
+                .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!
                 .requestPermission();
           });
         }
@@ -334,21 +308,14 @@ class _LenderAppState extends State<LenderApp> {
           print(decoded);
           var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
               decoded['channel_id'], //only this is needed
-              (decoded['channel_id'] +
-                  '_notification'), // these don't do anything
-              channelDescription:
-                  (decoded['channel_id'] + '_notification_explanation'),
+              (decoded['channel_id'] + '_notification'), // these don't do anything
+              channelDescription: (decoded['channel_id'] + '_notification_explanation'),
               styleInformation: BigTextStyleInformation(''));
-          var iOSPlatformChannelSpecifics =
-              new IOSNotificationDetails(presentSound: false);
-          var platformChannelSpecifics = new NotificationDetails(
-              android: androidPlatformChannelSpecifics,
-              iOS: iOSPlatformChannelSpecifics);
-          flutterLocalNotificationsPlugin.show(
-              int.tryParse(message.data['id'] ?? '0') ?? 0,
-              message.notification!.title,
-              message.notification!.body,
-              platformChannelSpecifics,
+          var iOSPlatformChannelSpecifics = new IOSNotificationDetails(presentSound: false);
+          var platformChannelSpecifics =
+              new NotificationDetails(android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
+          flutterLocalNotificationsPlugin.show(int.tryParse(message.data['id'] ?? '0') ?? 0,
+              message.notification!.title, message.notification!.body, platformChannelSpecifics,
               payload: message.data['payload']);
         });
         FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -374,12 +341,10 @@ class _LenderAppState extends State<LenderApp> {
       Map<String, String> header = {
         "Content-Type": "application/json",
       };
-      http.Response response = await http.get(
-          Uri.parse((useTest ? TEST_URL : APP_URL) + '/currencies'),
-          headers: header);
+      http.Response response =
+          await http.get(Uri.parse((useTest ? TEST_URL : APP_URL) + '/currencies'), headers: header);
       Map<String, dynamic> decoded = jsonDecode(response.body);
-      for (String currency
-          in (decoded["rates"] as LinkedHashMap<String, dynamic>).keys) {
+      for (String currency in (decoded["rates"] as LinkedHashMap<String, dynamic>).keys) {
         if (currencies.containsKey(currency)) {
           currencies[currency]!["rate"] = decoded["rates"][currency];
         }
@@ -395,9 +360,7 @@ class _LenderAppState extends State<LenderApp> {
         "Content-Type": "application/json",
       };
       http.Response response = await http.get(
-          Uri.parse((useTest ? TEST_URL : APP_URL) +
-              '/supported?version=' +
-              currentVersion.toString()),
+          Uri.parse((useTest ? TEST_URL : APP_URL) + '/supported?version=' + currentVersion.toString()),
           headers: header);
       bool? decoded = jsonDecode(response.body);
       return decoded;
@@ -432,8 +395,7 @@ class _LenderAppState extends State<LenderApp> {
                 : (_link != null)
                     ? JoinGroup(
                         inviteURL: _link,
-                        fromAuth:
-                            (userProvider.user?.group == null) ? true : false,
+                        fromAuth: (userProvider.user?.group == null) ? true : false,
                       )
                     : (userProvider.user?.group == null)
                         ? JoinGroup(

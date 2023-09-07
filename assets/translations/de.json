@@ -352,8 +352,8 @@
     "paste_code": "oder füge den Einladungscode ein:",
 
     "gradient_themes" : "Farbübergängige Themen",
-    "dynamic_themes" : "Dynimische Themen",
-    "dynamic_themes_explanation" : "Diese Themen werden sich nach den Einstellungen deines Systems richten (falls es solche gibt).",
+    "change-theme.dynamic-theme" : "Dynimisches Thema",
+    "change-theme.dynamic-theme.subtitle" : "Dieses Thema richtet sich an die Farben die du für dein System eingestellst.",
 
     "in_app_purchase_description": "Anzeigen und Themen",
     "iapp_not_supported": "Der Laden ist auf dieser Platform nicht unterstützt.",

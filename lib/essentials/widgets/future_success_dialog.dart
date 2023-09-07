@@ -22,6 +22,14 @@ Future<R?> showFutureOutputDialog<R, T extends FutureOutput>({
 }) {
   return showDialog(
     context: context,
+    barrierDismissible: barrierDismissible,
+    barrierColor: barrierColor,
+    barrierLabel: barrierLabel,
+    useSafeArea: useSafeArea,
+    useRootNavigator: useRootNavigator,
+    routeSettings: routeSettings,
+    anchorPoint: anchorPoint,
+    traversalEdgeBehavior: traversalEdgeBehavior,
     builder: (context) => FutureOutputDialog<T>(
       future: future,
       context: context,

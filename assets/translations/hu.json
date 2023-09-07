@@ -345,8 +345,8 @@
     "paste_code": "vagy másold ide a meghívót:",
 
     "gradient_themes" : "Színátmenetes témák",
-    "dynamic_themes" : "Dinamikus témák",
-    "dynamic_themes_explanation" : "Ezek a témák alkalmazkodni fognak a rendszer színbeállításaihoz (amennyiben azok elérhetők)",
+    "change-theme.dynamic-theme" : "Dinamikus téma",
+    "change-theme.dynamic-theme.subtitle" : "Ez a téma az általad választott rendszerszínekhez alkalmazkodik.",
 
     "in_app_purchase_description": "Reklámok és témák",
     "iapp_not_supported": "A bolt ezen a platformon nem támogatott",

@@ -22,15 +22,20 @@ import 'package:http/http.dart' as http;
 
 class AppStateProvider extends ChangeNotifier {
   User? user;
-  late ThemeName themeName;
+  late ThemeName _themeName;
 
+  ThemeName get themeName => AppTheme.themes.containsKey(_themeName)
+      ? _themeName
+      : _themeName.brightness == Brightness.dark
+          ? ThemeName.dodoDark
+          : ThemeName.dodoLight;
   Group? get currentGroup => user?.group;
   ThemeData get theme {
     return AppTheme.themes[themeName] ?? AppTheme.generateThemeData(ThemeName.greenLight, Colors.lightGreen).value;
   }
 
   AppStateProvider(BuildContext context, ThemeName themeName) {
-    this.themeName = themeName;
+    this._themeName = themeName;
     final preferences = context.read<SharedPreferences>();
     if (preferences.containsKey('api_token')) {
       List<String> usersGroupNames = preferences.getStringList('users_groups') ?? [];
@@ -398,7 +403,7 @@ class AppStateProvider extends ChangeNotifier {
   }
 
   void setThemeName(ThemeName themeName, {bool notify = true}) {
-    this.themeName = themeName;
+    this._themeName = themeName;
     SharedPreferences.getInstance().then((preferences) {
       preferences.setString('theme', themeName.storageName);
     });

@@ -14,194 +14,172 @@ class ColorPicker extends StatefulWidget {
 }
 
 class _ColorPickerState extends State<ColorPicker> {
-  List<Widget> _getDynamicColors({required bool enabled}) {
-    return ThemeName.getThemeNamesByType(ThemeType.dynamic).map((entry) {
-      return ColorElement(
-        theme: AppTheme.themes[entry],
-        themeName: entry,
-        enabled: enabled,
-        dualColor: true,
-      );
-    }).toList();
-  }
+  late Brightness brightness;
 
-  List<Widget> _getSimpleColors() {
-    return ThemeName.getThemeNamesByType(ThemeType.simpleColor).map((entry) {
-      return ColorElement(
-        theme: AppTheme.themes[entry],
-        themeName: entry,
-      );
-    }).toList();
-  }
-
-  List<Widget> _getDualColors({required bool enabled}) {
-    return ThemeName.getThemeNamesByType(ThemeType.dualColor).map((entry) {
-      return ColorElement(
-        theme: AppTheme.themes[entry],
-        themeName: entry,
-        dualColor: true,
-        enabled: enabled,
-      );
-    }).toList();
-  }
-
-  List<Widget> _getGradientColors({required bool enabled}) {
-    return ThemeName.getThemeNamesByType(ThemeType.gradient).map((entry) {
-      return ColorElement(
-        theme: AppTheme.themes[entry],
-        themeName: entry,
-        enabled: enabled,
-      );
-    }).toList();
+  Widget _colorWrap(ThemeType themeType, {required bool enabled}) {
+    return Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        runSpacing: 15,
+        spacing: 15,
+        children: ThemeName.getThemeNamesByTypeAndBrightness(themeType, brightness).map((entry) {
+          return ColorElement(
+            theme: AppTheme.themes[entry]!,
+            themeName: entry,
+            enabled: enabled,
+            dualColor: themeType == ThemeType.dualColor,
+          );
+        }).toList());
   }
 
   @override
-  Widget build(BuildContext context) { 
+  void initState() {
+    super.initState();
+    brightness = context.read<AppStateProvider>().themeName.brightness;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // This line is important so that textTheme is updated, don't know why
     print(Theme.of(context).colorScheme.onSurfaceVariant.alpha);
     return Selector<AppStateProvider, bool>(
-      selector: (context, provider) => provider.user!.useGradients,
-      builder: (context, useGradients, _) {
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Center(
+        selector: (context, provider) => provider.user!.useGradients,
+        builder: (context, useGradients, _) {
+          Color enabledColor = Theme.of(context).colorScheme.primary;
+          Color disabledColor = Theme.of(context).colorScheme.onSurfaceVariant;
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Center(
                     child: Text(
-                  'change_theme'.tr(),
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
-                )),
-                SizedBox(height: 10),
-                Center(
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    runSpacing: 5,
-                    spacing: 5,
-                    children: _getSimpleColors(),
+                      'change_theme'.tr(),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge!
+                          .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 7,
-                ),
-                Divider(),
-                SizedBox(
-                  height: 7,
-                ),
-                Text(
-                  'dual_tone_themes'.tr(),
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontSize: 18),
-                  textAlign: TextAlign.center,
-                ),
-                Visibility(
-                  visible: !useGradients,
-                  child: Text(
-                    'gradient_available_in_paid_version'.tr(),
-                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                SizedBox(
-                  height: 7,
-                ),
-                Center(
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    runSpacing: 5,
-                    spacing: 5,
-                    children: _getDualColors(enabled: useGradients),
-                  ),
-                ),
-                Text(
-                  'gradient_themes'.tr(),
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontSize: 18),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Center(
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    runSpacing: 5,
-                    spacing: 5,
-                    children: _getGradientColors(enabled: useGradients),
-                  ),
-                ),
-                Visibility(
-                  visible: AppTheme.themes.keys.where((element) => element.type == ThemeType.dynamic).isNotEmpty,
-                  child: Column(
+                  SizedBox(height: 10),
+                  Row(
                     children: [
-                      SizedBox(
-                        height: 7,
+                      Expanded(
+                        child: Icon(
+                          Icons.light_mode,
+                          color: brightness == Brightness.light ? enabledColor : disabledColor,
+                        ),
                       ),
-                      Divider(),
-                      SizedBox(
-                        height: 7,
+                      Switch(
+                        value: brightness == Brightness.dark,
+                        onChanged: (value) {
+                          AppStateProvider provider = context.read<AppStateProvider>();
+                          provider.setThemeName(provider.themeName.getCounterPart());
+                          setState(
+                            () => brightness = value ? Brightness.dark : Brightness.light,
+                          );
+                        },
                       ),
-                      Text(
-                        'dynamic_themes'.tr(),
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            fontSize: 18),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(
-                        height: 3,
-                      ),
-                      Text(
-                        'dynamic_themes_explanation'.tr(),
-                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(
-                        height: 3,
-                      ),
-                      Center(
-                        child: Wrap(
-                          alignment: WrapAlignment.center,
-                          runSpacing: 5,
-                          spacing: 5,
-                          children: _getDynamicColors(enabled: useGradients),
+                      Expanded(
+                        child: Icon(
+                          Icons.dark_mode,
+                          color: brightness == Brightness.dark ? enabledColor : disabledColor,
                         ),
                       ),
                     ],
                   ),
-                )
-              ],
+                  SizedBox(height: 20),
+                  _colorWrap(ThemeType.simpleColor, enabled: true),
+                  SizedBox(height: 10),
+                  Divider(),
+                  SizedBox(height: 10),
+                  Text(
+                    'dual_tone_themes'.tr(),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
+                    textAlign: TextAlign.center,
+                  ),
+                  Visibility(
+                    visible: !useGradients,
+                    child: Text(
+                      'gradient_available_in_paid_version'.tr(),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall!
+                          .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  _colorWrap(ThemeType.dualColor, enabled: useGradients),
+                  SizedBox(height: 15),
+                  Text(
+                    'gradient_themes'.tr(),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 15),
+                  _colorWrap(ThemeType.gradient, enabled: useGradients),
+                  Visibility(
+                    visible: AppTheme.themes.keys.where((element) => element.type == ThemeType.dynamic).isNotEmpty,
+                    child: Column(
+                      children: [
+                        SizedBox(height: 10),
+                        Divider(),
+                        SizedBox(height: 10),
+                        Text(
+                          'change-theme.dynamic-theme'.tr(),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge!
+                              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 3),
+                        Text(
+                          'change-theme.dynamic-theme.subtitle'.tr(),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        _colorWrap(ThemeType.dynamic, enabled: useGradients),
+                        SizedBox(height: 10)
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        );
-      }
-    );
+          );
+        });
   }
 }
 
-class ColorElement extends StatefulWidget {
-  final ThemeData? theme;
+class ColorElement extends StatelessWidget {
+  final ThemeData theme;
   final ThemeName themeName;
   final bool enabled;
   final bool dualColor;
   const ColorElement({
-    this.theme,
+    required this.theme,
     required this.themeName,
     this.enabled = true,
     this.dualColor = false,
   });
 
-  @override
-  _ColorElementState createState() => _ColorElementState();
-}
-
-class _ColorElementState extends State<ColorElement> {
   Future _updateColor(String? name) async {
     Map<String, String?> body = {'theme': name};
     await Http.put(uri: '/user', body: body);
@@ -210,71 +188,48 @@ class _ColorElementState extends State<ColorElement> {
   @override
   Widget build(BuildContext context) {
     return Selector<AppStateProvider, ThemeName>(
-      selector: (context, provider) => provider.themeName,
-      builder: (context, themeName, _) {
-        return Ink(
-          padding: EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            gradient: (widget.themeName == themeName)
-                ? widget.dualColor
-                    ? LinearGradient(
-                        colors: [
-                          widget.theme!.colorScheme.primary,
-                          widget.theme!.colorScheme.secondary
-                        ],
-                        stops: [0.5, 0.5],
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                      )
-                    : AppTheme.gradientFromTheme(widget.themeName,
-                        useSecondary: true)
-                : LinearGradient(colors: [Colors.transparent, Colors.transparent]),
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(18),
-            onTap: () {
-              if (widget.enabled) {
-                context.read<AppStateProvider>().setThemeName(widget.themeName);
-                _updateColor(widget.themeName.storageName);
-              } else if (isIAPPlatformEnabled) {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => InAppPurchasePage()));
-              } else {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return IAPPNotSupportedDialog();
-                  },
-                );
-              }
-            },
-            child: Ink(
-              padding: EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                gradient: widget.dualColor
-                    ? LinearGradient(
-                        colors: [
-                          widget.theme!.colorScheme.primary,
-                          widget.theme!.colorScheme.secondary
-                        ],
-                        stops: [0.5, 0.5],
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                      )
-                    : AppTheme.gradientFromTheme(widget.themeName),
-                border:
-                    Border.all(color: widget.theme!.colorScheme.surface, width: 6),
-                borderRadius: BorderRadius.circular(18),
+        selector: (context, provider) => provider.themeName,
+        builder: (context, currentThemeName, _) {
+          Color splitColor = theme.colorScheme.onPrimary;
+          return Ink(
+            decoration: BoxDecoration(
+              border: Border.all(
+                strokeAlign: BorderSide.strokeAlignOutside,
+                color: currentThemeName == themeName ? Theme.of(context).colorScheme.onSurface : Colors.transparent,
+                width: 6,
               ),
-              child: SizedBox(
-                width: 24,
-                height: 24,
-              ),
+              gradient: dualColor
+                  ? LinearGradient(
+                      colors: [theme.colorScheme.primary, splitColor, splitColor, theme.colorScheme.secondary],
+                      stops: [0.48, 0.48, 0.52, 0.52],
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                    )
+                  : AppTheme.gradientFromTheme(themeName),
+              borderRadius: BorderRadius.circular(100),
             ),
-          ),
-        );
-      }
-    );
+            child: InkWell(
+                borderRadius: BorderRadius.circular(100),
+                onTap: () {
+                  if (enabled) {
+                    context.read<AppStateProvider>().setThemeName(themeName);
+                    _updateColor(themeName.storageName);
+                  } else if (isIAPPlatformEnabled) {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => InAppPurchasePage()));
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return IAPPNotSupportedDialog();
+                      },
+                    );
+                  }
+                },
+                child: SizedBox(
+                  width: 40,
+                  height: 40,
+                )),
+          );
+        });
   }
 }

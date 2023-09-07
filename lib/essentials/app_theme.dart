@@ -43,17 +43,20 @@ enum ThemeName {
   yellowGradientDark(Brightness.dark, ThemeType.gradient, 'yellowGradientDarkTheme'),
   orangeGradientLight(Brightness.light, ThemeType.gradient, 'orangeGradientLightTheme'),
   orangeGradientDark(Brightness.dark, ThemeType.gradient, 'orangeGradientDarkTheme'),
-  blackGradientLight(Brightness.light, ThemeType.gradient, 'blackGradientLightTheme'),
-  whiteGradientDark(Brightness.dark, ThemeType.gradient, 'whiteGradientDarkTheme'),
+  blackGradientLight(Brightness.light, ThemeType.gradient, 'blackGradientLightTheme',
+      counterPart: 'whiteGradientDarkTheme'),
+  whiteGradientDark(Brightness.dark, ThemeType.gradient, 'whiteGradientDarkTheme',
+      counterPart: 'blackGradientLightTheme'),
   rainbowGradientLight(Brightness.light, ThemeType.gradient, 'rainbowGradientLightTheme'),
   rainbowGradientDark(Brightness.dark, ThemeType.gradient, 'rainbowGradientDarkTheme'),
-  lightDynamic(Brightness.light, ThemeType.dynamic, 'lightDynamic'),
-  darkDynamic(Brightness.dark, ThemeType.dynamic, 'darkDynamic');
+  lightDynamic(Brightness.light, ThemeType.dynamic, 'lightDynamic', counterPart: 'darkDynamic'),
+  darkDynamic(Brightness.dark, ThemeType.dynamic, 'darkDynamic', counterPart: 'lightDynamic');
 
-  const ThemeName(this.brightness, this.type, this.storageName);
+  const ThemeName(this.brightness, this.type, this.storageName, {String? counterPart}) : _counterPart = counterPart;
   final Brightness brightness;
   final ThemeType type;
   final String storageName;
+  final String? _counterPart;
 
   static List<ThemeName> getThemeNamesByType(ThemeType type) {
     return ThemeName.values.where((element) => element.type == type).toList();
@@ -63,12 +66,26 @@ enum ThemeName {
     return ThemeName.values.where((element) => element.brightness == brightness).toList();
   }
 
+  static List<ThemeName> getThemeNamesByTypeAndBrightness(ThemeType type, Brightness brightness) {
+    return ThemeName.values.where((element) => element.type == type && element.brightness == brightness).toList();
+  }
+
   static List<ThemeName> premiumThemes(bool premium) {
     return ThemeName.values.where((element) => element.type.premium == premium).toList();
   }
 
   static ThemeName fromString(String themeName) {
     return ThemeName.values.firstWhere((element) => element.storageName == themeName);
+  }
+
+  ThemeName getCounterPart() {
+    if (this._counterPart != null) {
+      return ThemeName.values.firstWhere((element) => element.storageName == this._counterPart);
+    } else {
+      String toReplace = this.brightness == Brightness.light ? 'Light' : 'Dark';
+      String replaceWith = this.brightness == Brightness.light ? 'Dark' : 'Light';
+      return ThemeName.fromString(this.storageName.replaceFirst(toReplace, replaceWith));
+    }
   }
 
   bool isDodo() {
@@ -130,8 +147,8 @@ class AppTheme {
       Color.fromARGB(255, 255, 94, 98),
     ],
     ThemeName.whiteGradientDark: [
-      Color.fromARGB(255, 235, 237, 238),
-      Color.fromARGB(255, 253, 251, 251),
+      Color.fromARGB(255, 255, 255, 255),
+      Color.fromARGB(255, 215, 215, 215),
     ],
     ThemeName.blackGradientLight: [
       Color.fromARGB(255, 67, 67, 67),
@@ -167,7 +184,7 @@ class AppTheme {
     ],
     ThemeName.plumGradientDark: [
       Color(0xffd3bbff),
-      Color(0xffBEA8E5),
+      Color(0xFFB497E7),
     ],
     ThemeName.sexyBlueGradientLight: [
       Color.fromARGB(255, 33, 147, 176),
@@ -272,8 +289,6 @@ class AppTheme {
                           ]);
   }
 
-  // TODO: return MapEntry<ThemeName, ThemeData>, refactor
-
   static MapEntry<ThemeName, ThemeData> generateThemeData(ThemeName themeName, Color seedColor) {
     ColorScheme colorScheme = ColorScheme.fromSeed(
       seedColor: seedColor,
@@ -282,7 +297,10 @@ class AppTheme {
     ColorScheme? newColorScheme;
     switch (themeName) {
       case ThemeName.plumGradientDark:
-        newColorScheme = colorScheme.copyWith(onPrimary: Color.fromARGB(255, 40, 1, 92));
+        newColorScheme = colorScheme.copyWith(
+          onPrimary: Color.fromARGB(255, 40, 1, 92),
+          secondary: Color(0xFFB497E7),
+        );
         break;
       case ThemeName.endlessGradientDark:
         newColorScheme = colorScheme.copyWith(onPrimary: Color(0xff00241A));
@@ -345,8 +363,8 @@ class AppTheme {
         break;
       case ThemeName.orangeDark:
         newColorScheme = colorScheme.copyWith(
-          secondary: Color(0xffffb3b0),
-          onSecondary: Color(0xff680010),
+          secondary: Color.fromARGB(255, 254, 200, 198),
+          onSecondary: Color.fromARGB(255, 126, 21, 36),
           secondaryContainer: Color(0xff91071c),
           onSecondaryContainer: Color(0xffffdad8),
         );
@@ -410,6 +428,11 @@ class AppTheme {
       data = data.copyWith(colorScheme: newColorScheme);
     }
     return MapEntry(themeName, data);
+  }
+
+  static void removeDynamicThemes() {
+    AppTheme.themes.remove(ThemeName.lightDynamic);
+    AppTheme.themes.remove(ThemeName.darkDynamic);
   }
 
   static void addDynamicThemes(ColorScheme lightScheme, ColorScheme darkScheme) {

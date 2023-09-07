@@ -348,8 +348,8 @@
     "paste_code": "or by pasting its invitation code:",
 
     "gradient_themes" : "Gradient themes",
-    "dynamic_themes" : "Dynamic themes",
-    "dynamic_themes_explanation" : "These themes will dynamically change when you change your system color preference (if available)",
+    "change-theme.dynamic-theme" : "Dynamic theme",
+    "change-theme.dynamic-theme.subtitle" : "This theme will dynamically change with the colors you selected for your system.",
 
     "in_app_purchase_description": "Ads and color themes",
     "iapp_not_supported": "The store is not enabled on your platform",
