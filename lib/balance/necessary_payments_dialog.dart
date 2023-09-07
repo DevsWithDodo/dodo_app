@@ -1,7 +1,6 @@
 import 'package:csocsort_szamla/balance/necessary_payment_entry.dart';
 import 'package:csocsort_szamla/essentials/currencies.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/payments_needed.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -9,26 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class NecessaryPaymentsDialog extends StatefulWidget {
+class NecessaryPaymentsDialog extends StatelessWidget {
+  final List<Payment> necessaryPayments;
   final List<Member> members;
 
   const NecessaryPaymentsDialog({
+    required this.necessaryPayments,
     required this.members,
     super.key,
   });
-
-  @override
-  State<NecessaryPaymentsDialog> createState() => _NecessaryPaymentsDialogState();
-}
-
-class _NecessaryPaymentsDialogState extends State<NecessaryPaymentsDialog> {
-  late List<Payment> _payments;
-
-  @override
-  void initState() {
-    super.initState();
-    _payments = necessaryPayments(widget.members, context);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,14 +63,14 @@ class _NecessaryPaymentsDialogState extends State<NecessaryPaymentsDialog> {
                 child: Icon(Icons.copy),
                 onPressed: () {
                   String currency = context.read<AppStateProvider>().currentGroup!.currency;
-                  int longestPayerNick = _payments
+                  int longestPayerNick = this.necessaryPayments
                       .map((e) => e.payerNickname.length)
                       .reduce((value, element) => value > element ? value : element);
-                  int longestTakerNick = _payments
+                  int longestTakerNick = this.necessaryPayments
                       .map((e) => e.takerNickname.length)
                       .reduce((value, element) => value > element ? value : element);
                   Clipboard.setData(ClipboardData(
-                    text: _payments.map((payment) {
+                    text: this.necessaryPayments.map((payment) {
                       String firstSpaces = ' ' * (longestPayerNick - payment.payerNickname.length);
                       String secondSpaces = ' ' * (longestTakerNick - payment.takerNickname.length);
                       return "${payment.payerNickname}${firstSpaces}\t➡️\t${payment.takerNickname}:${secondSpaces}\t${payment.amount.toMoneyString(currency, withSymbol: true)}";
@@ -100,7 +88,7 @@ class _NecessaryPaymentsDialogState extends State<NecessaryPaymentsDialog> {
   List<Widget> _generatePaymentEntries() {
     Map<int, List<Payment>> paymentsByPayer = {};
     for (Payment payment
-        in _payments.where((payment) => payment.amount > Currency.threshold(payment.originalCurrency))) {
+        in this.necessaryPayments.where((payment) => payment.amount > Currency.threshold(payment.originalCurrency))) {
       if (paymentsByPayer.containsKey(payment.payerId)) {
         paymentsByPayer[payment.payerId]!.add(payment);
       } else {
@@ -112,7 +100,7 @@ class _NecessaryPaymentsDialogState extends State<NecessaryPaymentsDialog> {
       paymentEntries.add(
         NecessaryPaymentEntry(
           payments: paymentsByPayer[payerId]!,
-          takers: widget.members
+          takers: members
               .where((element) => paymentsByPayer[payerId]!.any((payment) => payment.takerId == element.id))
               .toList(),
         ),

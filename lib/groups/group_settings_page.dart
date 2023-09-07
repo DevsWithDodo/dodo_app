@@ -33,9 +33,8 @@ class _GroupSettingState extends State<GroupSettings> {
   Future<bool> _getHasGuests() async {
     try {
       Response response = await Http.get(
-        uri: generateUri(GetUriKeys.groupHasGuests, context, params: [
-          context.read<AppStateProvider>().user!.group!.id.toString()
-        ]),
+        uri: generateUri(GetUriKeys.groupHasGuests, context,
+            params: [context.read<AppStateProvider>().user!.group!.id.toString()]),
       );
       Map<String, dynamic> decoded = jsonDecode(response.body);
       // print(decoded);
@@ -78,8 +77,7 @@ class _GroupSettingState extends State<GroupSettings> {
 
   @override
   Widget build(BuildContext context) {
-    bool bigScreen = !context
-        .select<ScreenWidth, bool>((screenWidth) => screenWidth.isMobile);
+    bool bigScreen = !context.select<ScreenWidth, bool>((screenWidth) => screenWidth.isMobile);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -104,19 +102,18 @@ class _GroupSettingState extends State<GroupSettings> {
                     return Row(
                       children: [
                         Expanded(
-                          child: ListView(
-                            controller: ScrollController(),
-                            children: columnWidgets.take(2).toList(),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: columnWidgets.take(2).toList(),
+                            ),
                           ),
                         ),
                         Expanded(
-                          child: ListView(
+                          child: SingleChildScrollView(
                             controller: ScrollController(),
-                            children: columnWidgets.reversed
-                                .take(4)
-                                .toList()
-                                .reversed
-                                .toList(),
+                            child: Column(
+                              children: columnWidgets.reversed.take(3).toList().reversed.toList(),
+                            ),
                           ),
                         ),
                       ],
@@ -162,18 +159,19 @@ class _GroupSettingState extends State<GroupSettings> {
                   children: [
                     Text(
                       'rename_group'.tr(),
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge!
+                          .copyWith(color: Theme.of(context).colorScheme.onSurface),
                     ),
                     SizedBox(height: 10),
                     GradientButton(
                       useSecondary: true,
                       child: Icon(Icons.edit),
-                      onPressed: () {
-                        showDialog(
-                            builder: (context) => RenameGroupDialog(),
-                            context: context);
-                      },
+                      onPressed: () => showDialog(
+                          builder: (context) => RenameGroupDialog(),
+                          context: context,
+                        ),
                     ),
                     SizedBox(height: 10),
                   ],
@@ -181,10 +179,7 @@ class _GroupSettingState extends State<GroupSettings> {
               ),
               Text(
                 'group-settings.change-nickname'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
               ),
               SizedBox(height: 10),
               Row(
@@ -222,8 +217,10 @@ class _GroupSettingState extends State<GroupSettings> {
                 Center(
                   child: Text(
                     'change_group_currency'.tr(),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(color: Theme.of(context).colorScheme.onSurface),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -233,10 +230,8 @@ class _GroupSettingState extends State<GroupSettings> {
                 Center(
                     child: Text(
                   'change_group_currency_explanation'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleSmall!
-                      .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                  style:
+                      Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurface),
                   textAlign: TextAlign.center,
                 )),
                 SizedBox(
@@ -249,9 +244,7 @@ class _GroupSettingState extends State<GroupSettings> {
                       useSecondary: true,
                       child: Icon(Icons.monetization_on),
                       onPressed: () {
-                        showDialog(
-                            builder: (context) => ChangeGroupCurrencyDialog(),
-                            context: context);
+                        showDialog(builder: (context) => ChangeGroupCurrencyDialog(), context: context);
                       },
                     ),
                   ],

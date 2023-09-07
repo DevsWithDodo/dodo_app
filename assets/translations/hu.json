@@ -207,7 +207,7 @@
     "price": "Ár: ",
     "buy": "Vásárlás",
 
-    "boost_group": "Csoport fejlesztése",
+    "boost-group": "Csoport fejlesztése",
     "boost-group.subtitle": "Egy fejlesztett csoportban láthatod a statisztikákat az alkalmazáson belül.",
     "boost-group.boosted.subtitle": "Ezt a csoportot már felfejlesztették \uD83D\uDE0E. Így elérhetőek a statisztikák az alkalmazáson belül.",
     "boost-group.boosts-available": "Csoportfejlesztő Dodóid száma: {}",

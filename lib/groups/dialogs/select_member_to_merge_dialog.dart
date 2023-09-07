@@ -27,22 +27,15 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
   Member? _selectedMember;
 
   Future<BoolFutureOutput> _mergeGuest() async {
-    Map<String, dynamic> body = {
-      'member_id': _selectedMember!.id,
-      'guest_id': widget.guestId
-    };
+    Map<String, dynamic> body = {'member_id': _selectedMember!.id, 'guest_id': widget.guestId};
     await Http.post(
-        uri: '/groups/' +
-            context.read<AppStateProvider>().currentGroup!.id.toString() +
-            '/merge_guest',
-        body: body);
+        uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString() + '/merge_guest', body: body);
     return BoolFutureOutput.True;
   }
 
   Future<List<Member>> _getAllMembers() async {
     try {
-      Response response = await Http.get(
-          uri: generateUri(GetUriKeys.groupCurrent, context), useCache: false);
+      Response response = await Http.get(uri: generateUri(GetUriKeys.groupCurrent, context), useCache: false);
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = [];
       for (var memberJson in decoded['data']['members']) {
@@ -72,10 +65,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
             Center(
               child: Text(
                 'merge_guest'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
               ),
             ),
             SizedBox(
@@ -100,17 +90,13 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
                         Center(
                           child: MemberChips(
                             multiple: false,
-                            allMembers: snapshot.data!
-                                .where((element) => !element.isGuest!)
-                                .toList(),
+                            allMembers: snapshot.data!.where((element) => !element.isGuest!).toList(),
                             setChosenMembers: (newMembers) {
                               setState(() {
                                 _selectedMember = newMembers.firstOrNull;
                               });
                             },
-                            chosenMembers: _selectedMember == null
-                                ? []
-                                : [_selectedMember!],
+                            chosenMembers: _selectedMember == null ? [] : [_selectedMember!],
                           ),
                         ),
                       ],
@@ -150,29 +136,28 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
                         (value) {
                           if (value ?? false == true) {
                             showFutureOutputDialog(
-                                context: context,
-                                future: _mergeGuest(),
-                                outputCallbacks: {
-                                  BoolFutureOutput.True: () async {
-                                    EventBus.instance
-                                        .fire(EventBus.refreshBalances);
-                                    EventBus.instance
-                                        .fire(EventBus.refreshPurchases);
-                                    EventBus.instance
-                                        .fire(EventBus.refreshPayments);
-                                    EventBus.instance
-                                        .fire(EventBus.refreshShopping);
-                                    Navigator.of(context).pop();
-                                  }
-                                });
+                              context: context,
+                              future: _mergeGuest(),
+                              outputCallbacks: {
+                                BoolFutureOutput.True: () async {
+                                  EventBus.instance.fire(EventBus.refreshBalances);
+                                  EventBus.instance.fire(EventBus.refreshPurchases);
+                                  EventBus.instance.fire(EventBus.refreshPayments);
+                                  EventBus.instance.fire(EventBus.refreshShopping);
+                                  EventBus.instance.fire(EventBus.refreshGroupMembers);
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                            );
                           }
                         },
                       );
                     } else {
                       FToast ft = FToast();
                       ft.init(context);
-                      ft.showToast(
-                          child: errorToast('needs_member'.tr(), context));
+                      ft.showToast(child: errorToast('needs_member'.tr(), context));
                     }
                   },
                 )

@@ -189,12 +189,15 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                   context: context,
                                   future: _removeMember(widget.member.id),
                                   outputCallbacks: {
-                                    BoolFutureOutput.True: () async {
-                                      EventBus.instance.fire(EventBus.refreshBalances);
-                                      EventBus.instance.fire(EventBus.refreshGroupMembers);
-                                      Navigator.of(context).pop();
-                                      Navigator.of(context).pop();
-                                    }
+                                    LeftOrRemovedFromGroupFutureOutput.RemovedFromGroup: () {
+                                          EventBus.instance.fire(EventBus.refreshBalances);
+                                          EventBus.instance.fire(EventBus.refreshPurchases);
+                                          EventBus.instance.fire(EventBus.refreshPayments);
+                                          EventBus.instance.fire(EventBus.refreshShopping);
+                                          EventBus.instance.fire(EventBus.refreshGroupMembers);
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                        }
                                   },
                                 );
                               }
@@ -280,13 +283,6 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                           );
                                           await clearAllCache();
                                         },
-                                        LeftOrRemovedFromGroupFutureOutput.RemovedFromGroup: () {
-                                          EventBus.instance.fire(EventBus.refreshBalances);
-                                          EventBus.instance.fire(EventBus.refreshPurchases);
-                                          EventBus.instance.fire(EventBus.refreshPayments);
-                                          EventBus.instance.fire(EventBus.refreshShopping);
-                                          Navigator.of(context).pop();
-                                        }
                                       },
                                     );
                                   }

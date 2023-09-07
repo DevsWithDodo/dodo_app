@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/balance/necessary_payments_dialog.dart';
+import 'package:csocsort_szamla/balance/necessary_payments_button.dart';
 import 'package:csocsort_szamla/balance/select_balance_currency.dart';
 import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
@@ -78,7 +78,6 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
 
   @override
   Widget build(BuildContext context) {
-    String groupCurrency = context.select<AppStateProvider, String>((provider) => provider.currentGroup!.currency);
     super.build(context);
     return Card(
       child: Padding(
@@ -105,29 +104,12 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
                       if (snapshot.hasData) {
                         return Column(
                           children: [
-                            Column(children: _generateBalances(snapshot.data!)),
+                            ..._generateBalances(snapshot.data!),
                             Visibility(
                               visible: snapshot.data!.length < 2,
                               child: _oneMemberWidget(),
                             ),
-                            Visibility(
-                              visible: snapshot.data!
-                                  .where((member) => member.balance < Currency.threshold(groupCurrency))
-                                  .isNotEmpty,
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: TextButton(
-                                  onPressed: () => showDialog(
-                                    context: context,
-                                    barrierDismissible: true,
-                                    builder: (context) => NecessaryPaymentsDialog(
-                                      members: snapshot.data!,
-                                    ),
-                                  ),
-                                  child: Text('payments_needed'.tr()),
-                                ),
-                              ),
-                            )
+                            NecessaryPaymentsButton(members: snapshot.data!)
                           ],
                         );
                       } else {
@@ -232,8 +214,10 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
           style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
         ),
         SizedBox(height: 10),
-        Text('invite_friends'.tr(),
-            style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurface)),
+        Text(
+          'invite_friends'.tr(),
+          style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurface),
+        ),
         SizedBox(height: 5),
         FutureBuilder(
           future: _getInvitation(),
@@ -247,10 +231,9 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
                       GradientButton(
                         onPressed: () {
                           showDialog(
-                              context: context,
-                              builder: (context) {
-                                return ShareGroupDialog(inviteCode: snapshot.data!);
-                              });
+                            context: context,
+                            builder: (context) => ShareGroupDialog(inviteCode: snapshot.data!),
+                          );
                         },
                         child: Icon(Icons.share),
                       ),
@@ -261,9 +244,7 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
                 return ErrorMessage(
                   error: snapshot.error.toString(),
                   errorLocation: 'invitation',
-                  onTap: () {
-                    setState(() {});
-                  },
+                  onTap: () => setState(() {}),
                 );
               }
             }

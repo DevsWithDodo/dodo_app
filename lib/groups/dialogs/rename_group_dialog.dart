@@ -109,6 +109,7 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
             _groupNameController.text = '';
             EventBus.instance.fire(EventBus.refreshGroups);
             Navigator.of(context).pop();
+            Navigator.of(context).pop();
           }
         }
       );
