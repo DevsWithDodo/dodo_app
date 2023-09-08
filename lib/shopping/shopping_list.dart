@@ -323,30 +323,38 @@ class _ShoppingListState extends State<ShoppingList>
                         SizedBox(
                           height: 20,
                         ),
-                        TextFormField(
-                          validator: (value) => validateTextField([
-                            isEmpty(value),
-                            minimalLength(value, 2),
-                          ]),
-                          decoration: InputDecoration(
-                            hintText: 'wish'.tr(),
-                            prefixIcon: Icon(
-                              Icons.shopping_cart,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                validator: (value) => validateTextField([
+                                  isEmpty(value),
+                                  minimalLength(value, 2),
+                                ]),
+                                decoration: InputDecoration(
+                                  hintText: 'wish'.tr(),
+                                  prefixIcon: Icon(
+                                    Icons.shopping_cart,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                                ),
+                                controller: _addRequestController,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(255)
+                                ],
+                                onFieldSubmitted: (value) => _buttonPush(),
+                              ),
                             ),
-                            suffixIcon: IconButton(
-                              icon: Icon(Icons.add_shopping_cart,
-                                  color: Theme.of(context).colorScheme.primary),
-                              onPressed: _buttonPush,
+                            Padding(
+                              padding: const EdgeInsets.only(left: 5),
+                              child: IconButton.filledTonal(
+                                icon: Icon(Icons.add_shopping_cart),
+                                onPressed: _buttonPush,
+                              ),
                             ),
-                          ),
-                          controller: _addRequestController,
-                          inputFormatters: [
-                            LengthLimitingTextInputFormatter(255)
                           ],
-                          onFieldSubmitted: (value) => _buttonPush(),
                         ),
                         SizedBox(
                           height: 10,

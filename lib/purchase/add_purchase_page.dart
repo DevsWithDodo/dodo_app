@@ -167,8 +167,8 @@ class _AddPurchasePageState extends State<AddPurchasePage> with AddModifyPurchas
                                       setState(() {
                                         for (Member member in membersMap.keys) {
                                           membersMap[member] = !membersMap[member]!;
-                                          customAmountMap[member] = 0;
                                         }
+                                        customAmountMap = {};
                                       });
                                     },
                                     icon: Icon(
@@ -208,8 +208,8 @@ class _AddPurchasePageState extends State<AddPurchasePage> with AddModifyPurchas
                                       setState(() {
                                         for (Member member in membersMap.keys) {
                                           membersMap[member] = false;
-                                          customAmountMap[member] = 0;
                                         }
+                                        customAmountMap = {};
                                       });
                                     },
                                     icon: Icon(
