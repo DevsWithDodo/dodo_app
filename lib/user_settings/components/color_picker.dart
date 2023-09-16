@@ -17,6 +17,9 @@ class _ColorPickerState extends State<ColorPicker> {
   late Brightness brightness;
 
   Widget _colorWrap(ThemeType themeType, {required bool enabled}) {
+    if (AppTheme.themes.keys.where((element) => element.type == themeType).isEmpty) {
+      return SizedBox();
+    }
     return Wrap(
         alignment: WrapAlignment.center,
         crossAxisAlignment: WrapCrossAlignment.center,
