@@ -4,16 +4,16 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:csocsort_szamla/auth/login_or_register_page.dart';
-import 'package:csocsort_szamla/essentials/app_theme.dart';
-import 'package:csocsort_szamla/essentials/currencies.dart';
-import 'package:csocsort_szamla/essentials/models.dart';
-import 'package:csocsort_szamla/essentials/providers/invite_url_provider.dart';
-import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
-import 'package:csocsort_szamla/essentials/providers/screen_width_provider.dart';
-import 'package:csocsort_szamla/essentials/widgets/version_not_supported_page.dart';
-import 'package:csocsort_szamla/groups/join_group.dart';
-import 'package:csocsort_szamla/main/in_app_purchase_page.dart';
+import 'package:csocsort_szamla/pages/app/store_page.dart';
+import 'package:csocsort_szamla/pages/app/join_group_page.dart';
+import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
+import 'package:csocsort_szamla/helpers/app_theme.dart';
+import 'package:csocsort_szamla/helpers/currencies.dart';
+import 'package:csocsort_szamla/helpers/models.dart';
+import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
+import 'package:csocsort_szamla/pages/version_not_supported_page.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -33,9 +33,9 @@ import 'package:showcaseview/showcaseview.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'config.dart';
-import 'essentials/http.dart';
-import 'essentials/navigator_service.dart';
-import 'groups/main_group_page.dart';
+import 'helpers/http.dart';
+import 'helpers/navigator_service.dart';
+import 'pages/app/main_page.dart';
 
 final getIt = GetIt.instance;
 
@@ -83,7 +83,7 @@ Future onSelectNotification(String? payload, AppStateProvider userProvider) asyn
             .get<NavigationService>()
             .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainPage(selectedIndex: selectedTab)));
       } else if (page == 'store') {
-        getIt.get<NavigationService>().pushAndRemoveUntil(MaterialPageRoute(builder: (context) => InAppPurchasePage()));
+        getIt.get<NavigationService>().pushAndRemoveUntil(MaterialPageRoute(builder: (context) => StorePage()));
       } else if (page == 'group_settings') {
         int selectedTab = 2;
         getIt
@@ -186,7 +186,7 @@ class _LenderAppState extends State<LenderApp> {
       setState(() {
         if (context.read<AppStateProvider>().user?.id != null) {
           getIt.get<NavigationService>().push(MaterialPageRoute(
-              builder: (context) => JoinGroup(
+              builder: (context) => JoinGroupPage(
                   inviteURL: _link, fromAuth: (context.read<AppStateProvider>().user?.group == null) ? true : false)));
         } else {
           getIt.get<NavigationService>().push(MaterialPageRoute(builder: (context) => LoginOrRegisterPage()));
@@ -393,12 +393,12 @@ class _LenderAppState extends State<LenderApp> {
             home: userProvider.user == null
                 ? LoginOrRegisterPage()
                 : (_link != null)
-                    ? JoinGroup(
+                    ? JoinGroupPage(
                         inviteURL: _link,
                         fromAuth: (userProvider.user?.group == null) ? true : false,
                       )
                     : (userProvider.user?.group == null)
-                        ? JoinGroup(
+                        ? JoinGroupPage(
                             fromAuth: true,
                           )
                         : MainPage(),
