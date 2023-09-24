@@ -532,5 +532,12 @@
 
     "group-settings.change-nickname": "Change nickname",
 
-    "registration.set-pin": "Set pin"
+    "registration.set-pin": "Set pin",
+
+    "shopping-list.entry.wish": "{name}'s wish",
+    "shopping-list.hint": "Tap on a wish to see more details, hold it to react.",
+
+    "personalised-ads.dialog.title": "Personalised ads",
+    "personalised-ads.dialog.subtitle": "Set if you want to see personalised ads in the app. This setting can be changed later in the settings menu.",
+    "personalised-ads.dialog.question": "Do you want to see personalised ads?"
 }

@@ -36,8 +36,6 @@ class _ShoppingListState extends State<ShoppingList>
 
   var _formKey = GlobalKey<FormState>();
 
-  // late ShoppingRequest _newShoppingRequest;
-
   Future<List<ShoppingRequest>> _getShoppingList(
       {bool overwriteCache = false}) async {
     try {
@@ -87,7 +85,7 @@ class _ShoppingListState extends State<ShoppingList>
           await Http.post(uri: '/requests/restore/' + id.toString());
       if (_shoppingList != null) {
         await (_shoppingList!.then((list) {
-          list.add(jsonDecode(response.body)['data']);
+          list.add(ShoppingRequest.fromJson(jsonDecode(response.body)['data']));
           return list;
         }));
       }
@@ -224,11 +222,9 @@ class _ShoppingListState extends State<ShoppingList>
     super.build(context);
     return RefreshIndicator(
       onRefresh: () async {
-        if (context.read<IsOnlineProvider>().isOnline)
-          await deleteCache(uri: '/groups');
         setState(() {
           _shoppingList = null;
-          _shoppingList = _getShoppingList(overwriteCache: true);
+          _shoppingList = _getShoppingList(overwriteCache: context.read<IsOnlineProvider>().isOnline);
         });
       },
       child: GestureDetector(
@@ -359,6 +355,7 @@ class _ShoppingListState extends State<ShoppingList>
                         SizedBox(
                           height: 10,
                         ),
+                        Text('shopping-list.hint'.tr(), style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center),
                       ],
                     ),
                   ),

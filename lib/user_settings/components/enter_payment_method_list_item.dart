@@ -1,6 +1,6 @@
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/validation_rules.dart';
-import 'package:csocsort_szamla/user_settings/components/payment_method_list.dart';
+import 'package:csocsort_szamla/user_settings/components/enter_payment_method_list.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,7 +30,6 @@ class _EnterPaymentMethodListItemState extends State<EnterPaymentMethodListItem>
 
   @override
   Widget build(BuildContext context) {
-    print('payment method list item build');
     bool priority = widget.paymentMethod?.priority ?? _priority;
     return Theme(
       data: Theme.of(context).copyWith(

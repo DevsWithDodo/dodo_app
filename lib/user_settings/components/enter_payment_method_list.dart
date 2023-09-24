@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/gradient_button.dart';
-import 'package:csocsort_szamla/user_settings/components/payment_method_list_item.dart';
+import 'package:csocsort_szamla/user_settings/components/enter_payment_method_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -46,7 +46,7 @@ class EnterPaymentMethodList extends StatelessWidget {
                   ),
                   Visibility(
                     visible: provider.paymentMethods.isNotEmpty ||
-                        context.read<AppStateProvider>().user!.paymentMethods.isNotEmpty,
+                        context.watch<AppStateProvider>().user!.paymentMethods.isNotEmpty,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: GradientButton(

@@ -24,32 +24,37 @@ class PurchaseEntry extends StatefulWidget {
 }
 
 class _PurchaseEntryState extends State<PurchaseEntry> {
-  void handleSendReaction(String reaction) {
-    User user = context.read<AppStateProvider>().user!;
-    Reaction? oldReaction = widget.purchase.reactions!
-        .firstWhereOrNull((element) => element.userId == user.id);
-    bool alreadyReacted = oldReaction != null;
-    bool sameReaction =
-        alreadyReacted ? oldReaction.reaction == reaction : false;
-    if (sameReaction) {
-      widget.purchase.reactions!.remove(oldReaction);
-      setState(() {});
-    } else if (!alreadyReacted) {
-      widget.purchase.reactions!.add(Reaction(
-        nickname: user.username,
-        reaction: reaction,
-        userId: user.id,
-      ));
-      setState(() {});
-    } else {
-      widget.purchase.reactions!.add(Reaction(
-        nickname: oldReaction.nickname,
-        reaction: reaction,
-        userId: user.id,
-      ));
-      widget.purchase.reactions!.remove(oldReaction);
-      setState(() {});
-    }
+  late List<Reaction> reactions;
+
+  @override
+  void initState() {
+    super.initState();
+    reactions = widget.purchase.reactions!;
+  }
+
+  void handleSendReaction(String reaction, int userId) {
+    setState(() {
+      User user = context.read<AppStateProvider>().user!;
+      Reaction? oldReaction = reactions.firstWhereOrNull((element) => element.userId == user.id);
+      bool alreadyReacted = oldReaction != null;
+      bool sameReaction = alreadyReacted ? oldReaction.reaction == reaction : false;
+      if (sameReaction) {
+        reactions.remove(oldReaction);
+      } else if (!alreadyReacted) {
+        reactions.add(Reaction(
+          nickname: user.username,
+          reaction: reaction,
+          userId: user.id,
+        ));
+      } else {
+        reactions.add(Reaction(
+          nickname: oldReaction.nickname,
+          reaction: reaction,
+          userId: user.id,
+        ));
+        reactions.remove(oldReaction);
+      }
+    });
   }
 
   @override
@@ -58,12 +63,9 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
     int? selectedMemberId = widget.selectedMemberId;
     String note = (widget.purchase.name == '')
         ? 'no_note'.tr()
-        : widget.purchase.name[0].toUpperCase() +
-            widget.purchase.name.substring(1);
+        : widget.purchase.name[0].toUpperCase() + widget.purchase.name.substring(1);
     bool bought = widget.purchase.buyerId == selectedMemberId;
-    bool received = widget.purchase.receivers
-        .where((element) => element.id == selectedMemberId)
-        .isNotEmpty;
+    bool received = widget.purchase.receivers.where((element) => element.id == selectedMemberId).isNotEmpty;
 
     Color textColor = bought
         ? themeName.type == ThemeType.gradient
@@ -94,13 +96,9 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
         ),
       ],
     );
-    TextStyle mainTextStyle =
-        Theme.of(context).textTheme.bodyLarge!.copyWith(color: textColor);
-    TextStyle subTextStyle =
-        Theme.of(context).textTheme.bodySmall!.copyWith(color: textColor);
-    String names = bought
-        ? widget.purchase.receivers.join(', ')
-        : widget.purchase.buyerNickname;
+    TextStyle mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(color: textColor);
+    TextStyle subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(color: textColor);
+    String names = bought ? widget.purchase.receivers.join(', ') : widget.purchase.buyerNickname;
 
     String amount = (bought
             ? widget.purchase.totalAmountOriginalCurrency
@@ -109,9 +107,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                 .balanceOriginalCurrency))
         .toMoneyString(widget.purchase.originalCurrency, withSymbol: true);
     String amountToSelf = bought && received
-        ? (-widget.purchase.receivers
-                .firstWhere((element) => element.id == selectedMemberId)
-                .balanceOriginalCurrency)
+        ? (-widget.purchase.receivers.firstWhere((element) => element.id == selectedMemberId).balanceOriginalCurrency)
             .toMoneyString(
             widget.purchase.originalCurrency,
             withSymbol: true,
@@ -120,13 +116,11 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
     BoxDecoration decoration = bought
         ? received
             ? BoxDecoration(
-                gradient: AppTheme.gradientFromTheme(themeName,
-                    useSecondaryContainer: true),
+                gradient: AppTheme.gradientFromTheme(themeName, useSecondaryContainer: true),
                 borderRadius: BorderRadius.circular(15),
               )
             : BoxDecoration(
-                gradient: AppTheme.gradientFromTheme(themeName,
-                    usePrimaryContainer: true),
+                gradient: AppTheme.gradientFromTheme(themeName, usePrimaryContainer: true),
                 borderRadius: BorderRadius.circular(15),
               )
         : BoxDecoration();
@@ -152,7 +146,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                             showDialog(
                               context: context,
                               builder: (context) => AddReactionDialog(
-                                type: 'purchases',
+                                type: ReactionType.purchase,
                                 reactions: widget.purchase.reactions!,
                                 reactToId: widget.purchase.id,
                                 onSend: this.handleSendReaction,
@@ -249,7 +243,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                   reactions: widget.purchase.reactions!,
                   reactedToId: widget.purchase.id,
                   isSecondaryColor: bought,
-                  type: 'purchases',
+                  type: ReactionType.purchase,
                   onSendReaction: this.handleSendReaction,
                 ),
               ),

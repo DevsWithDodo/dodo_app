@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/essentials/ad_unit.dart';
+import 'package:csocsort_szamla/essentials/event_bus.dart';
 import 'package:csocsort_szamla/essentials/models.dart';
 import 'package:csocsort_szamla/essentials/http.dart';
 import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
@@ -193,7 +194,11 @@ class _CreateGroupState extends State<CreateGroup> {
                 context: context,
                 outputCallbacks: {
                   BoolFutureOutput.True: () async {
-                    await clearAllCache(); // TODO: EventBus
+                    EventBus.instance.fire(EventBus.refreshGroups);
+                    EventBus.instance.fire(EventBus.refreshPayments);
+                    EventBus.instance.fire(EventBus.refreshPurchases);
+                    EventBus.instance.fire(EventBus.refreshShopping);
+                    EventBus.instance.fire(EventBus.refreshStatistics);
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) => MainPage()),
                       (r) => false,

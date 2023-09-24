@@ -362,6 +362,10 @@ class _JoinGroupState extends State<JoinGroup> {
                   outputCallbacks: {
                     BoolFutureOutput.True: () async {
                       EventBus.instance.fire(EventBus.refreshGroups);
+                      EventBus.instance.fire(EventBus.refreshPayments);
+                      EventBus.instance.fire(EventBus.refreshPurchases);
+                      EventBus.instance.fire(EventBus.refreshShopping);
+                      EventBus.instance.fire(EventBus.refreshStatistics);
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(builder: (context) => MainPage()),
                         (r) => false,
@@ -386,9 +390,7 @@ class _JoinGroupState extends State<JoinGroup> {
                           children: [
                             GradientButton(
                               child: Icon(Icons.check),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
+                              onPressed: () => Navigator.pop(context),
                             ),
                           ],
                         )

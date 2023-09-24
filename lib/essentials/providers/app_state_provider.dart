@@ -140,7 +140,6 @@ class AppStateProvider extends ChangeNotifier {
 
         Map<String, dynamic> decoded = jsonDecode(response.body);
         int? lastActiveGroup = decoded['data']['last_active_group'];
-        print(decoded);
         user = User(
           apiToken: decoded['data']['api_token'],
           username: decoded['data']['username'],
@@ -200,7 +199,7 @@ class AppStateProvider extends ChangeNotifier {
   }
 
   Future<BoolFutureOutput> register(
-      String username, String password, String currency, bool personalisedAds, BuildContext context) async {
+      String username, String password, String currency, BuildContext context) async {
     try {
       String? token;
       if (isFirebasePlatformEnabled) {
@@ -214,7 +213,6 @@ class AppStateProvider extends ChangeNotifier {
         "password_confirmation": password,
         "fcm_token": token,
         "language": context.locale.languageCode,
-        "personalised_ads": personalisedAds ? 1 : 0
       };
       Map<String, String> header = {
         "Content-Type": "application/json",
@@ -238,7 +236,7 @@ class AppStateProvider extends ChangeNotifier {
           ratedApp: false,
           showAds: false,
           useGradients: true,
-          personalisedAds: personalisedAds,
+          personalisedAds: false,
           trialVersion: true,
           paymentMethods: [],
           userStatus: UserStatus.fromJson(decoded['status']),

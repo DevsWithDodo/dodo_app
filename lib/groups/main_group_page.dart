@@ -80,7 +80,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   Future<List<Group>> _getGroups() async {
     Response response =
-        await Http.get(uri: generateUri(GetUriKeys.groups, context));
+        await Http.get(uri: generateUri(GetUriKeys.groups, context), overwriteCache: true);
     Map<String, dynamic> decoded = jsonDecode(response.body);
     AppStateProvider userProvider = context.read<AppStateProvider>();
     List<Group> groups = [];

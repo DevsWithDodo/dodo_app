@@ -41,6 +41,14 @@ class _ColorPickerState extends State<ColorPicker> {
     brightness = context.read<AppStateProvider>().themeName.brightness;
   }
 
+  void _updateBrightness(Brightness brightness) {
+    AppStateProvider provider = context.read<AppStateProvider>();
+    provider.setThemeName(provider.themeName.getCounterPart());
+    setState(
+      () => this.brightness = brightness,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // This line is important so that textTheme is updated, don't know why
@@ -48,8 +56,6 @@ class _ColorPickerState extends State<ColorPicker> {
     return Selector<AppStateProvider, bool>(
         selector: (context, provider) => provider.user!.useGradients,
         builder: (context, useGradients, _) {
-          Color enabledColor = Theme.of(context).colorScheme.primary;
-          Color disabledColor = Theme.of(context).colorScheme.onSurfaceVariant;
           return Card(
             child: Padding(
               padding: const EdgeInsets.all(15),
@@ -69,25 +75,27 @@ class _ColorPickerState extends State<ColorPicker> {
                   Row(
                     children: [
                       Expanded(
-                        child: Icon(
-                          Icons.light_mode,
-                          color: brightness == Brightness.light ? enabledColor : disabledColor,
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: IconButton(
+                            onPressed: () => _updateBrightness(Brightness.light),
+                            isSelected: brightness == Brightness.light,
+                            icon: Icon(Icons.light_mode),
+                          ),
                         ),
                       ),
                       Switch(
                         value: brightness == Brightness.dark,
-                        onChanged: (value) {
-                          AppStateProvider provider = context.read<AppStateProvider>();
-                          provider.setThemeName(provider.themeName.getCounterPart());
-                          setState(
-                            () => brightness = value ? Brightness.dark : Brightness.light,
-                          );
-                        },
+                        onChanged: (value) => _updateBrightness(value ? Brightness.dark : Brightness.light),
                       ),
                       Expanded(
-                        child: Icon(
-                          Icons.dark_mode,
-                          color: brightness == Brightness.dark ? enabledColor : disabledColor,
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: IconButton(
+                            isSelected: brightness == Brightness.dark,
+                            onPressed: () => _updateBrightness(Brightness.dark),
+                            icon: Icon(Icons.dark_mode),
+                          ),
                         ),
                       ),
                     ],

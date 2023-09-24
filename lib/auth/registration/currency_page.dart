@@ -1,7 +1,11 @@
-import 'package:csocsort_szamla/auth/registration/personalised_ads_page.dart';
+import 'package:csocsort_szamla/essentials/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/essentials/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/essentials/widgets/currency_picker_dropdown.dart';
+import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
+import 'package:csocsort_szamla/groups/join_group.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../essentials/widgets/gradient_button.dart';
 
 class CurrencyPage extends StatefulWidget {
@@ -45,8 +49,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
                         ),
                         CurrencyPickerDropdown(
                           defaultCurrencyValue: _defaultCurrency,
-                          currencyChanged: (newCurrency) =>
-                              setState(() => _defaultCurrency = newCurrency),
+                          currencyChanged: (newCurrency) => setState(() => _defaultCurrency = newCurrency),
                         ),
                       ],
                     ),
@@ -66,15 +69,25 @@ class _CurrencyPageState extends State<CurrencyPage> {
                       GradientButton(
                         child: Icon(Icons.arrow_right),
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PersonalisedAdsPage(
-                                username: widget.username,
-                                pin: widget.pin,
-                                defaultCurrency: _defaultCurrency,
-                              ),
-                            ),
+                          showFutureOutputDialog(
+                            context: context,
+                            future: context.read<AppStateProvider>().register(
+                                  widget.username,
+                                  widget.pin,
+                                  _defaultCurrency,
+                                  context,
+                                ),
+                            outputCallbacks: {
+                              BoolFutureOutput.True: () => Navigator.of(context).pushAndRemoveUntil(
+                                    MaterialPageRoute(
+                                      builder: (context) => JoinGroup(
+                                        fromAuth: true,
+                                        inviteURL: context.read<InviteUrlProvider>().inviteUrl,
+                                      ),
+                                    ),
+                                    (r) => false,
+                                  ),
+                            },
                           );
                         },
                       ),

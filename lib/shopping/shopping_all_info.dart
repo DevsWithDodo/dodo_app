@@ -57,37 +57,35 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
               children: <Widget>[
                 Row(
                   children: <Widget>[
-                    Icon(Icons.account_circle,
-                        color: Theme.of(context).colorScheme.secondary),
+                    Icon(Icons.account_circle, color: Theme.of(context).colorScheme.secondary),
                     Flexible(
                       child: Text(
                         ' - ' + widget.shoppingRequest.requesterNickname,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge!
+                            .copyWith(color: Theme.of(context).colorScheme.onSurface),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 5,
-                ),
+                SizedBox(height: 5),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Icon(Icons.receipt_long,
-                        color: Theme.of(context).colorScheme.secondary),
+                    Icon(Icons.receipt_long, color: Theme.of(context).colorScheme.secondary),
                     Flexible(
                       child: Text(
                         ' - ' + widget.shoppingRequest.name,
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge!
+                            .copyWith(color: Theme.of(context).colorScheme.onSurface),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 5,
-                ),
+                SizedBox(height: 5),
                 Row(
                   children: <Widget>[
                     Icon(
@@ -96,11 +94,11 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                     ),
                     Flexible(
                       child: Text(
-                        ' - ' +
-                            DateFormat('yyyy/MM/dd - HH:mm')
-                                .format(widget.shoppingRequest.updatedAt),
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface),
+                        ' - ' + DateFormat('yyyy/MM/dd - HH:mm').format(widget.shoppingRequest.updatedAt),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge!
+                            .copyWith(color: Theme.of(context).colorScheme.onSurface),
                       ),
                     ),
                   ],
@@ -149,13 +147,11 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                               onPressed: () {
                                 showFutureOutputDialog(
                                   context: context,
-                                  future: _deleteShoppingRequest(
-                                      widget.shoppingRequest.id),
+                                  future: _deleteShoppingRequest(widget.shoppingRequest.id),
                                   outputCallbacks: {
                                     BoolFutureOutput.True: () {
                                       Navigator.pop(context);
-                                      Navigator.pop(
-                                          context, {'type': 'deleted'});
+                                      Navigator.pop(context, {'type': 'deleted'});
                                     }
                                   },
                                 );
@@ -188,8 +184,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                                   outputCallbacks: {
                                     BoolFutureOutput.True: () {
                                       Navigator.pop(context, true);
-                                      Navigator.pop(
-                                          context, {'type': 'deleted'});
+                                      Navigator.pop(context, {'type': 'deleted'});
                                     }
                                   },
                                 );
@@ -209,13 +204,11 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                               onPressed: () {
                                 showFutureOutputDialog<bool, BoolFutureOutput>(
                                   context: context,
-                                  future: _fulfillShoppingRequest(
-                                      widget.shoppingRequest.id),
+                                  future: _fulfillShoppingRequest(widget.shoppingRequest.id),
                                   outputCallbacks: {
                                     BoolFutureOutput.True: () {
                                       Navigator.pop(context, true);
-                                      Navigator.pop(
-                                          context, {'type': 'deleted'});
+                                      Navigator.pop(context, {'type': 'deleted'});
                                     }
                                   },
                                 ).then((value) {

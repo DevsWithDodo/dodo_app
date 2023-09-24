@@ -24,34 +24,39 @@ class PaymentEntry extends StatefulWidget {
 }
 
 class _PaymentEntryState extends State<PaymentEntry> {
-  void handleSendReaction(String reaction) {
-    User user = context.read<AppStateProvider>().user!;
-    Reaction? oldReaction = widget.payment.reactions!
-        .firstWhereOrNull((element) => element.userId == user.id);
-    bool alreadyReacted = oldReaction != null;
-    bool sameReaction =
-        alreadyReacted ? oldReaction.reaction == reaction : false;
-    if (sameReaction) {
-      widget.payment.reactions!.remove(oldReaction);
-      setState(() {});
-    } else if (!alreadyReacted) {
-      widget.payment.reactions!.add(Reaction(
-        nickname: user.username,
-        reaction: reaction,
-        userId: user.id,
-      ));
-      setState(() {});
-    } else {
-      widget.payment.reactions!.add(
-        Reaction(
-          nickname: oldReaction.nickname,
+  late List<Reaction> reactions;
+
+  @override
+  void initState() {
+    super.initState();
+    reactions = widget.payment.reactions!;
+  }
+
+  void handleSendReaction(String reaction, int userId) {
+    setState(() {
+      User user = context.read<AppStateProvider>().user!;
+      Reaction? oldReaction = reactions.firstWhereOrNull((element) => element.userId == user.id);
+      bool alreadyReacted = oldReaction != null;
+      bool sameReaction = alreadyReacted ? oldReaction.reaction == reaction : false;
+      if (sameReaction) {
+        reactions.remove(oldReaction);
+      } else if (!alreadyReacted) {
+        reactions.add(Reaction(
+          nickname: user.username,
           reaction: reaction,
           userId: user.id,
-        ),
-      );
-      widget.payment.reactions!.remove(oldReaction);
-      setState(() {});
-    }
+        ));
+      } else {
+        reactions.add(
+          Reaction(
+            nickname: oldReaction.nickname,
+            reaction: reaction,
+            userId: user.id,
+          ),
+        );
+        reactions.remove(oldReaction);
+      }
+    });
   }
 
   @override
@@ -69,27 +74,19 @@ class _PaymentEntryState extends State<PaymentEntry> {
               : Theme.of(context).colorScheme.onSurfaceVariant;
           String note = (widget.payment.note == '')
               ? 'no_note'.tr()
-              : widget.payment.note[0].toUpperCase() +
-                  widget.payment.note.substring(1);
-          String takerName = paid
-              ? widget.payment.takerNickname
-              : widget.payment.payerNickname;
+              : widget.payment.note[0].toUpperCase() + widget.payment.note.substring(1);
+          String takerName = paid ? widget.payment.takerNickname : widget.payment.payerNickname;
           String amount = (paid ? '' : '-') +
-              widget.payment.amountOriginalCurrency.toMoneyString(
-                  widget.payment.originalCurrency,
-                  withSymbol: true);
+              widget.payment.amountOriginalCurrency.toMoneyString(widget.payment.originalCurrency, withSymbol: true);
           BoxDecoration boxDecoration = paid
               ? BoxDecoration(
-                  gradient: AppTheme.gradientFromTheme(themeName,
-                      usePrimaryContainer: true),
+                  gradient: AppTheme.gradientFromTheme(themeName, usePrimaryContainer: true),
                   borderRadius: BorderRadius.circular(15),
                 )
               : BoxDecoration();
 
-          TextStyle mainTextStyle =
-              Theme.of(context).textTheme.bodyLarge!.copyWith(color: textColor);
-          TextStyle subTextStyle =
-              Theme.of(context).textTheme.bodySmall!.copyWith(color: textColor);
+          TextStyle mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(color: textColor);
+          TextStyle subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(color: textColor);
           Widget buyer = Row(
             children: [
               Icon(
@@ -125,7 +122,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
                         : () {
                             showDialog(
                                 builder: (context) => AddReactionDialog(
-                                      type: 'payments',
+                                      type: ReactionType.payment,
                                       reactions: widget.payment.reactions!,
                                       reactToId: widget.payment.id,
                                       onSend: this.handleSendReaction,
@@ -136,8 +133,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
                       showModalBottomSheet<String>(
                           context: context,
                           isScrollControlled: true,
-                          builder: (context) => SingleChildScrollView(
-                              child: PaymentAllInfo(widget.payment))).then(
+                          builder: (context) => SingleChildScrollView(child: PaymentAllInfo(widget.payment))).then(
                         (value) {
                           if (value == 'deleted') {
                             final bus = EventBus.instance;
@@ -193,7 +189,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
                   reactions: widget.payment.reactions!,
                   onSendReaction: this.handleSendReaction,
                   isSecondaryColor: widget.payment.payerId == user.id,
-                  type: 'payments',
+                  type: ReactionType.payment,
                 ),
               )
             ],

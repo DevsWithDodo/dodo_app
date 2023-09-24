@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 class InAppPurchasePage extends StatefulWidget {
+  const InAppPurchasePage({Key? key}) : super(key: key);
   @override
   _InAppPurchasePageState createState() => _InAppPurchasePageState();
 }

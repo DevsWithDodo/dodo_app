@@ -18,6 +18,7 @@ class _ConfirmLeaveDialogState extends State<ConfirmLeaveDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
+        constraints: BoxConstraints(maxWidth: 500),
         padding: EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

@@ -7,6 +7,7 @@ import 'package:csocsort_szamla/essentials/widgets/future_success_dialog.dart';
 import 'package:csocsort_szamla/essentials/widgets/past_reaction_container.dart';
 import 'package:csocsort_szamla/purchase/add_purchase_page.dart';
 import 'package:csocsort_szamla/shopping/shopping_all_info.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,100 +26,74 @@ class ShoppingListEntry extends StatefulWidget {
   });
 
   @override
-  _ShoppingListEntryState createState() => _ShoppingListEntryState();
+  State<ShoppingListEntry> createState() => _ShoppingListEntryState();
 }
 
 class _ShoppingListEntryState extends State<ShoppingListEntry> {
-  late Icon icon;
-  late TextStyle mainTextStyle;
-  late TextStyle subTextStyle;
-  late BoxDecoration boxDecoration;
-
-  String? name;
-  late User user;
+  late List<Reaction> reactions;
 
   @override
   void initState() {
     super.initState();
-    user = context.read<AppStateProvider>().user!;
+    reactions = widget.shoppingRequest.reactions!;
   }
 
-  void handleSendReaction(String reaction) {
-    Reaction? oldReaction = widget.shoppingRequest.reactions!
-        .firstWhereOrNull((element) => element.userId == user.id);
-    bool alreadyReacted = oldReaction != null;
-    bool sameReaction =
-        alreadyReacted ? oldReaction.reaction == reaction : false;
-    if (sameReaction) {
-      widget.shoppingRequest.reactions!.remove(oldReaction);
-      setState(() {});
-    } else if (!alreadyReacted) {
-      widget.shoppingRequest.reactions!.add(Reaction(
-        nickname: context.read<AppStateProvider>().user!.username,
-        reaction: reaction,
-        userId: user.id,
-      ));
-      setState(() {});
-    } else {
-      widget.shoppingRequest.reactions!.add(Reaction(
-        nickname: oldReaction.nickname,
-        reaction: reaction,
-        userId: user.id,
-      ));
-      widget.shoppingRequest.reactions!.remove(oldReaction);
-      setState(() {});
-    }
+  void handleSendReaction(String reaction, int userId) {
+    setState(() {
+      Reaction? oldReaction = reactions.firstWhereOrNull((element) => element.userId == userId);
+      bool alreadyReacted = oldReaction != null;
+      bool sameReaction = alreadyReacted ? oldReaction.reaction == reaction : false;
+      if (sameReaction) {
+        reactions.remove(oldReaction);
+      } else if (!alreadyReacted) {
+        reactions.add(Reaction(
+          nickname: context.read<AppStateProvider>().user!.username,
+          reaction: reaction,
+          userId: userId,
+        ));
+      } else {
+        reactions.add(Reaction(
+          nickname: oldReaction.nickname,
+          reaction: reaction,
+          userId: userId,
+        ));
+        reactions.remove(oldReaction);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    name = widget.shoppingRequest.name;
-    mainTextStyle = Theme.of(context)
-        .textTheme
-        .bodyLarge!
-        .copyWith(color: Theme.of(context).colorScheme.onSurface);
-    subTextStyle = Theme.of(context)
-        .textTheme
-        .bodySmall!
-        .copyWith(color: Theme.of(context).colorScheme.onSurface);
-    boxDecoration = BoxDecoration(
+    String name = widget.shoppingRequest.name;
+    User user = context.watch<AppStateProvider>().user!;
+    TextStyle mainTextStyle =
+        Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface);
+    TextStyle subTextStyle =
+        Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurface);
+    BoxDecoration boxDecoration = BoxDecoration(
       borderRadius: BorderRadius.circular(20),
     );
-    if (widget.shoppingRequest.requesterId == user.id) {
-      icon = Icon(
-        Icons.shopping_cart_outlined,
-        color: Theme.of(context).colorScheme.primary,
-      );
-    } else {
-      icon = Icon(Icons.card_giftcard,
-          color: Theme.of(context).colorScheme.secondary);
-    }
+    Icon icon = Icon(
+      Icons.check_box_outlined,
+      color: widget.shoppingRequest.requesterId == user.id
+          ? Theme.of(context).colorScheme.primary
+          : Theme.of(context).colorScheme.secondary,
+    );
     return Dismissible(
       key: UniqueKey(),
-      secondaryBackground: Container(
-        child: Align(
-            alignment: Alignment.centerRight,
-            child: Icon(
-              widget.shoppingRequest.requesterId != user.id
-                  ? Icons.done
-                  : Icons.delete,
-              size: 30,
-              color: Theme.of(context).textTheme.bodyLarge!.color,
-            )),
+      secondaryBackground: Align(
+        alignment: Alignment.centerRight,
+        child: Icon(
+          widget.shoppingRequest.requesterId != user.id ? Icons.done : Icons.delete,
+        ),
       ),
-      dismissThresholds: {
-        DismissDirection.startToEnd: 0.6,
-        DismissDirection.endToStart: 0.6
-      },
+      dismissThresholds: {DismissDirection.startToEnd: 0.6, DismissDirection.endToStart: 0.6},
       background: Align(
-          alignment: Alignment.centerLeft,
-          child: Icon(
-            widget.shoppingRequest.requesterId != user.id
-                ? Icons.attach_money
-                : Icons.edit,
-            size: 30,
-            color: Theme.of(context).textTheme.bodyLarge!.color,
-          )),
+        alignment: Alignment.centerLeft,
+        child: Icon(
+          widget.shoppingRequest.requesterId != user.id ? Icons.attach_money : Icons.edit,
+        ),
+      ),
       onDismissed: (direction) {
         // If requester is not the current user, the request has to be deleted either way
         if (widget.shoppingRequest.requesterId != user.id) {
@@ -129,7 +104,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
               BoolFutureOutput.True: () => Navigator.of(context).pop(true),
             },
           ).then((value) {
-            widget.onDeleteRequest(widget.shoppingRequest.id);
+            this.widget.onDeleteRequest(widget.shoppingRequest.id);
             // But if the direction is startToEnd, the AddPurchase site has to be called
             if (direction == DismissDirection.startToEnd && value == true) {
               Navigator.push(
@@ -154,8 +129,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                 BoolFutureOutput.True: () => Navigator.of(context).pop(true),
               },
             ).then((value) {
-              if (value ?? false)
-                widget.onDeleteRequest(widget.shoppingRequest.id);
+              if (value ?? false) this.widget.onDeleteRequest(widget.shoppingRequest.id);
             });
           } else if (direction == DismissDirection.startToEnd) {
             showDialog<ShoppingRequest>(
@@ -176,21 +150,15 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
       child: Stack(
         children: [
           Container(
-            height: 75,
-            width: MediaQuery.of(context).size.width,
             decoration: boxDecoration,
-            margin: EdgeInsets.only(
-                top: widget.shoppingRequest.reactions!.length == 0 ? 5 : 10,
-                bottom: 8,
-                left: 5,
-                right: 5),
+            margin: EdgeInsets.only(top: widget.shoppingRequest.reactions!.length == 0 ? 5 : 10, bottom: 8),
             child: Material(
               type: MaterialType.transparency,
               child: InkWell(
                 onLongPress: () {
                   showDialog(
                       builder: (context) => AddReactionDialog(
-                            type: 'requests',
+                            type: ReactionType.request,
                             reactions: widget.shoppingRequest.reactions!,
                             reactToId: widget.shoppingRequest.id,
                             onSend: this.handleSendReaction,
@@ -201,14 +169,13 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                   showModalBottomSheet<Map<String, dynamic>>(
                     context: context,
                     isScrollControlled: true,
-                    builder: (context) => SingleChildScrollView(
-                        child: ShoppingAllInfo(widget.shoppingRequest)),
+                    builder: (context) => SingleChildScrollView(child: ShoppingAllInfo(widget.shoppingRequest)),
                   ).then((value) {
                     if (value != null) {
                       if (value['type'] == 'deleted') {
-                        widget.onDeleteRequest(widget.shoppingRequest.id);
+                        this.widget.onDeleteRequest(widget.shoppingRequest.id);
                       } else {
-                        widget.onEditRequest(value['request']);
+                        this.widget.onEditRequest(value['request']);
                       }
                     }
                   });
@@ -216,49 +183,32 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                 borderRadius: BorderRadius.circular(15),
                 child: Padding(
                   padding: EdgeInsets.all(8),
-                  child: Flex(
-                    direction: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10, right: 20),
+                        child: icon,
+                      ),
                       Flexible(
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             Flexible(
-                              child: Row(
-                                children: <Widget>[
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  icon,
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  Flexible(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Flexible(
-                                          child: Text(
-                                            name!,
-                                            style: mainTextStyle,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        Flexible(
-                                          child: Text(
-                                            widget.shoppingRequest
-                                                .requesterNickname,
-                                            style: subTextStyle,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                              child: Text(
+                                name,
+                                style: mainTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            Flexible(
+                              child: Text(
+                                'shopping-list.entry.wish'
+                                    .tr(namedArgs: {'name': widget.shoppingRequest.requesterNickname}),
+                                style: subTextStyle,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
@@ -271,10 +221,10 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
             ),
           ),
           PastReactionContainer(
-            reactions: widget.shoppingRequest.reactions!,
+            reactions: reactions,
             reactedToId: widget.shoppingRequest.id,
             isSecondaryColor: widget.shoppingRequest.requesterId == user.id,
-            type: 'requests',
+            type: ReactionType.request,
             onSendReaction: this.handleSendReaction,
           ),
         ],

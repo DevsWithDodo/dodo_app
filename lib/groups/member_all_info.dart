@@ -190,14 +190,14 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                   future: _removeMember(widget.member.id),
                                   outputCallbacks: {
                                     LeftOrRemovedFromGroupFutureOutput.RemovedFromGroup: () {
-                                          EventBus.instance.fire(EventBus.refreshBalances);
-                                          EventBus.instance.fire(EventBus.refreshPurchases);
-                                          EventBus.instance.fire(EventBus.refreshPayments);
-                                          EventBus.instance.fire(EventBus.refreshShopping);
-                                          EventBus.instance.fire(EventBus.refreshGroupMembers);
-                                          Navigator.of(context).pop();
-                                          Navigator.of(context).pop();
-                                        }
+                                      EventBus.instance.fire(EventBus.refreshBalances);
+                                      EventBus.instance.fire(EventBus.refreshPurchases);
+                                      EventBus.instance.fire(EventBus.refreshPayments);
+                                      EventBus.instance.fire(EventBus.refreshShopping);
+                                      EventBus.instance.fire(EventBus.refreshGroupMembers);
+                                      Navigator.of(context).pop();
+                                      Navigator.of(context).pop();
+                                    }
                                   },
                                 );
                               }
@@ -273,7 +273,8 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                           EventBus.instance.fire(EventBus.refreshShopping);
                                         },
                                         LeftOrRemovedFromGroupFutureOutput.LeftNoOutherGroup: () async {
-                                          await Navigator.of(context).pushAndRemoveUntil(
+                                          print('left no outher group');
+                                          Navigator.of(context).pushAndRemoveUntil(
                                             MaterialPageRoute(
                                               builder: (context) => JoinGroup(
                                                 fromAuth: true,
@@ -281,7 +282,11 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                             ),
                                             (r) => false,
                                           );
-                                          await clearAllCache();
+                                          AppStateProvider provider = context.read<AppStateProvider>();
+                                          provider.setGroups([]);
+                                          provider.setGroup(null);
+                                          print(provider.user!.groups);
+                                          clearAllCache();
                                         },
                                       },
                                     );
@@ -317,11 +322,12 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
     if (memberId != null) {
       return LeftOrRemovedFromGroupFutureOutput.RemovedFromGroup;
     }
-    AppStateProvider userProvider = context.read<AppStateProvider>();
     if (response.body != "") {
       // The API returns the group if the user has other groups
       Map<String, dynamic> decoded = jsonDecode(response.body);
-      userProvider.setGroup(Group(
+      AppStateProvider provider = context.read<AppStateProvider>();
+      provider.setGroups(provider.user!.groups.where((group) => group.id != provider.user!.group!.id).toList());
+      provider.setGroup(Group(
         id: decoded['data']['group_id'],
         name: decoded['data']['group_name'],
         currency: decoded['data']['currency'],
