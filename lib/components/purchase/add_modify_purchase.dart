@@ -22,7 +22,7 @@ import '../helpers/member_chips.dart';
 
 enum PurchaseType { fromShopping, newPurchase, modifyPurchase }
 
-class AddModifyPurchase {
+mixin AddModifyPurchase {
   TextEditingController amountController = TextEditingController();
   TextEditingController noteController = TextEditingController();
   Future<List<Member>>? members;

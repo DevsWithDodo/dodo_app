@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:csocsort_szamla/app.dart';
 import 'package:csocsort_szamla/pages/app/store_page.dart';
 import 'package:csocsort_szamla/pages/app/join_group_page.dart';
 import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
@@ -98,6 +99,12 @@ Future onSelectNotification(String? payload, AppStateProvider userProvider) asyn
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  SharedPreferences.setPrefix('__dodo__');
+  final _prefs = await SharedPreferences.getInstance();
+  runApp(App(_prefs));
+  return;
+
   await EasyLocalization.ensureInitialized();
   if (!kIsWeb) {
     isIAPPlatformEnabled = Platform.isAndroid || Platform.isIOS;

@@ -64,7 +64,7 @@ class GradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ThemeName themeName = this.themeName ?? context.watch<AppStateProvider>().themeName;
+    ThemeName themeName = this.themeName ?? ThemeName.dodoLight;
     Color textColor = AppTheme.textColorOnGradient(
       themeName,
       useSecondary: this.useSecondary,

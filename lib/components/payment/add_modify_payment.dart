@@ -18,7 +18,7 @@ import '../helpers/member_chips.dart';
 
 enum PaymentType { newPayment, modifyPayment }
 
-class AddModifyPayment {
+mixin AddModifyPayment {
   Member? selectedMember;
   TextEditingController amountController = TextEditingController();
   TextEditingController noteController = TextEditingController();
