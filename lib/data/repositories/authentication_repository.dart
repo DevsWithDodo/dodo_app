@@ -23,8 +23,13 @@ class AuthenticationRepository {
   AuthenticationRepository(this._authenticationProvider, this._prefs);
 
   Future login(String username, String password) async {
-    await _authenticationProvider.login(username, password);
-    _controller.add(AuthenticationStatus.authenticated);
+    try {
+      await _authenticationProvider.login(username, password);
+      _controller.add(AuthenticationStatus.authenticated);
+    }
+    catch (e) {
+      throw e;
+    }
   }
 
   Future signUp(String username, String password) async {

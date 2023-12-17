@@ -71,7 +71,7 @@ class _AppViewState extends State<AppView> {
       theme: AppTheme.themes[ThemeName.dodoLight],
       navigatorKey: _navigatorKey,
       builder: (context, child) {
-        return BlocListener<AuthenticationBloc, AuthenticationState>(
+        return BlocListener<AuthenticationBloc, AuthenticationState>( 
           listener: (context, state) {
             switch (state.status) {
               case AuthenticationStatus.authenticated:
@@ -84,7 +84,7 @@ class _AppViewState extends State<AppView> {
                   MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
                   (route) => false,
                 );
-              case AuthenticationStatus.unknown:
+              default:
                 break;
             }
           },

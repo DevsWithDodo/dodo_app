@@ -20,7 +20,10 @@ class AuthenticationBloc
     on<_AuthenticationStatusChanged>(_onAuthenticationStatusChanged);
     on<AuthenticationLogoutRequested>(_onAuthenticationLogoutRequested);
     _authenticationStatusSubscription = _authenticationRepository.status.listen(
-      (status) => add(_AuthenticationStatusChanged(status)),
+      (status) {
+        print('status: $status');
+        add(_AuthenticationStatusChanged(status));
+      },
     );
   }
 
@@ -33,6 +36,13 @@ class AuthenticationBloc
   Future<void> close() {
     _authenticationStatusSubscription.cancel();
     return super.close();
+  }
+
+  @override
+  void onTransition(
+      Transition<AuthenticationEvent, AuthenticationState> transition) {
+    super.onTransition(transition);
+    print(transition);
   }
 
   Future<void> _onAuthenticationStatusChanged(

@@ -32,3 +32,32 @@ class LoginPasswordChanged extends LoginEvent {
 class LoginPasswordSubmitted extends LoginEvent {
   const LoginPasswordSubmitted();
 }
+
+class LoginPinChanged extends LoginEvent {
+  final String pin;
+
+  const LoginPinChanged({required this.pin});
+
+  @override
+  List<Object> get props => [pin];
+}
+
+class LoginPinSubmitted extends LoginEvent {
+  const LoginPinSubmitted();
+}
+
+class LoginWentToName extends LoginEvent {
+  const LoginWentToName();
+}
+
+class LoginSwitchedToPassword extends LoginEvent {
+  const LoginSwitchedToPassword();
+}
+
+class LoginSwitchedToPin extends LoginEvent {
+  const LoginSwitchedToPin();
+}
+
+class LoginStatusChangedToInitial extends LoginEvent {
+  const LoginStatusChangedToInitial();
+}

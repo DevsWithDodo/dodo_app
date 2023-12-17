@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:csocsort_szamla/data/providers/api/token_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,8 +12,9 @@ class AuthenticationApiProvider {
   final SharedPreferences _prefs;
 
   Future<bool> login(String username, String password) async {
-    await http.post(http.generateUri('login'), body: {'username': username, 'password': password});
-    TokenManager.setToken('token', _prefs);
+    final response = await http.post(http.generateUri('login'), body: {'username': username, 'password': password});
+    final token = jsonDecode(response.body)['data']['api_token'];
+    TokenManager.setToken(token, _prefs);
     return true;    
   }
 
