@@ -1,11 +1,11 @@
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'models.dart';
 
 List<Payment> necessaryPayments(List<Member> members, BuildContext context) {
-  Group currentGroup = context.read<AppStateProvider>().currentGroup!;
+  Group currentGroup = context.read<UserState>().currentGroup!;
   List<Payment> payments = <Payment>[];
   List<Member> memberCopy = <Member>[];
   if (members.where((member) => member.balance != 0).length > 0) {

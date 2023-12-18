@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/user_settings/components/enter_payment_method_list_item.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ class EnterPaymentMethodList extends StatelessWidget {
       child: ChangeNotifierProvider(
         create: (context) => PaymentMethodProvider(
           paymentMethods: context
-              .read<AppStateProvider>()
+              .read<UserState>()
               .user!
               .paymentMethods
               .map((paymentMethod) => paymentMethod.clone())
@@ -46,7 +46,7 @@ class EnterPaymentMethodList extends StatelessWidget {
                   ),
                   Visibility(
                     visible: provider.paymentMethods.isNotEmpty ||
-                        context.watch<AppStateProvider>().user!.paymentMethods.isNotEmpty,
+                        context.watch<UserState>().user!.paymentMethods.isNotEmpty,
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: GradientButton(

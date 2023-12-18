@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/necessary_payments.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,14 +26,14 @@ class _RecommendedPaymentsState extends State<RecommendedPayments> {
     super.initState();
     List<Payment> payments = necessaryPayments(widget.members, context);
     if (widget.onlyShowOwn) {
-      print(Currency.threshold(payments.first.originalCurrency));
+      print(payments.first.originalCurrency.threshold());
       _necessaryPayments =
-          payments.where((payment) => payment.payerId == context.read<AppStateProvider>().user!.id).toList();
+          payments.where((payment) => payment.payerId == context.read<UserState>().user!.id).toList();
     } else {
       _necessaryPayments = payments;
     }
     _necessaryPayments =
-        _necessaryPayments.where((payment) => payment.amount > Currency.threshold(payment.originalCurrency)).toList();
+        _necessaryPayments.where((payment) => payment.amount > payment.originalCurrency.threshold()).toList();
   }
 
   @override

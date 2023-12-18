@@ -1,6 +1,7 @@
+import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
@@ -17,20 +18,20 @@ class ChangeUserCurrencyDialog extends StatefulWidget {
 }
 
 class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
-  late String _currencyCode;
+  late Currency _currency;
 
   @override
   void initState() {
     super.initState();
-    _currencyCode = context.read<AppStateProvider>().user!.currency;
+    _currency = context.read<UserState>().user!.currency;
   }
 
-  Future<BoolFutureOutput> _updateGroupCurrency(String currency) async {
+  Future<BoolFutureOutput> _updateUserCurrency(String currency) async {
     try {
       Map<String, dynamic> body = {"default_currency": currency};
 
       await Http.put(uri: '/user', body: body);
-      context.read<AppStateProvider>().setUserCurrency(currency);
+      context.read<UserState>().setUserCurrency(currency);
       return BoolFutureOutput.True;
     } catch (_) {
       throw _;
@@ -57,9 +58,9 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
             Padding(
               padding: const EdgeInsets.only(left: 8, right: 8),
               child: CurrencyPickerDropdown(
-                  defaultCurrencyValue: _currencyCode,
-                  currencyChanged: (currency) {
-                    _currencyCode = currency;
+                  defaultCurrencyValue: _currency.code,
+                  currencyChanged: (code) {
+                    _currency = Currency.fromCode(code);
                   }),
             ),
             SizedBox(
@@ -73,7 +74,7 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
                     FocusScope.of(context).unfocus();
                     showFutureOutputDialog(
                         context: context,
-                        future: _updateGroupCurrency(_currencyCode),
+                        future: _updateUserCurrency(_currency.code),
                         outputCallbacks: {
                           BoolFutureOutput.True: () async {
                             EventBus.instance.fire(EventBus.refreshBalances);

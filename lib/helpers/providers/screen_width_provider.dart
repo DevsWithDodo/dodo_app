@@ -2,22 +2,12 @@ import 'package:csocsort_szamla/config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ScreenWidthProvider extends StatefulWidget {
-  const ScreenWidthProvider({super.key, required this.child});
-  final Widget child;
-
-  @override
-  State<ScreenWidthProvider> createState() => _ScreenWidthProviderState();
-}
-
-class _ScreenWidthProviderState extends State<ScreenWidthProvider> {
-  late ScreenWidth _screenWidth;
-
-  @override
-  void initState() {
-    super.initState();
+class ScreenWidthProvider extends StatelessWidget {
+  ScreenWidthProvider({super.key, required this.builder}) {
     _screenWidth = ScreenWidth(width: 0, height: 0, isMobile: false);
   }
+  final Widget Function(BuildContext context) builder;
+  late final ScreenWidth _screenWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +22,7 @@ class _ScreenWidthProviderState extends State<ScreenWidthProvider> {
 
         return ChangeNotifierProvider.value(
           value: _screenWidth,
-          child: widget.child,
+          builder: (context, _) => this.builder(context),
         );
       },
     );

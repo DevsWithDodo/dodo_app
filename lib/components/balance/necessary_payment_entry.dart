@@ -1,7 +1,7 @@
 import 'package:csocsort_szamla/components/balance/payment_methods_dialog.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +13,7 @@ class NecessaryPaymentEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<AppStateProvider, User>(
+    return Selector<UserState, User>(
         selector: (_, provider) => provider.user!,
         builder: (context, user, _) {
           return Padding(
@@ -76,7 +76,7 @@ class NecessaryPaymentEntry extends StatelessWidget {
                                   child: Center(
                                     child: Text(
                                       payment.amount.toMoneyString(
-                                        context.read<AppStateProvider>().currentGroup!.currency,
+                                        context.read<UserState>().currentGroup!.currency,
                                         withSymbol: true,
                                       ),
                                       style: Theme.of(context).textTheme.bodyLarge,

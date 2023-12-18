@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/components/helpers/category_picker_icon_button.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
@@ -241,7 +241,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                           : keywords[1].tr() + ' ') +
                       lineBarSpot.y.toMoneyString(
                           context
-                              .read<AppStateProvider>()
+                              .read<UserState>()
                               .currentGroup!
                               .currency,
                           withSymbol: true),
@@ -328,7 +328,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 padding: const EdgeInsets.all(0),
                 child: Text(
                   value.toMoneyString(
-                      context.read<AppStateProvider>().currentGroup!.currency),
+                      context.read<UserState>().currentGroup!.currency),
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
@@ -373,7 +373,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     );
   }
 
-  Widget _sumOf(double? amount, int type) {
+  Widget _sumOf(double amount, int type) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -398,7 +398,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         Flexible(
             child: Text(
           amount.toMoneyString(
-              context.watch<AppStateProvider>().currentGroup!.currency,
+              context.watch<UserState>().currentGroup!.currency,
               withSymbol: true),
           style: Theme.of(context)
               .textTheme
@@ -630,8 +630,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                           SizedBox(
                             height: 10,
                           ),
-                          _sumOf(snapshot.data![2].values.first, 1),
-                          _sumOf(snapshot.data![3].values.first, 2),
+                          _sumOf(snapshot.data![2].values.first!, 1),
+                          _sumOf(snapshot.data![3].values.first!, 2),
                         ],
                       );
                     }
@@ -745,8 +745,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                           SizedBox(
                             height: 10,
                           ),
-                          _sumOf(snapshot.data![2].values.first, 1),
-                          _sumOf(snapshot.data![3].values.first, 2),
+                          _sumOf(snapshot.data![2].values.first!, 1),
+                          _sumOf(snapshot.data![3].values.first!, 2),
                         ],
                       );
                     }
@@ -861,8 +861,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                           SizedBox(
                             height: 10,
                           ),
-                          _sumOf(snapshot.data![2].values.first, 1),
-                          _sumOf(snapshot.data![3].values.first, 2),
+                          _sumOf(snapshot.data![2].values.first!, 1),
+                          _sumOf(snapshot.data![3].values.first!, 2),
                         ],
                       );
                     }

@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -6,38 +6,38 @@ import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:provider/provider.dart';
 
 class CustomAmountDialog extends StatefulWidget {
-  final double? initialValue;
+  final double initialValue;
   final double? maxValue;
   final double? maxMoney;
   final double minValue;
   final bool? alreadyCustom;
-  final String? currency;
+  final Currency? currency;
 
   const CustomAmountDialog(
-      {this.initialValue, this.maxValue, this.maxMoney, this.alreadyCustom, this.currency, this.minValue = 0});
+      {required this.initialValue, this.maxValue, this.maxMoney, this.alreadyCustom, this.currency, this.minValue = 0});
 
   @override
   State<CustomAmountDialog> createState() => _CustomAmountDialogState();
 }
 
 class _CustomAmountDialogState extends State<CustomAmountDialog> {
-  double? sliderValue;
-  String? currency;
+  late double sliderValue;
+  late Currency currency;
   TextEditingController customAmountController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     sliderValue = widget.initialValue;
-    currency = widget.currency ?? context.read<AppStateProvider>().currentGroup!.currency;
-    customAmountController.text = sliderValue.toMoneyString(currency!);
+    currency = widget.currency ?? context.read<UserState>().currentGroup!.currency;
+    customAmountController.text = sliderValue.toMoneyString(currency);
   }
 
   void setSliderValue(newValue, {bool setController = true}) {
     setState(() {
       sliderValue = newValue;
       if (setController) {
-        customAmountController.text = sliderValue.toMoneyString(currency!);
+        customAmountController.text = sliderValue.toMoneyString(currency);
       }
     });
   }
@@ -82,10 +82,10 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
               controller: customAmountController,
               decoration: InputDecoration(
                 helperText: (customAmountController.text.length > 0
-                    ? 'chosen_amount'.tr() + ' (${currencies[currency]!['symbol']}) '
+                    ? 'chosen_amount'.tr() + ' (${currency.symbol}) '
                     : null),
-                hintText: 'custom_amount'.tr() + ' (${currencies[currency]!['symbol']}) ',
-                suffixText: '${(sliderValue! / widget.maxMoney! * 100).roundToDouble().toStringAsFixed(0)}%',
+                hintText: 'custom_amount'.tr() + ' (${currency.symbol}) ',
+                suffixText: '${(sliderValue / widget.maxMoney! * 100).roundToDouble().toStringAsFixed(0)}%',
               ),
               style: Theme.of(context)
                   .textTheme
@@ -110,7 +110,7 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
               height: 10,
             ),
             Slider(
-              value: sliderValue!,
+              value: sliderValue,
               divisions: 20,
               max: widget.maxValue!,
               min: widget.minValue,

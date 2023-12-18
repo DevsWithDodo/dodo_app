@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 
 import 'package:csocsort_szamla/helpers/models.dart';
+import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
 import 'package:csocsort_szamla/components/groups/merge_on_join_page.dart';
 import 'package:csocsort_szamla/components/groups/qr_scanner_page.dart';
@@ -11,7 +12,7 @@ import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
 import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/pages/app/create_group_page.dart';
@@ -36,15 +37,17 @@ class JoinGroupPage extends StatefulWidget {
 }
 
 class _JoinGroupPageState extends State<JoinGroupPage> {
-  TextEditingController _tokenController = TextEditingController();
+  late TextEditingController _tokenController;
   late TextEditingController _nicknameController;
   late User user;
 
   @override
   void initState() {
     super.initState();
-    user = context.read<AppStateProvider>().user!;
+    user = context.read<UserState>().user!;
+    final inviteUrl = context.read<InviteUrlState>().inviteUrl;
     _nicknameController = TextEditingController(text: user.username[0].toUpperCase() + user.username.substring(1));
+    _tokenController = TextEditingController(text: inviteUrl?.split('/').lastOrNull);
   }
 
   var _formKey = GlobalKey<FormState>();
@@ -58,7 +61,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
         return BoolFutureOutput.False;
       }
       Map<String, dynamic> decoded = jsonDecode(response.body);
-      AppStateProvider userProvider = context.read<AppStateProvider>();
+      UserState userProvider = context.read<UserState>();
       userProvider.setGroups(
           userProvider.user!.groups +
               [
@@ -95,10 +98,10 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
     if (_tokenController.text == '') {
       _tokenController.text = widget.inviteURL != null ? widget.inviteURL!.split('/').removeLast() : '';
     }
-    User user = context.select<AppStateProvider, User>(
+    User user = context.select<UserState, User>(
       (provider) => provider.user!,
     );
-    List<Group> groups = context.select<AppStateProvider, List<Group>>(
+    List<Group> groups = context.select<UserState, List<Group>>(
       (provider) => provider.user!.groups,
     );
 
@@ -192,7 +195,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                               .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                         onTap: () {
-                          context.read<AppStateProvider>().logout();
+                          context.read<UserState>().logout();
                           Navigator.pushAndRemoveUntil(
                               context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
                         },
@@ -370,6 +373,10 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                         MaterialPageRoute(builder: (context) => MainPage()),
                         (r) => false,
                       );
+                      final inviteState = context.read<InviteUrlState>();
+                      if (inviteState.inviteUrl != null) {
+                        inviteState.inviteUrl = null;
+                      }
                     },
                   },
                   outputChildren: {

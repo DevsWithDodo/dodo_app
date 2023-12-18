@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/components/helpers/custom_choice_chip.dart';
 import 'package:csocsort_szamla/components/helpers/custom_amount_dialog.dart';
+import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../helpers/models.dart';
@@ -15,7 +16,7 @@ class MemberChips extends StatelessWidget {
   final Map<Member, double> customAmounts;
   final ValueChanged<Map<Member, double>>? setCustomAmounts;
   final double Function()? getFullAmount;
-  final String? selectedCurrency;
+  final Currency? selectedCurrency;
   final bool showAnimation;
 
   MemberChips({

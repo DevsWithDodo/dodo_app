@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +9,7 @@ class User {
   String apiToken;
   String username;
   int id;
-  String currency;
+  Currency currency;
   Group? group;
   List<Group> groups;
   bool ratedApp;
@@ -176,7 +177,7 @@ class Member {
 }
 
 class Group {
-  String currency;
+  Currency currency;
   String name;
   int id;
   Group({
@@ -224,7 +225,7 @@ class Purchase {
   double totalAmount;
   late double totalAmountOriginalCurrency;
   String name;
-  late String originalCurrency;
+  late Currency originalCurrency;
   DateTime updatedAt;
   Category? category;
   List<Reaction>? reactions;
@@ -255,7 +256,7 @@ class Purchase {
       updatedAt: json['updated_at'] == null
           ? DateTime.now()
           : DateTime.parse(json['updated_at']).toLocal(),
-      originalCurrency: json['original_currency'],
+      originalCurrency: Currency.fromCode(json['original_currency']),
       buyerUsername: json['buyer_username'] ?? json['buyer_nickname'],
       buyerId: json['buyer_id'],
       buyerNickname: json['buyer_nickname'],
@@ -282,7 +283,7 @@ class Payment {
   late String note;
   int payerId, takerId;
   List<Reaction>? reactions;
-  String originalCurrency;
+  Currency originalCurrency;
 
   Payment({
     required this.id,
@@ -317,7 +318,7 @@ class Payment {
       takerUsername: json['taker_username'] ?? json['taker_nickname'],
       takerNickname: json['taker_nickname'],
       note: json['note'],
-      originalCurrency: json['original_currency'],
+      originalCurrency: Currency.fromCode(json['original_currency']),
       amountOriginalCurrency: (json['original_amount'] ?? json['amount']) * 1.0,
       reactions: json['reactions']
           .map<Reaction>((reaction) => Reaction.fromJson(reaction))

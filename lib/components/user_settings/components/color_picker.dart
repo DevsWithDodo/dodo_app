@@ -1,8 +1,9 @@
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/helpers/app_theme.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/main/dialogs/iapp_not_supported_dialog.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:csocsort_szamla/pages/app/store_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -38,12 +39,12 @@ class _ColorPickerState extends State<ColorPicker> {
   @override
   void initState() {
     super.initState();
-    brightness = context.read<AppStateProvider>().themeName.brightness;
+    brightness = context.read<AppThemeState>().themeName.brightness;
   }
 
   void _updateBrightness(Brightness brightness) {
-    AppStateProvider provider = context.read<AppStateProvider>();
-    provider.setThemeName(provider.themeName.getCounterPart());
+    AppThemeState provider = context.read<AppThemeState>();
+    provider.themeName = provider.themeName.getCounterPart();
     setState(
       () => this.brightness = brightness,
     );
@@ -53,7 +54,7 @@ class _ColorPickerState extends State<ColorPicker> {
   Widget build(BuildContext context) {
     // This line is important so that textTheme is updated, don't know why
     print(Theme.of(context).colorScheme.onSurfaceVariant.alpha);
-    return Selector<AppStateProvider, bool>(
+    return Selector<UserState, bool>(
         selector: (context, provider) => provider.user!.useGradients,
         builder: (context, useGradients, _) {
           return Card(
@@ -198,7 +199,7 @@ class ColorElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<AppStateProvider, ThemeName>(
+    return Selector<AppThemeState, ThemeName>(
         selector: (context, provider) => provider.themeName,
         builder: (context, currentThemeName, _) {
           Color splitColor = theme.colorScheme.onPrimary;
@@ -223,15 +224,15 @@ class ColorElement extends StatelessWidget {
                 borderRadius: BorderRadius.circular(100),
                 onTap: () {
                   if (enabled) {
-                    context.read<AppStateProvider>().setThemeName(themeName);
+                    context.read<AppThemeState>().themeName = themeName;
                     _updateColor(themeName.storageName);
-                  } else if (isIAPPlatformEnabled) {
+                  } else if (context.read<AppConfig>().isIAPPlatformEnabled) {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => StorePage()));
                   } else {
                     showDialog(
                       context: context,
                       builder: (context) {
-                        return IAPPNotSupportedDialog();
+                        return IAPNotSupportedDialog();
                       },
                     );
                   }

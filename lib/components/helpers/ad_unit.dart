@@ -1,5 +1,6 @@
 import 'package:csocsort_szamla/config.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,7 @@ class _AdUnitState extends State<AdUnit> {
       request: AdRequest(),
       listener: BannerAdListener(),
     );
-    if (context.read<AppStateProvider>().user!.showAds && isAdPlatformEnabled) {
+    if (context.read<UserState>().user!.showAds && context.read<AppConfig>().isAdPlatformEnabled) {
       ad.load();
     }
     super.initState();
@@ -30,11 +31,12 @@ class _AdUnitState extends State<AdUnit> {
 
   @override
   Widget build(BuildContext context) {
-    bool showAds = context.select<AppStateProvider,  bool>((AppStateProvider appState) => appState.user!.showAds);
-    if (ad.responseInfo == null && showAds && isAdPlatformEnabled) {
+    bool showAds = context.select<UserState,  bool>((UserState appState) => appState.user!.showAds);
+    bool adsEnabled = context.select<AppConfig,  bool>((AppConfig appState) => appState.isAdPlatformEnabled);
+    if (ad.responseInfo == null && showAds && adsEnabled) {
       ad.load();
     }
-    if (isAdPlatformEnabled) {
+    if (adsEnabled) {
       return Visibility(
         visible: showAds,
         child: Container(

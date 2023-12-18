@@ -2,15 +2,17 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/helpers/app_theme.dart';
+import 'package:csocsort_szamla/helpers/currencies.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
+import 'package:csocsort_szamla/pages/app/main_page.dart';
+import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/navigator_service.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
-import 'package:csocsort_szamla/pages/app/main_page.dart';
 import 'package:csocsort_szamla/main.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -20,64 +22,78 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-class AppStateProvider extends ChangeNotifier {
-  User? user;
-  late ThemeName _themeName;
+class UserProvider extends StatelessWidget {
+  UserProvider({
+    required BuildContext context,
+    required this.builder,
+    super.key,
+  }) : _userState = UserState(context);
 
-  ThemeName get themeName => AppTheme.themes.containsKey(_themeName)
-      ? _themeName
-      : _themeName.brightness == Brightness.dark
-          ? ThemeName.dodoDark
-          : ThemeName.dodoLight;
-  Group? get currentGroup => user?.group;
-  ThemeData get theme {
-    return AppTheme.themes[themeName] ?? AppTheme.generateThemeData(ThemeName.greenLight, Colors.lightGreen).value;
+  late final UserState _userState;
+  final Widget Function(BuildContext context) builder;
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider.value(
+      value: _userState,
+      builder: (context, _) => this.builder(context),
+    );
   }
+}
 
-  AppStateProvider(BuildContext context, ThemeName themeName) {
-    this._themeName = themeName;
+class UserState extends ChangeNotifier {
+  User? user;
+  Group? get currentGroup => user?.group;
+
+  UserState(BuildContext context) {
     final preferences = context.read<SharedPreferences>();
     if (preferences.containsKey('api_token')) {
-      List<String> usersGroupNames = preferences.getStringList('users_groups') ?? [];
-      List<int> usersGroupIds = preferences.getStringList('users_group_ids')?.map((e) => int.parse(e)).toList() ?? [];
-      List<String> usersGroupCurrencies = preferences.getStringList('users_group_currencies') ?? [];
-      user = User(
-          apiToken: preferences.getString('api_token')!,
-          username: preferences.getString('current_username')!,
-          id: preferences.getInt('current_user_id')!,
-          currency: preferences.getString('current_user_currency') ?? 'EUR',
-          group: preferences.containsKey('current_group_id')
-              ? Group(
-                  id: preferences.getInt('current_group_id')!,
-                  name: preferences.getString('current_group_name')!,
-                  currency: preferences.getString('current_group_currency')!,
-                )
-              : null,
-          groups: usersGroupNames
-              .asMap()
-              .map((index, value) => MapEntry(
-                  index,
-                  Group(
-                    id: usersGroupIds[index],
-                    name: value,
-                    currency: usersGroupCurrencies.length > index ? usersGroupCurrencies[index] : 'EUR',
-                  )))
-              .values
-              .toList(),
-          ratedApp: preferences.getBool('rated_app') ?? false,
-          paymentMethods: [],
-          userStatus: UserStatus(
-            pinVerificationCount: 100,
-            pinVerifiedAt: DateTime.now(),
-            trialStatus: TrialStatus.seen,
-          ));
-      _fetchUserData();
+      user = _getLocalUser(preferences);
+      _fetchUserData(context);
+      print(user);
     }
   }
 
-  Future _fetchUserData() async {
+  User _getLocalUser(SharedPreferences preferences) {
+    List<String> usersGroupNames = preferences.getStringList('users_groups') ?? [];
+      List<int> usersGroupIds = preferences.getStringList('users_group_ids')?.map((e) => int.parse(e)).toList() ?? [];
+      List<String> usersGroupCurrencies = preferences.getStringList('users_group_currencies') ?? [];
+      return User(
+        apiToken: preferences.getString('api_token')!,
+        username: preferences.getString('current_username')!,
+        id: preferences.getInt('current_user_id')!,
+        currency: Currency.fromCodeSafe(preferences.getString('current_user_currency') ?? 'EUR'),
+        group: preferences.containsKey('current_group_id')
+            ? Group(
+                id: preferences.getInt('current_group_id')!,
+                name: preferences.getString('current_group_name')!,
+                currency: Currency.fromCodeSafe(preferences.getString('current_group_currency') ?? 'EUR'),
+              )
+            : null,
+        groups: usersGroupNames
+            .asMap()
+            .map((index, value) => MapEntry(
+                index,
+                Group(
+                  id: usersGroupIds[index],
+                  name: value,
+                  currency: Currency.fromCodeSafe(usersGroupCurrencies.length > index ? usersGroupCurrencies[index] : 'EUR'),
+                )))
+            .values
+            .toList(),
+        ratedApp: preferences.getBool('rated_app') ?? false,
+        paymentMethods: [],
+        userStatus: UserStatus(
+          pinVerificationCount: 100,
+          pinVerifiedAt: DateTime.now(),
+          trialStatus: TrialStatus.seen,
+        ),
+      );
+  }
+
+  Future _fetchUserData(BuildContext context) async {
     try {
-      http.Response response = await http.get(Uri.parse((useTest ? TEST_URL : APP_URL) + '/user'),
+      http.Response response = await http.get(Uri.parse(context.read<AppConfig>().appUrl + '/user'),
           headers: {"Content-Type": "application/json", "Authorization": "Bearer ${user!.apiToken}"});
       var decoded = jsonDecode(response.body);
       if (response.statusCode > 299 || response.statusCode < 200) {
@@ -113,10 +129,11 @@ class AppStateProvider extends ChangeNotifier {
               MaterialPageRoute(builder: (context) => MainPage()),
             );
       }
-      if (!user!.useGradients && themeName.type != ThemeType.simpleColor) {
-        themeName.brightness == Brightness.dark
-            ? setThemeName(ThemeName.greenDark)
-            : setThemeName(ThemeName.greenLight);
+      var themeState = context.read<AppThemeState>();
+      if (!user!.useGradients && themeState.themeName.type != ThemeType.simpleColor) {
+        themeState.themeName = themeState.themeName.brightness == Brightness.dark
+            ? ThemeName.greenDark
+            : ThemeName.greenLight;
       }
     } catch (_) {
       throw _;
@@ -126,7 +143,7 @@ class AppStateProvider extends ChangeNotifier {
   Future<LoginFutureOutputs> login(String username, String password, BuildContext context) async {
     try {
       String? token;
-      if (isFirebasePlatformEnabled) {
+      if (context.read<AppConfig>().isFirebasePlatformEnabled) {
         FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
         token = await _firebaseMessaging.getToken();
       }
@@ -134,7 +151,7 @@ class AppStateProvider extends ChangeNotifier {
       Map<String, String> header = {"Content-Type": "application/json"};
       String bodyEncoded = jsonEncode(body);
       http.Response response =
-          await http.post(Uri.parse((useTest ? TEST_URL : APP_URL) + '/login'), headers: header, body: bodyEncoded);
+          await http.post(Uri.parse(context.read<AppConfig>().appUrl + '/login'), headers: header, body: bodyEncoded);
       if (response.statusCode == 200) {
         final preferences = context.read<SharedPreferences>();
 
@@ -145,8 +162,6 @@ class AppStateProvider extends ChangeNotifier {
           username: decoded['data']['username'],
           id: decoded['data']['id'],
           currency: decoded['data']['default_currency'],
-          group: null,
-          groups: [],
           ratedApp: preferences.getBool('rated_app') ?? false,
           personalisedAds: decoded['data']['personalised_ads'] == 1,
           showAds: decoded['data']['ad_free'] == 0,
@@ -175,7 +190,7 @@ class AppStateProvider extends ChangeNotifier {
             currency: group['currency'],
           ));
         }
-        String? inviteUrl = context.read<InviteUrlProvider>().inviteUrl;
+        String? inviteUrl = context.read<InviteUrlState>().inviteUrl;
         setGroups(groups);
         if (groups.isEmpty) {
           return LoginFutureOutputs.joinGroupFromAuth;
@@ -198,11 +213,10 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  Future<BoolFutureOutput> register(
-      String username, String password, String currency, BuildContext context) async {
+  Future<BoolFutureOutput> register(String username, String password, String currency, BuildContext context) async {
     try {
       String? token;
-      if (isFirebasePlatformEnabled) {
+      if (context.read<AppConfig>().isFirebasePlatformEnabled) {
         FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
         token = await _firebaseMessaging.getToken();
       }
@@ -220,7 +234,7 @@ class AppStateProvider extends ChangeNotifier {
 
       String bodyEncoded = jsonEncode(body);
       http.Response response = await http.post(
-        Uri.parse((useTest ? TEST_URL : APP_URL) + '/register'),
+        Uri.parse(context.read<AppConfig>().appUrl + '/register'),
         headers: header,
         body: bodyEncoded,
       );
@@ -273,7 +287,7 @@ class AppStateProvider extends ChangeNotifier {
     SharedPreferences.getInstance().then((preferences) {
       preferences.setStringList('users_groups', groups.map((e) => e.name).toList());
       preferences.setStringList('users_group_ids', groups.map((e) => e.id.toString()).toList());
-      preferences.setStringList('users_group_currencies', groups.map((e) => e.currency).toList());
+      preferences.setStringList('users_group_currencies', groups.map((e) => e.currency.code).toList());
     });
     if (notify) {
       notifyListeners();
@@ -294,7 +308,7 @@ class AppStateProvider extends ChangeNotifier {
       }
       preferences.setString('current_group_name', group.name);
       preferences.setInt('current_group_id', group.id);
-      preferences.setString('current_group_currency', group.currency);
+      preferences.setString('current_group_currency', group.currency.code);
     });
     if (notify) {
       notifyListeners();
@@ -311,10 +325,10 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  void setGroupCurrency(String currency, {bool notify = true}) {
+  void setGroupCurrency(Currency currency, {bool notify = true}) {
     user!.group!.currency = currency;
     SharedPreferences.getInstance().then((preferences) {
-      preferences.setString('current_group_currency', currency);
+      preferences.setString('current_group_currency', currency.code);
     });
     if (notify) {
       notifyListeners();
@@ -333,7 +347,7 @@ class AppStateProvider extends ChangeNotifier {
       }
       preferences.setString('current_username', user.username);
       preferences.setInt('current_user_id', user.id);
-      preferences.setString('current_user_currency', user.currency);
+      preferences.setString('current_user_currency', user.currency.code);
       preferences.setString('api_token', user.apiToken);
       preferences.setBool('rated_app', user.ratedApp);
     });
@@ -343,7 +357,7 @@ class AppStateProvider extends ChangeNotifier {
   }
 
   void setUserCurrency(String currency, {bool notify = true}) {
-    user!.currency = currency;
+    user!.currency = Currency.fromCode(currency);
     SharedPreferences.getInstance().then((preferences) {
       preferences.setString('current_user_currency', currency);
     });
@@ -400,15 +414,6 @@ class AppStateProvider extends ChangeNotifier {
     }
   }
 
-  void setThemeName(ThemeName themeName, {bool notify = true}) {
-    this._themeName = themeName;
-    SharedPreferences.getInstance().then((preferences) {
-      preferences.setString('theme', themeName.storageName);
-    });
-    if (notify) {
-      notifyListeners();
-    }
-  }
 
   void setPaymentMethods(List<PaymentMethod> paymentMethods, {bool notify = true}) {
     user!.paymentMethods = paymentMethods;

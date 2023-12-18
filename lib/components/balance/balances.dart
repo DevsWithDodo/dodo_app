@@ -3,10 +3,11 @@ import 'dart:convert';
 import 'package:csocsort_szamla/components/balance/necessary_payments_button.dart';
 import 'package:csocsort_szamla/components/balance/select_balance_currency.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/components/groups/dialogs/add_guest_dialog.dart';
 import 'package:csocsort_szamla/components/groups/dialogs/share_group_dialog.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -28,13 +29,13 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
   get wantKeepAlive => true;
 
   Future<List<Member>>? _members;
-  late String _selectedCurrency;
+  late Currency _selectedCurrency;
 
   Future<List<Member>> _getMembers() async {
     try {
       Response response = await Http.get(
           uri: generateUri(GetUriKeys.groupCurrent, context,
-              params: [context.read<AppStateProvider>().user!.group!.id.toString()]));
+              params: [context.read<UserState>().user!.group!.id.toString()]));
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = [];
       for (var member in decoded['data']['members']) {
@@ -51,7 +52,7 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
     setState(() {
       _members = null;
       _members = _getMembers();
-      _selectedCurrency = context.read<AppStateProvider>().user!.group!.currency;
+      _selectedCurrency = context.read<UserState>().user!.group!.currency;
     });
   }
 
@@ -64,7 +65,7 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
     );
     _members = null;
     _members = _getMembers();
-    _selectedCurrency = context.read<AppStateProvider>().user!.group!.currency;
+    _selectedCurrency = context.read<UserState>().user!.group!.currency;
   }
 
   @override
@@ -134,10 +135,10 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
               right: 0,
               width: 90,
               child: SelectBalanceCurrency(
-                selectedCurrency: _selectedCurrency,
-                onCurrencyChange: (selectedCurrency) {
+                selectedCurrency: _selectedCurrency.code,
+                onCurrencyChange: (code) {
                   setState(() {
-                    _selectedCurrency = selectedCurrency;
+                    _selectedCurrency = Currency.fromCode(code);
                   });
                 },
               ),
@@ -154,7 +155,7 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
         uri: generateUri(
           GetUriKeys.groupCurrent,
           context,
-          params: [context.read<AppStateProvider>().user!.group!.id.toString()],
+          params: [context.read<UserState>().user!.group!.id.toString()],
         ),
       );
       Map<String, dynamic> decoded = jsonDecode(response.body);
@@ -165,17 +166,17 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
   }
 
   List<Widget> _generateBalances(List<Member> members) {
-    ThemeName themeName = context.watch<AppStateProvider>().themeName;
+    ThemeName themeName = context.watch<AppThemeState>().themeName;
     return members.map<Widget>((Member member) {
       TextStyle textStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          color: member.id == context.read<AppStateProvider>().user!.id
+          color: member.id == context.read<UserState>().user!.id
               ? themeName.type == ThemeType.gradient
                   ? Theme.of(context).colorScheme.onPrimary
                   : Theme.of(context).colorScheme.onSecondary
               : Theme.of(context).colorScheme.onSurface);
       return Container(
         padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-        decoration: member.id == context.read<AppStateProvider>().user!.id
+        decoration: member.id == context.read<UserState>().user!.id
             ? BoxDecoration(
                 gradient: AppTheme.gradientFromTheme(themeName, useSecondary: true),
                 borderRadius: BorderRadius.circular(15),
@@ -193,7 +194,7 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
               firstChild: Container(),
               secondChild: Text(
                 member.balance
-                    .exchange(context.watch<AppStateProvider>().currentGroup!.currency, _selectedCurrency)
+                    .exchange(context.watch<UserState>().currentGroup!.currency, _selectedCurrency)
                     .toMoneyString(_selectedCurrency),
                 style: textStyle,
               ),

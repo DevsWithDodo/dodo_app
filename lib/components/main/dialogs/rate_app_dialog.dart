@@ -1,6 +1,5 @@
-import 'dart:io';
-
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/common.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -25,26 +24,8 @@ class RateAppDialog extends StatelessWidget {
         child: GradientButton(
           child: Text('to_store'.tr()),
           onPressed: () {
-            String url = "";
-            switch (Platform.operatingSystem) {
-              case "android":
-                url =
-                    "market://details?id=csocsort.hu.machiato32.csocsort_szamla";
-                break;
-              case "windows":
-                url = "ms-windows-store://pdp/?productid=9NVB4CZJDSQ7";
-                break;
-              case "ios":
-                url =
-                    "itms-apps://itunes.apple.com/app/id1558223634?action=write-review";
-                break;
-              default:
-                url =
-                    "https://play.google.com/store/apps/details?id=csocsort.hu.machiato32.csocsort_szamla";
-                break;
-            }
-            launchUrlString(url);
-            context.read<AppStateProvider>().setRatedApp(true);
+            launchUrlString(getShopURL());
+            context.read<UserState>().setRatedApp(true);
           },
         ),
       ),

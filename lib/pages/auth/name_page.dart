@@ -1,7 +1,7 @@
 import 'package:csocsort_szamla/components/auth/forgot_password_dialog.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
 import 'package:csocsort_szamla/pages/auth/login/login_pin_page.dart';
 import 'package:csocsort_szamla/pages/auth/sign_up/sign_up_pin_page.dart';
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:expandable/expandable.dart';
@@ -293,7 +293,7 @@ class _NamePageState extends State<NamePage> {
 
   Future<BoolFutureOutput> _checkUsernameTaken() async {
     http.Response response = await http.post(
-      Uri.parse((useTest ? TEST_URL : APP_URL) + '/validate_username'),
+      Uri.parse(context.read<AppConfig>().appUrl + '/validate_username'),
       body: {
         'username': _usernameController.text,
       },

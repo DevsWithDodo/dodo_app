@@ -1,5 +1,5 @@
 import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -82,10 +82,10 @@ class _PersonalisedAdsDialogState extends State<PersonalisedAdsDialog> {
 
   Future<BoolFutureOutput> _updatePersonalisedAds() async {
     try {
-      if (context.read<AppStateProvider>().user!.personalisedAds != _personalisedAds) {
+      if (context.read<UserState>().user!.personalisedAds != _personalisedAds) {
         Map<String, dynamic> body = {"personalised_ads": _personalisedAds ? "on" : "off"};
         await Http.put(uri: '/user', body: body);
-        context.read<AppStateProvider>().setPersonalisedAds(_personalisedAds);
+        context.read<UserState>().setPersonalisedAds(_personalisedAds);
       }
       return BoolFutureOutput.True;
     } catch (_) {

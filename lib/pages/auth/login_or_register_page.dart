@@ -1,7 +1,7 @@
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +28,8 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
       DeviceOrientation.portraitDown,
     ]);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (useTest) {
+      final appConfig = context.read<AppConfig>();
+      if (appConfig.useTest) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Theme.of(context).colorScheme.tertiary,
           duration: Duration(hours: 10),
@@ -44,7 +45,7 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
             textColor: Theme.of(context).colorScheme.onSecondary,
             onPressed: () {
               setState(() {
-                useTest = !useTest;
+                appConfig.useTest = !appConfig.useTest;
                 _tapped = false;
                 _doubleTapped = false;
               });
@@ -68,6 +69,7 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final appConfig = context.read<AppConfig>();
     return Scaffold(
       key: _scaffoldKey,
       body: Center(
@@ -90,7 +92,7 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                   onLongPress: () {
                     if (_tapped && _doubleTapped) {
                       setState(() {
-                        if (!useTest) {
+                        if (!appConfig.useTest) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             backgroundColor:
                                 Theme.of(context).colorScheme.secondary,
@@ -111,7 +113,7 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                                   Theme.of(context).colorScheme.onSecondary,
                               onPressed: () {
                                 setState(() {
-                                  useTest = !useTest;
+                                  appConfig.useTest = !appConfig.useTest;
                                   _tapped = false;
                                   _doubleTapped = false;
                                 });
@@ -122,16 +124,16 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                           ScaffoldMessenger.of(context).removeCurrentSnackBar();
                         }
                         clearAllCache();
-                        useTest = !useTest;
+                        appConfig.useTest = !appConfig.useTest;
                         _tapped = false;
-                        _doubleTapped = false;
+                        _doubleTapped = false;  
                       });
                     }
                   },
                   child: ColorFiltered(
                     colorFilter: ColorFilter.mode(
                         Theme.of(context).colorScheme.primary,
-                        context.watch<AppStateProvider>().themeName.isDodo() &&
+                        context.watch<AppThemeState>().themeName.isDodo() &&
                                 !kIsWeb
                             ? BlendMode.dst
                             : BlendMode.srcIn),

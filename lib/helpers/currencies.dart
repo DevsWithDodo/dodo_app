@@ -1,65 +1,92 @@
 import 'dart:collection';
 
-extension Money on double? {
-  String toMoneyString(String code, {withSymbol = false}) {
+extension Money on double {
+  String toMoneyString(Currency currency, {withSymbol = false}) {
     if (!withSymbol) {
-      double? d = this;
-      if (this! > -Currency.threshold(code) && this! < 0) {
-        d = -this!;
+      double d = this;
+      if (this > -currency.threshold() && this < 0) {
+        d = -this;
       }
-      return currencies[code]!["subunit"] == 1
-          ? d!.toStringAsFixed(2)
-          : d!.toStringAsFixed(0);
+      return currency.hasSubunit ? d.toStringAsFixed(2) : d.toStringAsFixed(0);
     } else {
-      return currencies[code]!["before"] == 1
-          ? this! < 0
-              ? "-" +
-                  currencies[code]!["symbol"] +
-                  "" +
-                  this!.abs().toMoneyString(code)
-              : currencies[code]!["symbol"] + "" + this.toMoneyString(code)
-          : this.toMoneyString(code) + " " + currencies[code]!["symbol"];
+      return currency.symbolBeforeAmount
+          ? this < 0
+              ? "-" + currency.symbol + "" + this.abs().toMoneyString(currency)
+              : currency.symbol + "" + this.toMoneyString(currency)
+          : this.toMoneyString(currency) + " " + currency.symbol;
     }
   }
 
-  double? exchange(String fromCurrency, String toCurrency) {
+  double exchange(Currency fromCurrency, Currency toCurrency) {
     if (fromCurrency == toCurrency) {
       return this;
     }
-    if (currencies[toCurrency]!["rate"] == null ||
-        currencies[fromCurrency]!["rate"] == null) {
-      return this;
-    }
-    return this! *
-        currencies[toCurrency]!["rate"] /
-        currencies[fromCurrency]!["rate"];
+    return this * toCurrency.rate / fromCurrency.rate;
   }
 }
 
 class Currency {
-  static double threshold(String code) {
-    return (currencies[code]!['subunit'] == 1 ? 0.01 : 1) / 2;
+  const Currency._(
+    this.code,
+    this.hasSubunit,
+    this.symbol,
+    this.symbolBeforeAmount,
+    [this.rate = 1]
+  );
+
+  factory Currency.fromCodeSafe(String code) {
+    if (!_unorderedCurrencies.containsKey(code)) {
+      return Currency.fromCode('EUR');
+    }
+    return Currency._fromEntry(code, _unorderedCurrencies[code]!);
   }
 
-  static bool hasSubunit(String code) {
-    return currencies[code]!["subunit"] == 1;
+  factory Currency.fromCode(String code) {
+    if (!_unorderedCurrencies.containsKey(code)) {
+      throw Exception('There is no currency with the given abbreviation $code');
+    }
+    return Currency._fromEntry(code, _unorderedCurrencies[code]!);
   }
 
-  static String getSymbol(String code) {
-    return currencies[code]!["symbol"];
+  factory Currency._fromEntry(String code, Map<String, dynamic> entry) {
+    return Currency._(
+      code,
+      entry['subunit'] == 1,
+      entry['symbol'],
+      entry['before'] == 1,
+      (entry['rate'] ?? 1) * 1.0,
+    );
+  }
+
+  final String code;
+  final String symbol;
+  final bool symbolBeforeAmount;
+  final bool hasSubunit;
+  final double rate;
+
+  static List<String> allCodes() {
+    return _currencies.keys.toList();
   }
 
   static List<String> enumerateCurrencies() {
-    return currencies.keys
-        .map((key) => key + ";" + currencies[key]!["symbol"])
+    return _currencies.keys
+        .map((key) => key + ";" + _currencies[key]!["symbol"])
         .toList();
   }
+
+  void setRate(dynamic rate) {
+    _currencies[this.code]!['rate'] = rate;
+  }
+
+  double threshold() {
+    return (this.hasSubunit ? 0.01 : 1) / 2;
+  }
+
 }
 
-Map<String, Map<String, dynamic>> currencies =
-    SplayTreeMap.from(unorderedCurrencies, (a, b) => a.compareTo(b));
+Map<String, Map<String, dynamic>> _currencies = SplayTreeMap.from(_unorderedCurrencies, (a, b) => a.compareTo(b));
 
-Map<String, Map<String, dynamic>> unorderedCurrencies = {
+Map<String, Map<String, dynamic>> _unorderedCurrencies = {
   "CAD": {"subunit": 1, "symbol": "C\$", "before": 1},
   "HKD": {"subunit": 1, "symbol": "HK\$", "before": 1},
   "ISK": {"subunit": 0, "symbol": "Íkr.", "before": 0},

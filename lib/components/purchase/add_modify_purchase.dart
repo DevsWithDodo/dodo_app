@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/category_picker_icon_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -22,13 +22,13 @@ import '../helpers/member_chips.dart';
 
 enum PurchaseType { fromShopping, newPurchase, modifyPurchase }
 
-class AddModifyPurchase {
+mixin AddModifyPurchase {
   TextEditingController amountController = TextEditingController();
   TextEditingController noteController = TextEditingController();
   Future<List<Member>>? members;
   Map<Member, bool> membersMap = Map<Member, bool>();
   Map<Member, double> customAmountMap = Map<Member, double>();
-  late String selectedCurrency;
+  late Currency selectedCurrency;
   FocusNode focusNode = FocusNode();
   late Function(BuildContext context) buttonPush;
   late void Function(void Function()) _setState;
@@ -59,7 +59,7 @@ class AddModifyPurchase {
     this.savedPurchase = savedPurchase;
     this.buttonPush = buttonPush ?? (context) {};
     this._setState = setState;
-    this.user = context.read<AppStateProvider>().user!;
+    this.user = context.read<UserState>().user!;
     this.selectedCurrency = user.group!.currency;
     if (purchaseType == PurchaseType.fromShopping) {
       noteController.text = shoppingRequest!.name;
@@ -107,7 +107,7 @@ class AddModifyPurchase {
   Map<String, dynamic> generateBody(String name, double amount, List<Member> members, BuildContext context) {
     return {
       "name": name,
-      "group": context.read<AppStateProvider>().currentGroup!.id,
+      "group": context.read<UserState>().currentGroup!.id,
       "amount": amount,
       "currency": selectedCurrency,
       "category": selectedCategory != null ? selectedCategory!.text : null,

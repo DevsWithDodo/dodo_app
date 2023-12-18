@@ -1,18 +1,43 @@
+import 'dart:async';
 import 'dart:io';
 
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/helpers/navigator_service.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/main.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'dart:developer' as developer;
 
 double adHeight(BuildContext context) =>
-    (isAdPlatformEnabled && (context.read<AppStateProvider>().user?.showAds ?? false)) ? 50 : 0;
+    (context.read<AppConfig>().isAdPlatformEnabled && (context.read<UserState>().user?.showAds ?? false)) ? 50 : 0;
 
 /// The delay time in ms for the success dialog to pop.
 int delayTime = 700;
+
+void log(
+  String message, {
+  DateTime? time,
+  int? sequenceNumber,
+  int level = 0,
+  String name = '',
+  Zone? zone,
+  Object? error,
+  StackTrace? stackTrace,
+}) {
+  developer.log(
+    message,
+    time: time,
+    sequenceNumber: sequenceNumber,
+    level: level,
+    name: name,
+    zone: zone,
+    error: error,
+    stackTrace: stackTrace,
+  );
+  print(message);
+}
 
 void showToast(
   String message, {
@@ -56,4 +81,17 @@ void showToast(
     return;
   }
   Fluttertoast.showToast(msg: message);
+}
+
+String getShopURL() {
+  switch (Platform.operatingSystem) {
+    case "android":
+      return "market://details?id=csocsort.hu.machiato32.csocsort_szamla";
+    case "windows":
+      return "ms-windows-store://pdp/?productid=9NVB4CZJDSQ7";
+    case "ios":
+      return "itms-apps://itunes.apple.com/app/id1558223634?action=write-review";
+    default:
+      return "https://play.google.com/store/apps/details?id=csocsort.hu.machiato32.csocsort_szamla";
+  }
 }

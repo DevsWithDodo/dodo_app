@@ -2,7 +2,7 @@ import 'package:csocsort_szamla/pages/app/join_group_page.dart';
 import 'package:csocsort_szamla/pages/auth/login/password_page.dart';
 
 import 'package:csocsort_szamla/components/auth/pin_pad.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -115,7 +115,7 @@ class _LoginPinPageState extends State<LoginPinPage> {
     String pin = _pin;
     showFutureOutputDialog(
       context: context,
-      future: context.read<AppStateProvider>().login(username!, pin, context),
+      future: context.read<UserState>().login(username!, pin, context),
       outputCallbacks: {
         LoginFutureOutputs.main: () => Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => MainPage()),
@@ -123,13 +123,13 @@ class _LoginPinPageState extends State<LoginPinPage> {
         ),
         LoginFutureOutputs.joinGroup: () => Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => JoinGroupPage(
-            inviteURL: context.read<InviteUrlProvider>().inviteUrl,
+            inviteURL: context.read<InviteUrlState>().inviteUrl,
           )),
           (route) => false,
         ),
         LoginFutureOutputs.joinGroupFromAuth:() => Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => JoinGroupPage(
-            inviteURL: context.read<InviteUrlProvider>().inviteUrl,
+            inviteURL: context.read<InviteUrlState>().inviteUrl,
             fromAuth: true,
           )),
           (route) => false,

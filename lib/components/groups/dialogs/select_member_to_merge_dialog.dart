@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
@@ -29,7 +29,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
   Future<BoolFutureOutput> _mergeGuest() async {
     Map<String, dynamic> body = {'member_id': _selectedMember!.id, 'guest_id': widget.guestId};
     await Http.post(
-        uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString() + '/merge_guest', body: body);
+        uri: '/groups/' + context.read<UserState>().currentGroup!.id.toString() + '/merge_guest', body: body);
     return BoolFutureOutput.True;
   }
 

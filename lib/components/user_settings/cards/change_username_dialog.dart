@@ -1,5 +1,5 @@
 import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
@@ -22,7 +22,7 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
       Map<String, dynamic> body = {'username': newUsername};
 
       await Http.put(uri: '/user', body: body);
-      context.read<AppStateProvider>().setUsername(newUsername);
+      context.read<UserState>().setUsername(newUsername);
       return BoolFutureOutput.True;
     } catch (_) {
       throw _;

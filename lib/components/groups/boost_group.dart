@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
@@ -28,7 +28,7 @@ class _BoostGroupState extends State<BoostGroup> {
     try {
       Response response = await Http.get(
           uri: generateUri(GetUriKeys.groupBoost, context,
-              params: [context.read<AppStateProvider>().user!.group!.id.toString()]),
+              params: [context.read<UserState>().user!.group!.id.toString()]),
           useCache: false);
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data'];
@@ -39,7 +39,7 @@ class _BoostGroupState extends State<BoostGroup> {
 
   Future<BoolFutureOutput> _postBoost() async {
     try {
-      await Http.post(uri: '/groups/' + context.read<AppStateProvider>().user!.group!.id.toString() + '/boost');
+      await Http.post(uri: '/groups/' + context.read<UserState>().user!.group!.id.toString() + '/boost');
       return BoolFutureOutput.True;
     } catch (_) {
       throw _;
@@ -112,14 +112,14 @@ class _BoostGroupState extends State<BoostGroup> {
                               child: Icon(Icons.insights),
                               onPressed: () {
                                 if (snapshot.data!['available_boosts'] == 0) {
-                                  if (isIAPPlatformEnabled) {
+                                  if (context.watch<AppConfig>().isIAPPlatformEnabled) {
                                     Navigator.push(
                                             context, MaterialPageRoute(builder: (context) => StorePage()))
                                         .then((value) {
                                       setState(() {});
                                     });
                                   } else {
-                                    showDialog(context: context, builder: (context) => IAPPNotSupportedDialog());
+                                    showDialog(context: context, builder: (context) => IAPNotSupportedDialog());
                                   }
                                 } else {
                                   showDialog(

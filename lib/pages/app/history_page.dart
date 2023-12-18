@@ -6,7 +6,7 @@ import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/components/payment/payment_entry.dart';
 import 'package:csocsort_szamla/components/purchase/purchase_entry.dart';
@@ -51,7 +51,7 @@ class _HistoryPageState extends State<HistoryPage>
         uri: generateUri(
           GetUriKeys.purchases, context,
           queryParams: {
-            'group': context.read<AppStateProvider>().currentGroup!.id.toString(),
+            'group': context.read<UserState>().currentGroup!.id.toString(),
             'from_date': _startDate == null
                 ? null
                 : DateFormat('yyyy-MM-dd').format(_startDate!),
@@ -99,7 +99,7 @@ class _HistoryPageState extends State<HistoryPage>
         uri: generateUri(
           GetUriKeys.payments, context,
           queryParams: {
-            'group': context.read<AppStateProvider>().currentGroup!.id.toString(),
+            'group': context.read<UserState>().currentGroup!.id.toString(),
             'from_date': _startDate == null
                 ? null
                 : DateFormat('yyyy-MM-dd').format(_startDate!),
@@ -159,7 +159,7 @@ class _HistoryPageState extends State<HistoryPage>
   @override
   void initState() {
     super.initState();
-    _selectedMemberId = widget.selectedMemberId ?? context.read<AppStateProvider>().user!.id;
+    _selectedMemberId = widget.selectedMemberId ?? context.read<UserState>().user!.id;
     _tabController = TabController(
         length: 2, vsync: this, initialIndex: widget.startingIndex ?? 0);
     _selectedIndex = widget.startingIndex ?? 0;

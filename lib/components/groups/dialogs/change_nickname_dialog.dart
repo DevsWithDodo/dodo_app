@@ -1,5 +1,5 @@
 import 'package:csocsort_szamla/helpers/event_bus.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,7 +27,7 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
     try {
       Map<String, dynamic> body = {"member_id": memberId, "nickname": nickname};
       await Http.put(
-            uri: '/groups/' + context.read<AppStateProvider>().currentGroup!.id.toString() + '/members',
+            uri: '/groups/' + context.read<UserState>().currentGroup!.id.toString() + '/members',
             body: body,
           );
       return BoolFutureOutput.True;

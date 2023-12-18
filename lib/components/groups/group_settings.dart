@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/groups/dialogs/change_group_currency_dialog.dart';
@@ -34,7 +34,7 @@ class _GroupSettingState extends State<GroupSettings> {
     try {
       Response response = await Http.get(
         uri: generateUri(GetUriKeys.groupHasGuests, context,
-            params: [context.read<AppStateProvider>().user!.group!.id.toString()]),
+            params: [context.read<UserState>().user!.group!.id.toString()]),
       );
       Map<String, dynamic> decoded = jsonDecode(response.body);
       // print(decoded);
@@ -189,7 +189,7 @@ class _GroupSettingState extends State<GroupSettings> {
                     useSecondary: true,
                     child: Icon(Icons.edit),
                     onPressed: () {
-                      User user = context.read<AppStateProvider>().user!;
+                      User user = context.read<UserState>().user!;
                       showDialog(
                         context: context,
                         builder: (context) => ChangeNicknameDialog(

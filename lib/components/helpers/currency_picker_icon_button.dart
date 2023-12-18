@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/currency_picker_dropdown.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +7,11 @@ import 'package:provider/provider.dart';
 import '../../helpers/currencies.dart';
 
 class CurrencyPickerIconButton extends StatefulWidget {
-  final String? selectedCurrency;
-  final Function(String?)? onCurrencyChanged;
+  final Currency selectedCurrency;
+  final Function(Currency?) onCurrencyChanged;
 
   const CurrencyPickerIconButton(
-      {this.selectedCurrency, this.onCurrencyChanged});
+      {required this.selectedCurrency, required this.onCurrencyChanged});
 
   @override
   State<CurrencyPickerIconButton> createState() =>
@@ -21,11 +21,11 @@ class CurrencyPickerIconButton extends StatefulWidget {
 class _CurrencyPickerIconButtonState extends State<CurrencyPickerIconButton> {
   @override
   Widget build(BuildContext context) {
-    String groupCurrency = context.watch<AppStateProvider>().currentGroup!.currency;
+    Currency groupCurrency = context.watch<UserState>().currentGroup!.currency;
     return IconButton.filledTonal(
       isSelected: widget.selectedCurrency != groupCurrency,
       onPressed: () {
-        showDialog(
+        showDialog<Currency?>(
             context: context,
             builder: (context) {
               return Dialog(
@@ -35,7 +35,7 @@ class _CurrencyPickerIconButtonState extends State<CurrencyPickerIconButton> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       CurrencyPickerDropdown(
-                        defaultCurrencyValue: widget.selectedCurrency,
+                        defaultCurrencyValue: widget.selectedCurrency.code,
                         currencyChanged: (newCurrency) {
                           Navigator.pop(context, newCurrency);
                         },
@@ -53,14 +53,14 @@ class _CurrencyPickerIconButtonState extends State<CurrencyPickerIconButton> {
                   ),
                 ),
               );
-            }).then((newCurrency) => widget.onCurrencyChanged!(newCurrency));
+            }).then((newCurrency) => widget.onCurrencyChanged(newCurrency));
       },
       icon: Container(
         constraints: BoxConstraints(maxWidth: 15),
         child: FittedBox(
           fit: BoxFit.fitWidth,
           child: Text(
-            Currency.getSymbol(widget.selectedCurrency!),
+            widget.selectedCurrency.symbol,
             style: Theme.of(context).textTheme.labelLarge!.copyWith(
                 fontSize: 18),
           ),

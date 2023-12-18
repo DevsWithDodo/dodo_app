@@ -1,5 +1,4 @@
 import 'package:csocsort_szamla/components/balance/necessary_payments_dialog.dart';
-import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/necessary_payments.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -21,7 +20,7 @@ class _NecessaryPaymentsButtonState extends State<NecessaryPaymentsButton> {
   void initState() {
     super.initState();
     _necessaryPayments = necessaryPayments(widget.members, context)
-        .where((payment) => payment.amount > Currency.threshold(payment.originalCurrency))
+        .where((payment) => payment.amount > payment.originalCurrency.threshold())
         .toList();
   }
 

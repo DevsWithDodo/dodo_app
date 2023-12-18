@@ -4,12 +4,15 @@ import 'dart:io' show Platform;
 
 import 'package:collection/collection.dart';
 import 'package:connectivity_widget/connectivity_widget.dart';
+import 'package:csocsort_szamla/helpers/app_theme.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:csocsort_szamla/pages/app/store_page.dart';
 import 'package:csocsort_szamla/pages/app/join_group_page.dart';
 import 'package:csocsort_szamla/pages/app/user_settings_page.dart';
 import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/pages/app/create_group_page.dart';
 import 'package:csocsort_szamla/components/groups/group_settings.dart';
@@ -26,7 +29,6 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/balance/balances.dart';
-import '../../config.dart';
 import '../../components/helpers/ad_unit.dart';
 import '../../helpers/currencies.dart';
 import '../../helpers/http.dart';
@@ -78,15 +80,18 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   Future<List<Group>> _getGroups() async {
+    if (!this.mounted) {
+      return [];
+    }
     Response response = await Http.get(uri: generateUri(GetUriKeys.groups, context), overwriteCache: true);
     Map<String, dynamic> decoded = jsonDecode(response.body);
-    AppStateProvider userProvider = context.read<AppStateProvider>();
+    UserState userProvider = context.read<UserState>();
     List<Group> groups = [];
     for (var group in decoded['data']) {
       groups.add(Group(
         name: group['group_name'],
         id: group['group_id'],
-        currency: group['currency'],
+        currency: Currency.fromCode(group['currency']),
       ));
     }
     userProvider.setGroups(groups, notify: false);
@@ -112,7 +117,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   List<Widget> _generateListTiles(List<Group> groups) {
-    String currentGroupName = context.watch<AppStateProvider>().user!.group!.name;
+    String currentGroupName = context.watch<UserState>().user!.group!.name;
     return groups.map((group) {
       return Padding(
         padding: EdgeInsets.symmetric(horizontal: 12),
@@ -138,7 +143,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                       .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             onTap: () async {
-              context.read<AppStateProvider>().setGroup(group);
+              context.read<UserState>().setGroup(group);
               setState(() {
                 _selectedIndex = 0;
                 _tabController!.animateTo(_selectedIndex);
@@ -222,7 +227,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 : null,
             centerTitle: true,
             title: Text(
-              context.watch<AppStateProvider>().user!.group?.name ?? '',
+              context.watch<UserState>().user!.group?.name ?? '',
               style: TextStyle(letterSpacing: 0.25, fontSize: 24),
             ),
           ),
@@ -370,7 +375,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   Widget _drawer() {
-    return Consumer<AppStateProvider>(builder: (context, appStateProvider, _) {
+    ThemeName themeName = context.watch<AppThemeState>().themeName;
+    return Consumer<UserState>(builder: (context, appStateProvider, _) {
       return Ink(
         decoration: BoxDecoration(
           color: ElevationOverlay.applyOverlay(context, Theme.of(context).colorScheme.surface, 1),
@@ -389,7 +395,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                         Expanded(
                           child: ColorFiltered(
                             colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.primary,
-                                appStateProvider.themeName.isDodo() && !kIsWeb ? BlendMode.dst : BlendMode.srcIn),
+                                themeName.isDodo() && !kIsWeb ? BlendMode.dst : BlendMode.srcIn),
                             child: Image(
                               image: AssetImage('assets/dodo.png'),
                             ),
@@ -513,7 +519,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               builder: (context, AsyncSnapshot<dynamic> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {
-                    String currency = snapshot.data!['currency'];
+                    Currency currency = Currency.fromCode(snapshot.data!['currency']);
                     double balance = snapshot.data!['balance'] * 1.0;
                     return Text('Σ: ' + balance.toMoneyString(currency, withSymbol: true),
                         style: Theme.of(context)
@@ -540,8 +546,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 onTap: () {
                   if (appStateProvider.user!.trialVersion) {
                     showDialog(builder: (context) => TrialVersionDialog(), context: context);
-                  } else if (!isIAPPlatformEnabled) {
-                    showDialog(builder: (context) => IAPPNotSupportedDialog(), context: context);
+                  } else if (!context.read<AppConfig>().isIAPPlatformEnabled) {
+                    showDialog(builder: (context) => IAPNotSupportedDialog(), context: context);
                   } else {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => StorePage()));
                   }
@@ -615,7 +621,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                         break;
                     }
                     launchUrlString(url);
-                    context.read<AppStateProvider>().setRatedApp(true);
+                    context.read<UserState>().setRatedApp(true);
                   },
                 ),
               ),
@@ -663,7 +669,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                       .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
                 onTap: () async {
-                  context.read<AppStateProvider>().logout();
+                  context.read<UserState>().logout();
                   Navigator.pushAndRemoveUntil(
                       context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
                 },

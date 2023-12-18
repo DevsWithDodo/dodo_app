@@ -1,10 +1,11 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
+import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
 import 'package:csocsort_szamla/components/helpers/currency_picker_dropdown.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
@@ -25,12 +26,12 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   late TextEditingController _nicknameController;
 
   var _formKey = GlobalKey<FormState>();
-  String? _defaultCurrencyValue;
+  late Currency _defaultCurrencyValue;
 
   @override
   void initState() {
     super.initState();
-    User user = context.read<AppStateProvider>().user!;
+    User user = context.read<UserState>().user!;
     _nicknameController = TextEditingController(text: user.username[0].toUpperCase() + user.username.substring(1));
     _defaultCurrencyValue = user.currency;
   }
@@ -40,7 +41,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
       Map<String, dynamic> body = {'group_name': groupName, 'currency': currency, 'member_nickname': nickname};
       http.Response response = await Http.post(uri: '/groups', body: body);
       Map<String, dynamic> decoded = jsonDecode(response.body);
-      AppStateProvider userProvider = context.read<AppStateProvider>();
+      UserState userProvider = context.read<UserState>();
       userProvider.setGroups(
           userProvider.user!.groups +
               [
@@ -145,12 +146,12 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                                 ),
                                 Flexible(
                                   child: CurrencyPickerDropdown(
-                                    currencyChanged: (newValue) {
+                                    currencyChanged: (code) {
                                       setState(() {
-                                        _defaultCurrencyValue = newValue;
+                                        _defaultCurrencyValue = Currency.fromCode(code);
                                       });
                                     },
-                                    defaultCurrencyValue: _defaultCurrencyValue,
+                                    defaultCurrencyValue: _defaultCurrencyValue.code,
                                   ),
                                 ),
                               ],
@@ -180,7 +181,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
               String token = _groupName.text;
               String nickname = _nicknameController.text;
               showFutureOutputDialog(
-                future: _createGroup(token, nickname, _defaultCurrencyValue),
+                future: _createGroup(token, nickname, _defaultCurrencyValue.code),
                 context: context,
                 outputCallbacks: {
                   BoolFutureOutput.True: () async {

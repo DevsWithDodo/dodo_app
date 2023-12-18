@@ -1,7 +1,7 @@
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:flutter/material.dart';
@@ -82,7 +82,7 @@ class _DeleteAllDataState extends State<DeleteAllData> {
                                   MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
                                   (r) => false,
                                 );
-                                AppStateProvider userProvider = context.read<AppStateProvider>();
+                                UserState userProvider = context.read<UserState>();
                                 userProvider.setGroup(null);
                                 userProvider.setGroups([]);
                                 userProvider.setUser(null);

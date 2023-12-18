@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:csocsort_szamla/helpers/currencies.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/custom_choice_chip.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -18,12 +18,12 @@ import '../helpers/member_chips.dart';
 
 enum PaymentType { newPayment, modifyPayment }
 
-class AddModifyPayment {
+mixin AddModifyPayment {
   Member? selectedMember;
   TextEditingController amountController = TextEditingController();
   TextEditingController noteController = TextEditingController();
   Future<List<Member>>? members;
-  late String selectedCurrency;
+  late Currency selectedCurrency;
   late Function(BuildContext context) _buttonPush;
   late void Function(void Function()) _setState;
   PaymentType? _paymentType;
@@ -45,8 +45,8 @@ class AddModifyPayment {
     this._setState = setState;
     this._paymentType = paymentType;
     this._buttonPush = buttonPush ?? (context) {};
-    this.user = context.read<AppStateProvider>().user!;
-    this.selectedCurrency = context.read<AppStateProvider>().currentGroup!.currency;
+    this.user = context.read<UserState>().user!;
+    this.selectedCurrency = context.read<UserState>().currentGroup!.currency;
     if (_paymentType == PaymentType.modifyPayment) {
       this._savedPayment = savedPayment;
       selectedCurrency = savedPayment!.originalCurrency;
@@ -78,7 +78,7 @@ class AddModifyPayment {
 
   Map<String, dynamic> generateBody(String note, double amount, Member toMember, BuildContext context) {
     return {
-      'group': context.read<AppStateProvider>().currentGroup!.id,
+      'group': context.read<UserState>().currentGroup!.id,
       'currency': selectedCurrency,
       'amount': amount,
       'note': note,

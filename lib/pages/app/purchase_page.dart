@@ -192,7 +192,7 @@ class _PurchasePageState extends State<PurchasePage> with AddModifyPurchase {
                                           return Text(
                                             member.nickname +
                                                 ': ' +
-                                                customAmountMap[member]
+                                                customAmountMap[member]!
                                                     .toMoneyString(selectedCurrency, withSymbol: true),
                                             style: Theme.of(context).textTheme.bodySmall!.copyWith(
                                                   color: Theme.of(context).colorScheme.tertiary,

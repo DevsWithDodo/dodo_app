@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
 import 'package:csocsort_szamla/components/shopping/im_shopping_dialog.dart';
@@ -44,7 +44,7 @@ class _ShoppingListState extends State<ShoppingList>
           GetUriKeys.requests,
           context,
           queryParams: {
-            'group': context.read<AppStateProvider>().user!.group!.id.toString()
+            'group': context.read<UserState>().user!.group!.id.toString()
           },
         ),
         overwriteCache: overwriteCache,
@@ -65,7 +65,7 @@ class _ShoppingListState extends State<ShoppingList>
   Future<BoolFutureOutput> _postShoppingRequest(String name) async {
     try {
       Map<String, dynamic> body = {
-        'group': context.read<AppStateProvider>().currentGroup!.id,
+        'group': context.read<UserState>().currentGroup!.id,
         'name': name
       };
       Response response = await Http.post(uri: '/requests', body: body);
@@ -239,7 +239,7 @@ class _ShoppingListState extends State<ShoppingList>
               Column(
                 children: [
                   SizedBox(
-                    height: 160,
+                    height: 180,
                   ),
                   Expanded(
                     child: FutureBuilder(
@@ -298,7 +298,7 @@ class _ShoppingListState extends State<ShoppingList>
                 ],
               ),
               Container(
-                height: 180,
+                height: 205,
                 color: Colors.transparent,
                 child: Card(
                   child: Padding(

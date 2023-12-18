@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:csocsort_szamla/pages/app/history_page.dart';
 import 'package:csocsort_szamla/components/payment/payment_entry.dart';
 import 'package:csocsort_szamla/components/purchase/purchase_entry.dart';
@@ -36,7 +37,7 @@ class _HistoryState extends State<History> {
           GetUriKeys.purchases, context,
           queryParams: {
             'limit': '6',
-            'group': context.read<AppStateProvider>().currentGroup!.id.toString(),
+            'group': context.read<UserState>().currentGroup!.id.toString(),
           },
         ),
         overwriteCache: overwriteCache,
@@ -61,7 +62,7 @@ class _HistoryState extends State<History> {
           GetUriKeys.payments, context,
           queryParams: {
             'limit': '6',
-            'group': context.read<AppStateProvider>().currentGroup!.id.toString(),
+            'group': context.read<UserState>().currentGroup!.id.toString(),
           },
         ),
         overwriteCache: overwriteCache,
@@ -155,7 +156,7 @@ class _HistoryState extends State<History> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
                         gradient: _selectedIndex == 0
-                            ? AppTheme.gradientFromTheme(context.watch<AppStateProvider>().themeName)
+                            ? AppTheme.gradientFromTheme(context.watch<AppThemeState>().themeName)
                             : LinearGradient(colors: [
                                 ElevationOverlay.applyOverlay(context,
                                     Theme.of(context).colorScheme.surface, 10),
@@ -212,7 +213,7 @@ class _HistoryState extends State<History> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
                         gradient: _selectedIndex == 1
-                            ? AppTheme.gradientFromTheme(context.watch<AppStateProvider>().themeName)
+                            ? AppTheme.gradientFromTheme(context.watch<AppThemeState>().themeName)
                             : LinearGradient(colors: [
                                 ElevationOverlay.applyOverlay(context,
                                     Theme.of(context).colorScheme.surface, 10),
@@ -411,7 +412,7 @@ class _HistoryState extends State<History> {
     return data.map((element) {
       return PaymentEntry(
         payment: element,
-        selectedMemberId: context.read<AppStateProvider>().user!.id,
+        selectedMemberId: context.read<UserState>().user!.id,
       );
     }).toList();
   }
@@ -423,7 +424,7 @@ class _HistoryState extends State<History> {
     return data.map((element) {
       return PurchaseEntry(
         purchase: element,
-        selectedMemberId: context.read<AppStateProvider>().user!.id,
+        selectedMemberId: context.read<UserState>().user!.id,
       );
     }).toList();
   }

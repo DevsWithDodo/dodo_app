@@ -1,5 +1,5 @@
 import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/components/user_settings/cards/about_us.dart';
 import 'package:csocsort_szamla/components/user_settings/cards/change_language.dart';
@@ -77,7 +77,7 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
       ChangeUsername(),
       ChangeUserCurrency(),
       PaymentMethods(),
-      Selector<AppStateProvider, bool>(
+      Selector<UserState, bool>(
         selector: (context, provider) => provider.user!.showAds,
         builder: (context, showAds, child) => Visibility(
           visible: showAds,

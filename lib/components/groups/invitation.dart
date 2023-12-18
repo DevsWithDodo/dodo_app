@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
@@ -63,7 +63,7 @@ class _InvitationState extends State<Invitation> {
       Map<String, dynamic> body = {'admin_approval': _needsApproval ? 1 : 0};
       await Http.put(
         uri: '/groups/' +
-            context.read<AppStateProvider>().user!.group!.id.toString(),
+            context.read<UserState>().user!.group!.id.toString(),
         body: body,
       );
       return BoolFutureOutput.True;
@@ -462,7 +462,7 @@ class _ApproveMemberState extends State<ApproveMember> {
       Map<String, dynamic> body = {'member_id': memberId, 'approve': approve};
       await Http.post(
           uri: '/groups/' +
-              context.read<AppStateProvider>().user!.group!.id.toString() +
+              context.read<UserState>().user!.group!.id.toString() +
               '/members/approve_or_deny',
           body: body);
       return BoolFutureOutput.True;

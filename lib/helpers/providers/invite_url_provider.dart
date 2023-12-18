@@ -1,9 +1,57 @@
+import 'package:csocsort_szamla/helpers/navigator_service.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/main.dart';
+import 'package:csocsort_szamla/pages/app/join_group_page.dart';
+import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:uni_links/uni_links.dart' as uniLinks;
 
-class InviteUrlProvider extends ChangeNotifier {
+class InviteUrlProvider extends StatelessWidget {
+  InviteUrlProvider({required this.builder}) {
+    _inviteUrl = InviteUrlState(null);
+
+    uniLinks.getInitialLink().then((link) {
+      if (link != null) {
+        _inviteUrl.inviteUrl = link;
+      }
+    });
+
+    uniLinks.linkStream.listen((link) {
+      if (link != null) {
+        _inviteUrl.inviteUrl = link;
+
+        BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
+        if (context.read<UserState>().user != null) {
+          getIt.get<NavigationService>().push(
+                MaterialPageRoute(
+                  builder: (context) =>
+                      JoinGroupPage(fromAuth: (context.read<UserState>().user?.group == null) ? true : false),
+                ),
+              );
+        } else {
+          getIt.get<NavigationService>().push(MaterialPageRoute(builder: (context) => LoginOrRegisterPage()));
+        }
+      }
+    });
+  }
+
+  final Widget Function(BuildContext context) builder;
+  late final InviteUrlState _inviteUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider.value(
+      value: _inviteUrl,
+      builder: (context, child) => this.builder(context),
+    );
+  }
+}
+
+class InviteUrlState extends ChangeNotifier {
   String? _inviteUrl = null;
 
-  InviteUrlProvider(this._inviteUrl);
+  InviteUrlState(this._inviteUrl);
 
   String? get inviteUrl => _inviteUrl;
 

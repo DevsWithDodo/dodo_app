@@ -1,7 +1,8 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
@@ -43,8 +44,8 @@ class AddReactionDialog extends StatelessWidget {
   }
 
   List<Widget> _generateReactions(BuildContext context) {
-    ThemeName themeName = context.read<AppStateProvider>().themeName;
-    User user = context.read<AppStateProvider>().user!;
+    ThemeName themeName = context.watch<AppThemeState>().themeName;
+    User user = context.read<UserState>().user!;
     return reactions.map((e) {
       return Container(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -83,7 +84,7 @@ class AddReactionDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print('add_reaction_dialog.dart: ');
-    return Selector<AppStateProvider, int>(
+    return Selector<UserState, int>(
       selector: (_, userProvider) => userProvider.user!.id,
       builder: (context, userId, _) {
         return Dialog(

@@ -3,7 +3,8 @@ import 'dart:io';
 
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/navigator_service.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/main.dart';
 import 'package:csocsort_szamla/pages/app/join_group_page.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -15,7 +16,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../pages/auth/login_or_register_page.dart';
-import '../config.dart';
 import '../pages/app/main_page.dart';
 
 enum GetUriKeys {
@@ -52,7 +52,7 @@ String generateUri(
   Map<String, String?>? queryParams,
 }) {
   if (type == HttpType.get) {
-    Group? currentGroup = context.read<AppStateProvider>().currentGroup;
+    Group? currentGroup = context.read<UserState>().currentGroup;
     if (params == null && currentGroup != null) {
       params = [currentGroup.id.toString()];
     }
@@ -104,10 +104,10 @@ class Http {
       Map<String, String> header = {
         "Content-Type": "application/json",
         "Authorization":
-            "Bearer " + (context.read<AppStateProvider>().user?.apiToken ?? '')
+            "Bearer " + (context.read<UserState>().user?.apiToken ?? '')
       };
       http.Response response = await http.get(
-        Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
+        Uri.parse(context.read<AppConfig>().appUrl + uri),
         headers: header,
       );
       if (response.statusCode < 300 && response.statusCode >= 200) {
@@ -118,7 +118,7 @@ class Http {
         if (error['error'] == 'Unauthenticated.') {
           //TODO: lehet itt dobja a random hibat
           clearAllCache();
-          AppStateProvider appStateProvider = context.read<AppStateProvider>();
+          UserState appStateProvider = context.read<UserState>();
           appStateProvider.logout(withoutRequest: true);
           FToast ft = FToast();
           ft.init(context);
@@ -162,18 +162,18 @@ class Http {
       Map<String, String> header = {
         "Content-Type": "application/json",
         "Authorization":
-            "Bearer " + (context.read<AppStateProvider>().user?.apiToken ?? '')
+            "Bearer " + (context.read<UserState>().user?.apiToken ?? '')
       };
       http.Response response;
       if (body != null) {
         String bodyEncoded = json.encode(body);
         response = await http.post(
-            Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
+            Uri.parse(context.read<AppConfig>().appUrl + uri),
             headers: header,
             body: bodyEncoded);
       } else {
         response = await http.post(
-            Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
+            Uri.parse(context.read<AppConfig>().appUrl + uri),
             headers: header);
       }
 
@@ -218,18 +218,18 @@ class Http {
       Map<String, String> header = {
         "Content-Type": "application/json",
         "Authorization":
-            "Bearer " + (context.read<AppStateProvider>().user?.apiToken ?? '')
+            "Bearer " + (context.read<UserState>().user?.apiToken ?? '')
       };
       http.Response response;
       if (body != null) {
         String bodyEncoded = json.encode(body);
         response = await http.put(
-            Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
+            Uri.parse(context.read<AppConfig>().appUrl + uri),
             headers: header,
             body: bodyEncoded);
       } else {
         response = await http.put(
-            Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
+            Uri.parse(context.read<AppConfig>().appUrl + uri),
             headers: header);
       }
 
@@ -271,10 +271,10 @@ class Http {
       Map<String, String> header = {
         "Content-Type": "application/json",
         "Authorization":
-            "Bearer " + (context.read<AppStateProvider>().user?.apiToken ?? '')
+            "Bearer " + (context.read<UserState>().user?.apiToken ?? '')
       };
       http.Response response = await http.delete(
-          Uri.parse((useTest ? TEST_URL : APP_URL) + uri),
+          Uri.parse(context.read<AppConfig>().appUrl + uri),
           headers: header);
 
       if (response.statusCode < 300 && response.statusCode >= 200) {
@@ -308,7 +308,7 @@ class Http {
   }
 
   static void memberNotInGroup(BuildContext context) {
-    AppStateProvider userProvider = context.read<AppStateProvider>();
+    UserState userProvider = context.read<UserState>();
     userProvider.setGroup(null, notify: false);
     clearAllCache();
     FToast ft = FToast();
@@ -441,7 +441,7 @@ Future deleteCache({required String uri, bool multipleArgs = false}) async {
 
 Future clearGroupCache(BuildContext context) async {
   if (!kIsWeb) {
-    int currentGroupId = context.read<AppStateProvider>().currentGroup!.id;
+    int currentGroupId = context.read<UserState>().currentGroup!.id;
     var cacheDir = await _getCacheDir();
     String s = Platform.isWindows ? '\\' : '/';
     if (cacheDir.existsSync()) {

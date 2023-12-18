@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/user_settings/components/enter_payment_method_list.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -18,7 +18,7 @@ class PaymentMethods extends StatelessWidget {
       Map<String, dynamic> body = {"payment_details": jsonEncode(paymentMethods.map((e) => e.toJson()).toList())};
 
       await Http.put(uri: '/user', body: body);
-      context.read<AppStateProvider>().setPaymentMethods(paymentMethods);
+      context.read<UserState>().setPaymentMethods(paymentMethods);
       EventBus.instance.fire(EventBus.refreshBalances);
       EventBus.instance.fire(EventBus.refreshGroupMembers);
       return BoolFutureOutput.True;

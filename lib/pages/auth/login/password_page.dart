@@ -1,5 +1,5 @@
 import 'package:csocsort_szamla/pages/auth/login/login_pin_page.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -134,7 +134,7 @@ class _PasswordPageState extends State<PasswordPage> {
     showDialog(
       context: context,
       builder: (context) => FutureOutputDialog(
-        future: context.read<AppStateProvider>().login(
+        future: context.read<UserState>().login(
           widget.username!,
           _passwordController.text,
           context,

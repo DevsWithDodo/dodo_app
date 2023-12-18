@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:csocsort_szamla/components/auth/pin_pad.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -27,7 +27,7 @@ class _PinVerificationDialogState extends State<PinVerificationDialog> {
         'password': pin,
       },
     );
-    AppStateProvider provider = context.read<AppStateProvider>();
+    UserState provider = context.read<UserState>();
     provider.setUserStatus(UserStatus.fromJson(jsonDecode(response.body)));
     return BoolFutureOutput.True;
   }

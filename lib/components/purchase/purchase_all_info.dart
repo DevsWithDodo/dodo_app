@@ -1,5 +1,5 @@
 import 'package:csocsort_szamla/helpers/currencies.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/helpers/transaction_receivers.dart';
@@ -23,7 +23,7 @@ class PurchaseAllInfo extends StatefulWidget {
 }
 
 class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
-  late String displayCurrency;
+  late Currency displayCurrency;
 
   @override
   void initState() {
@@ -54,7 +54,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         );
 
-    String groupCurrency = context.select<AppStateProvider, String>(
+    Currency groupCurrency = context.select<UserState, Currency>(
         (provider) => provider.currentGroup!.currency);
 
     return DefaultTextStyle(
@@ -154,7 +154,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                         Center(
                           child: Text(
                             'info.purchase-currency'.tr(namedArgs: {
-                              "currency": widget.purchase.originalCurrency
+                              "currency": widget.purchase.originalCurrency.code
                             }),
                             style: titleStyle,
                             textAlign: TextAlign.center,
@@ -173,7 +173,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                         Center(
                           child: Text(
                             'info.group-currency'.tr(
-                              namedArgs: {"currency": groupCurrency},
+                              namedArgs: {"currency": groupCurrency.code},
                             ),
                             style: titleStyle,
                             textAlign: TextAlign.center,

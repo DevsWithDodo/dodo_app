@@ -1,7 +1,7 @@
 import 'package:csocsort_szamla/components/balance/necessary_payment_entry.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +62,7 @@ class NecessaryPaymentsDialog extends StatelessWidget {
               GradientButton(
                 child: Icon(Icons.copy),
                 onPressed: () {
-                  String currency = context.read<AppStateProvider>().currentGroup!.currency;
+                  Currency currency = context.read<UserState>().currentGroup!.currency;
                   int longestPayerNick = this.necessaryPayments
                       .map((e) => e.payerNickname.length)
                       .reduce((value, element) => value > element ? value : element);
@@ -88,7 +88,7 @@ class NecessaryPaymentsDialog extends StatelessWidget {
   List<Widget> _generatePaymentEntries() {
     Map<int, List<Payment>> paymentsByPayer = {};
     for (Payment payment
-        in this.necessaryPayments.where((payment) => payment.amount > Currency.threshold(payment.originalCurrency))) {
+        in this.necessaryPayments.where((payment) => payment.amount > payment.originalCurrency.threshold())) {
       if (paymentsByPayer.containsKey(payment.payerId)) {
         paymentsByPayer[payment.payerId]!.add(payment);
       } else {

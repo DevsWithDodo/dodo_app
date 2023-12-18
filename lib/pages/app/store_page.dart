@@ -1,10 +1,11 @@
 import 'dart:io';
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:provider/provider.dart';
 
 class StorePage extends StatefulWidget {
   const StorePage({Key? key}) : super(key: key);
@@ -56,23 +57,29 @@ class _StorePageState extends State<StorePage> {
             children: [
               Text(
                 e.id.tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
               SizedBox(
                 height: 10,
               ),
               Text((e.id + '_explanation').tr(),
-                  style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall!
+                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   textAlign: TextAlign.center),
               SizedBox(
                 height: 10,
               ),
               Text('price'.tr() + e.price,
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   textAlign: TextAlign.center),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -80,14 +87,11 @@ class _StorePageState extends State<StorePage> {
                   GradientButton(
                     child: Text('buy'.tr()),
                     onPressed: () {
-                      PurchaseParam purchaseParam =
-                          PurchaseParam(productDetails: e);
+                      PurchaseParam purchaseParam = PurchaseParam(productDetails: e);
                       if (_isConsumable(e.id)) {
-                        InAppPurchase.instance
-                            .buyConsumable(purchaseParam: purchaseParam);
+                        InAppPurchase.instance.buyConsumable(purchaseParam: purchaseParam);
                       } else {
-                        InAppPurchase.instance
-                            .buyNonConsumable(purchaseParam: purchaseParam);
+                        InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
                       }
                     },
                   )
@@ -104,35 +108,23 @@ class _StorePageState extends State<StorePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'in_app_purchase'.tr(),
-          // style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
-        ),
-        // flexibleSpace: Container(
-        //   decoration: BoxDecoration(
-        //       gradient: AppTheme.gradientFromTheme(Theme.of(context))),
-        // ),
+        title: Text('in_app_purchase'.tr()),
       ),
-      body: !isIAPPlatformEnabled
+      body: !context.watch<AppConfig>().isIAPPlatformEnabled
           ? Container()
           : FutureBuilder(
               future: iap.isAvailable(),
               builder: (context, AsyncSnapshot<bool> isAvailableSnapshot) {
-                if (isAvailableSnapshot.connectionState ==
-                    ConnectionState.done) {
+                if (isAvailableSnapshot.connectionState == ConnectionState.done) {
                   if (isAvailableSnapshot.hasData) {
                     if (isAvailableSnapshot.data!) {
                       return FutureBuilder(
-                        future:
-                            InAppPurchase.instance.queryProductDetails(_ids),
-                        builder: (context,
-                            AsyncSnapshot<ProductDetailsResponse> snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.done) {
+                        future: InAppPurchase.instance.queryProductDetails(_ids),
+                        builder: (context, AsyncSnapshot<ProductDetailsResponse> snapshot) {
+                          if (snapshot.connectionState == ConnectionState.done) {
                             if (snapshot.hasData) {
                               return ListView(
-                                children:
-                                    _buildItems(snapshot.data!.productDetails),
+                                children: _buildItems(snapshot.data!.productDetails),
                               );
                             } else {
                               return ErrorMessage(
@@ -146,8 +138,7 @@ class _StorePageState extends State<StorePage> {
                           }
 
                           return LinearProgressIndicator(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
+                            backgroundColor: Theme.of(context).colorScheme.primary,
                           );
                         },
                       );

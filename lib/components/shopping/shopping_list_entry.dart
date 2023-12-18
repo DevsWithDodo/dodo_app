@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/past_reaction_container.dart';
@@ -47,7 +47,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
         reactions.remove(oldReaction);
       } else if (!alreadyReacted) {
         reactions.add(Reaction(
-          nickname: context.read<AppStateProvider>().user!.username,
+          nickname: context.read<UserState>().user!.username,
           reaction: reaction,
           userId: userId,
         ));
@@ -65,7 +65,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
   @override
   Widget build(BuildContext context) {
     String name = widget.shoppingRequest.name;
-    User user = context.watch<AppStateProvider>().user!;
+    User user = context.watch<UserState>().user!;
     TextStyle mainTextStyle =
         Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface);
     TextStyle subTextStyle =

@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/components/helpers/currency_picker_dropdown.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
@@ -71,7 +71,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
                         onPressed: () {
                           showFutureOutputDialog(
                             context: context,
-                            future: context.read<AppStateProvider>().register(
+                            future: context.read<UserState>().register(
                                   widget.username,
                                   widget.pin,
                                   _defaultCurrency,
@@ -82,7 +82,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
                                     MaterialPageRoute(
                                       builder: (context) => JoinGroupPage(
                                         fromAuth: true,
-                                        inviteURL: context.read<InviteUrlProvider>().inviteUrl,
+                                        inviteURL: context.read<InviteUrlState>().inviteUrl,
                                       ),
                                     ),
                                     (r) => false,

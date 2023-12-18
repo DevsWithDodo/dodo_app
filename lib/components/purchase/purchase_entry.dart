@@ -3,10 +3,11 @@ import 'package:csocsort_szamla/helpers/app_theme.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/past_reaction_container.dart';
 import 'package:csocsort_szamla/components/purchase/purchase_all_info.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +35,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
 
   void handleSendReaction(String reaction, int userId) {
     setState(() {
-      User user = context.read<AppStateProvider>().user!;
+      User user = context.read<UserState>().user!;
       Reaction? oldReaction = reactions.firstWhereOrNull((element) => element.userId == user.id);
       bool alreadyReacted = oldReaction != null;
       bool sameReaction = alreadyReacted ? oldReaction.reaction == reaction : false;
@@ -59,7 +60,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeName themeName = context.watch<AppStateProvider>().themeName;
+    ThemeName themeName = context.watch<AppThemeState>().themeName;;
     int? selectedMemberId = widget.selectedMemberId;
     String note = (widget.purchase.name == '')
         ? 'no_note'.tr()
@@ -124,7 +125,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                 borderRadius: BorderRadius.circular(15),
               )
         : BoxDecoration();
-    return Selector<AppStateProvider, User>(
+    return Selector<UserState, User>(
         selector: (context, userProvider) => userProvider.user!,
         builder: (context, user, _) {
           return Stack(

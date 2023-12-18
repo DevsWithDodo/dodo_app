@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -26,7 +27,7 @@ class _GroupMembersState extends State<GroupMembers> {
     try {
       http.Response response = await Http.get(
         uri: generateUri(GetUriKeys.groupCurrent, context,
-            params: [context.read<AppStateProvider>().user!.group!.id.toString()]),
+            params: [context.read<UserState>().user!.group!.id.toString()]),
         useCache: false,
       );
       Map<String, dynamic> decoded = jsonDecode(response.body);
@@ -35,7 +36,7 @@ class _GroupMembersState extends State<GroupMembers> {
         members.add(Member.fromJson(member));
       }
       members.sort((member1, member2) => member1.nickname.compareTo(member2.nickname));
-      currentMember = members.firstWhere((member) => member.id == context.read<AppStateProvider>().user!.id);
+      currentMember = members.firstWhere((member) => member.id == context.read<UserState>().user!.id);
       members.remove(currentMember);
       members.insert(0, currentMember!);
       return members;
@@ -179,9 +180,9 @@ class MemberEntry extends StatelessWidget {
     TextStyle subTextStyle;
     BoxDecoration boxDecoration;
     Color iconColor;
-    AppStateProvider provider = context.watch<AppStateProvider>();
+    UserState provider = context.watch<UserState>();
     User user = provider.user!;
-    ThemeName themeName = provider.themeName;
+    ThemeName themeName = context.watch<AppThemeState>().themeName;
     if (member.id == user.id) {
       mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
           color: themeName.type == ThemeType.gradient

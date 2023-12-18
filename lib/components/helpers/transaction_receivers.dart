@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +18,7 @@ class TransactionReceivers extends StatelessWidget {
   });
 
   final Map<double, List<Member>> groupedReceivers;
-  final String displayCurrency;
+  final Currency displayCurrency;
   final String buyerNickname;
   final TransactionType type;
 
@@ -30,7 +30,7 @@ class TransactionReceivers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String groupCurrency = context.select<AppStateProvider, String>((provider) => provider.currentGroup!.currency);
+    Currency groupCurrency = context.select<UserState, Currency>((provider) => provider.currentGroup!.currency);
     TextStyle titleStyle = Theme.of(context).textTheme.titleMedium!.copyWith(
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         );

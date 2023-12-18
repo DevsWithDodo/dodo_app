@@ -1,12 +1,13 @@
 import 'dart:math';
 
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/helpers/app_theme.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/navigator_service.dart';
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/main.dart';
 import 'package:csocsort_szamla/components/main/dialogs/iapp_not_supported_dialog.dart';
@@ -29,7 +30,7 @@ class MainDialogBuilder extends StatefulWidget {
   MainDialogBuilder({required this.context, super.key}) {
     dialogs = [
       TrialEndedDialog(
-        canShow: (context) => context.read<AppStateProvider>().user!.userStatus.trialStatus == TrialStatus.expired,
+        canShow: (context) => context.read<UserState>().user!.userStatus.trialStatus == TrialStatus.expired,
         type: DialogType.modal,
         showTime: DialogShowTime.both,
         onDismiss: (context, {payload}) async {
@@ -39,28 +40,27 @@ class MainDialogBuilder extends StatefulWidget {
               'trial_status': "seen",
             },
           );
-          AppStateProvider provider = context.read<AppStateProvider>();
+          UserState provider = context.read<UserState>();
+          AppThemeState appTheme = context.read<AppThemeState>();
           provider.setUserStatus(provider.user!.userStatus.copyWith(
             trialStatus: TrialStatus.seen,
           ));
           EventBus.instance.fire(EventBus.hideMainDialog);
-          ThemeName currentTheme = provider.themeName;
+          ThemeName currentTheme = appTheme.themeName;
           if (currentTheme.type == ThemeType.dualColor ||
               currentTheme.type == ThemeType.gradient ||
               currentTheme.type == ThemeType.dynamic) {
-            provider.setThemeName(
-              currentTheme.brightness == Brightness.light ? ThemeName.greenLight : ThemeName.greenDark,
-            );
+            appTheme.themeName = currentTheme.brightness == Brightness.light ? ThemeName.greenLight : ThemeName.greenDark;
           }
           if (payload == 'shop') {
-            if (isIAPPlatformEnabled) {
+            if (context.read<AppConfig>().isIAPPlatformEnabled) {
               await Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => const StorePage(),
               ));
             } else {
               await showDialog(
                 context: context,
-                builder: (context) => IAPPNotSupportedDialog(),
+                builder: (context) => IAPNotSupportedDialog(),
               );
             }
           }
@@ -74,7 +74,7 @@ class MainDialogBuilder extends StatefulWidget {
         showTime: DialogShowTime.both,
         type: DialogType.bottom,
         canShow: (context) {
-          UserStatus status = context.read<AppStateProvider>().user!.userStatus;
+          UserStatus status = context.read<UserState>().user!.userStatus;
           int verificationCount = status.pinVerificationCount;
           Duration difference = DateTime.now().difference(status.pinVerifiedAt);
           if (verificationCount <= 1 && difference.inDays >= 1) {
@@ -93,7 +93,7 @@ class MainDialogBuilder extends StatefulWidget {
           return false;
         },
         onDismiss: (context, {payload}) {
-          AppStateProvider provider = context.read<AppStateProvider>();
+          UserState provider = context.read<UserState>();
           UserStatus status = provider.user!.userStatus;
           provider.setUserStatus(status.copyWith(
             pinVerifiedAt: DateTime.now(), // Only show once per session
@@ -102,7 +102,7 @@ class MainDialogBuilder extends StatefulWidget {
       ),
       LikeTheAppMainDialog(
         canShow: (context) {
-          User? user = context.read<AppStateProvider>().user;
+          User? user = context.read<UserState>().user;
           return user != null &&
               user.userStatus.trialStatus != TrialStatus.trial &&
               !user.ratedApp &&
@@ -111,13 +111,13 @@ class MainDialogBuilder extends StatefulWidget {
         type: DialogType.modal,
         showTime: DialogShowTime.onBuild,
         onDismiss: (context, {payload}) {
-          context.read<AppStateProvider>().user!.ratedApp = true;
+          context.read<UserState>().user!.ratedApp = true;
           EventBus.instance.fire(EventBus.hideMainDialog);
         },
       ),
       PaymentMethodMainDialog(
         canShow: (context) {
-          User? user = context.read<AppStateProvider>().user;
+          User? user = context.read<UserState>().user;
           return user != null && user.paymentMethods.isEmpty && Random().nextDouble() <= 0.15;
         },
         type: DialogType.bottom,
@@ -125,9 +125,9 @@ class MainDialogBuilder extends StatefulWidget {
       ),
       ThemesMainDialog(
         canShow: (context) {
-          AppStateProvider provider = context.read<AppStateProvider>();
+          UserState provider = context.read<UserState>();
           User? user = provider.user;
-          ThemeName currentTheme = provider.themeName;
+          ThemeName currentTheme = context.read<AppThemeState>().themeName;;
           if (user == null) return false;
           late double chance;
           if (user.userStatus.trialStatus == TrialStatus.trial) {

@@ -1,4 +1,5 @@
-import 'package:csocsort_szamla/helpers/providers/app_state_provider.dart';
+import 'package:csocsort_szamla/helpers/currencies.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/helpers/transaction_receivers.dart';
@@ -22,7 +23,7 @@ class PaymentAllInfo extends StatefulWidget {
 }
 
 class _PaymentAllInfoState extends State<PaymentAllInfo> {
-  late String displayCurrency;
+  late Currency displayCurrency;
 
   Future<BoolFutureOutput> _deletePayment(int id) async {
     try {
@@ -53,7 +54,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         );
 
-    String groupCurrency = context.select<AppStateProvider, String>(
+    Currency groupCurrency = context.select<UserState, Currency>(
         (provider) => provider.currentGroup!.currency);
 
     return DefaultTextStyle(
@@ -103,7 +104,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                         Center(
                           child: Text(
                             'info.purchase-currency'.tr(namedArgs: {
-                              "currency": widget.payment.originalCurrency
+                              "currency": widget.payment.originalCurrency.code
                             }),
                             style: titleStyle,
                             textAlign: TextAlign.center,
@@ -122,7 +123,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                         Center(
                           child: Text(
                             'info.group-currency'.tr(
-                              namedArgs: {"currency": groupCurrency},
+                              namedArgs: {"currency": groupCurrency.code},
                             ),
                             style: titleStyle,
                             textAlign: TextAlign.center,
