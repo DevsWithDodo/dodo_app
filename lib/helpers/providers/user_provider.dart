@@ -161,7 +161,7 @@ class UserState extends ChangeNotifier {
           apiToken: decoded['data']['api_token'],
           username: decoded['data']['username'],
           id: decoded['data']['id'],
-          currency: decoded['data']['default_currency'],
+          currency: Currency.fromCodeSafe(decoded['data']['default_currency']),
           ratedApp: preferences.getBool('rated_app') ?? false,
           personalisedAds: decoded['data']['personalised_ads'] == 1,
           showAds: decoded['data']['ad_free'] == 0,
@@ -187,7 +187,7 @@ class UserState extends ChangeNotifier {
           groups.add(Group(
             name: group['group_name'],
             id: group['group_id'],
-            currency: group['currency'],
+            currency: Currency.fromCodeSafe(group['currency']),
           ));
         }
         String? inviteUrl = context.read<InviteUrlState>().inviteUrl;
