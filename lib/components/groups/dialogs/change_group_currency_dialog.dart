@@ -9,11 +9,9 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 class ChangeGroupCurrencyDialog extends StatefulWidget {
   @override
-  _ChangeGroupCurrencyDialogState createState() =>
-      _ChangeGroupCurrencyDialogState();
+  _ChangeGroupCurrencyDialogState createState() => _ChangeGroupCurrencyDialogState();
 }
 
 class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
@@ -24,8 +22,7 @@ class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
       Map<String, dynamic> body = {"currency": currency.code};
 
       await Http.put(
-        uri: '/groups/' +
-            context.read<UserState>().currentGroup!.id.toString(),
+        uri: '/groups/' + context.read<UserState>().currentGroup!.id.toString(),
         body: body,
       );
       context.read<UserState>().setGroupCurrency(currency);
@@ -52,8 +49,10 @@ class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
           children: <Widget>[
             Text(
               'change_group_currency'.tr(),
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -62,10 +61,9 @@ class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
             Padding(
               padding: const EdgeInsets.only(left: 8, right: 8),
               child: CurrencyPickerDropdown(
-                  defaultCurrencyValue: _currency.code,
-                  currencyChanged: (currency) {
-                    _currency = Currency.fromCode(currency);
-                  }),
+                currency: _currency,
+                currencyChanged: (currency) => setState(() => _currency = currency),
+              ),
             ),
             SizedBox(
               height: 5,
@@ -76,17 +74,13 @@ class _ChangeGroupCurrencyDialogState extends State<ChangeGroupCurrencyDialog> {
                 GradientButton(
                   onPressed: () {
                     FocusScope.of(context).unfocus();
-                    showFutureOutputDialog(
-                      context: context,
-                      future: _updateGroupCurrency(_currency),
-                      outputCallbacks: {
-                        BoolFutureOutput.True: () async {
-                          await clearGroupCache(context);
-                          EventBus.instance.fire(EventBus.refreshBalances);
-                          Navigator.of(context).pop();
-                        }
+                    showFutureOutputDialog(context: context, future: _updateGroupCurrency(_currency), outputCallbacks: {
+                      BoolFutureOutput.True: () async {
+                        await clearGroupCache(context);
+                        EventBus.instance.fire(EventBus.refreshBalances);
+                        Navigator.of(context).pop();
                       }
-                    );
+                    });
                   },
                   child: Icon(Icons.check),
                 ),

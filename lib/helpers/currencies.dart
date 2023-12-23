@@ -25,6 +25,17 @@ extension Money on double {
   }
 }
 
+class CurrencyNotFoundException implements Exception {
+  CurrencyNotFoundException(this.code);
+
+  final String code;
+
+  @override
+  String toString() {
+    return 'CurrencyNotFoundException: There is no currency with the given code $code';
+  }
+}
+
 class Currency {
   const Currency._(
     this.code,
@@ -43,7 +54,7 @@ class Currency {
 
   factory Currency.fromCode(String code) {
     if (!_unorderedCurrencies.containsKey(code)) {
-      throw Exception('There is no currency with the given abbreviation $code');
+      throw CurrencyNotFoundException(code);
     }
     return Currency._fromEntry(code, _unorderedCurrencies[code]!);
   }
@@ -68,10 +79,8 @@ class Currency {
     return _currencies.keys.toList();
   }
 
-  static List<String> enumerateCurrencies() {
-    return _currencies.keys
-        .map((key) => key + ";" + _currencies[key]!["symbol"])
-        .toList();
+  static List<Currency> all() {
+    return _currencies.keys.map((code) => Currency.fromCode(code)).toList();
   }
 
   void setRate(dynamic rate) {
@@ -82,6 +91,15 @@ class Currency {
     return (this.hasSubunit ? 0.01 : 1) / 2;
   }
 
+  @override
+  String toString() {
+    return this.code;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is Currency && other.code == this.code;
+  }
 }
 
 Map<String, Map<String, dynamic>> _currencies = SplayTreeMap.from(_unorderedCurrencies, (a, b) => a.compareTo(b));

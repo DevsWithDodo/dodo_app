@@ -417,7 +417,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
           'statistics'.tr(),
         ),
       ),
-      body: context.watch<ScreenWidth>().isMobile
+      body: context.watch<ScreenSize>().isMobile
           ? SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

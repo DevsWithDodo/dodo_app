@@ -26,14 +26,14 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   late TextEditingController _nicknameController;
 
   var _formKey = GlobalKey<FormState>();
-  late Currency _defaultCurrencyValue;
+  late Currency _selectedCurrency;
 
   @override
   void initState() {
     super.initState();
     User user = context.read<UserState>().user!;
     _nicknameController = TextEditingController(text: user.username[0].toUpperCase() + user.username.substring(1));
-    _defaultCurrencyValue = user.currency;
+    _selectedCurrency = user.currency;
   }
 
   Future<BoolFutureOutput> _createGroup(String groupName, String nickname, String? currency) async {
@@ -45,11 +45,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
       userProvider.setGroups(
           userProvider.user!.groups +
               [
-                Group(
-                  id: decoded['group_id'],
-                  name: decoded['group_name'],
-                  currency: decoded['currency'],
-                )
+                Group.fromJson(decoded)
               ],
           notify: false);
       userProvider.setGroup(userProvider.user!.groups.last);
@@ -146,12 +142,8 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                                 ),
                                 Flexible(
                                   child: CurrencyPickerDropdown(
-                                    currencyChanged: (code) {
-                                      setState(() {
-                                        _defaultCurrencyValue = Currency.fromCode(code);
-                                      });
-                                    },
-                                    defaultCurrencyValue: _defaultCurrencyValue.code,
+                                    currencyChanged: (code) => setState(() => _selectedCurrency = code),
+                                    currency: _selectedCurrency,
                                   ),
                                 ),
                               ],
@@ -181,7 +173,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
               String token = _groupName.text;
               String nickname = _nicknameController.text;
               showFutureOutputDialog(
-                future: _createGroup(token, nickname, _defaultCurrencyValue.code),
+                future: _createGroup(token, nickname, _selectedCurrency.code),
                 context: context,
                 outputCallbacks: {
                   BoolFutureOutput.True: () async {

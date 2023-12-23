@@ -34,54 +34,50 @@ class _BootstrapState extends State<Bootstrap> {
   Widget build(BuildContext context) {
     return AppConfigProvider(
       builder: (context) => FutureBuilder(
-          future: _prefs,
-          builder: (context, AsyncSnapshot<SharedPreferences> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
-            }
-            return MultiProvider(
-                providers: [
-                  Provider(
-                    create: (context) => snapshot.data!,
-                  )
-                ],
-                builder: (context, child) {
-                  return AppThemeProvider(
+        future: _prefs,
+        builder: (context, AsyncSnapshot<SharedPreferences> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+          return Provider(
+            create: (context) => snapshot.data!,
+            builder: (context, child) => AppThemeProvider(
+                context: context,
+                builder: (context) => InviteUrlProvider(
+                  builder: (context) => ExchangeRateInitializer(
                     context: context,
-                    builder: (context) => InviteUrlProvider(
-                      builder: (context) => ExchangeRateInitializer(
+                    builder: (context) => UserProvider(
+                      context: context,
+                      builder: (context) => NotificationInitializer(
                         context: context,
-                        builder: (context) => UserProvider(
+                        builder: (context) => IAPInitializer(
                           context: context,
-                          builder: (context) => NotificationInitializer(
-                            context: context,
-                            builder: (context) => IAPInitializer(
-                              context: context,
-                              builder: (context) => ScreenWidthProvider(
-                                builder: (context) => EasyLocalization(
-                                  child: ShowCaseWidget(
-                                    builder: Builder(
-                                      builder: (context) => SupportedVersionInitializer(
-                                        builder: (context) => App(),
-                                      ),
-                                    ),
+                          builder: (context) => ScreenSizeProvider(
+                            builder: (context) => EasyLocalization(
+                              child: ShowCaseWidget(
+                                builder: Builder(
+                                  builder: (context) => SupportedVersionInitializer(
+                                    builder: (context) => App(),
                                   ),
-                                  supportedLocales: [Locale('en'), Locale('de'), Locale('it'), Locale('hu')],
-                                  path: 'assets/translations',
-                                  fallbackLocale: Locale('en'),
-                                  useOnlyLangCode: true,
-                                  saveLocale: true,
-                                  useFallbackTranslations: true,
                                 ),
                               ),
+                              supportedLocales: [Locale('en'), Locale('de'), Locale('hu')],
+                              path: 'assets/translations',
+                              fallbackLocale: Locale('en'),
+                              useOnlyLangCode: true,
+                              saveLocale: true,
+                              useFallbackTranslations: true,
                             ),
                           ),
                         ),
                       ),
                     ),
-                  );
-                });
-          }),
+                  ),
+                ),
+              ),
+          );
+        },
+      ),
     );
   }
 }

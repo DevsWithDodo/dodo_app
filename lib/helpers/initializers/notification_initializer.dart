@@ -22,10 +22,11 @@ class NotificationInitializer extends StatelessWidget {
   NotificationInitializer({required BuildContext context, required this.builder, super.key}) {
     init(context);
   }
-  
+
   final Widget Function(BuildContext context) builder;
 
-  void onSelectNotification(String? payload, BuildContext context) {
+  void onSelectNotification(NotificationResponse response, BuildContext context) {
+    String? payload = response.payload;
     if (payload == null) {
       return;
     }
@@ -72,7 +73,8 @@ class NotificationInitializer extends StatelessWidget {
     }
   }
 
-  void _createNotificationChannels(String groupId, List<String> channels, FlutterLocalNotificationsPlugin plugin) async {
+  void _createNotificationChannels(
+      String groupId, List<String> channels, FlutterLocalNotificationsPlugin plugin) async {
     AndroidNotificationChannelGroup androidNotificationChannelGroup =
         AndroidNotificationChannelGroup(groupId, (groupId + '_notification').tr());
     plugin
@@ -100,31 +102,39 @@ class NotificationInitializer extends StatelessWidget {
     notifications.initialize(
       InitializationSettings(
         android: AndroidInitializationSettings('@drawable/dodo'),
-        iOS: IOSInitializationSettings(),
+        iOS: DarwinInitializationSettings(),
       ),
-      onSelectNotification: (payload) => onSelectNotification(payload, context),
+      onDidReceiveNotificationResponse: (message) => onSelectNotification(message, context),
     );
 
     if (Platform.isAndroid) {
       notifications
           .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!
-          .requestPermission();
+          .requestNotificationsPermission();
     }
     Future.delayed(Duration(seconds: 1)).then((value) {
       if (Platform.isAndroid) {
         Future.delayed(Duration(seconds: 2)).then((value) {
           _createNotificationChannels('group_system', ['other', 'group_update'], notifications);
-          _createNotificationChannels('purchase', ['purchase_created', 'purchase_modified', 'purchase_deleted'], notifications);
-          _createNotificationChannels('payment', ['payment_created', 'payment_modified', 'payment_deleted'], notifications);
-          _createNotificationChannels('shopping', ['shopping_created', 'shopping_fulfilled', 'shopping_shop'], notifications);
+          _createNotificationChannels(
+              'purchase', ['purchase_created', 'purchase_modified', 'purchase_deleted'], notifications);
+          _createNotificationChannels(
+              'payment', ['payment_created', 'payment_modified', 'payment_deleted'], notifications);
+          _createNotificationChannels(
+              'shopping', ['shopping_created', 'shopping_fulfilled', 'shopping_shop'], notifications);
         });
       }
       FirebaseMessaging.instance.getInitialMessage().then((message) {
         if (message != null) {
-          onSelectNotification(message.data['payload'], context);
+          onSelectNotification(
+            NotificationResponse(
+                notificationResponseType: NotificationResponseType.selectedNotification,
+                payload: message.data['payload']),
+            context,
+          );
         }
       });
-      FirebaseMessaging.onMessage.listen((message) {
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         Map<String, dynamic> decoded = jsonDecode(message.data['payload']);
         var androidPlatformChannelSpecifics = AndroidNotificationDetails(
           decoded['channel_id'], //only this is needed
@@ -132,7 +142,7 @@ class NotificationInitializer extends StatelessWidget {
           channelDescription: (decoded['channel_id'] + '_notification_explanation'),
           styleInformation: BigTextStyleInformation(''),
         );
-        var iOSPlatformChannelSpecifics = IOSNotificationDetails(presentSound: false);
+        var iOSPlatformChannelSpecifics = DarwinNotificationDetails(presentSound: false);
         var platformChannelSpecifics = NotificationDetails(
           android: androidPlatformChannelSpecifics,
           iOS: iOSPlatformChannelSpecifics,
@@ -146,7 +156,13 @@ class NotificationInitializer extends StatelessWidget {
         );
       });
       FirebaseMessaging.onMessageOpenedApp.listen(
-        (message) => onSelectNotification(message.data['payload'], context),
+        (message) => onSelectNotification(
+          NotificationResponse(
+            notificationResponseType: NotificationResponseType.selectedNotification,
+            payload: message.data['payload'],
+          ),
+          context,
+        ),
       );
     });
   }

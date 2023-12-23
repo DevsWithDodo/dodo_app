@@ -117,15 +117,10 @@
     "where" : "Where?",
 
     "discovery_add_floating_title": "Add purchase or payment",
-    "discovery_add_floating_description": "\nPurchase:\nEnter the amount, if you bought something for one or more members, the then app distributes it evenly between them.\n\nPayment:\nEnter an amount if you payed a member.",
     "discovery_drawer_title": "User menu",
-    "discovery_drawer_description": "\nAt the top of the menu you can switch between your groups.\n\nBelow you can find your personal settings.",
     "discovery_settings_title": "Personal settings",
-    "discovery_settings_description": "\nHere you can change your username or password, and choose between beautiful color themes. 😉",
     "discover_shopping_title": "Group shopping list",
-    "discover_shopping_description" : "\nEveryone in the group has access to this shopping list\n\nYou can use it travelling together or when sharing a flat.",
     "discover_group_settings_title": "Group settings",
-    "discover_group_settings_description" : "\nAmongst other things this menu is used to invite people to the group and to change your nickname.",
 
     "reset_tutorial": "Rewatch tutorial",
     "reset_tutorial_explanation": "You'll need to restart the app",
@@ -180,7 +175,7 @@
     "accept_privacy_policy": "I accept the privacy policy",
     "must_accept_privacy_policy": "You have to accept the privacy policy!",
 
-    "gradient_available_in_paid_version": "You can buy the gradient and dynamic themes through the app",
+    "gradient_available_in_paid_version": "You can buy the gradient and adaptive themes through the app",
 
     "version_not_supported": "The version is not supported",
     "version_not_supported_explanation": "We updated Dodo to a new version. With this change some of the features in your versions will not work.",
@@ -197,8 +192,8 @@
     "group_boost_explanation": "Access group statistics.\nThe bundle includes enough Dodos for 2 groups.",
     "ad_gradient_bundle": "Basic Dodo Bundle",
     "ad_gradient_bundle_2": "Basic Dodo Bundle",
-    "ad_gradient_bundle_explanation": "Enjoy a seamless Dodo experience.\nRemove ads and unlock gradient and dynamic themes.",
-    "ad_gradient_bundle_2_explanation": "Enjoy a seamless Dodo experience.\nRemove ads and unlock gradient and dynamic themes.",
+    "ad_gradient_bundle_explanation": "Enjoy a seamless Dodo experience.\nRemove ads and unlock gradient and adaptive themes.",
+    "ad_gradient_bundle_2_explanation": "Enjoy a seamless Dodo experience.\nRemove ads and unlock gradient and adaptive themes.",
     "gradients": "Gradient and Dual-Tone Themes",
     "gradients_explanation": "Experience the full color palette of Dodo.\nUnlock gradient and dual-tone themes. (Our favorite is the orange theme 😉)",
     "big_lender_bundle": "Extended Dodo Bundle",
@@ -263,7 +258,7 @@
     "use_personalised_ads_explanation": "If you want to see personalised ads",
 
     "trial_version": "Trial time",
-    "trial_version_explanation": "You registered in the past two weeks, so you are using the app with certain bonuses. These include the ad-free experience, the usage of two-tone, gradient and dynamic themes and the access to group statistics. After two weeks you can buy these in the Dodo Store if you want.",
+    "trial_version_explanation": "You registered in the past two weeks, so you are using the app with certain bonuses. These include the ad-free experience, the usage of two-tone, gradient and adaptive themes and the access to group statistics. After two weeks you can buy these in the Dodo Store if you want.",
 
     "calculator": "Calculator",
     "calculator_explanation": "A simple calculator if you need it 😉",
@@ -348,8 +343,8 @@
     "paste_code": "or by pasting its invitation code:",
 
     "gradient_themes" : "Gradient themes",
-    "change-theme.dynamic-theme" : "Dynamic theme",
-    "change-theme.dynamic-theme.subtitle" : "This theme will dynamically change with the colors you selected for your system.",
+    "change-theme.adaptive-theme" : "Adaptive theme",
+    "change-theme.adaptive-theme.subtitle" : "This theme will adapt to the colors you selected for your system.",
 
     "in_app_purchase_description": "Ads and color themes",
     "iapp_not_supported": "The store is not enabled on your platform",
@@ -460,8 +455,10 @@
     "use_calculator": "Use the calculator",
     "choose_custom_amount": "Long press on user to choose custom amount",
 
-    "payments_needed.dialog.subtitle": "The necessary payments for everyone to break even.",
-    "payments_needed.dialog.hint": "Tap on the icon at the end of each row to see the possible payment methods.",
+    "payments-needed.page.subtitle": "These are the payments everyone needs to make to settle the group's balance.",
+    "payments-needed.page.payment-method-hint": "Tap on the icon at the end of each row to see the possible payment methods.",
+    "payments-needed.page.payment-page-hint": "Already paid? Go to the payment page to book it.",
+    "payments-needed.page.copy-hint": "Copy all necessary payments to the clipboard:",
 
     "pin-verification.title": "Verify pin",
     "pin-verification.description": "Type your pin below and verify your knowledge",
@@ -539,5 +536,19 @@
 
     "personalised-ads.dialog.title": "Personalised ads",
     "personalised-ads.dialog.subtitle": "Set if you want to see personalised ads in the app. This setting can be changed later in the settings menu.",
-    "personalised-ads.dialog.question": "Do you want to see personalised ads?"
+    "personalised-ads.dialog.question": "Do you want to see personalised ads?",
+
+    "change-theme.preview-hint": "Long press on any theme to preview it.",
+
+    "theme-preview.member.1": "John",
+    "theme-preview.member.2": "Alex",
+    "theme-preview.member.3": "Mary",
+
+    "theme-preview.purchase.1": "Groceries",
+    "theme-preview.purchase.2": "Train ride",
+    "theme-preview.purchase.3": "Pizza",
+
+    "theme-preview.request.1": "Milk",
+    "theme-preview.request.2": "Cereals",
+    "theme-preview.request.3": "Coffee"
 }

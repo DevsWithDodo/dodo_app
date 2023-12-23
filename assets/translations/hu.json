@@ -180,7 +180,7 @@
     "accept_privacy_policy": "Elfogadom az adatvédelmi tájékoztatót",
     "must_accept_privacy_policy": "El kell fogadnod az adatvédelmi tájékoztatót",
 
-    "gradient_available_in_paid_version": "A kéttónusú, színátmenetes és dinamikus témákat megveheted az alkalmazáson belül",
+    "gradient_available_in_paid_version": "A kéttónusú, színátmenetes és adaptív témákat megveheted az alkalmazáson belül",
 
     "version_not_supported": "A verzió nem támogatott",
     "version_not_supported_explanation": "Új Dodo verziót vezettünk be, emiatt a verziód néhány eleme már nem támogatott.",
@@ -345,8 +345,8 @@
     "paste_code": "vagy másold ide a meghívót:",
 
     "gradient_themes" : "Színátmenetes témák",
-    "change-theme.dynamic-theme" : "Dinamikus téma",
-    "change-theme.dynamic-theme.subtitle" : "Ez a téma az általad választott rendszerszínekhez alkalmazkodik.",
+    "change-theme.adaptive-theme" : "Adaptív téma",
+    "change-theme.adaptive-theme.subtitle" : "Ez a téma az általad választott rendszerszínekhez alkalmazkodik.",
 
     "in_app_purchase_description": "Reklámok és témák",
     "iapp_not_supported": "A bolt ezen a platformon nem támogatott",
@@ -458,8 +458,10 @@
     "use_calculator": "Használd a számológépet",
     "choose_custom_amount": "Nyomj hosszan egy tagra, hogy kiválaszd a hozzá tartozó összeget",
 
-    "payments_needed.dialog.subtitle": "A tagok egyenlegének kiegyenlítéséhez szükséges fizetések",
-    "payments_needed.dialog.hint": "Nyomj a sor végén lévő gombra, hogy lásd az elérhető fizetési módokat.",
+    "payments-needed.page.subtitle": "Ezek a fizetések szükségesek az összes egyenleg kiegyenlítéséhez.",
+    "payments-needed.page.payment-method-hint": "Nyomj a sor végén lévő gombra, hogy lásd az elérhető fizetési módokat.",
+    "payments-needed.page.payment-page-hint": "Már fizettél? Válts a fizetési oldalra, és írd fel:",
+    "payments-needed.page.copy-hint": "Másold ki az összes szükséges fizetést:",
 
     "pin-verification.title": "Pin ellenőrzése",
     "pin-verification.description": "Írd be a pin kódod és bizonyosodj meg róla, hogy nem felejtetted el. Nem tudjuk visszaállítani, ha elfelejted.",
@@ -537,5 +539,19 @@
 
     "personalised-ads.dialog.title": "Személyre szabott hirdetések",
     "personalised-ads.dialog.subtitle": "Add meg, hogy szeretnél-e az alkalmazásban személyre szabott reklámokat látni. Ezt később a beállításokban megváltoztathatod",
-    "personalised-ads.dialog.question": "Szeretnél személyre szabott reklámokat?"
+    "personalised-ads.dialog.question": "Szeretnél személyre szabott reklámokat?",
+
+    "change-theme.preview-hint": "Az előnézet megjelenítéséhez nyomj hosszan egy témára.",
+
+    "theme-preview.member.1": "Jani",
+    "theme-preview.member.2": "Andris",
+    "theme-preview.member.3": "Luca",
+
+    "theme-preview.purchase.1": "Bevásárlás",
+    "theme-preview.purchase.2": "MÁV",
+    "theme-preview.purchase.3": "Pizza",
+
+    "theme-preview.request.1": "Tej",
+    "theme-preview.request.2": "Müzli",
+    "theme-preview.request.3": "Kávé"
 }

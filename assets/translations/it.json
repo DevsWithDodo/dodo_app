@@ -1,454 +1,200 @@
 {
-    "title":"Dodo",
-    "subtitle":"Privacy-focused bill splitting",
+    "title": "Dodo",
+    "subtitle": "Dividere le bollette in base alla privacy",
 
-    "login":"Accedi",
-    "register":"Crea un account",
-    "username":"Nome utente",
-    "password":"Password",
+    "login": "Accedi",
+    "register": "Iscriviti",
+    "username": "Nome utente",
+    "password": "Password",
 
-    "name":"Nome",
-    "confirm_password":"Conferma la password",
+    "name": "Nome",
+    "confirm_password": "Conferma password",
 
-    "balances":"Saldi",
-    "history":"Cronologia",
-    "home":"Casa",
-    "shopping_list":"Lista della spesa",
-    "group":"Gruppo",
-    "purchase":"Spesa",
-    "payment":"Pagamento",
+    "balances": "Saldi",
+    "history": "Storia",
+    "home": "Casa",
+    "shopping_list": "Elenco acquisti",
+    "group": "Gruppo",
+    "purchase": "Acquisto",
+    "payment": "Pagamento",
 
-    "wish":"Desiderio",
+    "wish": "Il mio desiderio",
 
-    "nickname":"Soprannome",
-    "new_nickname":"Soprannome nuovo",
-    "rename_group":"Rinomina il gruppo",
-    "new_name": "Nome nuovo",
-    "invitation":"Invito",
-    "members":"Membri",
+    "nickname": "Nickname",
+    "new_nickname": "Nuovo nickname",
+    "rename_gruppo": "Rinomina gruppo",
+    "new_name": "Nuovo nome",
+    "invitation": "Invito",
+    "members": "Membri",
 
-    "groups":"Gruppi",
-    "join_group":"Iscriviti ad un gruppo",
-    "create_group":"Crea un gruppo",
-    "settings":"Impostazoni",
-    "logout":"Esci",
+    "groups": "Gruppi",
+    "join_group": "Unisci gruppo",
+    "create_group": "Crea gruppo",
+    "settings": "Impostazioni",
+    "logout": "Esci",
 
-    "join":"Iscriviti",
-    "nickname_in_group":"Soprannome nel gruppo",
-    "no_group_yet":"Non hai ancora dei gruppi?",
+    "join": "Unisciti",
+    "nickname_in_group": "Nickname nel gruppo",
+    "no_group_yet": "Non hai ancora un gruppo?",
+    
+    "group_name": "Nome del gruppo",
+    "create": "Crea",
 
-    "group_name":"Il nome del gruppo",
-    "create":"Crea",
+    "change_password": "Cambia password",
+    "old_password": "Vecchia password",
+    "new_password": "Nuova password",
+    "new_password_confirm": "Conferma nuova password",
+    "change_theme": "Cambia tema",
+    "change_language": "Cambia lingua",
 
-    "change_password":"Modifica la password",
-    "old_password":"Password attuale",
-    "new_password":"Password nouva",
-    "new_password_confirm":"Conferma la password",
-    "change_theme":"Cambia il tema",
-    "change_language": "Cambia la lingua",
+    "full_amount": "Importo completo",
+    "note": "Nota",
 
-    "full_amount":"Somma totale",
-    "note":"Nota",
+    "amount": "Importo",
 
-    "amount":"Somma",
-
-    "passwords_not_match": "Le due password non sono uguali!",
-    "okay": "Va bene!",
-    "error": "Un'errore è accaduto!",
+    "password_not_match": "Le due password non corrispondono!",
+    "okay": "Affermativo!",
+    "error": "Si è verificato un errore!",
     "back": "Indietro",
 
     "yes": "Sì",
     "no": "No",
 
-    "login_required": "Purtroppo devi accedere di nuovo!",
+    "login_required": "È necessario effettuare nuovamente il login!",
     "purchases": "Acquisti",
     "payments": "Pagamenti",
 
-    "more": "Più",
+    "more": "Altro",
 
-    "person_not_chosen": "Non hai scelto nessuno!",
-    "payment_scf": "Il pagamento è stato registrato con successo!",
-    "add_new": "Aggiungi un altro",
+    "person_not_chosen": "Nessuna persona scelta!",
+    "payment_scf": "Il pagamento è stato salvato con successo!",
+    "add_new": "Aggiungi nuovo",
 
-    "no_note": "Non c'è nota",
-    "want_delete": "Vorresti cancellare l'articolo?",
-    "delete": "Cancella",
+    "no_note": "Nessuna nota aggiuntiva",
+    "want_delete": "Vuoi revocare l'elemento?",
+    "delete": "Elimina",
 
-    "per_person": " {}/persona",
-    "no_amount": "Non hai aggiunto la somma!",
-    "purchase_scf": "L'acquisto è stato registrato con successo!",
-    "invitation_to_lender": "Invito ad un gruppo Dodo",
+    "per_persona": " {}/persona",
+    "no_amount": "Nessun importo indicato!",
+    "purchase_scf": "L'acquisto è stato salvato con successo!",
+    "invitation_to_lender": "Invito a un gruppo Dodo",
 
     "field_empty": "Il campo non può essere vuoto!",
-    "not_valid_num": "Usa solo numeri!",
-    "minimal_length": "Devi scriverci almeno {} caratteri!",
-    "edit_nickname": "Soprannome nuovo",
-    "payment_explanation": "Hai pagato a qualcuno",
+    "not_valid_num": "Non hai inserito un numero!",
+    "minimal_length": "Sono necessari almeno {} caratteri!",
+    "edit_nickname": "Nuovo nickname",
+    "payment_explanation": "Hai pagato qualcuno",
     "purchase_explanation": "Hai comprato qualcosa",
 
-    "members_explanation": "Dai un'occhiata ai membri del gruppo e cambia il tuo soprannome",
-    "members_explanation_admin": "Gesti il potere dei membri ed i soprannomi",
-    "modify": "Modifica",
-    "invitation_explanation": "Invita qualcuno al gruppo",
-    "rename_group_explanation": "Se non ti piace il cui nome",
-    "history_explanation": "Segui, modifica e revoca le tue transazioni precedenti",
+    "members.subtitle": "Vedi i metodi di pagamento e altri dettagli dei membri del gruppo o lascia il gruppo",
+    "members.hint": "Tocca un membro per vedere i suoi dettagli",
+    "members.admin.hint": "Toccare un membro per vedere i suoi dettagli, renderlo amministratore o cacciarlo dal gruppo",
 
-    "pay": "Pago",
-    "who_to_pay": "A chi dovrei pagare?",
+    "modify": "Modifica",
+    "invitation_explanation": "Invita qualcuno nel gruppo",
+    "rename_group_explanation": "Se non ti piace il nome",
+    "history_explanation": "Tocca una voce per modificarla e vedere ulteriori dettagli. Tenere premuto per reagire",
+
+    "pay": "Paga",
+    "who_to_pay": "Chi devo pagare?",
     "payments_needed": "Pagamenti necessari",
 
-    "remove_from_list": "Spuntato",
+    "remove_from_list": "Controlla",
     "add_as_expense": "Registra come spesa",
     "revoke": "Revoca",
 
-    "change_username": "Modifica il nome utente",
+    "change_username": "Cambia nome utente",
 
-    "hi": "Ciao",
+    "ciao": "Ciao",
 
-    "report_a_bug": "Annunci un errore",
-    "bug": "Errore",
-    "what_is_wrong": "Che c'è che non va?",
+    "report_a_bug": "Segnala un bug",
+    "bug": "Bug",
+    "what_is_wrong": "Cosa c'è di sbagliato?",
 
-    "nothing_to_show": "Silenzio...",
+    "nothing_to_show": "Non c'è ancora nulla da mostrare...",
 
-    "i_m_shopping" : "Sono in negozio",
+    "i_m_shopping" : "Sto facendo shopping",
     "where" : "Dove?",
 
-    "discovery_add_floating_title": "Aggiungere spesa o pagamento",
-    "discovery_add_floating_description": "\nSpesa:\nQuando compri qualcosa per uno o più membri, inseriscici la somma e l'app la dividerà in parti uguali.\n\nPagamento:\nQuando paghi ad un membro, ci puoi inserire la somma.",
-    "discovery_drawer_title": "Impostazioni degli utenti",
-    "discovery_drawer_description": "\nNella parte superiore del menu puoi gestire i tuoi grupppi.\n\nSotto trovi le impostazioni personali.",
+    "discovery_add_floating_title": "Aggiungi acquisto o pagamento",
+    "discovery_drawer_title": "Menu utente",
     "discovery_settings_title": "Impostazioni personali",
-    "discovery_settings_description": "\nQui puoi modificare il tuo nome utente, la tua password, persino puoi scegliere tra colori bellissimi. 😉",
-    "discover_shopping_title": "Lista della spesa comune",
-    "discover_shopping_description" : "\nQuesta lista è visibile per tutti i membri del gruppo.\n\nLa potete usare in vacanza o con i coinquilini.",
-    "discover_group_settings_title": "Impostazioni del gruppo",
-    "discover_group_settings_description" : "\nQui puoi, tra l'altro, invitare nuovi membri, modificare il tuo soprannove e guardare le statistiche del gruppo.",
-
-    "reset_tutorial": "Rivedi il tutorial",
-    "reset_tutorial_explanation": "Per farlo devi riavviare l'app!",
-
-    "password_reminder": "Promemoria della password",
+    "discover_shopping_title": "Elenco acquisti di gruppo",
+    "discover_group_settings_title": "Impostazioni di gruppo",
+    "reset_tutorial": "Rewatch tutorial",
+    "reset_tutorial_explanation": "È necessario riavviare l'applicazione",
+    "password_reminder": "Promemoria password",
     "forgot_password": "Password dimenticata",
-    "your_password_reminder": "Il tuo promemoria della password:",
+    "your_password_reminder": "Promemoria password:",
+    "cannot_connect": "La connessione al server non è riuscita. Controllare la connessione a Internet e riprovare",
+    "format_exception": "Si è verificato un errore durante l'analisi dei dati. Riprovare",
+    "no_connection": "Non c'è connessione a Internet",
 
-    "cannot_connect": "La connessione al server non è stata di successo. Controlli la connessione internet e riprovi dopo.",
-    "format_exception": "Errore analizzando i dati. Cerca di riprovare!",
-    "no_connection": "Non c'è connessione internet.",
+    "store": "Store",
 
-    "store": "Negozio",
-
-    "leave_group": "Lascio il gruppo",
-    "balance_at_least_0": "Per poter lasciare, il tuo saldo deve essere 0 al minimo",
-    "kick_member": "Butti fuori",
-    "really_kick": "Se togli il membro, il suo saldo sarà aggiunto al tuo. Vorresti toglierlo comunque?",
-    "really_leave": "Se lasci, il tuo saldo sarà diviso tra gli altri membri del gruppo. Vorresti lasciarlo comunque?",
+    "leave_group": "Gruppo di partenza",
+    "balance_at_least_0": "Il tuo saldo deve essere almeno pari a 0 per lasciare il gruppo!",
+    "kick_member": "Calcia il membro",
+    "really_kick": "Se calci questo membro, il suo saldo attuale verrà aggiunto al tuo saldo. Sei sicuro di volerlo cacciare?",
+    "really_leave": "Se te ne vai, il tuo saldo attuale sarà diviso tra tutti gli altri. Sei sicuro di volertene andare?",
 
     "auto_payment": "Pagamento automatico",
 
-    "your_currency": "Valuta tua",
-    "currency_of_group": "Valuta del gruppo",
+    "your_currency": "La tua valuta",
+    "valuta_del_gruppo": "La valuta del gruppo",
 
-    "location": "Nome della pagina",
-    "details": "Più dettagli",
+    "location": "Località",
+    "details": "Ulteriori dettagli",
 
-    "change_username_explanation": "Modifica il tuo nome utente con cui accedi all'app",
-    "change_password_explanation": "Modifica la tua password con cui accedi all'app",
+    "change_username_explanation": "Cambia il nome utente che si usa per accedere all'app",
+    "change_password_explanation": "Modifica della password utilizzata per accedere all'applicazione",
 
     "change_group_currency": "Cambia la valuta del gruppo",
-    "change_group_currency_explanation": "Cambia la valuta ma non dimenticare che i tuoi debiti attuali non saranno convertiti!",
+    "change_group_currency_explanation": "Cambia la valuta del gruppo, ma tieni presente che i saldi non saranno convertiti!",
 
-    "add_guest": "Aggiungi ospiti",
-    "merge_guest": "Assegna l'ospite",
-    "sure_merge_guest": "Vorresti sicuramente assegnarci l'ospite?",
+    "merge_guest": "Assegna un ospite a un membro",
+    "add_guest": "Aggiungi ospite",
+    "sure_merge_guest": "Sei sicuro di voler assegnare l'ospite al membro scelto?",
 
-    "edit_request": "Modifico la richiesta",
+    "edit_request": "Modifica richiesta di acquisto",
     "edited_request": "Richiesta modificata",
 
-    "about_us": "Di noi",
-    "about_us_explanation": "Informazioni di noi e dell'applicazione",
-    "about_us_text": "L'applicazione è stata sviluppata da due studenti.\n\nUn grande ringraziamento ad Anna Hegyi e Sára Kata Kovács per le traduzioni e ad Ábel Kocsis per l'aiuto con l'informativa sulla privacy. E anche a tutti coloro che hanno testato l'applicazione!😉\n\nTutti i migliori, i vostri sviluppatori",
+    "about_us": "About us",
+    "about_us_explanation": "Informazioni su di noi e sull'app",
+    "about_us_text": "L'app è stata sviluppata da due studenti.Un grande ringraziamento ad Anna Hegyi e Sára Kata Kovács per le traduzioni e ad Ábel Kocsis per l'aiuto con l'informativa sulla privacy. E anche a tutti coloro che hanno testato l'app!\uD83D\uDE09\n\n\nTutti i migliori, i vostri sviluppatori",
 
-    "reactions": "Reazioni",
+    "reactions": "Reactions",
     "add_reaction": "Aggiungi reazione",
-    "all_reactions": "Reazioni precedenti",
+    "all_reactions": "Reazioni passate",
 
-    "username_explanation": "Usando il tu nome utente puoi accandere all'app. Puoi utilizzare solo le lettere minuscole dell'alfabeto inglese e numeri. Più tardi nel gruppo potrai aggiungerti qualsiasi soprannome.",
+    "username_explanation": "Si utilizzerà il nome utente per accedere all'app. Sono consentite solo lettere minuscole e numeri inglesi. In seguito sarà possibile assegnarsi un nickname per ogni gruppo.",
 
-    "accept_privacy_policy": "Accetto la normativa sulla privacy.",
-    "must_accept_privacy_policy": "Devi accettare la normativa sulla privacy!",
+    "accept_privacy_policy": "Accetto l'informativa sulla privacy",
+    "must_accept_privacy_policy": "Devi accettare l'informativa sulla privacy!",
 
-    "gradient_available_in_paid_version": "Puoi comprare i colori gradienti nell'app",
+    "gradient_available_in_paid_version": "È possibile acquistare il gradiente e i temi adattivi tramite l'app",
 
-    "version_not_supported": "Questa versione non è supportata",
-    "version_not_supported_explanation": "Abbiamo fatto un aggiornamento dell'app, perciò alcune funzioni della tua versione non sono supportate.",
-    "download_new_version": "Scarica la versione nuova!",
+    "version_not_supported": "La versione non è supportata",
+    "version_not_supported_explanation": "Abbiamo aggiornato Dodo a una nuova versione. Con questa modifica alcune delle funzioni presenti nelle vostre versioni non funzioneranno",
+    "download_nuova_versione": "Scarica la nuova versione",
 
-    "in_app_purchase": "Negozio Dodo",
+    "in_app_purchase": "Dodo Store",
 
-    "if_not_working": "Se questo non aiuta",
-    "report_this_error": "Annuncia l'errore",
+    "if_not_working": "Se non funziona",
+    "report_this_error": "Segnala il bug",
 
     "remove_ads": "Esperienza senza annunci",
-    "remove_ads_explanation": "Vivi l'esperienza di Dodo senza interruzioni.\nRimuovi gli annunci pubblicitari",
+    "remove_ads_explanation": "Vivi l'esperienza di Dodo senza interruzioni.Rimuovi le pubblicità",
     "group_boost": "Gruppo che potenzia Dodos",
-    "group_boost_explanation": "Espandi il limite di membri del gruppo a 30 e accedi alle statistiche del gruppo.\nIl pacchetto include abbastanza Dodos per 2 gruppi",
+    "group_boost_explanation": "Accedi alle statistiche di gruppo.´Il pacchetto include abbastanza Dodos per 2 gruppi",
     "ad_gradient_bundle": "Pacchetto Dodo di base",
     "ad_gradient_bundle_2": "Pacchetto Dodo di base",
-    "ad_gradient_bundle_explanation": "Godetevi un'esperienza Dodo senza soluzione di continuità.\nRimuovete gli annunci e sbloccate i temi gradienti e dinamici.",
-    "ad_gradient_bundle_2_explanation": "Godetevi un'esperienza Dodo senza soluzione di continuità.\nRimuovete gli annunci e sbloccate i temi gradienti e dinamici.",
-    "gradienti": "Temi a gradiente e a doppia tonalità",
-    "gradienti_spiegazione": "Sperimenta l'intera tavolozza di colori di Dodo.\nSblocca i temi a gradiente e a doppia tonalità. (Il nostro preferito è il tema arancione 😉 )",
+    "ad_gradient_bundle_explanation": "Godetevi un'esperienza Dodo senza soluzione di continuità.\nRimuovete gli annunci e sbloccate i temi sfumati e adattivi.",
+    "ad_gradient_bundle_2_explanation": "Godetevi un'esperienza Dodo senza soluzione di continuità.\nRimuovete gli annunci e sbloccate i temi gradienti e adattivi.",
+    "gradients": "Temi a gradiente e a doppia tonalità",
+    "gradients_explanation": "Sperimenta l'intera tavolozza di colori di Dodo.\nSblocca i temi a gradiente e a doppia tonalità. (Il nostro preferito è il tema arancione 😉 )",
     "big_lender_bundle": "Pacchetto Dodo esteso",
-    "big_lender_bundle_explanation": "Questo pacchetto comprende il pacchetto Dodo di base più i Dodos che aumentano il gruppo per 1 gruppo",
-
+    "big_lender_bundle_explanation": "Questo bundle include il bundle Dodo di base più i Dodos che aumentano il gruppo per 1 gruppo",
     "price": "Prezzo: ",
-    "buy": "Compra",
-
-    "boost_group": "Sviluppa il gruppo",
-    "boost_group_explanation": "Aumenta il numero dei membri possibili nel gruppo a 30 persone e seguite le statistiche.",
-    "available": "Numero dei Gruppo-sviluppante Dodos: {}",
-
-    "sure_boost": "Vorresti sicuramente sviluppare il gruppo?",
-    "already_boosted": "Il gruppo è già sviluppato!",
-
-    "delete_all_data": "Cancella tutti i dati utenti",
-    "delete_all_data_explanation": "In questo caso non rimane nessun dato legato a te nei nostri server.",
-
-    "you_seem_lonely": "Sei solo?",
-    "invite_friends": "Invita i tuoi amici",
-    "add_guests_offline": "O aggiungi membri al gruppo",
-    "you_seem_lonely_explanation": "Più tardi potrai fare queste cose nelle impostazioni del gruppo.",
-
-    "undo": "Annulla",
-    "request_deleted": "Cancellato!",
-
-    "sure_user_delete": "Facendo questo cancelli irrevocabilmente il tuo account. Vorresti sicuramente continuare?",
-
-    "statistics": "Statistiche",
-    "payments_stats": "Pagamenti",
-    "payments_stats_explanation": "Qui puoi vedere i pagamenti che hai fatto e quelli che hai ricevuto.",
-    "payed": "Pagato:",
-    "taken": "Ricevuto:",
-    "you_payed": "Hai pagato",
-    "you_took": "Hai ricevuto",
-
-    "purchases_stats": "Acquisti",
-    "purchases_stats_explanation": "Qui puoi vedere gli acquisti che hai fatto e quelli che hai ricevuto.",
-    "stat_bought": "Comprato:",
-    "received": "Ricevuto:",
-    "you_bought": "Hai comprato",
-    "you_received": "Hai ricevuto",
-
-    "group_stats": "Le statistiche del gruppo",
-    "group_stats_explanation": "Qui puoi vedere tutti gli acquisti e pagamenti del gruppo.",
-    "stats_purchases": "Acquisti:",
-    "stats_payments": "Pagamenti:",
-
-    "sum_of": "Σ",
-
-    "select_date": "Scegli la data",
-    "select_date_explanation": "Scegli il periodo le cui statistiche vorresti vedere.",
-
-    "personalised_ads": "Vorrei vedere delle pubblicità personalizzate.",
-
-    "statistics_not_available": "Le statistiche non sono disponibili.",
-    "statistics_not_available_explanation": "Questo gruppo non è stato ancora sviluppato, quindi le statistiche non sono ancora disponibili. Sviluppa il gruppo o compri Gruppo-sviluppante Dodos nel Negozio Dodo!",
-
-    "use_personalised_ads": "Pubblicità personalizzate",
-    "use_personalised_ads_explanation": "Se voui vedere delle pubblicità personalizzate",
-
-    "trial_version": "Periodo di prova",
-    "trial_version_explanation": "Siccome hai registrato nelle ultime due settimane, usi attualmente l'app con certi bonus, i quali sono: nessuna pubblicità, temi gradienti, statistiche. Dopo le due settimane li puoi comprare nel Negozio Dodo.",
-
-    "calculator": "Calcolatrice",
-    "calculator_explanation": "Ecco una calcolatrice, usi se vuoi. 😉",
-
-    "approve_members": "Accetti membri",
-    "approve_members_explanation": "Accetti l'adesione dei nuovi membri nel gruppo. Sotto puoi cambiare se l'approvazione dei admin sia necessaria.",
-    "needs_approval": "L'approvazione di un admin è necessaria",
-    "download_export": "Scarica dati",
-    "download_export_explanation": "Scarica tutti i dati del gruppo",
-    "download_xls": "Scarica come tabella excel",
-    "download_xls_explanation": "Usi questo se vuoi tu ordinare i dati",
-    "download_pdf": "Scarica come PDF",
-    "download_pdf_explanation": "Usi questo se vuoi una visione d'insieme veloce",
-    "export": "Dati scaricabili",
-    "export_explanation": "I dati del gruppo come tabella o PDF",
-    "statistics_explanation": "Le statistiche del gruppo con diagramme",
-    "coming_soon": "Imminente",
-
-    "modify_payment": "Modifica il pagamento",
-    "modify_payment_explanation": "Modifica i pagamento se i dettagli hanno cambiato",
-    "modify_purchase": "Modifica l'acquisto",
-    "modify_purchase_explanation": "Modifica l'acquisto se i dettagli hanno cambiato",
-
-    "not_in_group": "Non sei membro in questo gruppo!",
-
-    "approve_still_needed": "La richiesta di adesione è mandata, per poter accederci l'approvazione di un'admin è necessaria. Averla approvata riceverai una notificazione, intanto abbi pazienza.",
-    "approve": "Approvo",
-    "disapprove": "Disapprovo",
-
-    "purchase_notification": "Acquisti",
-
-    "purchase_created_notification": "Acquisti nuovi",
-    "purchase_created_notification_explanation": "Notificazioni che ricevi in caso degli acquisti nuovi",
-
-    "purchase_modified_notification": "Acquisti modificati",
-    "purchase_modified_notification_explanation": "Notificazioni che ricevi in caso degli acquisti modificati",
-
-    "purchase_deleted_notification": "Acquisti revocati",
-    "purchase_deleted_notification_explanation": "Notificazioni che ricevi in caso degli acquisti revocati",
-
-    "payment_notification": "Pagamenti",
-
-    "payment_created_notification": "Pagamenti nuovi",
-    "payment_created_notification_explanation": "Notificazioni che ricevi in caso dei pagamenti nuovi",
-
-    "payment_modified_notification": "Pagamenti modificati",
-    "payment_modified_notification_explanation": "Notificazioni che ricevi in caso dei pagamenti modificati",
-
-    "payment_deleted_notification": "Pagamenti revocati",
-    "payment_deleted_notification_explanation": "Notificazioni che ricevi in caso dei pagamenti revocati",
-
-    "shopping_notification": "Lista della spesa",
-
-    "shopping_created_notification": "Richieste nuove",
-    "shopping_created_notification_explanation": "Notificazioni che ricevi in caso delle richieste nuove",
-
-    "shopping_fulfilled_notification": "Richieste spuntate",
-    "shopping_fulfilled_notification_explanation": "Notificazioni che ricevi in caso delle richieste spuntate",
-
-    "shopping_shop_notification": "Qualcuno sta facendo la spesa",
-    "shopping_shop_notification_explanation": "Notificazioni che ricevi quando qualcuno sta facendo la spesa",
-
-    "group_system_notification":"Notificazioni di gruppo e di sistema ",
-
-    "other_notification": "Tutto il resto",
-    "other_notification_explanation": "Tutte le altre notificazioni",
-
-    "group_update_notification": "Aggiornamenti di gruppo",
-    "group_update_notification_explanation": "Per esempio cambiamenti di nome, nuovi membri ecc.",
-
-    "im_shopping_explanation": "I tuoi amici ricevono una notificazione quando sei in negozio",
-
-    "gruppo_necessita_di_approvazione": "Approvazione dell'amministratore",
-    "group_needs_approval_explanation": "Decide se ha bisogno dell'approvazione di un amministratore per entrare nel gruppo",
-
-    "boost_group_boosted_explanation": "Questo gruppo è già stato potenziato \uD83D\uDE0E. Ciò significa che è possibile vedere le statistiche del gruppo e che il limite di membri è arrivato a 30",
-
-    "Condividi": "Condividi il gruppo",
-    "share_url": "Oppure invita i tuoi amici con un messaggio",
-    "scan_code": "Leggi il codice QR",
-    "paste_code": "Oppure incolla l'invito:",
-
-    "gradient_themes" : "Temi gradienti",
-    "dynamic_themes" : "Temi dinamici",
-    "dynamic_themes_explanation" : "Questi temi cambiano dinamicamente quando si modifica la preferenza del colore del sistema (se disponibile)",
-
-    "in_app_purchase_description": "Annunci e temi colore",
-    "iapp_not_supported": "Il negozio non è abilitato sulla vostra piattaforma",
-    "iapp_not_supported_explanation": "Gli articoli in app (es. no ads, temi a colori) al momento possono essere acquistati solo nell'app Android o iOS. Se non possiedi un dispositivo Android ma vuoi comunque acquistare qualcosa scrivi un'email a developer@dodoapp.net.",
-    "no_camera_access": "L'app non ha il permesso di accedere alla fotocamera",
-
-    "suggerimento_personalizzato": "Suggerimento: premere a lungo su un membro in basso per personalizzare l'importo pagato",
-    "add_purchase_explanation": "Per impostazione predefinita, l'importo sarà suddiviso in parti uguali tra i membri selezionati",
-
-    "first_give_amount_toast": "Digita prima un importo!",
-    "cant_add_custom_amount_toast": "L'importo da pagare non può essere personalizzato",
-    "no_money_left_toast": "Hai già distribuito l'intero importo",
-    "custom_above_amount_toast": "L'intero importo era inferiore al valore personalizzato impostato in precedenza",
-    "sum_above_amount_toast": "La somma dei valori personalizzati era superiore all'intero importo",
-
-    "importo_personalizzato": "Importo personalizzato",
-    "custom_amount_explanation": "Imposta quanto deve pagare il membro scelto",
-    "reset": "Reset",
-    "importo_scelto": "Importo scelto: ",
-
-    "da_chi": "Chi:",
-    "to_who": {
-        "uno": "Per chi:",
-        "altro": "Per chi:"
-    },
-
-    "cibo": "Cibo",
-    "generi alimentari": "generi alimentari",
-    "trasporto": "Trasporti",
-    "intrattenimento": "Intrattenimento",
-    "shopping": "Shopping",
-    "salute": "Salute",
-    "altro": "Altro",
-    "category_hint": "Scegliere la categoria",
-
-    "change_user_currency": "Cambia la valuta predefinita",
-    "change_user_currency_explanation": "Questa è la valuta predefinita, quella in cui viene mostrato il riepilogo",
-
-    "pin": "Pin",
-    "confirm_pin": "Conferma pin",
-
-    "4_necessario": "4 cifre necessarie",
-
-    "Siamo_preoccupati_della_vostra_privacy": "Teniamo al sicuro i vostri dati",
-
-    "char_not_allowed": "Non è consentito utilizzare il carattere „{}“",
-    "username_taken": "Il nome utente scelto è già occupato",
-
-    "pins_not_match": "I due pin non corrispondono",
-
-    "change_to_password": "Usa invece la password",
-    "change_to_pin": "Usa invece il pin",
-    "password_login_deprecato": "Il metodo di accesso preferito è il pin",
-    "password_login_deprecato_spiegazione": "Passa all'uso del pin dopo il login nel menu delle impostazioni utente",
-
-    "membro_da_fondere_in": "A chi assegnare le proprie transazioni:",
-    "needs_member": "Scegliere prima il membro",
-    "guest": "Ospite",
-
-    "warning_wont_see": "Poiché non hai acquistato e non stai pagando, non vedrai la transazione nella tua cronologia!",
-
-    "thank_you": "Grazie",
-    "even_one_rating_helps": "Siamo davvero contenti che l'app ti piaccia. Per favore, recensiscila in negozio. Ogni recensione aiuta a farla trovare a più persone!",
-    "to_store": "Valutala😎",
-    "like_the_app": "Ti piace l'app?",
-    "rate_app": "Vota l'app",
-
-    "unisci_con_ospite": "Assegna ospite",
-    "merge_with_guest_explanation": "Il gruppo ha degli utenti ospiti le cui transazioni sono state gestite da altri membri. Se vi riconoscete come uno di loro, potete ora associare le loro transazioni precedenti a voi (se non sapete cosa significa, saltate questo passaggio)",
-    "ospiti_nel_gruppo": "Ospiti nel gruppo:",
-    "salta": "Salta",
-    "merge": "Assegna",
-
-    "dual_tone_themes": "Temi dual tone",
-
-    "change_pin": "Cambia pin",
-    "change_pin_explanation": "Cambia il pin con cui accedi al tuo account",
-    "old_pin": "Vecchio pin",
-    "new_pin": "Nuovo pin",
-    "new_pin_confirm": "Conferma nuovo pin",
-    "change_pin_scf": "Cambiato pin con successo",
-
-    "trial_ended": "Il tempo di prova è terminato",
-    "trial_ended_explanation": "D'ora in poi vedrete gli annunci e potrete utilizzare solo i temi a colori semplici",
-    "trial_ended_explanation_2": "Se vuoi continuare a usare queste funzioni (e sostenerci) puoi acquistarle nel negozio Dodo.",
-
-    "filter_statistics": "Filtrare le statistiche",
-    "filter_statistics_explanation": "Filtra per intervallo di date e categoria",
-
-    "statistics_and_export": "Statistiche ed esportazione dati",
-    "statistics_and_export_explanation_1": "Visualizza le statistiche all'interno dell'app",
-    "statistics_and_export_explanation_2": "Oppure scaricare i dati come file PDF o XLS.",
-
-    "report_bug": "Segnala un bug",
-    "report_bug_explanation": "Segnalaci se hai trovato qualcosa che non funziona come previsto.",
-
-    "bills": "Bollette",
-
-    "category": "Categoria",
-
-    "pick_category": "Scegli la categoria",
-    "pick_currency": "Usa la calcolatrice",
-    "use_calculator": "Use the calculator",
-    "choose_custom_amount": "Premere a lungo sull'utente per scegliere l'importo personalizzato",
-
-    "payments_needed_explanation": "I pagamenti necessari per raggiungere il pareggio"
+    "buy": "Acquista",
 }

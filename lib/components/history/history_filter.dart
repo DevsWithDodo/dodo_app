@@ -17,14 +17,17 @@ class HistoryFilter extends StatefulWidget {
   final DateTime? startDate;
   final DateTime? endDate;
   final Category? selectedCategory;
-  final int? selectedMember;
-  final void Function(Member, DateTime?, DateTime?, Category?)? onValuesChanged;
+  final int selectedMemberId;
+  final void Function(int, DateTime, DateTime, Category?) onValuesChanged;
+  final bool isScrolled;
   const HistoryFilter({
-    this.startDate,
-    this.endDate,
-    this.selectedCategory,
-    this.selectedMember,
-    this.onValuesChanged,
+    required this.isScrolled,
+    required this.startDate,
+    required this.endDate,
+    required this.selectedCategory,
+    required this.selectedMemberId,
+    required this.onValuesChanged,
+    super.key,
   });
 
   @override
@@ -32,16 +35,15 @@ class HistoryFilter extends StatefulWidget {
 }
 
 class _HistoryFilterState extends State<HistoryFilter> {
-  DateTime? _startDate;
-  DateTime? _endDate;
+  late DateTime _startDate;
+  late DateTime _endDate;
   Category? _selectedCategory;
-  Future<List<Member>>? _members;
-  List<Member>? _membersChosen;
+  late Future<List<Member>> _members;
+  late int _selectedMemberId;
 
   Future<List<Member>> _getMembers() async {
     try {
-      Response response = await Http.get(
-          uri: generateUri(GetUriKeys.groupCurrent, context));
+      Response response = await Http.get(uri: generateUri(GetUriKeys.groupCurrent, context));
 
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = [];
@@ -57,152 +59,134 @@ class _HistoryFilterState extends State<HistoryFilter> {
   @override
   void initState() {
     super.initState();
+    _selectedMemberId = widget.selectedMemberId;
     _members = _getMembers();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _selectedMemberId = widget.selectedMemberId;
     _selectedCategory = widget.selectedCategory;
-    _startDate =
-        widget.startDate ?? DateTime.parse("2020-01-26 03:14:00");
+    _startDate = widget.startDate ?? DateTime.now().subtract(Duration(days: 30));
     _endDate = widget.endDate ?? DateTime.now();
   }
 
   @override
   Widget build(BuildContext context) {
     return Selector<UserState, User>(
-      selector: (context, provider) => provider.user!,
-      builder: (context, user, _) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        selector: (context, provider) => provider.user!,
+        builder: (context, user, _) {
+          return Container(
+            height: 250,
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+            color: ElevationOverlay.applySurfaceTint(Theme.of(context).colorScheme.surface,
+                Theme.of(context).colorScheme.surfaceTint, widget.isScrolled ? 2 : 0),
+            child: Material(
+              color: Colors.transparent,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    _startDate == null
-                        ? 'no_date_range'.tr()
-                        : DateFormat.yMMMd(context.locale.languageCode)
-                                .format(_startDate!) +
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        DateFormat.yMMMd(context.locale.languageCode).format(_startDate) +
                             ' - ' +
-                            DateFormat.yMMMd(context.locale.languageCode)
-                                .format(_endDate!),
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.date_range,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    onPressed: () async {
-                      DateTimeRange? range = await showDateRangePicker(
-                        context: context,
-                        firstDate: DateTime.parse('2020-01-17'),
-                        lastDate: DateTime.now(),
-                        currentDate: DateTime.now(),
-                        initialDateRange: DateTimeRange(
-                          start: _startDate!,
-                          end: _endDate!,
+                            DateFormat.yMMMd(context.locale.languageCode).format(_endDate),
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.date_range,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
-                        builder: (context, child) => child!,
-                      );
-                      if (range != null) {
-                        setState(() {
-                          _startDate = range.start;
-                          _endDate = range.end;
-                        });
-                      }
-                    },
+                        onPressed: () async {
+                          DateTimeRange? range = await showDateRangePicker(
+                            context: context,
+                            firstDate: DateTime.parse('2020-01-17'),
+                            lastDate: DateTime.now(),
+                            currentDate: DateTime.now(),
+                            initialDateRange: DateTimeRange(
+                              start: _startDate,
+                              end: _endDate,
+                            ),
+                            builder: (context, child) => child!,
+                          );
+                          if (range != null) {
+                            setState(() {
+                              _startDate = range.start;
+                              _endDate = range.end;
+                            });
+                          }
+                        },
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('category'.tr(),
-                      style: Theme.of(context).textTheme.bodyLarge),
-                  CategoryPickerIconButton(
-                    selectedCategory: _selectedCategory,
-                    onCategoryChanged: (newCategory) {
-                      setState(() {
-                        if (_selectedCategory?.type == newCategory?.type) {
-                          _selectedCategory = null;
-                        } else {
-                          _selectedCategory = newCategory;
-                        }
-                      });
-                    },
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
-              FutureBuilder(
-                  future: _members,
-                  builder: (context, AsyncSnapshot<List<Member>> snapshot) {
-                    if (snapshot.connectionState != ConnectionState.done) {
-                      return CircularProgressIndicator();
-                    }
-                    if (!snapshot.hasData) {
-                      return ErrorMessage(
-                        error: snapshot.error.toString(),
-                        onTap: () {
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('category'.tr(), style: Theme.of(context).textTheme.bodyLarge),
+                      CategoryPickerIconButton(
+                        selectedCategory: _selectedCategory,
+                        onCategoryChanged: (newCategory) {
                           setState(() {
-                            _members = null;
-                            _members = _getMembers();
+                            if (_selectedCategory?.type == newCategory?.type) {
+                              _selectedCategory = null;
+                            } else {
+                              _selectedCategory = newCategory;
+                            }
                           });
                         },
-                        errorLocation: 'history_filter',
-                      );
-                    }
-                    if (_membersChosen == null) {
-                      _membersChosen = [];
-                      if (widget.selectedMember != null) {
-                        _membersChosen!.add(snapshot.data!.firstWhere(
-                            (element) => element.id == widget.selectedMember));
-                      }
-                      if (_membersChosen!.isEmpty) {
-                        _membersChosen = [
-                          snapshot.data!
-                              .firstWhere((element) => element.id == user.id)
-                        ];
-                      }
-                    }
-                    return MemberChips(
-                      allMembers: snapshot.data!,
-                      chosenMembers: _membersChosen!,
-                      setChosenMembers: (newMembersChosen) {
-                        setState(() {
-                          if (newMembersChosen.isEmpty) {
-                            _membersChosen = [
-                              snapshot.data!.firstWhere(
-                                  (element) => element.id == user.id)
-                            ];
-                          } else {
-                            _membersChosen = newMembersChosen;
-                          }
-                        });
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 5),
+                  Expanded(
+                    child: FutureBuilder(
+                      future: _members,
+                      builder: (context, AsyncSnapshot<List<Member>> snapshot) {
+                        if (snapshot.connectionState != ConnectionState.done) {
+                          return CircularProgressIndicator();
+                        }
+                        if (!snapshot.hasData) {
+                          return ErrorMessage(
+                            error: snapshot.error.toString(),
+                            onTap: () => setState(() => _members = _getMembers()),
+                            errorLocation: 'history_filter',
+                          );
+                        }
+                        return Center(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: MemberChips(
+                              allMembers: snapshot.data!,
+                              chosenMembers:
+                                  snapshot.data!.where((element) => element.id == _selectedMemberId).toList(),
+                              setChosenMembers: (newMembersChosen) {
+                                if (newMembersChosen.isNotEmpty) {
+                                  setState(() => _selectedMemberId = newMembersChosen.first.id);
+                                }
+                              },
+                              multiple: false,
+                              showAnimation: false,
+                            ),
+                          ),
+                        );
                       },
-                      multiple: false,
-                      showAnimation: false,
-                    );
-                  }),
-              SizedBox(height: 15),
-              GradientButton(
-                useSecondary: true,
-                child: Icon(Icons.check),
-                onPressed: () => widget.onValuesChanged!(
-                    _membersChosen!.first, _startDate, _endDate, _selectedCategory),
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  GradientButton(
+                    useSecondary: true,
+                    child: Icon(Icons.filter_alt),
+                    onPressed: () => widget.onValuesChanged(_selectedMemberId, _startDate, _endDate, _selectedCategory),
+                  ),
+                ],
               ),
-              SizedBox(height: 10),
-              Divider(),
-            ],
-          ),
-        );
-      }
-    );
+            ),
+          );
+        });
   }
 }

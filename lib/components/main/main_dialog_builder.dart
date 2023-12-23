@@ -215,7 +215,7 @@ class _MainDialogBuilderState extends State<MainDialogBuilder> {
               alignment: _dialog?.type == DialogType.modal ? Alignment.center : Alignment.bottomCenter,
               child: Padding(
                 padding: EdgeInsets.only(
-                    bottom: _dialog?.type == DialogType.bottom ? (context.select<ScreenWidth, bool>((provider) => provider.isMobile) ? 95 : 15) : 0),
+                    bottom: _dialog?.type == DialogType.bottom ? (context.select<ScreenSize, bool>((provider) => provider.isMobile) ? 95 : 15) : 0),
                 child: Provider.value(
                   value: () => setState(() {
                     visible = false; 

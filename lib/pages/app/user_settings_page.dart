@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
@@ -10,10 +12,25 @@ import 'package:csocsort_szamla/components/user_settings/cards/delete_all_data.d
 import 'package:csocsort_szamla/components/user_settings/cards/payment_methods.dart';
 import 'package:csocsort_szamla/components/user_settings/cards/personalised_ads.dart';
 import 'package:csocsort_szamla/components/user_settings/cards/report_bug.dart';
-import 'package:csocsort_szamla/components/user_settings/components/color_picker.dart';
+import 'package:csocsort_szamla/components/user_settings/components/theme_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+class StackWidgetState {
+  StackWidgetState(this.widget, this.setWidget) {
+    hide = _controller.stream;
+  }
+
+  Widget? widget;
+  Function(Widget? widget) setWidget;
+  StreamController<bool> _controller = StreamController.broadcast();
+  late Stream<bool> hide;
+
+  void hideWidget() {
+    _controller.add(true);
+  }
+}
 
 class UserSettingsPage extends StatefulWidget {
   @override
@@ -21,57 +38,71 @@ class UserSettingsPage extends StatefulWidget {
 }
 
 class _UserSettingsPageState extends State<UserSettingsPage> {
+  Widget? stackWidget;
+
+
+
   @override
   Widget build(BuildContext context) {
-    print('asdasdasd');
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'settings'.tr(),
-        ),
+    return Provider(
+      create: (context) => StackWidgetState(
+        stackWidget,
+        (widget) => setState(() => stackWidget = widget),
       ),
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Column(
-          children: [
-            if (context.select<ScreenWidth, bool>((screenWidth) => screenWidth.isMobile))
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: _settings(),
-                  ),
-                ),
-              )
-            else
-              Expanded(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ListView(
-                        controller: ScrollController(),
-                        children: _settings().take(3).toList(),
-                      ),
-                    ),
-                    Expanded(
-                      child: ListView(
-                        controller: ScrollController(),
-                        children: _settings().reversed.take(7).toList().reversed.toList(),
-                      ),
-                    ),
-                  ],
-                ),
+      child: Stack(
+        children: [
+          Scaffold(
+            appBar: AppBar(
+              title: Text(
+                'settings'.tr(),
               ),
-            AdUnit(site: 'settings'),
-          ],
-        ),
+            ),
+            body: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              child: Column(
+                children: [
+                  if (context.select<ScreenSize, bool>((screenWidth) => screenWidth.isMobile))
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: _settings(),
+                        ),
+                      ),
+                    )
+                  else
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: ListView(
+                              controller: ScrollController(),
+                              children: _settings().take(3).toList(),
+                            ),
+                          ),
+                          Expanded(
+                            child: ListView(
+                              controller: ScrollController(),
+                              children: _settings().reversed.take(7).toList().reversed.toList(),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  AdUnit(site: 'settings'),
+                ],
+              ),
+            ),
+          ),
+          stackWidget ?? SizedBox(), 
+        ],
       ),
     );
   }
 
   List<Widget> _settings() {
     return [
-      ColorPicker(),
+      ThemePicker(),
       LanguagePicker(),
       ChangePassword(),
       ChangeUsername(),

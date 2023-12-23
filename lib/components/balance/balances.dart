@@ -135,12 +135,8 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
               right: 0,
               width: 90,
               child: SelectBalanceCurrency(
-                selectedCurrency: _selectedCurrency.code,
-                onCurrencyChange: (code) {
-                  setState(() {
-                    _selectedCurrency = Currency.fromCode(code);
-                  });
-                },
+                selectedCurrency: _selectedCurrency,
+                onCurrencyChanged: (currency) => setState(() => _selectedCurrency = currency),
               ),
             ),
           ],
@@ -166,44 +162,7 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
   }
 
   List<Widget> _generateBalances(List<Member> members) {
-    ThemeName themeName = context.watch<AppThemeState>().themeName;
-    return members.map<Widget>((Member member) {
-      TextStyle textStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          color: member.id == context.read<UserState>().user!.id
-              ? themeName.type == ThemeType.gradient
-                  ? Theme.of(context).colorScheme.onPrimary
-                  : Theme.of(context).colorScheme.onSecondary
-              : Theme.of(context).colorScheme.onSurface);
-      return Container(
-        padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
-        decoration: member.id == context.read<UserState>().user!.id
-            ? BoxDecoration(
-                gradient: AppTheme.gradientFromTheme(themeName, useSecondary: true),
-                borderRadius: BorderRadius.circular(15),
-              )
-            : null,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(
-              member.nickname,
-              style: textStyle,
-            ),
-            AnimatedCrossFade(
-              duration: Duration(milliseconds: 300),
-              firstChild: Container(),
-              secondChild: Text(
-                member.balance
-                    .exchange(context.watch<UserState>().currentGroup!.currency, _selectedCurrency)
-                    .toMoneyString(_selectedCurrency),
-                style: textStyle,
-              ),
-              crossFadeState: CrossFadeState.showSecond,
-            ),
-          ],
-        ),
-      );
-    }).toList();
+    return members.map<Widget>((Member member) => BalanceMemberEntry(member: member, selectedCurrency: _selectedCurrency)).toList();
   }
 
   Widget _oneMemberWidget() {
@@ -280,5 +239,53 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
         )
       ],
     );
+  }
+}
+
+
+class BalanceMemberEntry extends StatelessWidget {
+  const BalanceMemberEntry({super.key, required this.member, required this.selectedCurrency});
+
+  final Member member;
+  final Currency selectedCurrency;
+
+  @override
+  Widget build(BuildContext context) {
+    final themeName = context.watch<AppThemeState>().themeName;
+    TextStyle textStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
+          color: member.id == context.read<UserState>().user!.id
+              ? themeName.type == ThemeType.gradient
+                  ? Theme.of(context).colorScheme.onPrimary
+                  : Theme.of(context).colorScheme.onSecondary
+              : Theme.of(context).colorScheme.onSurface);
+      return Container(
+        padding: EdgeInsets.fromLTRB(8, 8, 8, 8),
+        decoration: member.id == context.read<UserState>().user!.id
+            ? BoxDecoration(
+                gradient: AppTheme.gradientFromTheme(themeName, useSecondary: true),
+                borderRadius: BorderRadius.circular(15),
+              )
+            : null,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              member.nickname,
+              style: textStyle,
+            ),
+            AnimatedCrossFade(
+              duration: Duration(milliseconds: 300),
+              firstChild: Container(),
+              secondChild: Text(
+                member.balance
+                    .exchange(context.watch<UserState>().currentGroup!.currency, selectedCurrency)
+                    .toMoneyString(selectedCurrency),
+                style: textStyle,
+              ),
+              crossFadeState: CrossFadeState.showSecond,
+            ),
+          ],
+        ),
+      );
   }
 }

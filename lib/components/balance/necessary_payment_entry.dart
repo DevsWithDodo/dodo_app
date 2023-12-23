@@ -23,7 +23,7 @@ class NecessaryPaymentEntry extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 color: payments[0].payerId == user.id
-                    ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+                    ? Theme.of(context).colorScheme.primaryContainer
                     : Theme.of(context).colorScheme.surfaceVariant,
               ),
               child: Row(

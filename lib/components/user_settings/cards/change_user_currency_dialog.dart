@@ -13,8 +13,7 @@ import '../../helpers/currency_picker_dropdown.dart';
 
 class ChangeUserCurrencyDialog extends StatefulWidget {
   @override
-  _ChangeUserCurrencyDialogState createState() =>
-      _ChangeUserCurrencyDialogState();
+  _ChangeUserCurrencyDialogState createState() => _ChangeUserCurrencyDialogState();
 }
 
 class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
@@ -48,8 +47,10 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
           children: <Widget>[
             Text(
               'change_group_currency'.tr(),
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -58,10 +59,9 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
             Padding(
               padding: const EdgeInsets.only(left: 8, right: 8),
               child: CurrencyPickerDropdown(
-                  defaultCurrencyValue: _currency.code,
-                  currencyChanged: (code) {
-                    _currency = Currency.fromCode(code);
-                  }),
+                currency: _currency,
+                currencyChanged: (code) => setState(() => _currency = code),
+              ),
             ),
             SizedBox(
               height: 5,

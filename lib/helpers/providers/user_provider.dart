@@ -213,7 +213,7 @@ class UserState extends ChangeNotifier {
     }
   }
 
-  Future<BoolFutureOutput> register(String username, String password, String currency, BuildContext context) async {
+  Future<BoolFutureOutput> register(String username, String password, Currency currency, BuildContext context) async {
     try {
       String? token;
       if (context.read<AppConfig>().isFirebasePlatformEnabled) {

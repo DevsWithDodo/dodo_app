@@ -105,13 +105,12 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
       (provider) => provider.user!.groups,
     );
 
-    return WillPopScope(
-      onWillPop: () {
+    return PopScope(
+      canPop: false, // onPopInvoked handles the navigation, TODO: refactor
+      onPopInvoked: (didPop) {
         if (user.group != null) {
           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
-          return Future.value(false);
         }
-        return Future.value(true);
       },
       child: Form(
         key: _formKey,

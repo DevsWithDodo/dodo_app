@@ -326,11 +326,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
       Map<String, dynamic> decoded = jsonDecode(response.body);
       UserState provider = context.read<UserState>();
       provider.setGroups(provider.user!.groups.where((group) => group.id != provider.user!.group!.id).toList());
-      provider.setGroup(Group(
-        id: decoded['data']['group_id'],
-        name: decoded['data']['group_name'],
-        currency: decoded['data']['currency'],
-      ));
+      provider.setGroup(Group.fromJson(decoded['data']));
       return LeftOrRemovedFromGroupFutureOutput.LeftHasOutherGroup;
     }
     return LeftOrRemovedFromGroupFutureOutput.LeftNoOutherGroup;

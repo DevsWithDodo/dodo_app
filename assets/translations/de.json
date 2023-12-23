@@ -352,8 +352,8 @@
     "paste_code": "oder füge den Einladungscode ein:",
 
     "gradient_themes" : "Farbübergängige Themen",
-    "change-theme.dynamic-theme" : "Dynimisches Thema",
-    "change-theme.dynamic-theme.subtitle" : "Dieses Thema richtet sich an die Farben die du für dein System eingestellst.",
+    "change-theme.adaptive-theme" : "Adaptive Thema",
+    "change-theme.adaptive-theme.subtitle" : "Dieses Thema richtet sich an die Farben die du für dein System eingestellt hast.",
 
     "in_app_purchase_description": "Anzeigen und Themen",
     "iapp_not_supported": "Der Laden ist auf dieser Platform nicht unterstützt.",
@@ -463,8 +463,10 @@
     "use_calculator": "Benutze den Taschenrechner",
     "choose_custom_amount": "Drücke lange auf einen der Nutzer um einen individuellen Betrag zu wählen",
 
-    "payments_needed.dialog.subtitle": "Die nötigen Zahlungen damit alle wieder auf 0 kommen.",
-    "payments_needed.dialog.hint": "Tippe auf das Icon am Ende jeder Zeile um die möglichen Zahlungsmethoden zu sehen.",
+    "payments-needed.page.subtitle": "Dies sind die Zahlungen damit die Gruppe auf 0 kommt.",
+    "payments-needed.page.payment-method-hint": "Tippe auf das Icon am Ende jeder Zeile um die möglichen Zahlungsmethoden zu sehen.",
+    "payments-needed.page.payment-page-hint": "Schon bezahlt? Gehe zur Zahlungsseite um es zu bestätigen.",
+    "payments-needed.page.copy-hint": "Kopiere alle nötigen Zahlungen in die Zwischenablage:",
 
     "pin-verification.title": "Pin bestätigen",
     "pin-verification.description": "Gib deinen Pin an und gehe sicher dass du es noch weißt",
@@ -542,5 +544,19 @@
 
     "personalised-ads.dialog.title": "Persönliche Anzeigen",
     "personalised-ads.dialog.subtitle": "Lege fest, ob du personalisierte Anzeigen in der App sehen möchtest? Diese Einstellung kann später in den Einstellungen geändert werden.",
-    "personalised-ads.dialog.question": "Willst du personalisierte Anzeigen sehen?"
+    "personalised-ads.dialog.question": "Willst du personalisierte Anzeigen sehen?",
+
+    "change-theme.preview-hint": "Halte ein Farbthema gedrückt um dir eine Vorschau anzuschauen.",
+
+    "theme-preview.member.1": "Jonas",
+    "theme-preview.member.2": "Alex",
+    "theme-preview.member.3": "Marie",
+
+    "theme-preview.purchase.1": "Einkauf",
+    "theme-preview.purchase.2": "Bahnfahrt",
+    "theme-preview.purchase.3": "Pizza",
+
+    "theme-preview.request.1": "Milch",
+    "theme-preview.request.2": "Müsli",
+    "theme-preview.request.3": "Kaffee"
 }

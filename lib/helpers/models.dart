@@ -185,6 +185,14 @@ class Group {
     required this.id,
     required this.currency,
   });
+
+  factory Group.fromJson(Map<String, dynamic> json) {
+    return Group(
+      name: json['group_name'],
+      id: json['group_id'],
+      currency: Currency.fromCode(json['currency']),
+    );
+  }
 }
 
 class Reaction {
@@ -270,6 +278,22 @@ class Purchase {
           .map<Reaction>((reaction) => Reaction.fromJson(reaction))
           .toList(),
       category: Category.fromName(json["category"]),
+    );
+  }
+
+  factory Purchase.example(String name, double amount, Currency currency, Member buyer, List<Member> receivers, [List<Reaction> reactions = const []]) {
+    return Purchase(
+      id: 0,
+      name: name,
+      updatedAt: DateTime.now(),
+      originalCurrency: currency,
+      buyerUsername: buyer.username,
+      buyerId: buyer.id,
+      buyerNickname: buyer.nickname,
+      totalAmount: amount,
+      totalAmountOriginalCurrency: amount,
+      receivers: receivers,
+      reactions: [],
     );
   }
 }
@@ -385,6 +409,15 @@ class Category {
     Category(type: CategoryType.bills, icon: Icons.house, text: 'bills'),
     Category(type: CategoryType.other, icon: Icons.category, text: 'other'),
   ];
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Category &&
+          runtimeType == other.runtimeType &&
+          type == other.type &&
+          icon == other.icon &&
+          text == other.text;
 }
 
 class ShoppingRequest {

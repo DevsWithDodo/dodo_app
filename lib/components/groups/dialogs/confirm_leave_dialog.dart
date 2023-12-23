@@ -2,18 +2,13 @@ import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-class ConfirmLeaveDialog extends StatefulWidget {
+class ConfirmLeaveDialog extends StatelessWidget {
   final String title;
   final String choice;
 
   /// Confirms user choice. Has border and title.
   /// Translates the required [title] and [choice] automatically.
   ConfirmLeaveDialog({required this.choice, required this.title});
-  @override
-  _ConfirmLeaveDialogState createState() => _ConfirmLeaveDialogState();
-}
-
-class _ConfirmLeaveDialogState extends State<ConfirmLeaveDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -25,7 +20,7 @@ class _ConfirmLeaveDialogState extends State<ConfirmLeaveDialog> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              widget.title.tr(),
+              title.tr(),
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
@@ -34,7 +29,7 @@ class _ConfirmLeaveDialogState extends State<ConfirmLeaveDialog> {
               height: 10,
             ),
             Text(
-              widget.choice.tr(),
+              choice.tr(),
               style: Theme.of(context).textTheme.titleSmall!.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,

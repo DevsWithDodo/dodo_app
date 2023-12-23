@@ -77,7 +77,7 @@ class _GroupSettingState extends State<GroupSettings> {
 
   @override
   Widget build(BuildContext context) {
-    bool bigScreen = !context.select<ScreenWidth, bool>((screenWidth) => screenWidth.isMobile);
+    bool bigScreen = !context.select<ScreenSize, bool>((screenWidth) => screenWidth.isMobile);
 
     return RefreshIndicator(
       onRefresh: () async {

@@ -166,7 +166,7 @@ class Http {
       };
       http.Response response;
       if (body != null) {
-        String bodyEncoded = json.encode(body);
+        String bodyEncoded = jsonEncode(body, toEncodable: (e) => e.toString());
         response = await http.post(
             Uri.parse(context.read<AppConfig>().appUrl + uri),
             headers: header,
@@ -222,7 +222,7 @@ class Http {
       };
       http.Response response;
       if (body != null) {
-        String bodyEncoded = json.encode(body);
+        String bodyEncoded = json.encode(body, toEncodable: (e) => e.toString());
         response = await http.put(
             Uri.parse(context.read<AppConfig>().appUrl + uri),
             headers: header,

@@ -62,8 +62,7 @@ class _InvitationState extends State<Invitation> {
     try {
       Map<String, dynamic> body = {'admin_approval': _needsApproval ? 1 : 0};
       await Http.put(
-        uri: '/groups/' +
-            context.read<UserState>().user!.group!.id.toString(),
+        uri: '/groups/' + context.read<UserState>().user!.group!.id.toString(),
         body: body,
       );
       return BoolFutureOutput.True;
@@ -99,10 +98,7 @@ class _InvitationState extends State<Invitation> {
           children: <Widget>[
             Text(
               'invitation'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
             ),
             SizedBox(
               height: 10,
@@ -110,10 +106,7 @@ class _InvitationState extends State<Invitation> {
             Center(
               child: Text(
                 'invite_friends'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurface),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -131,15 +124,13 @@ class _InvitationState extends State<Invitation> {
                           child: Column(
                             children: [
                               GradientButton(
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return ShareGroupDialog(
-                                          inviteCode: snapshot.data,
-                                        );
-                                      });
-                                },
+                                onPressed: () => showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return ShareGroupDialog(
+                                        inviteCode: snapshot.data,
+                                      );
+                                    }),
                                 child: Icon(Icons.share),
                               ),
                               Visibility(
@@ -153,10 +144,7 @@ class _InvitationState extends State<Invitation> {
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleSmall!
-                                            .copyWith(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onSurface),
+                                            .copyWith(color: Theme.of(context).colorScheme.onSurface),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -165,8 +153,7 @@ class _InvitationState extends State<Invitation> {
                                       onPressed: () {
                                         showDialog(
                                           context: context,
-                                          builder: (context) =>
-                                              AddGuestDialog(),
+                                          builder: (context) => AddGuestDialog(),
                                         );
                                       },
                                       child: Icon(Icons.person_add),
@@ -181,10 +168,8 @@ class _InvitationState extends State<Invitation> {
                           visible: widget.isAdmin!,
                           child: FutureBuilder(
                             future: _unapproved,
-                            builder: (context,
-                                AsyncSnapshot<List<Member>> snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.done) {
+                            builder: (context, AsyncSnapshot<List<Member>> snapshot) {
+                              if (snapshot.connectionState == ConnectionState.done) {
                                 if (snapshot.hasData) {
                                   return Column(
                                     children: [
@@ -202,25 +187,18 @@ class _InvitationState extends State<Invitation> {
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleLarge!
-                                                .copyWith(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onSurface),
+                                                .copyWith(color: Theme.of(context).colorScheme.onSurface),
                                             textAlign: TextAlign.center,
                                           ),
                                           SizedBox(
                                             height: 10,
                                           ),
                                           Text(
-                                            'group_needs_approval_explanation'
-                                                .tr(),
+                                            'group_needs_approval_explanation'.tr(),
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleSmall!
-                                                .copyWith(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onSurface),
+                                                .copyWith(color: Theme.of(context).colorScheme.onSurface),
                                             textAlign: TextAlign.center,
                                           ),
                                         ],
@@ -229,43 +207,31 @@ class _InvitationState extends State<Invitation> {
                                         height: 5,
                                       ),
                                       Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: [
                                           Text(
                                             'needs_approval'.tr(),
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleSmall!
-                                                .copyWith(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onSurface),
+                                                .copyWith(color: Theme.of(context).colorScheme.onSurface),
                                           ),
                                           Switch(
-                                            trackOutlineColor:
-                                                MaterialStateProperty.all<
-                                                    Color>(Colors.transparent),
+                                            trackOutlineColor: MaterialStateProperty.all<Color>(Colors.transparent),
                                             value: _needsApproval,
-                                            activeColor: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
+                                            activeColor: Theme.of(context).colorScheme.secondary,
                                             onChanged: (value) {
                                               setState(() {
                                                 _needsApproval = value;
                                               });
-                                              VoidCallback resetSwitcher = () =>
-                                                  setState(() =>
-                                                      _needsApproval =
-                                                          !_needsApproval);
+                                              VoidCallback resetSwitcher =
+                                                  () => setState(() => _needsApproval = !_needsApproval);
                                               showFutureOutputDialog(
                                                 context: context,
                                                 future: _updateNeedsApproval(),
                                                 outputCallbacks: {
-                                                  BoolFutureOutput.False:
-                                                      resetSwitcher,
-                                                  FutureOutput.Error:
-                                                      resetSwitcher,
+                                                  BoolFutureOutput.False: resetSwitcher,
+                                                  FutureOutput.Error: resetSwitcher,
                                                 },
                                               );
                                             },
@@ -284,30 +250,21 @@ class _InvitationState extends State<Invitation> {
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .titleLarge!
-                                                  .copyWith(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onSurface),
+                                                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
                                               textAlign: TextAlign.center,
                                             ),
                                             SizedBox(
                                               height: 10,
                                             ),
                                             Text(
-                                              'approve_members_explanation'
-                                                  .tr(),
+                                              'approve_members_explanation'.tr(),
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .titleSmall!
-                                                  .copyWith(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onSurface),
+                                                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
                                               textAlign: TextAlign.center,
                                             ),
-                                            Column(
-                                                children: _generateMembers(
-                                                    snapshot.data!)),
+                                            Column(children: _generateMembers(snapshot.data!)),
                                           ],
                                         ),
                                       ),
@@ -414,10 +371,7 @@ class _InvitationState extends State<Invitation> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyLarge!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSecondary),
+                                    .copyWith(color: Theme.of(context).colorScheme.onSecondary),
                                 overflow: TextOverflow.ellipsis,
                               )),
                               Flexible(
@@ -426,10 +380,7 @@ class _InvitationState extends State<Invitation> {
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSecondary),
+                                    .copyWith(color: Theme.of(context).colorScheme.onSecondary),
                                 overflow: TextOverflow.ellipsis,
                               ))
                             ],
@@ -456,14 +407,11 @@ class ApproveMember extends StatefulWidget {
 }
 
 class _ApproveMemberState extends State<ApproveMember> {
-  Future<BoolFutureOutput> _postApproveMember(
-      int? memberId, bool approve) async {
+  Future<BoolFutureOutput> _postApproveMember(int? memberId, bool approve) async {
     try {
       Map<String, dynamic> body = {'member_id': memberId, 'approve': approve};
       await Http.post(
-          uri: '/groups/' +
-              context.read<UserState>().user!.group!.id.toString() +
-              '/members/approve_or_deny',
+          uri: '/groups/' + context.read<UserState>().user!.group!.id.toString() + '/members/approve_or_deny',
           body: body);
       return BoolFutureOutput.True;
     } catch (_) {
@@ -479,16 +427,12 @@ class _ApproveMemberState extends State<ApproveMember> {
         children: [
           Row(
             children: <Widget>[
-              Icon(Icons.account_circle,
-                  color: Theme.of(context).colorScheme.secondary),
+              Icon(Icons.account_circle, color: Theme.of(context).colorScheme.secondary),
               Text(' - '),
               Flexible(
                   child: Text(
                 widget.member!.username,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
               )),
             ],
           ),
@@ -497,16 +441,12 @@ class _ApproveMemberState extends State<ApproveMember> {
           ),
           Row(
             children: <Widget>[
-              Icon(Icons.account_box,
-                  color: Theme.of(context).colorScheme.secondary),
+              Icon(Icons.account_box, color: Theme.of(context).colorScheme.secondary),
               Text(' - '),
               Flexible(
                   child: Text(
                 widget.member!.username,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
               )),
             ],
           ),

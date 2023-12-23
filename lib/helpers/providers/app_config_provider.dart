@@ -10,7 +10,7 @@ class AppConfigProvider extends StatelessWidget {
     _appConfig = AppConfig(
       useTest: false,
       isIAPPlatformEnabled: !kIsWeb && (Platform.isAndroid || Platform.isIOS),
-      isAdPlatformEnabled: false && !kIsWeb && (Platform.isAndroid || Platform.isIOS),
+      isAdPlatformEnabled: !kIsWeb && (Platform.isAndroid || Platform.isIOS),
       isFirebasePlatformEnabled: !kIsWeb && (Platform.isAndroid || Platform.isIOS),
     );
   }

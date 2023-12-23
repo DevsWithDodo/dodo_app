@@ -25,7 +25,7 @@ class _CurrencyPickerIconButtonState extends State<CurrencyPickerIconButton> {
     return IconButton.filledTonal(
       isSelected: widget.selectedCurrency != groupCurrency,
       onPressed: () {
-        showDialog<Currency?>(
+        showDialog<Currency>(
             context: context,
             builder: (context) {
               return Dialog(
@@ -35,7 +35,7 @@ class _CurrencyPickerIconButtonState extends State<CurrencyPickerIconButton> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       CurrencyPickerDropdown(
-                        defaultCurrencyValue: widget.selectedCurrency.code,
+                        currency: widget.selectedCurrency,
                         currencyChanged: (newCurrency) {
                           Navigator.pop(context, newCurrency);
                         },

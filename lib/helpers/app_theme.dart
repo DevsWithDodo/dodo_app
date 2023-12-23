@@ -50,7 +50,9 @@ enum ThemeName {
   rainbowGradientLight(Brightness.light, ThemeType.gradient, 'rainbowGradientLightTheme'),
   rainbowGradientDark(Brightness.dark, ThemeType.gradient, 'rainbowGradientDarkTheme'),
   lightDynamic(Brightness.light, ThemeType.dynamic, 'lightDynamic', counterPart: 'darkDynamic'),
-  darkDynamic(Brightness.dark, ThemeType.dynamic, 'darkDynamic', counterPart: 'lightDynamic');
+  darkDynamic(Brightness.dark, ThemeType.dynamic, 'darkDynamic', counterPart: 'lightDynamic'),
+  greenRedLight(Brightness.light, ThemeType.dualColor, 'greenRedLight'),
+  greenRedDark(Brightness.dark, ThemeType.dualColor, 'greenRedDark');
 
   const ThemeName(this.brightness, this.type, this.storageName, {String? counterPart}) : _counterPart = counterPart;
   final Brightness brightness;
@@ -97,7 +99,20 @@ enum ThemeName {
   }
 }
 
+class ThemeNotFoundException implements Exception {
+  final String message;
+  ThemeNotFoundException([this.message = "Theme not found"]);
+}
+
 class AppTheme {
+  static ThemeData getTheme(ThemeName themeName) {
+    if (AppTheme.themes.containsKey(themeName)) {
+      return AppTheme.themes[themeName]!;
+    } else {
+      throw ThemeNotFoundException();
+    }
+  }
+
   static Map<ThemeName, ThemeData> themes = Map.fromEntries([
     generateThemeData(ThemeName.pinkLight, Colors.purple[300]!),
     generateThemeData(ThemeName.pinkDark, Colors.pink[300]!),
@@ -135,6 +150,8 @@ class AppTheme {
     generateThemeData(ThemeName.whiteGradientDark, Color.fromARGB(255, 253, 251, 251)),
     generateThemeData(ThemeName.rainbowGradientLight, Colors.purple),
     generateThemeData(ThemeName.rainbowGradientDark, Colors.purple),
+    generateThemeData(ThemeName.greenRedLight, Color(0xff94483c)),
+    generateThemeData(ThemeName.greenRedDark, Color(0xffffb4a7)),
   ]);
 
   static Map<ThemeName, List<Color>> gradientColors = {
@@ -397,6 +414,69 @@ class AppTheme {
           onSurfaceVariant: Color.fromARGB(255, 191, 200, 204),
         );
         break;
+      case ThemeName.greenRedLight:
+        newColorScheme = colorScheme.copyWith(
+          primary: Color(0xff94483c),
+          primaryContainer: Color(0xffffdad4),
+          onPrimaryContainer: Color(0xff3d0603),
+          secondary: Color(0xff3f6655),
+          onSecondary: Color(0xffffffff),
+          secondaryContainer: Color(0xffc1ecd6),
+          onSecondaryContainer: Color(0xff002115),
+          tertiary: Color(0xff1a6966),
+          onTertiary: Color(0xffffffff),
+          tertiaryContainer: Color(0xffa8efeb),
+          onTertiaryContainer: Color(0xff00201f),
+          error: Color(0xffba1a1a),
+          errorContainer: Color(0xffffdad6),
+          onErrorContainer: Color(0xff410002),
+          background: Color(0xfff6fff6),
+          onBackground: Color(0xff151d18),
+          surface: Color(0xfff6fff6),
+          onSurface: Color(0xff151d18),
+          surfaceVariant: Color(0xffd6e7da),
+          onSurfaceVariant: Color(0xff3c4a41),
+          outline: Color(0xff6a7a6f),
+          outlineVariant: Color(0xffbacbbe),
+          inverseSurface: Color(0xff2a322d),
+          onInverseSurface: Color(0xffeaf3ea),
+          inversePrimary: Color(0xffffb4a7),
+          surfaceTint: Color(0xff94483c),
+        );
+        break;
+      case ThemeName.greenRedDark:
+        newColorScheme = ColorScheme(
+          brightness: Brightness.dark,
+          primary: Color(0xffffb4a7),
+          onPrimary: Color(0xff591b13),
+          primaryContainer: Color(0xff763127),
+          onPrimaryContainer: Color(0xffffdad4),
+          secondary: Color(0xffa5d0ba),
+          onSecondary: Color(0xff0d3728),
+          secondaryContainer: Color(0xff274e3e),
+          onSecondaryContainer: Color(0xffc1ecd6),
+          tertiary: Color(0xff8cd3cf),
+          onTertiary: Color(0xff003735),
+          tertiaryContainer: Color(0xff00504d),
+          onTertiaryContainer: Color(0xffa8efeb),
+          error: Color(0xffffb4ab),
+          onError: Color(0xff690005),
+          errorContainer: Color(0xff93000a),
+          onErrorContainer: Color(0xffffb4ab),
+          background: Color(0xff151d18),
+          onBackground: Color(0xffdce5dc),
+          surface: Color(0xff151d18),
+          onSurface: Color(0xffdce5dc),
+          surfaceVariant: Color(0xff3c4a41),
+          onSurfaceVariant: Color(0xffbacbbe),
+          outline: Color(0xff859589),
+          outlineVariant: Color(0xff3c4a41),
+          inverseSurface: Color(0xffdce5dc),
+          onInverseSurface: Color(0xff2a322d),
+          inversePrimary: Color(0xff94483c),
+          surfaceTint: Color(0xffffb4a7),
+        );
+        break;
       default:
         break;
     }
@@ -425,7 +505,7 @@ class AppTheme {
       ),
     );
     if (newColorScheme != null) {
-      data = data.copyWith(colorScheme: newColorScheme);
+      data = data.copyWith(colorScheme: newColorScheme, scaffoldBackgroundColor: newColorScheme.surface);
     }
     return MapEntry(themeName, data);
   }

@@ -1,4 +1,3 @@
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -7,7 +6,7 @@ import '../../helpers/app_theme.dart';
 
 class GradientButton extends StatelessWidget {
   final Widget child;
-  final Function()? onPressed;
+  final VoidCallback? onPressed;
   final bool useSecondary;
   final double borderRadius;
   final bool useTertiary;
@@ -36,7 +35,7 @@ class GradientButton extends StatelessWidget {
   factory GradientButton.icon({
     required Widget icon,
     required Widget label,
-    required Function() onPressed,
+    VoidCallback? onPressed,
     ThemeName? themeName,
     bool useSecondary = false,
     double borderRadius = 20,
@@ -89,6 +88,7 @@ class GradientButton extends StatelessWidget {
           height: 40,
           child: Ink(
             decoration: BoxDecoration(
+              color: null,
               gradient: disabled
                   ? LinearGradient(colors: [Colors.grey, Colors.grey])
                   : AppTheme.gradientFromTheme(

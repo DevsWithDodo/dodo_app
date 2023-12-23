@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-class MyStack<T> {
+class DataStack<T> {
   final _stack = Queue<T>();
 
   int get length => _stack.length;

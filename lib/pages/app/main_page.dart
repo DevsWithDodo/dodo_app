@@ -199,7 +199,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   void _handleDrawer() {
-    if (context.read<ScreenWidth>().isMobile) {
+    if (context.read<ScreenSize>().isMobile) {
       _scaffoldKey.currentState!.openEndDrawer();
     } else {
       _scaffoldKey.currentState!.openDrawer();
@@ -208,7 +208,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    bool isMobile = context.watch<ScreenWidth>().isMobile;
+    bool isMobile = context.watch<ScreenSize>().isMobile;
     if (!isMobile && _selectedIndex > 1) {
       _selectedIndex = 0;
       _tabController!.animateTo(_selectedIndex);
@@ -292,7 +292,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   Widget _body(bool isOnline) {
-    ScreenWidth screenWidth = context.watch<ScreenWidth>();
+    ScreenSize screenWidth = context.watch<ScreenSize>();
     bool bigScreen = !screenWidth.isMobile;
     List<Widget> tabWidgets = _tabWidgets(isOnline);
     return Row(
@@ -362,7 +362,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               ),
               StatisticsDataExport(),
               Visibility(
-                visible: context.watch<ScreenWidth>().isMobile,
+                visible: context.watch<ScreenSize>().isMobile,
                 child: SizedBox(height: 70),
               ), // So the floating button doesn't block info
             ],

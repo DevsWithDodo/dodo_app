@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
 import 'package:csocsort_szamla/components/helpers/currency_picker_dropdown.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   TextEditingController groupCountController = TextEditingController();
   bool submittedGroupCount = false;
 
-  String currency = '';
+  Currency? currency = null;
   List<List<TextEditingController>> groupQuestionsControllers = [];
 
   @override
@@ -87,7 +88,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ],
                 ),
                 CurrencyPickerDropdown(
-                  defaultCurrencyValue: 'EUR',
+                  currency: Currency.fromCode('EUR'),
                   currencyChanged: (value) => setState(() => currency = value),
                 ),
                 SizedBox(height: 20),

@@ -1,3 +1,4 @@
+import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/components/helpers/currency_picker_dropdown.dart';
@@ -17,7 +18,7 @@ class CurrencyPage extends StatefulWidget {
 }
 
 class _CurrencyPageState extends State<CurrencyPage> {
-  String _defaultCurrency = 'EUR';
+  Currency _defaultCurrency = Currency.fromCode('EUR');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +49,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
                           height: 10,
                         ),
                         CurrencyPickerDropdown(
-                          defaultCurrencyValue: _defaultCurrency,
+                          currency: _defaultCurrency,
                           currencyChanged: (newCurrency) => setState(() => _defaultCurrency = newCurrency),
                         ),
                       ],

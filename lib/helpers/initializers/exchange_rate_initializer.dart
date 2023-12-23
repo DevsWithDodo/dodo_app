@@ -23,12 +23,20 @@ class ExchangeRateInitializer extends StatelessWidget {
       http.Response response =
           await http.get(Uri.parse(context.read<AppConfig>().appUrl + '/currencies'), headers: header);
       Map<String, dynamic> decoded = jsonDecode(response.body);
+      List<String> notFound = [];
       for (String currency in (decoded["rates"] as LinkedHashMap<String, dynamic>).keys) {
         try {
           Currency.fromCode(currency).setRate(decoded['rates'][currency]);
-        } catch (_) {
-          log(_.toString());
+        } catch (e) {
+          if (e is CurrencyNotFoundException) {
+            notFound.add(currency);
+          } else {
+            log(e.toString());
+          }
         }
+      }
+      if (notFound.isNotEmpty) {
+        log("Couldn't find the following currencies: ${notFound.join(', ')}");
       }
     } catch (_) {
       for (String currency in Currency.allCodes()) {

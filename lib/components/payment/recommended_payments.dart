@@ -26,7 +26,6 @@ class _RecommendedPaymentsState extends State<RecommendedPayments> {
     super.initState();
     List<Payment> payments = necessaryPayments(widget.members, context);
     if (widget.onlyShowOwn) {
-      print(payments.first.originalCurrency.threshold());
       _necessaryPayments =
           payments.where((payment) => payment.payerId == context.read<UserState>().user!.id).toList();
     } else {
