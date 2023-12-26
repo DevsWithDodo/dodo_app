@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:csocsort_szamla/config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
 class AppConfigProvider extends StatelessWidget {
@@ -13,6 +14,10 @@ class AppConfigProvider extends StatelessWidget {
       isAdPlatformEnabled: !kIsWeb && (Platform.isAndroid || Platform.isIOS),
       isFirebasePlatformEnabled: !kIsWeb && (Platform.isAndroid || Platform.isIOS),
     );
+
+    if (_appConfig.isAdPlatformEnabled) {
+      MobileAds.instance.initialize();
+    }
   }
 
   final Widget Function(BuildContext context) builder;

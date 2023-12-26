@@ -14,13 +14,4 @@ Map<String, String> adUnitIds = {
   'settings':'example'
 };
 
-/// Whether in app purchase enabled on the platform. Set programmatically.
-bool isIAPPlatformEnabled = false;
-
-/// Whether ads are enabled on the platform. Set programmatically.
-bool isAdPlatformEnabled = false;
-
-/// Whether Firebase are enabled on the platform. Set programmatically.
-bool isFirebasePlatformEnabled = false;
-
 double tabletViewWidth = 850;
