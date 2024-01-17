@@ -179,7 +179,6 @@ mixin AddModifyPurchase {
               key: _noteKey,
               validator: (value) => validateTextField([
                 isEmpty(value),
-                minimalLength(value, 3),
               ]),
               decoration: InputDecoration(
                 hintText: 'note'.tr(),
@@ -246,13 +245,12 @@ mixin AddModifyPurchase {
                 notValidNumber(value!.replaceAll(',', '.')),
               ]),
               focusNode: focusNode,
-              decoration: InputDecoration(
-                hintText: 'full_amount'.tr(),
-              ),
+              decoration: InputDecoration(hintText: 'full_amount'.tr()),
               controller: amountController,
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))],
               onFieldSubmitted: (value) => buttonPush(context),
+              onChanged: (value) => _setState(() => amountController.text = value.replaceAll(',', '.')),
             ),
           ),
           Padding(

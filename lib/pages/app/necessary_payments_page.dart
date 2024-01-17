@@ -127,7 +127,7 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('payments-needed.page.payment-page-hint'.tr()),
+                  Flexible(child: Text('payments-needed.page.payment-page-hint'.tr())),
                   GradientButton(
                     child: Icon(Icons.payments),
                     onPressed: () => Navigator.push(

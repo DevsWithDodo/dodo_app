@@ -232,7 +232,7 @@ class UserState extends ChangeNotifier {
         "Content-Type": "application/json",
       };
 
-      String bodyEncoded = jsonEncode(body);
+      String bodyEncoded = json.encode(body, toEncodable: (e) => e.toString());
       http.Response response = await http.post(
         Uri.parse(context.read<AppConfig>().appUrl + '/register'),
         headers: header,
@@ -244,7 +244,7 @@ class UserState extends ChangeNotifier {
           apiToken: decoded['api_token'],
           username: decoded['username'],
           id: decoded['id'],
-          currency: decoded['default_currency'],
+          currency: Currency.fromCodeSafe(decoded['default_currency']),
           group: null,
           groups: [],
           ratedApp: false,

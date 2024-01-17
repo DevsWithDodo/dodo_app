@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io' show Platform;
 
+import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
@@ -68,7 +69,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                 Group(
                   id: decoded['data']['group_id'],
                   name: decoded['data']['group_name'],
-                  currency: decoded['data']['currency'],
+                  currency: Currency.fromCode(decoded['data']['currency']),
                 )
               ],
           notify: false);
