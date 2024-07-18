@@ -1,12 +1,12 @@
 import 'dart:convert';
 
+import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
+import 'package:csocsort_szamla/components/shopping/im_shopping_dialog.dart';
+import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
-import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
-import 'package:csocsort_szamla/components/shopping/im_shopping_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -239,7 +239,7 @@ class _ShoppingListState extends State<ShoppingList>
               Column(
                 children: [
                   SizedBox(
-                    height: 180,
+                    height: 195,
                   ),
                   Expanded(
                     child: FutureBuilder(
@@ -298,7 +298,7 @@ class _ShoppingListState extends State<ShoppingList>
                 ],
               ),
               Container(
-                height: 205,
+                height: 220,
                 color: Colors.transparent,
                 child: Card(
                   child: Padding(
@@ -328,7 +328,7 @@ class _ShoppingListState extends State<ShoppingList>
                                   minimalLength(value, 2),
                                 ]),
                                 decoration: InputDecoration(
-                                  hintText: 'wish'.tr(),
+                                  labelText: 'wish'.tr(),
                                   prefixIcon: Icon(
                                     Icons.shopping_cart,
                                     color: Theme.of(context)

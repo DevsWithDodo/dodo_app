@@ -180,10 +180,12 @@ class Group {
   Currency currency;
   String name;
   int id;
+  bool? adminApproval;
   Group({
     required this.name,
     required this.id,
     required this.currency,
+    this.adminApproval,
   });
 
   factory Group.fromJson(Map<String, dynamic> json) {

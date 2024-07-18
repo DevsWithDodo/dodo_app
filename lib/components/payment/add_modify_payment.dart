@@ -1,13 +1,15 @@
 import 'dart:convert';
+
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:csocsort_szamla/components/helpers/custom_choice_chip.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
-import 'package:csocsort_szamla/components/helpers/custom_choice_chip.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+
 import '../../helpers/http.dart';
 import '../../helpers/models.dart';
 import '../../helpers/validation_rules.dart';
@@ -89,7 +91,7 @@ mixin AddModifyPayment {
 
   TextFormField noteTextField(BuildContext context) => TextFormField(
         decoration: InputDecoration(
-          hintText: 'note'.tr(),
+          labelText: 'note'.tr(),
           prefixIcon: Icon(
             Icons.note,
             color: Theme.of(context).colorScheme.onSurface,
@@ -121,7 +123,7 @@ mixin AddModifyPayment {
               ]),
               controller: amountController,
               decoration: InputDecoration(
-                hintText: 'amount'.tr(),
+                labelText: 'amount'.tr(),
               ),
               keyboardType: TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))],

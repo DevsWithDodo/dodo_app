@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:csocsort_szamla/helpers/navigator_service.dart';
@@ -8,7 +9,6 @@ import 'package:csocsort_szamla/main.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'dart:developer' as developer;
 
 double adHeight(BuildContext context) =>
     (context.read<AppConfig>().isAdPlatformEnabled && (context.read<UserState>().user?.showAds ?? false)) ? 50 : 0;

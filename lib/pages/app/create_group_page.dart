@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
-import 'package:csocsort_szamla/helpers/currencies.dart';
-import 'package:csocsort_szamla/helpers/event_bus.dart';
-import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
-import 'package:csocsort_szamla/helpers/validation_rules.dart';
 import 'package:csocsort_szamla/components/helpers/currency_picker_dropdown.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
+import 'package:csocsort_szamla/helpers/currencies.dart';
+import 'package:csocsort_szamla/helpers/event_bus.dart';
+import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:csocsort_szamla/helpers/models.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/helpers/validation_rules.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -90,7 +90,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                                 minimalLength(value!.trim(), 1),
                               ]),
                               decoration: InputDecoration(
-                                hintText: 'group_name'.tr(),
+                                labelText: 'group_name'.tr(),
                                 prefixIcon: Icon(
                                   Icons.group,
                                 ),
@@ -109,15 +109,10 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                                 minimalLength(value, 1),
                               ]),
                               decoration: InputDecoration(
-                                hintText: 'nickname_in_group'.tr(),
                                 labelText: 'nickname_in_group'.tr(),
                                 filled: true,
                                 prefixIcon: Icon(
                                   Icons.account_circle,
-                                ),
-                                border: UnderlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
                                 ),
                               ),
                               controller: _nicknameController,

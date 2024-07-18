@@ -310,6 +310,7 @@ class AppTheme {
     ColorScheme colorScheme = ColorScheme.fromSeed(
       seedColor: seedColor,
       brightness: themeName.brightness,
+      // dynamicSchemeVariant: DynamicSchemeVariant.expressive
     );
     ColorScheme? newColorScheme;
     switch (themeName) {
@@ -406,12 +407,14 @@ class AppTheme {
           onSecondaryContainer: Color.fromARGB(255, 255, 239, 184),
           tertiary: Color.fromARGB(255, 253, 187, 59),
           onTertiary: Color.fromARGB(255, 66, 44, 0),
-          background: Color.fromARGB(255, 25, 28, 29),
-          onBackground: Color.fromARGB(255, 225, 227, 228),
           surface: Color.fromARGB(255, 25, 28, 29),
           onSurface: Color.fromARGB(255, 225, 227, 228),
-          surfaceVariant: Color.fromARGB(255, 64, 72, 75),
+          surfaceContainerHighest: Color.fromARGB(255, 64, 72, 75),
+          surfaceContainer: Color(0xff1d2a2e),
+          surfaceContainerLow: Color(0xff1c2528),
+          surfaceContainerHigh: ElevationOverlay.applySurfaceTint(Color.fromARGB(255, 25, 28, 29), Color.fromARGB(255, 88, 214, 247), 6),
           onSurfaceVariant: Color.fromARGB(255, 191, 200, 204),
+          surfaceTint: Color.fromARGB(255, 88, 214, 247),
         );
         break;
       case ThemeName.greenRedLight:
@@ -430,11 +433,12 @@ class AppTheme {
           error: Color(0xffba1a1a),
           errorContainer: Color(0xffffdad6),
           onErrorContainer: Color(0xff410002),
-          background: Color(0xfff6fff6),
-          onBackground: Color(0xff151d18),
           surface: Color(0xfff6fff6),
           onSurface: Color(0xff151d18),
-          surfaceVariant: Color(0xffd6e7da),
+          surfaceContainer: Color(0xffeef0e7),
+          surfaceContainerLow: Color(0xfff1f5ec),
+          surfaceContainerHigh: Color(0xffd4e3d9),
+          surfaceContainerHighest: Color(0xff3c4a41),
           onSurfaceVariant: Color(0xff3c4a41),
           outline: Color(0xff6a7a6f),
           outlineVariant: Color(0xffbacbbe),
@@ -463,11 +467,11 @@ class AppTheme {
           onError: Color(0xff690005),
           errorContainer: Color(0xff93000a),
           onErrorContainer: Color(0xffffb4ab),
-          background: Color(0xff151d18),
-          onBackground: Color(0xffdce5dc),
           surface: Color(0xff151d18),
           onSurface: Color(0xffdce5dc),
-          surfaceVariant: Color(0xff3c4a41),
+          surfaceContainerHighest: Color(0xff3c4a41),
+          surfaceContainerLow: Color(0xff20241f),
+          surfaceContainer: Color(0xff272823),
           onSurfaceVariant: Color(0xffbacbbe),
           outline: Color(0xff859589),
           outlineVariant: Color(0xff3c4a41),
@@ -482,7 +486,7 @@ class AppTheme {
     }
     if (themeName.isRainbow()) {
       newColorScheme = colorScheme.copyWith(onPrimary: Colors.white);
-    }
+    }    
 
     ThemeData data = ThemeData.from(colorScheme: colorScheme, useMaterial3: true).copyWith(
       cardTheme: CardTheme(
@@ -491,6 +495,9 @@ class AppTheme {
         ),
         margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
       ),
+      dialogTheme: DialogTheme(
+        backgroundColor: colorScheme.surfaceContainerHigh, // Temporary fix
+      ),
       bottomSheetTheme: BottomSheetThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
@@ -498,14 +505,19 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
+        border: UnderlineInputBorder(
         ),
+      ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: PredictiveBackPageTransitionsBuilder()
+        }
       ),
     );
     if (newColorScheme != null) {
-      data = data.copyWith(colorScheme: newColorScheme, scaffoldBackgroundColor: newColorScheme.surface);
+      data = data.copyWith(colorScheme: newColorScheme, scaffoldBackgroundColor: newColorScheme.surface, dialogTheme: DialogTheme(
+        backgroundColor: newColorScheme.surfaceContainerHigh, // Temporary fix
+      ));
     }
     return MapEntry(themeName, data);
   }
@@ -517,6 +529,34 @@ class AppTheme {
 
   static void addDynamicThemes(ColorScheme lightScheme, ColorScheme darkScheme) {
     try {
+      
+      ColorScheme otherlightScheme = ColorScheme.fromSeed(seedColor: lightScheme.primary, brightness: Brightness.light);
+      ColorScheme otherdarkScheme = ColorScheme.fromSeed(seedColor: darkScheme.primary, brightness: Brightness.dark);
+
+      lightScheme = lightScheme.copyWith(
+        surface: otherlightScheme.surface,
+        onSurface: otherlightScheme.onSurface,
+        surfaceBright: otherlightScheme.surfaceBright,
+        surfaceDim: otherlightScheme.surfaceDim,
+        surfaceContainer: otherlightScheme.surfaceContainer,
+        surfaceContainerHigh: otherlightScheme.surfaceContainerHigh,
+        surfaceContainerLow: otherlightScheme.surfaceContainerLow,
+        surfaceContainerHighest: otherlightScheme.surfaceContainerHighest,
+        surfaceContainerLowest: otherlightScheme.surfaceContainerLowest,
+      );
+
+      darkScheme = darkScheme.copyWith(
+        surface: otherdarkScheme.surface,
+        onSurface: otherdarkScheme.onSurface,
+        surfaceBright: otherdarkScheme.surfaceBright,
+        surfaceDim: otherdarkScheme.surfaceDim,
+        surfaceContainer: otherdarkScheme.surfaceContainer,
+        surfaceContainerHigh: otherdarkScheme.surfaceContainerHigh,
+        surfaceContainerLow: otherdarkScheme.surfaceContainerLow,
+        surfaceContainerHighest: otherdarkScheme.surfaceContainerHighest,
+        surfaceContainerLowest: otherdarkScheme.surfaceContainerLowest,
+      );
+
       AppTheme.themes[ThemeName.lightDynamic] = ThemeData.from(
         colorScheme: lightScheme,
         useMaterial3: true,
@@ -534,9 +574,9 @@ class AppTheme {
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
+          isCollapsed: false,
+          border: UnderlineInputBorder(
+
           ),
         ),
       );
@@ -557,9 +597,7 @@ class AppTheme {
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
+          border: UnderlineInputBorder(
           ),
         ),
       );

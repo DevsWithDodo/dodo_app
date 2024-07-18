@@ -65,8 +65,7 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
                   ]),
                   controller: _nicknameController,
                   decoration: InputDecoration(
-                    hintText: 'nickname'.tr(),
-                    filled: true,
+                    labelText: 'nickname'.tr(),
                     prefixIcon: Icon(
                       Icons.account_circle,
                     ),

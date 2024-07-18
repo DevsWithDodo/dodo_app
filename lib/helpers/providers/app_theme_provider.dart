@@ -20,7 +20,6 @@ class AppThemeProvider extends StatelessWidget {
       }
     } else {
       themeName = preferences.getString('theme')!;
-      print('Theme name: $themeName');
     }
 
     _appTheme = AppThemeState(ThemeName.fromString(themeName));
@@ -36,8 +35,6 @@ class AppThemeProvider extends StatelessWidget {
       builder: (context, _) => DynamicColorBuilder(
         builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
           if (lightDynamic != null && !AppTheme.themes.containsKey(ThemeName.lightDynamic)) {
-            print('AAAAAAAAAAAAAAAAAASDSDASD');
-            print(darkDynamic);
             AppTheme.addDynamicThemes(lightDynamic, darkDynamic!);
           }
           return this.builder(context);

@@ -558,5 +558,7 @@
 
     "theme-preview.request.1": "Milch",
     "theme-preview.request.2": "Müsli",
-    "theme-preview.request.3": "Kaffee"
+    "theme-preview.request.3": "Kaffee",
+
+    "invitation_field.selected_group": "Ausgewählte Gruppe"
 }

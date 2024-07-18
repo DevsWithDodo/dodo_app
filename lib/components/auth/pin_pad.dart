@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:csocsort_szamla/components/auth/pin_pad_number.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -33,9 +34,9 @@ class PinPad extends StatefulWidget {
 }
 
 class _PinPadState extends State<PinPad> {
-  bool isPinFieldNotEmpty() {
-    return (widget.isPinInput && widget.pin != '') ||
-        (!widget.isPinInput && widget.pinConfirm != '');
+  bool isPinFieldEmpty() {
+    return !((widget.isPinInput && widget.pin != '') ||
+        (!widget.isPinInput && widget.pinConfirm != ''));
   }
 
   @override
@@ -45,21 +46,20 @@ class _PinPadState extends State<PinPad> {
         Center(
           child: Ink(
             decoration: BoxDecoration(
-              color: ElevationOverlay.applyOverlay(
-                  context, Theme.of(context).colorScheme.surface, 8),
-              borderRadius: BorderRadius.circular(12),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
+              border: Border(
+                bottom: BorderSide(
+                  color: isPinFieldEmpty() ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.primary,
+                ),
+              ),
             ),
             height: 56,
             child: Stack(
               children: [
                 Center(
                   child: Builder(builder: (context) {
-                    String? textToShow = widget.pin;
-                    if (textToShow == '') {
-                      textToShow = widget.pinLabel ?? 'pin'.tr();
-                    } else {
-                      textToShow = '•' * textToShow.length;
-                    }
+                    String? textToShow = '•' * widget.pin.length;
                     if (!widget.isPinInput) {
                       textToShow = widget.pinConfirm;
                       if (widget.pinConfirm == '') {
@@ -72,26 +72,33 @@ class _PinPadState extends State<PinPad> {
                       textToShow,
                       style: Theme.of(context).textTheme.titleMedium!.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontSize: isPinFieldNotEmpty() ? 30 : null),
+                          fontSize: isPinFieldEmpty() ? null : 30),
                     );
                   }),
                 ),
-                AnimatedCrossFade(
-                  duration: Duration(milliseconds: 100),
-                  crossFadeState: (widget.isPinInput && widget.pin != '') ||
-                          (!widget.isPinInput && widget.pinConfirm != '')
-                      ? CrossFadeState.showSecond
-                      : CrossFadeState.showFirst,
-                  firstChild: Container(),
-                  secondChild: Padding(
-                    padding: const EdgeInsets.only(left: 16, top: 8),
-                    child: Text(
-                      widget.isPinInput ? 'pin'.tr() : 'confirm_pin'.tr(),
-                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                    ),
-                  ),
+                Builder(
+                  builder: (context) {
+                    final duration = Duration(milliseconds: 200);
+                    final theme = Theme.of(context);
+                    return AnimatedAlign(
+                      duration: duration,
+                      alignment: isPinFieldEmpty()
+                          ? Alignment.center
+                          : Alignment.topLeft,
+                      child: AnimatedDefaultTextStyle(
+                        duration: duration,
+                        style: theme.textTheme.bodySmall!.copyWith(
+                          color: isPinFieldEmpty() ? theme.colorScheme.onSurfaceVariant : theme.colorScheme.primary,
+                          fontSize: isPinFieldEmpty() ? 18 : 12,
+                        ),
+                        child: AnimatedPadding(
+                          duration: duration,
+                          padding: EdgeInsets.only(left: isPinFieldEmpty() ? 0 : 10, top: isPinFieldEmpty() ? 0 : 5),
+                          child: Text(widget.isPinInput ? 'pin'.tr() : 'confirm_pin'.tr())
+                        ),
+                      ),
+                    );
+                  }
                 ),
               ],
             ),
@@ -132,7 +139,7 @@ class _PinPadState extends State<PinPad> {
                         children: row
                             .map(
                               (number) =>
-                                  (number == 'C' && !isPinFieldNotEmpty() ||
+                                  (number == 'C' && isPinFieldEmpty() ||
                                           number == '')
                                       ? Container()
                                       : PinPadNumber(

@@ -553,5 +553,7 @@
 
     "theme-preview.request.1": "Tej",
     "theme-preview.request.2": "Müzli",
-    "theme-preview.request.3": "Kávé"
+    "theme-preview.request.3": "Kávé",
+
+    "invitation_field.selected_group": "Kiválasztott csoport"
 }

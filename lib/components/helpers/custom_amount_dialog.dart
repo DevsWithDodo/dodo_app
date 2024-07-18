@@ -1,8 +1,8 @@
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
+import 'package:csocsort_szamla/helpers/currencies.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:provider/provider.dart';
 
 class CustomAmountDialog extends StatefulWidget {
@@ -81,10 +81,7 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
             TextFormField(
               controller: customAmountController,
               decoration: InputDecoration(
-                helperText: (customAmountController.text.length > 0
-                    ? 'chosen_amount'.tr() + ' (${currency.symbol}) '
-                    : null),
-                hintText: 'custom_amount'.tr() + ' (${currency.symbol}) ',
+                labelText: 'custom_amount'.tr() + ' (${currency.symbol}) ',
                 suffixText: '${(sliderValue / widget.maxMoney! * 100).roundToDouble().toStringAsFixed(0)}%',
               ),
               style: Theme.of(context)

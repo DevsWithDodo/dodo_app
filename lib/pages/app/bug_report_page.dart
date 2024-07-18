@@ -1,7 +1,7 @@
 import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
+import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
-import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
@@ -71,7 +71,7 @@ class _BugReportPageState extends State<BugReportPage> {
                                     maxLines: 10,
                                     controller: _bugController,
                                     decoration: InputDecoration(
-                                      hintText: 'bug'.tr(),
+                                      labelText: 'bug'.tr(),
                                     ),
                                   )
                                 : Padding(
@@ -95,7 +95,7 @@ class _BugReportPageState extends State<BugReportPage> {
                                     maxLines: 10,
                                     controller: _locationController,
                                     decoration: InputDecoration(
-                                      hintText: 'location'.tr(),
+                                      labelText: 'location'.tr(),
                                     ),
                                   )
                                 : Padding(
@@ -116,7 +116,7 @@ class _BugReportPageState extends State<BugReportPage> {
                               maxLines: 10,
                               controller: _detailsController,
                               decoration: InputDecoration(
-                                hintText: 'details'.tr(),
+                                labelText: 'details'.tr(),
                               ),
                             ),
                             SizedBox(

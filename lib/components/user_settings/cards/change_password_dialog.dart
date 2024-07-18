@@ -1,7 +1,7 @@
-import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/validation_rules.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
+import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:csocsort_szamla/helpers/validation_rules.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +42,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       TextFormField(
         validator: (value) => validateTextField([isEmpty(value)]),
         decoration: InputDecoration(
-          hintText: 'old_pin'.tr(),
+          labelText: 'old_pin'.tr(),
           prefixIcon: Icon(
             Icons.password,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -60,7 +60,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           minimalLength(value, 4),
         ]),
         decoration: InputDecoration(
-          hintText: 'new_pin'.tr(),
+          labelText: 'new_pin'.tr(),
           prefixIcon: Icon(
             Icons.password,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -80,7 +80,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
           minimalLength(value, 4),
         ]),
         decoration: InputDecoration(
-          hintText: 'new_pin_confirm'.tr(),
+          labelText: 'new_pin_confirm'.tr(),
           prefixIcon: Icon(
             Icons.password,
           ),

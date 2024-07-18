@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
+import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -90,7 +90,7 @@ class _EditRequestDialogState extends State<EditRequestDialog> {
                   controller: _requestController,
                   onFieldSubmitted: (value) => _buttonPressed(),
                   decoration: InputDecoration(
-                    hintText: 'edited_request'.tr(),
+                    labelText: 'edited_request'.tr(),
                     prefixIcon: Icon(
                       Icons.shopping_cart,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,

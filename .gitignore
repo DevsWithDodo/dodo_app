@@ -83,3 +83,5 @@ config.dart
 
 **/GoogleService-Info.plist
 **/Info.plist
+
+.vscode/

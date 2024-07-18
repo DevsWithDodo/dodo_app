@@ -22,7 +22,7 @@ dependencies:
   firebase_analytics: ^10.7.4
   http: ^0.13.6
   shared_preferences: ^2.1.0
-  intl: ^0.18.1
+  intl: ^0.19.0
   fluttertoast: ^8.2.1
   provider: ^6.0.5
   flutter_speed_dial: ^7.0.0
@@ -42,9 +42,10 @@ dependencies:
   pretty_qr_code: ^3.0.0
   permission_handler: ^11.1.0
   google_mobile_ads: ^4.0.0
-  dynamic_color: ^1.6.3
+  dynamic_color: ^1.7.0
   mobile_scanner: ^3.2.0
   showcaseview: ^2.0.3
+  material_color_utilities: ^0.8.0
   flutter:
     sdk: flutter
   flutter_localizations:

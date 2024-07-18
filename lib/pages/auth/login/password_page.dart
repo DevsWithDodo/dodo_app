@@ -1,13 +1,13 @@
-import 'package:csocsort_szamla/pages/auth/login/login_pin_page.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
-import 'package:flutter/material.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/pages/auth/login/login_pin_page.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import '../../../helpers/validation_rules.dart';
 import '../../../components/helpers/gradient_button.dart';
+import '../../../helpers/validation_rules.dart';
 
 class PasswordPage extends StatefulWidget {
   final String? inviteUrl;
@@ -65,7 +65,7 @@ class _PasswordPageState extends State<PasswordPage> {
                           ]),
                           controller: _passwordController,
                           decoration: InputDecoration(
-                            hintText: 'password'.tr(),
+                            labelText: 'password'.tr(),
                             helperText: _passwordController.text != ''
                                 ? 'password'.tr()
                                 : null,

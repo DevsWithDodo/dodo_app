@@ -1,31 +1,29 @@
 import 'dart:convert';
-import 'dart:io' show Platform;
+import 'dart:io';
 
+import 'package:csocsort_szamla/components/groups/merge_on_join_page.dart';
+import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
+import 'package:csocsort_szamla/components/helpers/drawer_tile.dart';
+import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
+import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
+import 'package:csocsort_szamla/components/join_group/invitation_field.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
+import 'package:csocsort_szamla/helpers/event_bus.dart';
+import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
-import 'package:csocsort_szamla/components/groups/merge_on_join_page.dart';
-import 'package:csocsort_szamla/components/groups/qr_scanner_page.dart';
+import 'package:csocsort_szamla/pages/app/create_group_page.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
 import 'package:csocsort_szamla/pages/app/user_settings_page.dart';
 import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
-import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
-import 'package:csocsort_szamla/helpers/event_bus.dart';
-import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
-import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
-import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
-import 'package:csocsort_szamla/pages/app/create_group_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-
 
 class JoinGroupPage extends StatefulWidget {
   final bool fromAuth;
@@ -38,7 +36,7 @@ class JoinGroupPage extends StatefulWidget {
 }
 
 class _JoinGroupPageState extends State<JoinGroupPage> {
-  late TextEditingController _tokenController;
+  late String token;
   late TextEditingController _nicknameController;
   late User user;
 
@@ -47,15 +45,19 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
     super.initState();
     user = context.read<UserState>().user!;
     final inviteUrl = context.read<InviteUrlState>().inviteUrl;
-    _nicknameController = TextEditingController(text: user.username[0].toUpperCase() + user.username.substring(1));
-    _tokenController = TextEditingController(text: inviteUrl?.split('/').lastOrNull);
+    _nicknameController = TextEditingController(
+        text: user.username[0].toUpperCase() + user.username.substring(1));
+    token = inviteUrl?.split('/').lastOrNull ?? "";
   }
 
   var _formKey = GlobalKey<FormState>();
 
   Future<BoolFutureOutput> _joinGroup(String token, String nickname) async {
     try {
-      Map<String, dynamic> body = {'invitation_token': token, 'nickname': nickname};
+      Map<String, dynamic> body = {
+        'invitation_token': token,
+        'nickname': nickname
+      };
       Response response = await Http.post(uri: '/join', body: body);
 
       if (response.body == "") {
@@ -96,9 +98,9 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_tokenController.text == '') {
-      _tokenController.text = widget.inviteURL != null ? widget.inviteURL!.split('/').removeLast() : '';
-    }
+    // if (token == '') {
+    //   _tokenController.text = widget.inviteURL != null ? widget.inviteURL!.split('/').removeLast() : '';
+    // }
     User user = context.select<UserState, User>(
       (provider) => provider.user!,
     );
@@ -110,7 +112,10 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
       canPop: false, // onPopInvoked handles the navigation, TODO: refactor
       onPopInvoked: (didPop) {
         if (user.group != null) {
-          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => MainPage()),
+              (r) => false);
         }
       },
       child: Form(
@@ -122,16 +127,22 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
             ),
             leading: (user.group != null)
                 ? IconButton(
-                    icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
+                    icon: Icon(Icons.arrow_back,
+                        color: Theme.of(context).colorScheme.onSurface),
                     onPressed: () => Navigator.pushAndRemoveUntil(
-                        context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false),
+                        context,
+                        MaterialPageRoute(builder: (context) => MainPage()),
+                        (r) => false),
                   )
                 : null,
           ),
           drawer: !(widget.fromAuth || user.group != null)
               ? null
               : Drawer(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.horizontal(right: Radius.circular(16))),
+                  shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.horizontal(right: Radius.circular(16)),
+                  ),
                   elevation: 16,
                   child: Column(
                     children: [
@@ -147,7 +158,10 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineSmall!
-                                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant),
                                   ),
                                   SizedBox(
                                     height: 5,
@@ -157,7 +171,10 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyLarge!
-                                        .copyWith(color: Theme.of(context).colorScheme.primary),
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary),
                                   ),
                                 ],
                               ),
@@ -166,38 +183,21 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                         ),
                       ),
                       Divider(),
-                      ListTile(
-                        leading: Icon(
-                          Icons.settings,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        title: Text(
-                          'settings'.tr(),
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge!
-                              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                        ),
-                        onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => UserSettingsPage()));
-                        },
+                      DrawerTile(
+                        icon: Icons.settings, 
+                        label: 'settings'.tr(),
+                        builder: (context) => UserSettingsPage(),
                       ),
-                      ListTile(
-                        leading: Icon(
-                          Icons.exit_to_app,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        title: Text(
-                          'logout'.tr(),
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge!
-                              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                        ),
+                      DrawerTile(
+                        icon: Icons.exit_to_app, 
+                        label: 'logout'.tr(),
                         onTap: () {
                           context.read<UserState>().logout();
                           Navigator.pushAndRemoveUntil(
-                              context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginOrRegisterPage()),
+                              (r) => false);
                         },
                       ),
                     ],
@@ -207,20 +207,55 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
             behavior: HitTestBehavior.translucent,
             onTap: () => FocusScope.of(context).unfocus(),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Visibility(
-                  visible: groups.length == 0,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
-                    child: Text(
-                      'join-group.first-hint'.tr(),
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                Column(
+                  children: [
+                    Visibility(
+                      visible: groups.length == 0,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
+                        child: Text(
+                          'join-group.first-hint'.tr(),
+                          textAlign: TextAlign.center,
+                          style:
+                              Theme.of(context).textTheme.titleSmall!.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                        ),
+                      ),
                     ),
-                  ),
+                    SizedBox(height: 10),
+                    if (context.watch<InviteUrlState>().inviteUrl == null)
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            'no_group_yet'.tr(),
+                            style:
+                                Theme.of(context).textTheme.labelLarge!.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
+                                    ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(width: 10),
+                          FilledButton.tonal(
+                            child: Text('create_group'.tr()),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => CreateGroupPage()),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                  ],
                 ),
                 Expanded(
                   child: Center(
@@ -230,65 +265,14 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                         constraints: BoxConstraints(maxWidth: 500),
                         child: Column(
                           children: [
-                            Visibility(
-                              visible: widget.inviteURL == null && !kIsWeb && (Platform.isAndroid || Platform.isIOS),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'scan_code'.tr(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  SizedBox(height: 5),
-                                  GradientButton(
-                                    child: Icon(Icons.qr_code_scanner),
-                                    onPressed: () async {
-                                      if (await Permission.camera.request().isGranted) {
-                                        String? scanResult;
-                                        await Navigator.of(context)
-                                            .push(
-                                              MaterialPageRoute(builder: (context) => QRScannerPage()),
-                                            )
-                                            .then((value) => scanResult = value);
-                                        if (scanResult != null) {
-                                          setState(() {
-                                            _tokenController.text = scanResult!;
-                                          });
-                                        }
-                                      } else {
-                                        Fluttertoast.showToast(
-                                            msg: 'no_camera_access'.tr(), toastLength: Toast.LENGTH_LONG);
-                                      }
-                                    },
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    'paste_code'.tr(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                  ),
-                                  SizedBox(
-                                    height: 10,
-                                  )
-                                ],
-                              ),
-                            ),
-                            TextFormField(
-                              validator: (value) => validateTextField([
-                                isEmpty(value),
-                              ]),
-                              decoration: InputDecoration(
-                                hintText: 'invitation'.tr(),
-                                prefixIcon: Icon(
-                                  Icons.mail,
-                                ),
-                              ),
-                              controller: _tokenController,
+                            InvitationField(
+                              token: token,
+                              onChanged: (value) =>
+                                  setState(() => token = value),
+                              showScan: widget.inviteURL == null &&
+                                  !kIsWeb &&
+                                  (Platform.isAndroid || Platform.isIOS),
+                              showReset: context.watch<InviteUrlState>().inviteUrl == null,
                             ),
                             SizedBox(
                               height: 20,
@@ -300,43 +284,13 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                               ]),
                               decoration: InputDecoration(
                                 labelText: 'nickname_in_group'.tr(),
-                                hintText: 'nickname_in_group'.tr(),
-                                floatingLabelBehavior: FloatingLabelBehavior.always,
                                 prefixIcon: Icon(
                                   Icons.account_circle,
-                                ),
-                                border: UnderlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
                                 ),
                               ),
                               controller: _nicknameController,
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(15),
-                              ],
-                            ),
-                            SizedBox(height: 15),
-                            Wrap(
-                              alignment: WrapAlignment.center,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              children: [
-                                Text(
-                                  'no_group_yet'.tr(),
-                                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                      ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                SizedBox(width: 10),
-                                FilledButton.tonal(
-                                  child: Text('create_group'.tr()),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => CreateGroupPage()),
-                                    );
-                                  },
-                                ),
                               ],
                             ),
                           ],
@@ -357,8 +311,8 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
             ),
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                String token = _tokenController.text;
-                String nickname = _nicknameController.text[0].toUpperCase() + _nicknameController.text.substring(1);
+                String nickname = _nicknameController.text[0].toUpperCase() +
+                    _nicknameController.text.substring(1);
                 showFutureOutputDialog(
                   context: context,
                   future: _joinGroup(token, nickname),
@@ -386,7 +340,10 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                         Flexible(
                             child: Text(
                           'approve_still_needed'.tr(),
-                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.white),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge!
+                              .copyWith(color: Colors.white),
                           textAlign: TextAlign.center,
                         )),
                         SizedBox(

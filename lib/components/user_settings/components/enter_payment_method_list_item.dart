@@ -1,6 +1,6 @@
+import 'package:csocsort_szamla/components/user_settings/components/enter_payment_method_list.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
-import 'package:csocsort_szamla/components/user_settings/components/enter_payment_method_list.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -66,6 +66,7 @@ class _EnterPaymentMethodListItemState extends State<EnterPaymentMethodListItem>
               validator: widget.paymentMethod != null ? (value) => validateTextField([isEmpty(value)]) : null,
               decoration: InputDecoration(
                 hintText: 'payment-method.name.hint'.tr(),
+                isDense: false
               ),
               controller: nameController,
               onChanged: (value) {
@@ -82,6 +83,7 @@ class _EnterPaymentMethodListItemState extends State<EnterPaymentMethodListItem>
               validator: widget.paymentMethod != null ? (value) => validateTextField([isEmpty(value)]) : null,
               decoration: InputDecoration(
                 hintText: 'payment-method.value.hint'.tr(),
+                isDense: false,
               ),
               controller: valueController,
               onChanged: (value) {

@@ -1,8 +1,8 @@
+import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
+import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
-import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
-import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -59,7 +59,7 @@ class _ChangeUsernameDialogState extends State<ChangeUsernameDialog> {
                   ]),
                   controller: _usernameController,
                   decoration: InputDecoration(
-                    hintText: 'new_name'.tr(),
+                    labelText: 'new_name'.tr(),
                     prefixIcon: Icon(
                       Icons.account_circle,
                     ),

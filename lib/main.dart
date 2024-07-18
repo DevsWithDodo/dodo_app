@@ -8,7 +8,7 @@ import 'helpers/navigator_service.dart';
 
 final getIt = GetIt.instance;
 
-// Needed for HTTPS
+// Needed for HTTPSp
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {

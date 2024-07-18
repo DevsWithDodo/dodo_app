@@ -1,3 +1,4 @@
+import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +9,6 @@ import '../../../helpers/http.dart';
 import '../../../helpers/validation_rules.dart';
 import '../../helpers/future_output_dialog.dart';
 import '../../helpers/gradient_button.dart';
-
-import 'package:csocsort_szamla/helpers/event_bus.dart';
 
 class AddGuestDialog extends StatefulWidget {
   AddGuestDialog();
@@ -68,7 +67,8 @@ class _AddGuestDialogState extends State<AddGuestDialog> {
                   ]),
                   controller: _nicknameController,
                   decoration: InputDecoration(
-                    hintText: 'nickname'.tr(),
+                    border: UnderlineInputBorder(),
+                    labelText: 'nickname'.tr(),
                     filled: true,
                     prefixIcon: Icon(
                       Icons.account_circle,

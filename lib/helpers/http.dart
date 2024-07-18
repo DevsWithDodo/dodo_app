@@ -15,8 +15,8 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../pages/auth/login_or_register_page.dart';
 import '../pages/app/main_page.dart';
+import '../pages/auth/login_or_register_page.dart';
 
 enum GetUriKeys {
   groupHasGuests("/groups/{}/has_guests"),
@@ -35,7 +35,8 @@ enum GetUriKeys {
   statisticsPayments("/groups/{}/statistics/payments"),
   statisticsPurchases("/groups/{}/statistics/purchases"),
   statisticsAll("/groups/{}/statistics/all"),
-  requests("/requests");
+  requests("/requests"),
+  groupFromToken("/groups/from-invitation/{}");
 
   const GetUriKeys(this.uri);
   final String uri;

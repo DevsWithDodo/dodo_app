@@ -550,5 +550,7 @@
 
     "theme-preview.request.1": "Milk",
     "theme-preview.request.2": "Cereals",
-    "theme-preview.request.3": "Coffee"
+    "theme-preview.request.3": "Coffee",
+
+    "invitation_field.selected_group": "Selected group"
 }

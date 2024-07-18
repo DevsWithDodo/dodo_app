@@ -1,19 +1,19 @@
 import 'package:csocsort_szamla/components/auth/forgot_password_dialog.dart';
+import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
 import 'package:csocsort_szamla/pages/auth/login/login_pin_page.dart';
 import 'package:csocsort_szamla/pages/auth/sign_up/sign_up_pin_page.dart';
-import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:http/http.dart' as http;
 
-import '../../helpers/validation_rules.dart';
 import '../../components/helpers/gradient_button.dart';
+import '../../helpers/validation_rules.dart';
 
 class NamePage extends StatefulWidget {
   final bool isLogin;
@@ -64,48 +64,45 @@ class _NamePageState extends State<NamePage> {
                         padding: EdgeInsets.only(left: 20, right: 20),
                         shrinkWrap: true,
                         children: <Widget>[
-                          TextFormField(
-                            validator: (value) => validateTextField([
-                              isEmpty(value),
-                              minimalLength(value, 3),
-                              allowedRegEx(value, RegExp(r'[^a-z0-9.]+')),
-                              ...(_usernameTaken
-                                  ? [throwError('username_taken'.tr())]
-                                  : []),
-                            ]),
-                            onChanged: (value) => setState(() {}),
-                            onFieldSubmitted: (value) => _buttonPush(),
-                            controller: _usernameController,
-                            decoration: InputDecoration(
-                              hintText: 'username'.tr(),
-                              helperText: widget.isLogin &&
-                                      _usernameController.text != ''
-                                  ? 'username'.tr()
-                                  : null,
-                              prefixIcon: Icon(
-                                Icons.account_circle,
-                              ),
-                              suffixIcon: widget.isLogin
-                                  ? null
-                                  : IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          _usernameExplanationController
-                                                  .expanded =
-                                              !_usernameExplanationController
-                                                  .expanded;
-                                        });
-                                      },
-                                      icon: Icon(
-                                        Icons.info_outline,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                      ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextFormField(
+                                  validator: (value) => validateTextField([
+                                    isEmpty(value),
+                                    minimalLength(value, 3),
+                                    allowedRegEx(value, RegExp(r'[^a-z0-9.]+')),
+                                    ...(_usernameTaken
+                                        ? [throwError('username_taken'.tr())]
+                                        : []),
+                                  ]),
+                                  onChanged: (value) => setState(() {}),
+                                  onFieldSubmitted: (value) => _buttonPush(),
+                                  controller: _usernameController,
+                                  decoration: InputDecoration(
+                                    labelText: 'username'.tr(),
+                                    prefixIcon: Icon(
+                                      Icons.account_circle,
                                     ),
-                            ),
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(15),
+                                  ),
+                                  inputFormatters: [
+                                    LengthLimitingTextInputFormatter(15),
+                                  ],
+                                ),
+                              ),
+                              if (!widget.isLogin)
+                                IconButton.filledTonal(
+                                  onPressed: () {
+                                    setState(() {
+                                      _usernameExplanationController.expanded =
+                                          !_usernameExplanationController
+                                              .expanded;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    Icons.info_outline,
+                                  ),
+                                ),
                             ],
                           ),
                           Visibility(
@@ -264,25 +261,24 @@ class _NamePageState extends State<NamePage> {
       _showPrivacyPolicyValidation = false;
       if (_formKey.currentState!.validate() && _privacyPolicy) {
         showFutureOutputDialog(
-          context: context,
-          future: _checkUsernameTaken(),
-          outputTexts: {
-            BoolFutureOutput.False: 'username_taken'
-          },
-          outputCallbacks: {
-            BoolFutureOutput.True:() {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SignUpPinPage(
-                    username: _usernameController.text,
+            context: context,
+            future: _checkUsernameTaken(),
+            outputTexts: {
+              BoolFutureOutput.False: 'username_taken'
+            },
+            outputCallbacks: {
+              BoolFutureOutput.True: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SignUpPinPage(
+                      username: _usernameController.text,
+                    ),
                   ),
-                ),
-              );
-            }
-          }
-        );
+                );
+              }
+            });
       } else if (!_privacyPolicy) {
         setState(() {
           _showPrivacyPolicyValidation = true;
