@@ -1,6 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="csocsort.hu.machiato32.csocsort_szamla">
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- tools azert kell, mert a qrscan android manifestjeben is van definialva az ikon...-->
 
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that

@@ -8,6 +8,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   dynamic_color
   firebase_core
   permission_handler_windows
+  rive_common
   share_plus
   url_launcher_windows
 )
