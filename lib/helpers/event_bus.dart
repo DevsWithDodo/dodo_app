@@ -12,6 +12,7 @@ class EventBus {
   static _RefreshGroups refreshGroups = _RefreshGroups();
   static _RefreshMainDialog refreshMainDialog = _RefreshMainDialog();
   static _HideMainDialog hideMainDialog = _HideMainDialog();
+  static _RefreshGroupInfo refreshGroupInfo = _RefreshGroupInfo();
 
   static final EventBus _instance = EventBus();
 
@@ -134,6 +135,20 @@ class _RefreshGroups extends _AppEvent {
   void onEvent() {
     deleteCache(
       uri: generateUri(GetUriKeys.groups,
+          getIt.get<NavigationService>().navigatorKey.currentContext!),
+    );
+  }
+}
+
+class _RefreshGroupInfo extends _AppEvent {
+  @override
+  void onEvent() {
+    deleteCache(
+      uri: generateUri(GetUriKeys.groupCurrent,
+          getIt.get<NavigationService>().navigatorKey.currentContext!),
+    );
+    deleteCache(
+      uri: generateUri(GetUriKeys.groupMember,
           getIt.get<NavigationService>().navigatorKey.currentContext!),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../helpers/currencies.dart';
 
 class CurrencyPickerDropdown extends StatelessWidget {
@@ -8,6 +9,7 @@ class CurrencyPickerDropdown extends StatelessWidget {
   final Color? dropdownColor;
   final Color? textColor;
   final Color? backgroundColor;
+  final bool isDense;
   CurrencyPickerDropdown({
     required this.currency,
     required this.currencyChanged,
@@ -15,16 +17,16 @@ class CurrencyPickerDropdown extends StatelessWidget {
     this.textColor,
     this.dropdownColor,
     this.backgroundColor,
+    this.isDense = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Ink(
       decoration: BoxDecoration(
-        color: backgroundColor ?? Theme.of(context).colorScheme.surfaceVariant,
+        color: backgroundColor ?? Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: EdgeInsets.only(right: 5),
       child: DropdownButton(
         isExpanded: true,
         iconEnabledColor: textColor ?? Theme.of(context).colorScheme.onSurfaceVariant,
@@ -45,6 +47,8 @@ class CurrencyPickerDropdown extends StatelessWidget {
             .labelLarge!
             .copyWith(color: textColor ?? Theme.of(context).colorScheme.onSurfaceVariant),
         menuMaxHeight: 500,
+        isDense: isDense,
+        padding: isDense ? EdgeInsets.symmetric(vertical: 5) : null,
         items: Currency.all()
             .map((currency) => DropdownMenuItem(
                   alignment: Alignment.center,

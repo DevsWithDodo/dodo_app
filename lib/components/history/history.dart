@@ -1,19 +1,16 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/event_bus.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
-import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
-import 'package:csocsort_szamla/pages/app/history_page.dart';
 import 'package:csocsort_szamla/components/payment/payment_entry.dart';
 import 'package:csocsort_szamla/components/purchase/purchase_entry.dart';
+import 'package:csocsort_szamla/helpers/event_bus.dart';
+import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/pages/app/history_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
-import '../../helpers/app_theme.dart';
 import '../../helpers/models.dart';
 import '../helpers/error_message.dart';
 import '../helpers/gradient_button.dart';
@@ -29,12 +26,13 @@ class History extends StatefulWidget {
 class _HistoryState extends State<History> {
   Future<List<Payment>>? _payments;
   Future<List<Purchase>>? _purchases;
-  int? _selectedIndex;
+  late int _selectedIndex;
   Future<List<Purchase>> _getPurchases({bool overwriteCache = false}) async {
     try {
       Response response = await Http.get(
         uri: generateUri(
-          GetUriKeys.purchases, context,
+          GetUriKeys.purchases,
+          context,
           queryParams: {
             'limit': '6',
             'group': context.read<UserState>().currentGroup!.id.toString(),
@@ -59,7 +57,8 @@ class _HistoryState extends State<History> {
     try {
       Response response = await Http.get(
         uri: generateUri(
-          GetUriKeys.payments, context,
+          GetUriKeys.payments,
+          context,
           queryParams: {
             'limit': '6',
             'group': context.read<UserState>().currentGroup!.id.toString(),
@@ -95,7 +94,7 @@ class _HistoryState extends State<History> {
   @override
   void initState() {
     super.initState();
-    _selectedIndex = widget.selectedIndex;
+    _selectedIndex = widget.selectedIndex ?? 0;
     _payments = null;
     _payments = _getPayments();
     _purchases = null;
@@ -142,122 +141,29 @@ class _HistoryState extends State<History> {
             SizedBox(
               height: 20,
             ),
-            Row(
-              children: <Widget>[
-                Flexible(
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(30),
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      _selectedIndex = 0;
-                      setState(() {});
-                    },
-                    child: Ink(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        gradient: _selectedIndex == 0
-                            ? AppTheme.gradientFromTheme(context.watch<AppThemeState>().themeName)
-                            : LinearGradient(colors: [
-                                ElevationOverlay.applyOverlay(context,
-                                    Theme.of(context).colorScheme.surface, 10),
-                                ElevationOverlay.applyOverlay(context,
-                                    Theme.of(context).colorScheme.surface, 10)
-                              ]),
-                      ),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.shopping_cart,
-                              color: _selectedIndex == 0
-                                  ? Theme.of(context).colorScheme.onPrimary
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant),
-                          SizedBox(
-                            width: 3,
-                          ),
-                          Flexible(
-                            child: Text(
-                              'purchases'.tr(),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
-                                      color: _selectedIndex == 0
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .onPrimary
-                                          : Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+            SegmentedButton<int>(
+              emptySelectionAllowed: false,
+              multiSelectionEnabled: false,
+              selectedIcon: _selectedIndex == 0
+                  ? Icon(Icons.shopping_cart)
+                  : Icon(Icons.payment),
+              segments: [
+                ButtonSegment(
+                  value: 0,
+                  label: Text('purchases'.tr()),
+                  enabled: true,
                 ),
-                SizedBox(width: 20),
-                Flexible(
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(30),
-                    onTap: () {
-                      HapticFeedback.selectionClick();
-                      _selectedIndex = 1;
-                      setState(() {});
-                    },
-                    child: Ink(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        gradient: _selectedIndex == 1
-                            ? AppTheme.gradientFromTheme(context.watch<AppThemeState>().themeName)
-                            : LinearGradient(colors: [
-                                ElevationOverlay.applyOverlay(context,
-                                    Theme.of(context).colorScheme.surface, 10),
-                                ElevationOverlay.applyOverlay(context,
-                                    Theme.of(context).colorScheme.surface, 10)
-                              ]),
-                      ),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.attach_money,
-                              color: _selectedIndex == 1
-                                  ? Theme.of(context).colorScheme.onPrimary
-                                  : Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant),
-                          SizedBox(
-                            width: 3,
-                          ),
-                          Flexible(
-                            child: Text(
-                              'payments'.tr(),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
-                                      color: _selectedIndex == 1
-                                          ? Theme.of(context)
-                                              .colorScheme
-                                              .onPrimary
-                                          : Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                ButtonSegment(
+                  value: 1,
+                  label: Text('payments'.tr()),
+                  enabled: true,
                 ),
               ],
+              selected: new Set()..add(_selectedIndex),
+              onSelectionChanged: (Set<dynamic> selected) {
+                _selectedIndex = selected.first;
+                setState(() {});
+              },
             ),
             AnimatedCrossFade(
               crossFadeState: _selectedIndex == 0
@@ -269,45 +175,35 @@ class _HistoryState extends State<History> {
                 builder: (context, AsyncSnapshot<List<Purchase>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasData) {
-                      if (snapshot.data!.length == 0) {
-                        return Padding(
-                          padding: EdgeInsets.all(25),
-                          child: Text(
-                            'nothing_to_show'.tr(),
-                            style: Theme.of(context).textTheme.bodyLarge,
-                            textAlign: TextAlign.center,
-                          ),
-                        );
-                      }
                       return Column(
                         children: <Widget>[
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            // height: 490,
-                            child: Column(
-                              children: _generatePurchases(snapshot.data!),
-                            ),
-                          ),
-                          Visibility(
-                            visible: snapshot.data!.length > 5,
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: GradientButton.icon(
-                                useSecondary: true,
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HistoryPage(
-                                          startingIndex: _selectedIndex),
-                                    ),
-                                  );
-                                },
-                                icon: Icon(Icons.more_horiz),
-                                label: Text('more'.tr()),
+                          SizedBox(height: 10),
+                          if (snapshot.data!.length == 0)
+                            Padding(
+                              padding: EdgeInsets.all(25),
+                              child: Text(
+                                'nothing_to_show'.tr(),
+                                style: Theme.of(context).textTheme.bodyLarge,
+                                textAlign: TextAlign.center,
                               ),
+                            )
+                          else
+                            ..._generatePurchases(snapshot.data!),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: GradientButton.icon(
+                              useSecondary: true,
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HistoryPage(
+                                        startingIndex: _selectedIndex),
+                                  ),
+                                );
+                              },
+                              icon: Icon(Icons.list),
+                              label: Text('history.show-all'.tr()),
                             ),
                           )
                         ],
@@ -336,45 +232,38 @@ class _HistoryState extends State<History> {
                 builder: (context, AsyncSnapshot<List<Payment>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.hasData) {
-                      if (snapshot.data!.length == 0) {
-                        return Padding(
-                          padding: EdgeInsets.all(25),
-                          child: Text(
-                            'nothing_to_show'.tr(),
-                            style: Theme.of(context).textTheme.bodyLarge,
-                            textAlign: TextAlign.center,
-                          ),
-                        );
-                      }
                       return Column(
                         children: <Widget>[
                           SizedBox(
                             height: 10,
                           ),
-                          Container(
-                            // height: 490,
-                            child: Column(
-                                children: _generatePayments(snapshot.data!)),
-                          ),
-                          Visibility(
-                            visible: (snapshot.data as List).length > 5,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: GradientButton.icon(
-                                useSecondary: true,
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HistoryPage(
-                                        startingIndex: _selectedIndex,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                icon: Icon(Icons.more_horiz),
-                                label: Text('more'.tr()),
+                          if (snapshot.data!.length == 0)
+                            Padding(
+                              padding: EdgeInsets.all(25),
+                              child: Text(
+                                'nothing_to_show'.tr(),
+                                style: Theme.of(context).textTheme.bodyLarge,
+                                textAlign: TextAlign.center,
                               ),
+                            )
+                          else
+                            ..._generatePayments(snapshot.data!),
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: GradientButton.icon(
+                              useSecondary: true,
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => HistoryPage(
+                                      startingIndex: _selectedIndex,
+                                    ),
+                                  ),
+                                );
+                              },
+                              icon: Icon(Icons.list),
+                              label: Text('history.show-all'.tr()),
                             ),
                           )
                         ],

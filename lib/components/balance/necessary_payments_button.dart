@@ -29,8 +29,8 @@ class _NecessaryPaymentsButtonState extends State<NecessaryPaymentsButton> {
     return Visibility(
       visible: _necessaryPayments.isNotEmpty,
       child: Padding(
-        padding: const EdgeInsets.only(top: 10),
-        child: TextButton(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: OutlinedButton.icon(
           onPressed: () => Navigator.push(
             context,
             MaterialPageRoute(
@@ -40,7 +40,8 @@ class _NecessaryPaymentsButtonState extends State<NecessaryPaymentsButton> {
               ),
             ),
           ),
-          child: Text('payments_needed'.tr()),
+          label: Text('payments_needed'.tr()),
+          icon: Icon(Icons.paid_outlined),
         ),
       ),
     );

@@ -90,6 +90,18 @@ class UserStatus {
   }
 }
 
+class Guest {
+  int id;
+  String nickname;
+  int groupId;
+
+  Guest({
+    required this.id,
+    required this.nickname,
+    required this.groupId,
+  });
+}
+
 class PaymentMethod {
   String name;
   String value;
@@ -118,6 +130,15 @@ class PaymentMethod {
       priority: this.priority,
     );
   }
+
+  factory PaymentMethod.empty() {
+    return PaymentMethod(
+      name: '',
+      value: '',
+      priority: false,
+    );
+  }
+
 }
 
 class Member {

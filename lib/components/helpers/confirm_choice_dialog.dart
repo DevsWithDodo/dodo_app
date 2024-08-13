@@ -1,6 +1,6 @@
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 
 class ConfirmChoiceDialog extends StatefulWidget {
   final String choice;
@@ -17,11 +17,9 @@ class _ConfirmChoiceDialogState extends State<ConfirmChoiceDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
       child: Container(
         constraints: BoxConstraints(maxWidth: 400),
-        padding: EdgeInsets.all(8),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
@@ -30,8 +28,7 @@ class _ConfirmChoiceDialogState extends State<ConfirmChoiceDialog> {
               widget.choice.tr(),
               style: Theme.of(context)
                   .textTheme
-                  .bodyLarge!
-                  .copyWith(color: Colors.white),
+                  .bodyLarge!,
               textAlign: TextAlign.center,
             ),
             SizedBox(

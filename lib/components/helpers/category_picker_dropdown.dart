@@ -1,5 +1,4 @@
 import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class CategoryPickerDropdown extends StatefulWidget {
@@ -56,7 +55,7 @@ class _CategoryPickerDropdown extends State<CategoryPickerDropdown> {
                       : Theme.of(context).colorScheme.primary,
                 ),
                 Text(
-                  category.text.tr(),
+                  category.tr(),
                   style: Theme.of(context).textTheme.labelSmall!.copyWith(
                         color: widget.defaultCategoryValue == category
                             ? Theme.of(context).colorScheme.onTertiary

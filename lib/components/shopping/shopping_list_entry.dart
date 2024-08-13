@@ -1,12 +1,12 @@
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/past_reaction_container.dart';
-import 'package:csocsort_szamla/pages/app/purchase_page.dart';
 import 'package:csocsort_szamla/components/shopping/shopping_all_info.dart';
+import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:csocsort_szamla/helpers/models.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/pages/app/purchase_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -71,7 +71,8 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
     TextStyle subTextStyle =
         Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurface);
     BoxDecoration boxDecoration = BoxDecoration(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(12),
+      color: Theme.of(context).colorScheme.surfaceContainer,
     );
     Icon icon = Icon(
       Icons.check_box_outlined,
@@ -151,7 +152,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
         children: [
           Container(
             decoration: boxDecoration,
-            margin: EdgeInsets.only(top: widget.shoppingRequest.reactions!.length == 0 ? 5 : 10, bottom: 8),
+            margin: EdgeInsets.only(top: widget.shoppingRequest.reactions!.length == 0 ? 2 : 8, bottom: 5, left: 12, right: 12),
             child: Material(
               type: MaterialType.transparency,
               child: InkWell(

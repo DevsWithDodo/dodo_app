@@ -227,7 +227,8 @@ class Http {
         response = await http.put(
             Uri.parse(context.read<AppConfig>().appUrl + uri),
             headers: header,
-            body: bodyEncoded);
+            body: bodyEncoded,
+        );
       } else {
         response = await http.put(
             Uri.parse(context.read<AppConfig>().appUrl + uri),

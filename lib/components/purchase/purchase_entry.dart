@@ -1,13 +1,13 @@
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:csocsort_szamla/helpers/app_theme.dart';
-import 'package:csocsort_szamla/helpers/currencies.dart';
-import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/event_bus.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/past_reaction_container.dart';
 import 'package:csocsort_szamla/components/purchase/purchase_all_info.dart';
+import 'package:csocsort_szamla/helpers/app_theme.dart';
+import 'package:csocsort_szamla/helpers/currencies.dart';
+import 'package:csocsort_szamla/helpers/event_bus.dart';
+import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -115,16 +115,14 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
           )
         : '';
     BoxDecoration decoration = bought
-        ? received
-            ? BoxDecoration(
-                gradient: AppTheme.gradientFromTheme(themeName, useSecondaryContainer: true),
-                borderRadius: BorderRadius.circular(15),
-              )
-            : BoxDecoration(
-                gradient: AppTheme.gradientFromTheme(themeName, usePrimaryContainer: true),
-                borderRadius: BorderRadius.circular(15),
-              )
-        : BoxDecoration();
+        ? BoxDecoration(
+          gradient: received ? AppTheme.gradientFromTheme(themeName, useSecondaryContainer: true) : AppTheme.gradientFromTheme(themeName, usePrimaryContainer: true),
+          borderRadius: BorderRadius.circular(15),
+        )
+        : BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainerHigh,
+            borderRadius: BorderRadius.circular(15),
+        );
     return Selector<UserState, User>(
         selector: (context, userProvider) => userProvider.user!,
         builder: (context, user, _) {

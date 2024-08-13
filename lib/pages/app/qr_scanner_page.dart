@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import '../helpers/future_output_dialog.dart';
+import '../../components/helpers/future_output_dialog.dart';
 
 class QRScannerPage extends StatefulWidget {
   const QRScannerPage();
@@ -50,15 +50,18 @@ class _QRScannerPageState extends State<QRScannerPage> {
                       code = barcodeCapture.barcodes
                           .firstWhere(
                               (element) =>
-                                  element.rawValue!.startsWith('dodo://'),
+                                  element.rawValue!.startsWith('dodo://') ||
+                                  element.rawValue!
+                                      .startsWith('https://dodoapp.net/join/'),
                               orElse: null)
                           .rawValue
                           ?.replaceAll('http://', '')
-                          .replaceAll('htttp://', '');
+                          .replaceAll('htttp://', '')
+                          .replaceAll('https://dodoapp.net/join/', '')
+                          .replaceAll('dodo://', '');
                       if (code == null) {
                         return;
                       }
-                      code = code!.replaceAll('dodo://', '');
                       showFutureOutputDialog(
                         context: context,
                         future: _qrRead(),

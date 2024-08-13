@@ -7,25 +7,18 @@
     "username": "Felhasználónév",
     "password": "Jelszó",
 
-    "name": "Név",
-    "confirm_password": "Jelszó megerősítése",
-
     "balances": "Egyenlegek",
     "history": "Előzmények",
-    "home": "Főoldal",
     "shopping_list": "Bevásárlólista",
-    "group": "Csoport",
     "purchase": "Bevásárlás",
     "payment": "Fizetés",
 
     "wish": "Kívánságom",
 
     "nickname": "Becenév",
-    "new_nickname": "Új becenév",
     "rename_group": "Csoport átnevezése",
     "new_name": "Új név",
     "invitation": "Meghívó",
-    "members": "Tagok",
 
     "groups": "Csoportok",
     "join_group": "Csatlakozás csoporthoz",
@@ -33,17 +26,11 @@
     "settings": "Beállítások",
     "logout": "Kijelentkezés",
 
-    "join": "Csatlakozás",
-    "nickname_in_group": "Becenév a csoportban",
     "no_group_yet": "Nincs még csoportod?",
 
     "group_name": "Csoport neve",
     "create": "Létrehozás",
 
-    "change_password": "Jelszó megváltoztatása",
-    "old_password": "Jelenlegi jelszó",
-    "new_password": "Új jelszó",
-    "new_password_confirm": "Jelszó megerősítése",
     "change_theme": "Témaváltás",
     "change_language": "Nyelv választása",
 
@@ -52,9 +39,6 @@
 
     "amount": "Összeg",
 
-    "passwords_not_match": "A két jelszó nem egyezik!",
-    "okay": "Rendben",
-    "error": "Hiba történt!",
     "back": "Vissza",
 
     "yes": "Igen",
@@ -64,19 +48,12 @@
     "purchases": "Bevásárlások",
     "payments": "Fizetések",
 
-    "more": "Több",
-
     "person_not_chosen": "Nem választottál ki személyt!",
-    "payment_scf": "A fizetést sikeresen könyveltük!",
-    "add_new": "Új hozzáadása",
 
     "no_note": "Nincs megjegyzés",
-    "want_delete": "Vissza szeretnéd vonni a tételt?",
     "delete": "Törlés",
 
     "per_person": " {}/fő",
-    "no_amount": "Nem adtál meg összeget!",
-    "purchase_scf": "A bevásárlást sikeresen könyveltük!",
     "invitation_to_lender": "Meghívó Dodo csoportba",
 
     "field_empty": "A mező nem lehet üres!",
@@ -86,53 +63,26 @@
     "payment_explanation": "Fizettél valakinek",
     "purchase_explanation": "Vettél valamit",
 
-    "members.subtitle": "Nézd meg a tagok fizetési módjait és egyéb információit, vagy hagyd el a csoportot.",
-    "members.hint": "Koppints egy tagra a részletes információkért.",
-    "members.admin.hint": "Koppints egy tagra, hogy lásd a részletes információit, adminná tedd vagy hogy eltávolítsd a csoportból.",
-
     "modify": "Módosítás",
-    "invitation_explanation": "Hívj meg valakit a csoportba",
-    "rename_group_explanation": "Ha nem tetszik a neve",
     "history_explanation": "Nyomd meg a bejegyzést a szerkesztéshez és a részletek megjelenítéséhez. Tartsd nyomva a reagáláshoz.",
 
-    "pay": "Fizetés",
-    "who_to_pay": "Kinek fizessek?",
     "payments_needed": "Szükséges fizetések",
 
     "remove_from_list": "Kipipálva",
     "add_as_expense": "Írd fel bevásárlásnak",
-    "revoke": "Visszavonás",
 
     "change_username": "Felhasználónév megváltoztatása",
 
-    "hi": "Szia",
+    "hi": "Szia {}!",
 
     "report_a_bug": "Hiba jelentése",
     "bug": "Hiba",
-    "what_is_wrong": "A probléma",
 
     "nothing_to_show": "Itt még nincs semmi...",
 
-    "i_m_shopping" : "Vásárolni vagyok",
     "where" : "Hol?",
 
-    "discovery_add_floating_title": "Bevásárlás és fizetés hozzáadása",
-    "discovery_add_floating_description": "\nBevásárlás:\nItt írhatod fel az összeget, ha vettél valamit egy vagy több tagnak, az alkalmazás pedig arányosan elosztja köztük\n\nFizetés:\nItt írhatod fel az összeget, ha fizettél egy tagnak",
-    "discovery_drawer_title": "Felhasználói beállítások",
-    "discovery_drawer_description": "\nA menü felső részében kezelheted csoportjaidat.\n\nAlatta a személyes beállításaidat találod.",
-    "discovery_settings_title": "Személyes beállítások",
-    "discovery_settings_description": "\nItt változtathatod meg felhasználóneved, jelszavad, illetve választhatsz jobbnál jobb színek közül. 😉",
-    "discover_shopping_title": "Közös bevásárlólista",
-    "discover_shopping_description" : "\nEzt a bevásárlólistát a csoport összes tagja látja.\n\nFelhasználhatjátok pl. nyaraláson közös bevásárláshoz vagy lakótársakként, hogy ne mindenki külön menjen boltba.",
-    "discover_group_settings_title": "Csoport beállításai",
-    "discover_group_settings_description" : "\nTöbbek között itt hívhatsz meg új tagokat, változtathatod meg a beceneved, illetve nézheted a csoport statisztikáit.",
-
-    "reset_tutorial": "Tutorial újranézése",
-    "reset_tutorial_explanation": "Ehhez újra kell indítanod az alkalmazást",
-
-    "password_reminder": "Jelszóemlékeztető",
     "forgot_password": "Elfelejtett jelszó",
-    "your_password_reminder": "A te jelszóemlékeztetőd:",
 
     "cannot_connect": "A szerverhez való csatlakozás sikertelen volt. Ellenőrizd az internetkapcsolatod, majd koppintással próbáld újra.",
     "format_exception": "Hiba az adatok feldolgozása közben. Koppintással próbáld meg újra.",
@@ -155,10 +105,8 @@
     "details": "Részletesebb leírás",
 
     "change_username_explanation": "Változtasd meg a felhasználóneved, amelyikkel belépsz az alkalmazásba",
-    "change_password_explanation": "Változtasd meg a jelszód, amivel belépsz az alkalmazásba",
 
     "change_group_currency": "Csoport pénznemének megváltoztatása",
-    "change_group_currency_explanation": "Változtasd meg a pénznemet, de ügyelj rá, hogy a jelenlegi tartozások nem lesznek átváltva!",
 
     "add_guest": "Vendég hozzáadása",
     "merge_guest": "Vendég hozzárendelése",
@@ -207,54 +155,13 @@
     "price": "Ár: ",
     "buy": "Vásárlás",
 
-    "boost-group": "Csoport fejlesztése",
-    "boost-group.subtitle": "Egy fejlesztett csoportban láthatod a statisztikákat az alkalmazáson belül.",
-    "boost-group.boosted.subtitle": "Ezt a csoportot már felfejlesztették \uD83D\uDE0E. Így elérhetőek a statisztikák az alkalmazáson belül.",
-    "boost-group.boosts-available": "Csoportfejlesztő Dodóid száma: {}",
-    "boost-group.hint": "A csoport fejlesztésével járó előnyöket az összes csoporttag eléri.",
-
-    "sure_boost": "Biztosan fejleszteni szeretnéd a csoportot?",
-    "already_boosted": "A csoportot már felfejlesztették!",
-
     "delete_all_data": "Összes felhasználói adat törlése",
     "delete_all_data_explanation": "Ekkor semmilyen hozzád köthető adat nem marad meg a szervereinken.",
-
-    "you_seem_lonely": "Egyedül vagy?",
-    "invite_friends": "Hívd meg a barátaid",
-    "add_guests_offline": "Vagy adj vendégeket a csoporthoz",
-    "you_seem_lonely_explanation": "Később ezeket a csoport beállítasai között tudod elvégezni",
 
     "undo": "Visszavonás",
     "request_deleted": "Törölve!",
 
-    "sure_user_delete": "Ezzel visszavonhatatlanul letörlöd a felhasználói profilod. Biztosan folytatni szeretnéd?",
-
     "statistics": "Statisztikák",
-    "payments_stats": "Fizetések",
-    "payments_stats_explanation": "Itt láthatod az általad, illetve feléd intézett fizetéseket",
-    "payed": "Fizettél:",
-    "taken": "Fizettek:",
-    "you_payed": "Te fizettél",
-    "you_took": "Neked fizettek",
-
-    "purchases_stats": "Bevásárlások",
-    "purchases_stats_explanation": "Itt láthatod a általad, illetve neked intézett bevásárlásokat",
-    "stat_bought": "Vásároltál:",
-    "received": "Vásároltak:",
-    "you_bought": "Te vásároltál",
-    "you_received": "Neked vásároltak",
-
-    "group_stats": "A csoport statisztikái",
-    "group_stats_explanation": "Itt láthatod a csoport összes bevásárlását, fizetését",
-    "stats_purchases": "Bevásárlások:",
-    "stats_payments": "Fizetések:",
-
-    "sum_of": "Σ",
-
-    "select_date": "Dátum kiválasztása",
-    "select_date_explanation": "Választ ki az időtartományt, amelyben szeretnéd látni a statisztikákat",
-
-    "personalised_ads": "Szeretnék látni személyreszabott reklámokat",
 
     "statistics_not_available": "A statisztiszták nem elérhetőek",
     "statistics_not_available_explanation": "Ez a csoport még nem lett felfejlesztve, így a statisztikák még nem elérhetőek. Fejleszd fel a csoportot, vagy vedd meg a Csoportfejlesztő Dodókat a boltban!",
@@ -268,19 +175,12 @@
     "calculator": "Számológép",
     "calculator_explanation": "Itt egy számológép, használd, ha kell 😉",
 
-    "approve_members": "Jelentkezések elfogadása",
-    "approve_members_explanation": "Fogadd el az új tagok jelentkezését a csoportba. Lent változtathatod, az adminok beleegyezésének  szükségességét",
-    "needs_approval": "Admin beleegyezés szükséges",
     "download_export": "Letölthető adatok",
     "download_export_explanation": "Töltsd le a csoport összes adatát",
     "download_xls": "Letöltés excel táblázatként",
     "download_xls_explanation": "Használd ezt, ha magad szeretnéd rendezni az adatokat",
     "download_pdf": "Letöltés PDF-ként",
     "download_pdf_explanation": "Használd ezt, hogyha gyorsan átlátható összegzést szeretnél",
-    "export": "Letölthető adatok",
-    "export_explanation": "A csoport adatai táblázat és PDF formában",
-    "statistics_explanation": "A csoport statisztikái grafikusan ábrázolva",
-    "coming_soon": "Nem sokára elérhető",
 
     "modify_payment": "Fizetés módosítása",
     "modify_payment_explanation": "Módosítsd a fizetést, ha változtak a részletei",
@@ -288,10 +188,6 @@
     "modify_purchase_explanation": "Módosítsd a vásárlást, ha változtak a részletei",
 
     "not_in_group": "Nem vagy a csoport tagja!",
-
-    "approve_still_needed": "A belépési kérelmet elküldtük, a belépéshez a csoport adminjának beleegyezése szükséges. Ha az megtörtént, étesítést fogsz kapni, addig várj türelemmel.",
-    "approve": "Engedélyezés",
-    "disapprove": "Elutasítás",
 
     "purchase_notification": "Bevásárlások",
 
@@ -336,12 +232,8 @@
 
     "im_shopping_explanation": "A barátaid értesítést kapnak róla, hogy hol vagy",
 
-    "group_needs_approval": "Admin beleegyezés",
-    "group_needs_approval_explanation": "Döntsd el, hogy a csoportba való csatlakozáshoz szükséges-e az adminok beleegyezése",
-
     "share": "Oszd meg a csoportot",
     "share_url": "Vagy hívd meg a barátaid üzenetben",
-    "scan_code": "Csoporthoz való csatlakozáshoz olvasd be a csoport QR kódját",
     "paste_code": "vagy másold ide a meghívót:",
 
     "gradient_themes" : "Színátmenetes témák",
@@ -368,9 +260,7 @@
     "custom_amount": "Ráeső pénz",
     "custom-amount.dialog.subtitle": "Add meg, hogy a kiválasztott ember mennyit fizessen a teljes összegből.",
     "custom-amount.dialog.hint": "Használd a szövegdobozt vagy a csúszkát a beállításhoz.",
-
     "reset": "Visszaállítás",
-    "chosen_amount": "Választott összeg: ",
 
     "amount_textbox_hint": "Tipp: bal oldalon megadhatod a tranzakció pénznemét.",
 
@@ -380,51 +270,25 @@
         "other": "Ki(k)nek:"
     },
 
-    "food": "Étel",
-    "groceries": "Élelmiszer",
-    "transport": "Transzport",
-    "entertainment": "Szórakozás",
-    "shopping": "Bevásárlás",
-    "health": "Egészség",
-    "other": "Egyéb",
-    "category_hint": "Válaszd ki a kategóriát",
-
     "change_user_currency": "Alapértelmezett pénznem megváltoztatása",
     "change_user_currency_explanation": "Ezzel megváltoztatod azt a pénznemet, amelyben pl. az összefoglaló megjelenik.",
 
     "pin": "Pin",
     "confirm_pin": "Pin megerősítése",
 
-    "4_needed": "4 szám szükséges",
-
-    "we_are_concerned_your_privacy": "Figyelünk az adataid biztonságára",
-
     "char_not_allowed": "A(z) „{}“ karakter nem megengedett",
     "username_taken": "A felhasználónév már foglalt",
-
-    "pins_not_match": "A megadott PIN-ek nem egyeznek",
 
     "change_to_password": "Jelszó használata a bejelentkezéshez",
     "change_to_pin": "Pin használata a bejelentkezéshez",
     "password_login_deprecated": "A preferált bejelentkezési mód a PIN",
     "password_login_deprecated_explanation": "Válts pinre a bejelentkezés után a felhasználói beállítások menüpont alatt.",
 
-    "guest_to_merge": "Vendég:",
-    "member_to_merge_into": "Tag akihez a korábbi tranzakciói hozzá legyenek rendelve:",
-    "needs_member": "A csoporttagot ki kell választanod!",
-    "guest": "Vendég",
-
     "thank_you": "Köszönjük szépen",
     "even_one_rating_helps": "Nagyon örülünk, hogy tetszik az app. Légyszi értékeld a boltban😊. Már egy értékelés is sokat segít, hogy minél többen megtalálják!",
     "to_store": "Értékelem😎",
     "like_the_app": "Szereted használni az appot?",
     "rate_app": "Értékeld az appot",
-
-    "merge_with_guest": "Vendégfelhasználó átvétele",
-    "merge_with_guest_explanation": "A csoportban van(nak) vendégfelhasználó(k), akiknek a tranzakcióit eddig a többi tag intézte. Ha felismered magad valamelyikben, akkor most hozzárendelheted a korábbi tranzakcióit magadhoz.\n(Ha nem tudod, hogy ez mit jelent, akkor hagyd ki a lépést.)",
-    "guests_in_group": "A csoportban lévő vendég(ek):",
-    "skip": "Kihagyás",
-    "merge": "Összevonás",
 
     "dual_tone_themes": "Két tónusú témák",
 
@@ -433,7 +297,6 @@
     "old_pin": "Régi pin",
     "new_pin": "Új pin",
     "new_pin_confirm": "Új pin megerősítése",
-    "change_pin_scf": "A pin megváltoztatása sikeres volt.",
 
     "trial-ended.dialog.title": "A próbaidő lejárt",
     "trial-ended.dialog.subtitle": "Mostantól látni fogsz az alkalmazásban reklámokat és csak az egyszínű témákat használhatod, emellett a csoport statisztikáit sem láthatod.",
@@ -448,8 +311,6 @@
 
     "report_bug": "Hiba jelentése",
     "report_bug_explanation": "Szólj, ha valami nem úgy működik, mint ahogy kéne.",
-
-    "bills": "Számlák",
 
     "category": "Kategória",
 
@@ -555,5 +416,68 @@
     "theme-preview.request.2": "Müzli",
     "theme-preview.request.3": "Kávé",
 
-    "invitation_field.selected_group": "Kiválasztott csoport"
+    "invitation-field.selected-group": "Kiválasztott csoport",
+
+    "new-expense": "Kiadás felvétele",
+
+    "balances.display-currency": "Megjelenített pénznem",
+    "balances.collapse": "Kevesebb tag megjelenítése",
+    "balances.expand": "Összes tag megjelenítése",
+
+    "group_settings": "Csoportbeállítások",
+
+    "group-info": "Csoportinformáció",
+    "group-info.name": "Név",
+    "group-info.currency": "Pénznem",
+    "group-info.boosted": "Boost",
+    "group-info.boosted.perks": "Boostolt csoportokban a statisztikák elérhetőek az alkalmazáson belül.",
+    "group-info.boosted.boosts-available": "Csoportfejlesztő dodók száma: {}",
+    "group-info.boosted.no-boosts": "Vegyél csoportfejlesztő dodókat a",
+    "group-info.boosted.no-boosts.store": "Dodó Boltban",
+    "group-info.delete-group": "Csoport törlése",
+    "group-info.delete-group.explanation": "Ezzel visszavonhatatlanul törölni fogod a csoportot és az összes adatát. Biztosan folytatni szeretnéd?",
+
+    "finances": "Csoport pénzügyei",
+
+    "member-all-info.member-is-admin": "{name} a csoport adminja",
+    "balances.add-member": "Tag hozzáadása",
+
+    "add-member": "Tag hozzáadása vagy meghívása",
+    "add-member.invite": "Meghívás",
+    "add-member.create": "Hozzáadás",
+    "add-member.invite.with_link": "Vagy egy üzenettel",
+    "add-member.invite.with_qr": "Hívd meg a barátaid QR kóddal",
+    "add-member.create.description": "Adj hozzá tagokat a csoporthoz anélkül, hogy nekik regisztrálniuk kellene az alkalmazásba",
+    "add-member.create.note": "Később bármikor beléphetnek a csoportba ha szeretnének",
+
+    "history.show-all": "Összes megjelenítése",
+
+    "statistics.no-data-for-period": "Nincsenek adatok ebben az időszakban",
+    "statistics.legend.payments.first": "Te fizettél",
+    "statistics.legend.payments.second": "Neked fizettek",
+    "statistics.legend.purchases.first": "Te vettél",
+    "statistics.legend.purchases.second": "Neked vettek",
+    "statistics.legend.group.first": "Vásárlások",
+    "statistics.legend.group.second": "Fizetések",
+
+    "statistics.legend.sum-of": "Összesen",
+
+    "statistics.daily": "1N",
+    "statistics.weekly": "1Hé",
+    "statistics.monthly": "1Hó",
+    "statistics.yearly": "1É",
+
+    "statistics.payments": "Fizetések",
+    "statistics.purchases": "Vásárlások",
+    "statistics.group": "Csoport statisztikái",
+    
+    "invitation-field.who-are-you": "Ki vagy?",
+    "invitation-field.none": "Egyikük sem",
+    "nickname-in-group": "Becenév a csoportban",
+
+    "join-group.qr-scan": "QR kód beolvasása",
+
+    "payment-methods.add-new": "Hozzáadás",
+    "payment-methods.save.loading": "Mentés folyamatban...",
+    "payment-methods.save.ready": "Kész"
 }

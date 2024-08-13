@@ -6,11 +6,13 @@ class DrawerTile extends StatelessWidget {
     required this.icon,
     required this.label,
     this.builder,
-    this.onTap
+    this.onTap,
+    this.dense = false,
   });
 
   final IconData icon;
   final String label;
+  final bool dense;
   final Widget Function(BuildContext)? builder;
   final Function()? onTap;
 
@@ -19,31 +21,32 @@ class DrawerTile extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12),
       child: ListTile(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(28)),
-          ),
-          leading: Icon(
-            icon,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-          title: Text(
-            label,
-            style: Theme.of(context)
-                .textTheme
-                .labelLarge!
-                .copyWith(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurfaceVariant),
-          ),
-          onTap: onTap ?? (builder != null ? () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: builder!,
-              ),
-            );
-          } : null)
+        dense: dense,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(28)),
         ),
+        leading: Icon(
+          icon,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+        title: Text(
+          label,
+          style: Theme.of(context)
+              .textTheme
+              .labelLarge!
+              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+        onTap: onTap ??
+            (builder != null
+                ? () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: builder!,
+                      ),
+                    );
+                  }
+                : null),
+      ),
     );
   }
 }

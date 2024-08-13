@@ -1,7 +1,9 @@
 import 'dart:io';
+
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
@@ -47,6 +49,25 @@ class _StorePageState extends State<StorePage> {
   }
 
   List<Widget> _buildItems(List<ProductDetails> details) {
+    final user = context.read<UserState>().user!;
+    details = details.where((element) {
+      switch (element.id) {
+        case 'remove_ads':
+          return user.showAds;
+        case 'gradients':
+          return !user.useGradients;
+        case 'ad_gradient_bundle_2':
+          return !user.useGradients && user.showAds;
+        case 'ad_gradient_bundle':
+          return !user.useGradients && user.showAds;
+        case 'group_boost':
+          return true;
+        case 'big_lender_bundle':
+          return !user.useGradients && user.showAds;
+        default:
+          return true;
+      }
+    }).toList();
     details.sort((a, b) => sortBasic[a.id]!.compareTo(sortBasic[b.id]!));
     return details.map((e) {
       return Card(

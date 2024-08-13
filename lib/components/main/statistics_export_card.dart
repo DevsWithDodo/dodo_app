@@ -4,7 +4,7 @@ import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
-import 'package:csocsort_szamla/components/groups/dialogs/download_export_dialog.dart';
+import 'package:csocsort_szamla/components/main/dialogs/download_export_dialog.dart';
 import 'package:csocsort_szamla/pages/app/store_page.dart';
 import 'package:csocsort_szamla/pages/app/statistics_page.dart';
 import 'package:easy_localization/easy_localization.dart';

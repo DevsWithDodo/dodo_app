@@ -59,6 +59,7 @@ class GradientButton extends StatelessWidget {
         useTertiaryContainer: useTertiaryContainer,
         disabled: disabled,
         paddingLeft: 16,
+        paddingRight: 16,
         themeName: themeName,
       );
 
@@ -79,41 +80,44 @@ class GradientButton extends StatelessWidget {
           color: this.disabled ? Colors.white : textColor,
         ),
       ),
-      child: DefaultTextStyle(
-        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-              color: this.disabled ? Colors.white : textColor,
-            ),
-        child: Container(
-          constraints: BoxConstraints(minWidth: 88.0, minHeight: 36.0),
-          height: 40,
-          child: Ink(
-            decoration: BoxDecoration(
-              color: null,
-              gradient: disabled
-                  ? LinearGradient(colors: [Colors.grey, Colors.grey])
-                  : AppTheme.gradientFromTheme(
-                      themeName,
-                      useSecondary: this.useSecondary,
-                      usePrimaryContainer: this.usePrimaryContainer,
-                      useTertiaryContainer: this.useTertiary,
-                      useSecondaryContainer: this.useSecondaryContainer,
-                    ),
-              borderRadius: BorderRadius.circular(this.borderRadius),
-            ),
-            child: InkWell(
+      child: Material(
+        color: Colors.transparent,
+        child: DefaultTextStyle(
+          style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                color: this.disabled ? Colors.white : textColor,
+              ),
+          child: Container(
+            constraints: BoxConstraints(minWidth: 88.0, minHeight: 36.0),
+            height: 40,
+            child: Ink(
+              decoration: BoxDecoration(
+                color: null,
+                gradient: disabled
+                    ? LinearGradient(colors: [Colors.grey, Colors.grey])
+                    : AppTheme.gradientFromTheme(
+                        themeName,
+                        useSecondary: this.useSecondary,
+                        usePrimaryContainer: this.usePrimaryContainer,
+                        useTertiaryContainer: this.useTertiary,
+                        useSecondaryContainer: this.useSecondaryContainer,
+                      ),
                 borderRadius: BorderRadius.circular(this.borderRadius),
-                onTap: this.disabled ? null : this.onPressed,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(
-                          left: this.paddingLeft, right: this.paddingRight),
-                      child: this.child,
-                    ),
-                  ],
-                )),
+              ),
+              child: InkWell(
+                  borderRadius: BorderRadius.circular(this.borderRadius),
+                  onTap: this.disabled ? null : this.onPressed,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(
+                            left: this.paddingLeft, right: this.paddingRight),
+                        child: this.child,
+                      ),
+                    ],
+                  )),
+            ),
           ),
         ),
       ),

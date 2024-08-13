@@ -409,10 +409,10 @@ class AppTheme {
           onTertiary: Color.fromARGB(255, 66, 44, 0),
           surface: Color.fromARGB(255, 25, 28, 29),
           onSurface: Color.fromARGB(255, 225, 227, 228),
-          surfaceContainerHighest: Color.fromARGB(255, 64, 72, 75),
           surfaceContainer: Color(0xff1d2a2e),
           surfaceContainerLow: Color(0xff1c2528),
-          surfaceContainerHigh: ElevationOverlay.applySurfaceTint(Color.fromARGB(255, 25, 28, 29), Color.fromARGB(255, 88, 214, 247), 6),
+          surfaceContainerHigh: Color.fromARGB(255, 42, 51, 54),
+          surfaceContainerHighest: Color.fromARGB(255, 64, 72, 75),
           onSurfaceVariant: Color.fromARGB(255, 191, 200, 204),
           surfaceTint: Color.fromARGB(255, 88, 214, 247),
         );
@@ -438,7 +438,7 @@ class AppTheme {
           surfaceContainer: Color(0xffeef0e7),
           surfaceContainerLow: Color(0xfff1f5ec),
           surfaceContainerHigh: Color(0xffd4e3d9),
-          surfaceContainerHighest: Color(0xff3c4a41),
+          surfaceContainerHighest: Color(0xffebeae1),
           onSurfaceVariant: Color(0xff3c4a41),
           outline: Color(0xff6a7a6f),
           outlineVariant: Color(0xffbacbbe),
@@ -531,7 +531,7 @@ class AppTheme {
     try {
       
       ColorScheme otherlightScheme = ColorScheme.fromSeed(seedColor: lightScheme.primary, brightness: Brightness.light);
-      ColorScheme otherdarkScheme = ColorScheme.fromSeed(seedColor: darkScheme.primary, brightness: Brightness.dark);
+      ColorScheme otherDarkScheme = ColorScheme.fromSeed(seedColor: darkScheme.primary, brightness: Brightness.dark);
 
       lightScheme = lightScheme.copyWith(
         surface: otherlightScheme.surface,
@@ -546,15 +546,23 @@ class AppTheme {
       );
 
       darkScheme = darkScheme.copyWith(
-        surface: otherdarkScheme.surface,
-        onSurface: otherdarkScheme.onSurface,
-        surfaceBright: otherdarkScheme.surfaceBright,
-        surfaceDim: otherdarkScheme.surfaceDim,
-        surfaceContainer: otherdarkScheme.surfaceContainer,
-        surfaceContainerHigh: otherdarkScheme.surfaceContainerHigh,
-        surfaceContainerLow: otherdarkScheme.surfaceContainerLow,
-        surfaceContainerHighest: otherdarkScheme.surfaceContainerHighest,
-        surfaceContainerLowest: otherdarkScheme.surfaceContainerLowest,
+        surface: otherDarkScheme.surface,
+        onSurface: otherDarkScheme.onSurface,
+        surfaceBright: otherDarkScheme.surfaceBright,
+        surfaceDim: otherDarkScheme.surfaceDim,
+        surfaceContainer: otherDarkScheme.surfaceContainer,
+        surfaceContainerHigh: otherDarkScheme.surfaceContainerHigh,
+        surfaceContainerLow: otherDarkScheme.surfaceContainerLow,
+        surfaceContainerHighest: otherDarkScheme.surfaceContainerHighest,
+        surfaceContainerLowest: otherDarkScheme.surfaceContainerLowest,
+      );
+
+      lightScheme = lightScheme.copyWith(
+        surfaceContainerLow: ElevationOverlay.applySurfaceTint(lightScheme.surface, lightScheme.primary, 3),
+      );
+
+      darkScheme = darkScheme.copyWith(
+        surfaceContainerLow: ElevationOverlay.applySurfaceTint(darkScheme.surface, darkScheme.primary, 3),
       );
 
       AppTheme.themes[ThemeName.lightDynamic] = ThemeData.from(
@@ -562,6 +570,7 @@ class AppTheme {
         useMaterial3: true,
       ).copyWith(
         cardTheme: CardTheme(
+          color: lightScheme.surfaceContainerLow,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -585,6 +594,7 @@ class AppTheme {
         useMaterial3: true,
       ).copyWith(
         cardTheme: CardTheme(
+          color: darkScheme.surfaceContainerLow,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),

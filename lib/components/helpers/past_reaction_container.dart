@@ -42,7 +42,7 @@ class PastReactionContainer extends StatelessWidget {
     int sum = sortedKeys.map((k) => reactionMap[k]!).reduce((a, b) => a + b);
     List<String> orderedReactions = sortedKeys.map((k) => k).toList(growable: false).take(2).toList();
     return Container(
-      margin: EdgeInsets.only(right: 4),
+      margin: EdgeInsets.only(right: 7),
       child: Align(
         alignment: Alignment.topRight,
         child: Material(
@@ -62,7 +62,7 @@ class PastReactionContainer extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 4, horizontal: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: Theme.of(context).colorScheme.surfaceVariant,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,

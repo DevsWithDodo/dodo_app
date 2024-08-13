@@ -1,15 +1,14 @@
-import 'package:csocsort_szamla/helpers/currencies.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/confirm_choice_dialog.dart';
+import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/helpers/transaction_receivers.dart';
 import 'package:csocsort_szamla/components/purchase/modify_purchase_dialog.dart';
-import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
-
-import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
+import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class PurchaseAllInfo extends StatefulWidget {
@@ -113,7 +112,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                 ),
                 Flexible(
                   child: Text(
-                    DateFormat.yMd().add_Hm().format(widget.purchase.updatedAt),
+                    DateFormat.yMd(context.locale.languageCode).add_Hm().format(widget.purchase.updatedAt),
                   ),
                 ),
               ],

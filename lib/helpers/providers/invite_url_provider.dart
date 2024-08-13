@@ -1,3 +1,4 @@
+import 'package:app_links/app_links.dart';
 import 'package:csocsort_szamla/helpers/navigator_service.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/main.dart';
@@ -5,7 +6,6 @@ import 'package:csocsort_szamla/pages/app/join_group_page.dart';
 import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:app_links/app_links.dart';
 
 class InviteUrlProvider extends StatelessWidget {
   InviteUrlProvider({required this.builder}) {
@@ -56,6 +56,7 @@ class InviteUrlState extends ChangeNotifier {
 
   set inviteUrl(String? value) {
     _inviteUrl = value;
+    print('Invite URL: $_inviteUrl');
     notifyListeners();
   }
 }

@@ -4,39 +4,41 @@ import 'dart:io' show Platform;
 
 import 'package:collection/collection.dart';
 import 'package:connectivity_widget/connectivity_widget.dart';
-import 'package:csocsort_szamla/helpers/app_theme.dart';
-import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
-import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
-import 'package:csocsort_szamla/pages/app/store_page.dart';
-import 'package:csocsort_szamla/pages/app/join_group_page.dart';
-import 'package:csocsort_szamla/pages/app/user_settings_page.dart';
-import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
-import 'package:csocsort_szamla/helpers/event_bus.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
-import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
-import 'package:csocsort_szamla/pages/app/create_group_page.dart';
-import 'package:csocsort_szamla/components/groups/group_settings.dart';
+import 'package:csocsort_szamla/components/groups/dialogs/share_group_dialog.dart';
+import 'package:csocsort_szamla/components/groups/group_info.dart';
+import 'package:csocsort_szamla/components/helpers/drawer_tile.dart';
 import 'package:csocsort_szamla/components/history/history.dart';
 import 'package:csocsort_szamla/components/main/main_dialog_builder.dart';
+import 'package:csocsort_szamla/components/main/main_speed_dial.dart';
 import 'package:csocsort_szamla/components/main/statistics_export_card.dart';
 import 'package:csocsort_szamla/components/shopping/shopping_list.dart';
+import 'package:csocsort_szamla/helpers/app_theme.dart';
+import 'package:csocsort_szamla/helpers/event_bus.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/pages/app/create_group_page.dart';
+import 'package:csocsort_szamla/pages/app/join_group_page.dart';
+import 'package:csocsort_szamla/pages/app/store_page.dart';
+import 'package:csocsort_szamla/pages/app/user_settings_page.dart';
+import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:provider/provider.dart';
 
 import '../../components/balance/balances.dart';
 import '../../components/helpers/ad_unit.dart';
+import '../../components/helpers/error_message.dart';
+import '../../components/main/dialogs/iapp_not_supported_dialog.dart';
+import '../../components/main/dialogs/trial_version_dialog.dart';
 import '../../helpers/currencies.dart';
 import '../../helpers/http.dart';
 import '../../helpers/models.dart';
-import '../../components/helpers/error_message.dart';
-import '../../components/main/dialogs/iapp_not_supported_dialog.dart';
-import '../../components/main/main_speed_dial.dart';
-import '../../components/main/dialogs/trial_version_dialog.dart';
 
 class IsOnlineProvider extends ChangeNotifier {
   late bool _isOnline;
@@ -57,7 +59,8 @@ class MainPage extends StatefulWidget {
   final int selectedIndex;
   final String? scrollTo;
 
-  MainPage({this.selectedHistoryIndex = 0, this.selectedIndex = 0, this.scrollTo});
+  MainPage(
+      {this.selectedHistoryIndex = 0, this.selectedIndex = 0, this.scrollTo});
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -67,6 +70,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   SharedPreferences? prefs;
   Future<List<Group>>? _groups;
   Future<dynamic>? _sumBalance;
+  Future<String>? _invitation;
 
   TabController? _tabController;
   int _selectedIndex = 0;
@@ -83,7 +87,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     if (!this.mounted) {
       return [];
     }
-    Response response = await Http.get(uri: generateUri(GetUriKeys.groups, context), overwriteCache: true);
+    Response response = await Http.get(
+        uri: generateUri(GetUriKeys.groups, context), overwriteCache: true);
     Map<String, dynamic> decoded = jsonDecode(response.body);
     UserState userProvider = context.read<UserState>();
     List<Group> groups = [];
@@ -98,7 +103,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     //The group ID cannot change, but the group name and currency can change
     Group? group = groups.firstWhereOrNull(
       (group) => (group.id == userProvider.currentGroup!.id &&
-          (group.name != userProvider.currentGroup!.name || group.currency != userProvider.currentGroup!.currency)),
+          (group.name != userProvider.currentGroup!.name ||
+              group.currency != userProvider.currentGroup!.currency)),
     ); // Only notify if the current group's name or currency changed
     if (group != null) {
       userProvider.setGroup(group);
@@ -108,7 +114,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   Future<dynamic> _getSumBalance() async {
     try {
-      Response response = await Http.get(uri: generateUri(GetUriKeys.userBalanceSum, context));
+      Response response =
+          await Http.get(uri: generateUri(GetUriKeys.userBalanceSum, context));
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data'];
     } catch (_) {
@@ -116,49 +123,59 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     }
   }
 
-  List<Widget> _generateListTiles(List<Group> groups) {
-    String currentGroupName = context.watch<UserState>().user!.group!.name;
-    return groups.map((group) {
-      return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12),
-        child: Material(
-          type: MaterialType.transparency,
-          child: ListTile(
-            tileColor: (group.name == currentGroupName)
-                ? Theme.of(context).colorScheme.secondaryContainer
-                : Colors.transparent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(28)),
-            ),
-            title: Text(
-              group.name,
-              style: (group.name == currentGroupName)
-                  ? Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(color: Theme.of(context).colorScheme.onSecondaryContainer)
-                  : Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-            ),
-            onTap: () async {
-              context.read<UserState>().setGroup(group);
-              setState(() {
-                _selectedIndex = 0;
-                _tabController!.animateTo(_selectedIndex);
-              });
-              final bus = EventBus.instance;
-              bus.fire(EventBus.refreshBalances);
-              bus.fire(EventBus.refreshPurchases);
-              bus.fire(EventBus.refreshPayments);
-              bus.fire(EventBus.refreshPayments);
-              bus.fire(EventBus.refreshShopping);
-            },
-          ),
-        ),
+  Future<String> _getInvitation() async {
+    try {
+      Response response = await Http.get(
+        uri: generateUri(GetUriKeys.groupCurrent, context),
+        useCache: false,
       );
-    }).toList();
+      Map<String, dynamic> decoded = jsonDecode(response.body);
+      return decoded['data']['invitation'];
+    } catch (_) {
+      throw _;
+    }
+  }
+
+  List<Widget> _generateListTiles(List<Group> groups) {
+    int currentGroupId = context.watch<UserState>().user!.group!.id;
+    final theme = Theme.of(context);
+    return groups
+        .map<Widget>((group) => Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: ListTile(
+                tileColor: group.id == currentGroupId
+                    ? theme.colorScheme.secondaryContainer
+                    : Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(28)),
+                ),
+                title: Text(
+                  group.name,
+                  style: theme.textTheme.labelLarge!.copyWith(
+                    color: group.id == currentGroupId
+                        ? theme.colorScheme.onSecondaryContainer
+                        : theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                onTap: () async {
+                  context.read<UserState>().setGroup(group);
+                  setState(() {
+                    _selectedIndex = 0;
+                    _tabController!.animateTo(_selectedIndex);
+                  });
+                  final bus = EventBus.instance;
+                  bus.fire(EventBus.refreshBalances);
+                  bus.fire(EventBus.refreshPurchases);
+                  bus.fire(EventBus.refreshPayments);
+                  bus.fire(EventBus.refreshPayments);
+                  bus.fire(EventBus.refreshShopping);
+                  bus.fire(EventBus.refreshStatistics);
+                  bus.fire(EventBus.refreshGroupInfo);
+                },
+              ),
+            ))
+        .toList()
+      ..add(Divider());
   }
 
   void onRefreshBalancesEvent() {
@@ -173,17 +190,26 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     });
   }
 
+  void onRefreshGroupInfoEvent() {
+    setState(() {
+      _invitation = _getInvitation();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
 
     _selectedIndex = widget.selectedIndex;
-    _tabController = TabController(length: 3, vsync: this, initialIndex: widget.selectedIndex);
+    _tabController = TabController(
+        length: 2, vsync: this, initialIndex: widget.selectedIndex);
     _groups = _getGroups();
     _sumBalance = _getSumBalance();
+    _invitation = _getInvitation();
     final bus = EventBus.instance;
     bus.register(EventBus.refreshBalances, onRefreshBalancesEvent);
     bus.register(EventBus.refreshGroups, onRefreshGroupsEvent);
+    bus.register(EventBus.refreshGroupInfo, onRefreshGroupInfoEvent);
     scrollTo = widget.scrollTo;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       Future.delayed(Duration(seconds: 1)).then((value) => scrollTo = null);
@@ -195,6 +221,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     final bus = EventBus.instance;
     bus.unregister(EventBus.refreshBalances, onRefreshBalancesEvent);
     bus.unregister(EventBus.refreshGroups, onRefreshGroupsEvent);
+    bus.unregister(EventBus.refreshGroupInfo, onRefreshGroupInfoEvent);
     super.dispose();
   }
 
@@ -204,6 +231,25 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     } else {
       _scaffoldKey.currentState!.openDrawer();
     }
+  }
+
+  Widget _invitationButton() {
+    return FutureBuilder(
+        future: _invitation,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasData) {
+            return IconButton(
+              onPressed: () => showDialog(
+                context: context,
+                builder: (context) =>
+                    ShareGroupDialog(inviteCode: snapshot.data!),
+              ),
+              icon: Icon(Icons.share),
+            );
+          }
+          return Container();
+        });
   }
 
   @override
@@ -224,7 +270,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     onPressed: _handleDrawer,
                     icon: Icon(Icons.menu),
                   )
-                : null,
+                : _invitationButton(),
+            actions: [if (!isMobile) _invitationButton()],
             centerTitle: true,
             title: Text(
               context.watch<UserState>().user!.group?.name ?? '',
@@ -261,7 +308,8 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           floatingActionButton: Visibility(
             visible: _selectedIndex == 0,
             child: MainPageSpeedDial(
-              onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
+              onReturn: () =>
+                  EventBus.instance.fire(EventBus.refreshMainDialog),
             ),
           ),
           body: kIsWeb
@@ -274,16 +322,16 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     child: Text(
                       'no_connection'.tr(),
                       style: TextStyle(
-                          fontSize: 16, color: Theme.of(context).colorScheme.onError, fontWeight: FontWeight.bold),
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onError,
+                          fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  builder: (context, isOnline) {
-                    return ChangeNotifierProvider(
-                      create: (_) => IsOnlineProvider(isOnline: isOnline),
-                      child: _body(isOnline),
-                    );
-                  },
+                  builder: (context, isOnline) => ChangeNotifierProvider(
+                    create: (_) => IsOnlineProvider(isOnline: isOnline),
+                    child: _body(isOnline),
+                  ),
                 ),
         ),
         MainDialogBuilder(context: context),
@@ -292,46 +340,30 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   Widget _body(bool isOnline) {
-    ScreenSize screenWidth = context.watch<ScreenSize>();
-    bool bigScreen = !screenWidth.isMobile;
+    ScreenSize size = context.watch<ScreenSize>();
+    bool bigScreen = !size.isMobile;
     List<Widget> tabWidgets = _tabWidgets(isOnline);
-    return Row(
+    return Column(
       children: [
-        if (bigScreen)
-          NavigationRail(
-            labelType: NavigationRailLabelType.all,
-            destinations: _navigationRailItems(),
-            onDestinationSelected: (_index) => setState(() {
-              _selectedIndex = _index;
-              _tabController!.animateTo(_index);
-              ScaffoldMessenger.of(context).removeCurrentSnackBar();
-            }),
-            selectedIndex: _selectedIndex,
-          )
-        else
-          Container(),
         Expanded(
-          child: Column(
-            children: [
-              Expanded(
-                child: TabBarView(
-                  physics: NeverScrollableScrollPhysics(),
-                  controller: _tabController,
-                  children: !bigScreen
-                      ? tabWidgets
-                      : [
-                          Row(
-                            children: tabWidgets.take(2).map((child) => Expanded(child: child)).toList(),
-                          ),
-                          tabWidgets.reversed.first,
-                          Container(),
-                        ],
-                ),
-              ),
-              AdUnit(site: 'home_screen'),
-            ],
+          child: TabBarView(
+            physics: NeverScrollableScrollPhysics(),
+            controller: _tabController,
+            children: !bigScreen
+                ? tabWidgets
+                : [
+                    Row(
+                      children: tabWidgets
+                          .take(2)
+                          .map((child) => Expanded(child: child))
+                          .toList(),
+                    ),
+                    tabWidgets.reversed.first,
+                    Container(),
+                  ],
           ),
         ),
+        AdUnit(site: 'home_screen'),
       ],
     );
   }
@@ -348,6 +380,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           bus.fire(EventBus.refreshStatistics);
           bus.fire(EventBus.refreshMainDialog);
           bus.fire(EventBus.refreshGroups);
+          bus.fire(EventBus.refreshGroupInfo);
           if (isOnline) await clearGroupCache(context);
         },
         child: SingleChildScrollView(
@@ -361,16 +394,15 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 selectedIndex: widget.selectedHistoryIndex,
               ),
               StatisticsDataExport(),
-              Visibility(
-                visible: context.watch<ScreenSize>().isMobile,
-                child: SizedBox(height: 70),
-              ), // So the floating button doesn't block info
+              GroupInfo(),
+              if (context.watch<ScreenSize>().isMobile)
+                SizedBox(
+                    height: 70), // So the floating button doesn't block info
             ],
           ),
         ),
       ),
       ShoppingList(),
-      GroupSettings(scrollTo: scrollTo),
     ];
   }
 
@@ -379,7 +411,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     return Consumer<UserState>(builder: (context, appStateProvider, _) {
       return Ink(
         decoration: BoxDecoration(
-          color: ElevationOverlay.applyOverlay(context, Theme.of(context).colorScheme.surface, 1),
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -394,8 +426,11 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                       children: <Widget>[
                         Expanded(
                           child: ColorFiltered(
-                            colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.primary,
-                                themeName.isDodo() && !kIsWeb ? BlendMode.dst : BlendMode.srcIn),
+                            colorFilter: ColorFilter.mode(
+                                Theme.of(context).colorScheme.primary,
+                                themeName.isDodo() && !kIsWeb
+                                    ? BlendMode.dst
+                                    : BlendMode.srcIn),
                             child: Image(
                               image: AssetImage('assets/dodo.png'),
                             ),
@@ -406,14 +441,18 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall!
-                              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                              .copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant),
                         ),
                         Text(
-                          'hi'.tr() + ' ' + appStateProvider.user!.username + '!',
+                          'hi'.tr(args: [appStateProvider.user!.username]),
                           style: Theme.of(context)
                               .textTheme
                               .bodyLarge!
-                              .copyWith(color: Theme.of(context).colorScheme.primary),
+                              .copyWith(
+                                  color: Theme.of(context).colorScheme.primary),
                         ),
                       ],
                     ),
@@ -423,21 +462,31 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     builder: (context, AsyncSnapshot<List<Group>> snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (snapshot.hasData) {
-                          return Card(
-                            color: Colors.transparent,
-                            elevation: 0,
-                            margin: EdgeInsets.symmetric(horizontal: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(28)),
-                            ),
-                            clipBehavior: Clip.antiAlias,
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: ExpansionTile(
-                              title: Text('groups'.tr(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge!
-                                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
-                              leading: Icon(Icons.group, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                              tilePadding: EdgeInsets.symmetric(horizontal: 15),
+                              collapsedShape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(28),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(28),
+                              ),
+                              clipBehavior: Clip.antiAlias,
+                              title: Text(
+                                'groups'.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant),
+                              ),
+                              leading: Icon(Icons.group,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant),
                               children: _generateListTiles(snapshot.data!),
                             ),
                           );
@@ -459,57 +508,15 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                       );
                     },
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
-                    child: ListTile(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(28)),
-                      ),
-                      leading: Icon(
-                        Icons.group_add,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                      title: Text(
-                        'join_group'.tr(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelLarge!
-                            .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => JoinGroupPage()),
-                        );
-                      },
-                    ),
+                  DrawerTile(
+                    icon: Icons.group_add,
+                    label: 'join_group'.tr(),
+                    builder: (context) => JoinGroupPage(),
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
-                    child: ListTile(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(28)),
-                      ),
-                      leading: Icon(
-                        Icons.library_add,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                      title: Text(
-                        'create_group'.tr(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelLarge!
-                            .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CreateGroupPage(),
-                          ),
-                        );
-                      },
-                    ),
+                  DrawerTile(
+                    icon: Icons.library_add,
+                    label: 'create_group'.tr(),
+                    builder: (context) => CreateGroupPage(),
                   ),
                 ],
               ),
@@ -519,19 +526,22 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               builder: (context, AsyncSnapshot<dynamic> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {
-                    Currency currency = Currency.fromCode(snapshot.data!['currency']);
+                    Currency currency =
+                        Currency.fromCode(snapshot.data!['currency']);
                     double balance = snapshot.data!['balance'] * 1.0;
-                    return Text('Σ: ' + balance.toMoneyString(currency, withSymbol: true),
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(color: Theme.of(context).colorScheme.secondary));
+                    return Text(
+                        'Σ: ' +
+                            balance.toMoneyString(currency, withSymbol: true),
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            color: Theme.of(context).colorScheme.secondary));
                   }
                 }
                 return Text(
                   'Σ: ...',
-                  style:
-                      Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.secondary),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(color: Theme.of(context).colorScheme.secondary),
                 );
               },
             ),
@@ -545,15 +555,22 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 dense: true,
                 onTap: () {
                   if (appStateProvider.user!.trialVersion) {
-                    showDialog(builder: (context) => TrialVersionDialog(), context: context);
+                    showDialog(
+                        builder: (context) => TrialVersionDialog(),
+                        context: context);
                   } else if (!context.read<AppConfig>().isIAPPlatformEnabled) {
-                    showDialog(builder: (context) => IAPNotSupportedDialog(), context: context);
+                    showDialog(
+                        builder: (context) => IAPNotSupportedDialog(),
+                        context: context);
                   } else {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => StorePage()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => StorePage()));
                   }
                 },
                 leading: ColorFiltered(
-                  colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSurfaceVariant, BlendMode.srcIn),
+                  colorFilter: ColorFilter.mode(
+                      Theme.of(context).colorScheme.onSurfaceVariant,
+                      BlendMode.srcIn),
                   child: Image.asset(
                     'assets/dodo.png',
                     width: 25,
@@ -562,118 +579,72 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 subtitle: appStateProvider.user!.trialVersion
                     ? Text(
                         'trial_version'.tr().toUpperCase(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelSmall!
-                            .copyWith(color: Theme.of(context).colorScheme.secondary),
+                        style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                            color: Theme.of(context).colorScheme.secondary),
                       )
                     : Text(
                         'in_app_purchase_description'.tr(),
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelLarge!
-                            .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
                 title: Text(
                   'in_app_purchase'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ),
             ),
             Visibility(
               visible: !kIsWeb,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(28)),
-                  ),
-                  leading: Icon(
-                    Icons.rate_review,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  dense: true,
-                  title: Text(
-                    'rate_app'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelLarge!
-                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                  ),
-                  onTap: () {
-                    String url = "";
-                    String platform = kIsWeb ? "web" : Platform.operatingSystem;
-                    switch (platform) {
-                      case "android":
-                        url = "market://details?id=csocsort.hu.machiato32.csocsort_szamla";
-                        break;
-                      case "windows":
-                        url = "ms-windows-store://pdp/?productid=9NVB4CZJDSQ7";
-                        break;
-                      case "ios":
-                        url = "itms-apps://itunes.apple.com/app/id1558223634?action=write-review";
-                        break;
-                      default:
-                        url = "https://play.google.com/store/apps/details?id=csocsort.hu.machiato32.csocsort_szamla";
-                        break;
-                    }
-                    launchUrlString(url);
-                    context.read<UserState>().setRatedApp(true);
-                  },
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: ListTile(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(28)),
-                ),
+              child: DrawerTile(
                 dense: true,
-                leading: Icon(
-                  Icons.settings,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                title: Text(
-                  'settings'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                ),
+                icon: Icons.rate_review,
+                label: 'rate_app'.tr(),
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => UserSettingsPage()));
+                  String url = "";
+                  String platform = kIsWeb ? "web" : Platform.operatingSystem;
+                  switch (platform) {
+                    case "android":
+                      url =
+                          "market://details?id=csocsort.hu.machiato32.csocsort_szamla";
+                      break;
+                    case "windows":
+                      url = "ms-windows-store://pdp/?productid=9NVB4CZJDSQ7";
+                      break;
+                    case "ios":
+                      url =
+                          "itms-apps://itunes.apple.com/app/id1558223634?action=write-review";
+                      break;
+                    default:
+                      url =
+                          "https://play.google.com/store/apps/details?id=csocsort.hu.machiato32.csocsort_szamla";
+                      break;
+                  }
+                  launchUrlString(url);
+                  context.read<UserState>().setRatedApp(true);
                 },
               ),
+            ),
+            DrawerTile(
+              dense: true,
+              icon: Icons.settings,
+              label: 'settings'.tr(),
+              builder: (context) => UserSettingsPage(),
             ),
             Divider(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: ListTile(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(28)),
-                ),
-                leading: Icon(
-                  Icons.exit_to_app,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                dense: true,
-                title: Text(
-                  'logout'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                ),
-                onTap: () async {
-                  context.read<UserState>().logout();
-                  Navigator.pushAndRemoveUntil(
-                      context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
-                },
-              ),
+            DrawerTile(
+              dense: true,
+              label: 'logout'.tr(),
+              icon: Icons.exit_to_app,
+              onTap: () async {
+                context.read<UserState>().logout();
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LoginOrRegisterPage()),
+                    (r) => false);
+              },
             ),
           ],
         ),
@@ -681,67 +652,17 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     });
   }
 
-  List<NavigationRailDestination> _navigationRailItems() {
-    return [
-      NavigationRailDestination(
-        icon: Icon(
-          Icons.home,
-        ),
-        label: Text('home'.tr()),
-      ),
-      NavigationRailDestination(
-        icon: Stack(
-          children: [
-            Container(
-              margin: EdgeInsets.only(right: 5),
-              child: Icon(
-                Icons.group,
-                size: 22,
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(left: 17),
-              child: Icon(
-                Icons.settings,
-                size: 12,
-              ),
-            ),
-          ],
-        ),
-        label: Text('group'.tr()),
-      ),
-    ];
-  }
-
   List<Widget> _bottomNavbarItems() {
     return [
       NavigationDestination(
         icon: Icon(
-          Icons.home,
+          Icons.bar_chart_rounded,
         ),
-        label: 'home'.tr(),
+        label: 'finances'.tr(),
       ),
-      NavigationDestination(icon: Icon(Icons.receipt_long), label: 'shopping_list'.tr()),
       NavigationDestination(
-        icon: Stack(
-          children: [
-            Container(
-              margin: EdgeInsets.only(right: 5),
-              child: Icon(
-                Icons.group,
-                size: 22,
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(left: 17),
-              child: Icon(
-                Icons.settings,
-                size: 12,
-              ),
-            ),
-          ],
-        ),
-        label: 'group'.tr(),
+        icon: Icon(Icons.checklist),
+        label: 'shopping_list'.tr(),
       ),
     ];
   }

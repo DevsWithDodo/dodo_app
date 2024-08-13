@@ -95,3 +95,17 @@ String getShopURL() {
       return "https://play.google.com/store/apps/details?id=csocsort.hu.machiato32.csocsort_szamla";
   }
 }
+
+DateTime maxDateTime(DateTime a, DateTime b) {
+  if (a.isAfter(b)) {
+    return a;
+  }
+  return b;
+}
+
+DateTime minDateTime(DateTime a, DateTime b) {
+  if (a.isBefore(b)) {
+    return a;
+  }
+  return b;
+}

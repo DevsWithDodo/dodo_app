@@ -7,25 +7,18 @@
     "username":"Username",
     "password":"Password",
 
-    "name":"Name",
-    "confirm_password":"Confirm password",
-
     "balances":"Balances",
     "history":"History",
-    "home":"Home",
     "shopping_list":"Shopping list",
-    "group":"Group",
     "purchase":"Purchase",
     "payment":"Payment",
 
     "wish":"My wish",
 
     "nickname":"Nickname",
-    "new_nickname":"New nickname",
     "rename_group":"Rename group",
     "new_name":"New name",
     "invitation":"Invitation",
-    "members":"Members",
 
     "groups":"Groups",
     "join_group":"Join group",
@@ -33,28 +26,17 @@
     "settings":"Settings",
     "logout":"Log out",
 
-    "join":"Join",
-    "nickname_in_group":"Nickname in the group",
     "no_group_yet":"Don't have a group?",
     
     "group_name":"Name of group",
     "create":"Create",
 
-    "change_password":"Change password",
-    "old_password":"Old password",
-    "new_password":"New password",
-    "new_password_confirm":"Confirm new password",
     "change_theme":"Change theme",
     "change_language": "Change language",
 
     "full_amount":"Full amount",
     "note":"Note",
-
     "amount":"Amount",
-
-    "passwords_not_match": "The two passwords don't match!",
-    "okay": "Affirmative!",
-    "error": "An error occurred!",
     "back": "Back",
 
     "yes": "Yes",
@@ -64,70 +46,39 @@
     "purchases": "Purchases",
     "payments": "Payments",
 
-    "more": "More",
-
     "person_not_chosen": "No person chosen!",
-    "payment_scf": "The payment was saved successfully!",
-    "add_new": "Add new",
 
     "no_note": "No additional note",
-    "want_delete": "Do you want to revoke the item?",
     "delete": "Delete",
 
     "per_person": " {}/person",
-    "no_amount": "No amount given!",
-    "purchase_scf": "The purchase was saved successfully!",
     "invitation_to_lender": "Invitation to a Dodo group",
 
     "field_empty": "The field cannot be empty!",
-    "not_valid_num": "You did'n enter a number!",
+    "not_valid_num": "You didn't enter a number!",
     "minimal_length": "At least {} characters needed!",
     "edit_nickname": "New nickname",
-    "payment_explanation": "You paid someone",
-    "purchase_explanation": "You bought something",
-
-    "members.subtitle": "See payment methods and other details of group members or leave the group.",
-    "members.hint": "Tap on a member to see their details.",
-    "members.admin.hint": "Tap on a member to see their details, make them admin or kick them from the group.",
 
     "modify": "Modify",
-    "invitation_explanation": "Invite someone to the group",
-    "rename_group_explanation": "If you don't like the name",
     "history_explanation": "Tap an entry to modify it and see more details. Hold it to react.",
 
-    "pay": "Pay",
-    "who_to_pay": "Who should I pay?",
-    "payments_needed": "Necessary payments",
+    "payments_needed": "Settle up",
 
     "remove_from_list": "Check",
     "add_as_expense": "Book as expense",
-    "revoke": "Revoke",
 
     "change_username": "Change username",
 
-    "hi": "Hi",
+    "hi": "Hi {}!",
 
     "report_a_bug": "Report bug",
     "bug": "Bug",
-    "what_is_wrong": "What is wrong?",
 
     "nothing_to_show": "Nothing to show yet...",
 
-    "i_m_shopping" : "I'm shopping",
     "where" : "Where?",
 
-    "discovery_add_floating_title": "Add purchase or payment",
-    "discovery_drawer_title": "User menu",
-    "discovery_settings_title": "Personal settings",
-    "discover_shopping_title": "Group shopping list",
-    "discover_group_settings_title": "Group settings",
-
-    "reset_tutorial": "Rewatch tutorial",
-    "reset_tutorial_explanation": "You'll need to restart the app",
-
-    "password_reminder": "Password reminder",
     "forgot_password": "Forgotten password",
-    "your_password_reminder": "Your password reminder:",
 
     "cannot_connect": "Connecting to the server was unsuccessful. Check your internet connection and try again.",
     "format_exception": "An error occurred while parsing the data. Please try again.",
@@ -150,10 +101,8 @@
     "details": "More details",
 
     "change_username_explanation": "Change the username which you use to log in to the app",
-    "change_password_explanation": "Change the password which you use to log in to the app",
 
     "change_group_currency": "Change group currency",
-    "change_group_currency_explanation": "Change the currency of the group, but note that the balances will not be converted!",
 
     "merge_guest": "Assign guest to member",
     "add_guest": "Add guest",
@@ -163,14 +112,14 @@
     "edited_request": "Edited request",
 
     "about_us": "About us",
-    "about_us_explanation": "Informations about us and the app",
+    "about_us_explanation": "Information about us and the app",
     "about_us_text": "The app was developed by two students.\n\nA big thank you to Anna Hegyi, and Sára Kata Kovács for the translations and to Ábel Kocsis for the help with the privacy policy. And also to everyone who tested the app!\uD83D\uDE09\n\nAll the best, your devs",
 
     "reactions": "Reactions",
     "add_reaction": "Add reaction",
     "all_reactions": "Past reactions",
 
-    "username_explanation": "You're going to use the username for logging into the app. Only the english lowecase letters and numbers are allowed. Later you will be able to assign yourself a nickname for each group.",
+    "username_explanation": "You're going to use the username for logging into the app. Only the english lowercase letters and numbers are allowed. Later you will be able to assign yourself a nickname for each group.",
 
     "accept_privacy_policy": "I accept the privacy policy",
     "must_accept_privacy_policy": "You have to accept the privacy policy!",
@@ -202,54 +151,13 @@
     "price": "Price: ",
     "buy": "Buy",
 
-    "boost-group": "Boost group",
-    "boost-group.subtitle": "In a boosted group the statistics inside the app are available. You can buy group-boosting Dodos in the store.",
-    "boost-group.boosted.subtitle": "This group has already been boosted \uD83D\uDE0E. This means, that you can use the group's statistics inside the app.",
-    "boost-group.boosts-available": "Number of available group-boosting Dodos: {}",
-    "boost-group.hint": "The functionality of boosted groups is available for everyone in the group.",
-
-    "sure_boost": "Are you sure you want to boost the group?",
-    "already_boosted": "This group has already been boosted!",
-
     "delete_all_data": "Delete all user data",
     "delete_all_data_explanation": "Using this there won't be any remaining data on our servers, which could be bond to you",
-
-    "you_seem_lonely": "You seem lonely",
-    "invite_friends": "Invite your friends",
-    "add_guests_offline": "Or add offline guests to the group",
-    "you_seem_lonely_explanation": "You will be able to do these in the group settings",
 
     "undo": "Undo",
     "request_deleted": "Deleted!",
 
-    "sure_user_delete": "You won't be able to restore your account! Do you want to continue?",
-
     "statistics": "Statistics",
-    "payments_stats": "Payments",
-    "payments_stats_explanation": "Below are your payment statistics",
-    "payed": "Paid:",
-    "taken": "Received:",
-    "you_payed": "You paid",
-    "you_took": "You received",
-
-    "purchases_stats": "Purchases",
-    "purchases_stats_explanation": "Below are your purchase statistics",
-    "stat_bought": "Bought:",
-    "received": "Received:",
-    "you_bought": "You bought",
-    "you_received": "You received",
-
-    "group_stats": "The group's statistics",
-    "group_stats_explanation": "Below are all the payments and purchases of the group",
-    "stats_purchases": "Purchases:",
-    "stats_payments": "Payments:",
-
-    "sum_of": "Sum of",
-
-    "select_date": "Pick date",
-    "select_date_explanation": "Pick the range in which you want to see the statistics",
-
-    "personalised_ads": "I want to see personalised ads",
 
     "statistics_not_available": "Statistics not available",
     "statistics_not_available_explanation": "This group is not boosted, so the statistics aren't available. Boost the group or buy Groupboosting Dodos in the store!",
@@ -263,22 +171,12 @@
     "calculator": "Calculator",
     "calculator_explanation": "A simple calculator if you need it 😉",
 
-    "approve_members": "Approve members",
-    "approve_members_explanation": "Approve joining of new members to the group. You can toggle the necessity of the admin approval below.",
-    "needs_approval": "Admin approval needed",
     "download_export": "Download data",
     "download_export_explanation": "Download all group data",
     "download_xls": "Download as an excel table",
     "download_xls_explanation": "Use this if you want to manage the data for yourself",
     "download_pdf": "Download as a PDF file",
     "download_pdf_explanation": "Use this if you want to get a quick overview of the group",
-    "export": "Downloadable data",
-    "export_explanation": "The groups data as XLS or PDF",
-    "statistics_explanation": "The groups statistics as graphs",
-    "coming_soon": "Coming soon",
-
-    "cannot_modify_element_deleted_member": "You cannot modify the element, as it contains a removed member",
-    "cannot_delete_element_deleted_member": "You cannot revoke the element, as it contains a removed member",
 
     "modify_payment": "Modify payment",
     "modify_payment_explanation": "Modify a payment if its details changed",
@@ -286,10 +184,6 @@
     "modify_purchase_explanation": "Modify a purchase if its details changed",
 
     "not_in_group": "You are not a member of this group!",
-
-    "approve_still_needed": "The request to join the group was sent, it needs to be approved by the group's admins. Be patient, you will be receiving a notification.",
-    "approve": "Approve",
-    "disapprove": "Disapprove",
 
     "purchase_notification": "Purchases",
 
@@ -334,12 +228,8 @@
 
     "im_shopping_explanation": "Your friends will be notified, that you are shopping",
 
-    "group_needs_approval": "Admin approval",
-    "group_needs_approval_explanation": "Decide whether it needs an admin's approval to join the group",
-
     "share": "Share the group",
     "share_url": "Or invite your friends with a message",
-    "scan_code": "Join a group by reading its QR code",
     "paste_code": "or by pasting its invitation code:",
 
     "gradient_themes" : "Gradient themes",
@@ -351,7 +241,7 @@
     "iapp_not_supported_explanation": "In app items (ex. no ads, color themes) can as of right now only be purchased in the Android or the iOS app.\nIf you don't own an Android device but still want to buy something please write an email to developer@dodoapp.net.",
     "no_camera_access": "The app has no prmission to access the camera.",
 
-    "purchase.page.custom-amount-hint": "Long press on a member below to customize the amount they paid. You have to select at least two members for this.",
+    "purchase.page.custom-amount-hint": "Long press on a member below to customize the amount they paid.",
     "add_purchase_explanation": "By default the amount will be split equally between the selected members.",
 
     "purchase.page.custom-amount.toast.no-amount-given": "First type in an amount!",
@@ -366,9 +256,7 @@
     "custom_amount": "Custom amount",
     "custom-amount.dialog.subtitle": "Set how much the chosen member should pay.",
     "custom-amount.dialog.hint": "Use the textfield or the slider below to set the amount.",
-
     "reset": "Reset",
-    "chosen_amount": "Chosen amount",
 
     "from_who": "Who:",
     "to_who": {
@@ -376,29 +264,14 @@
         "other": "For whom:"
     },
 
-    "food": "Food",
-    "groceries": "Groceries",
-    "transport": "Transport",
-    "entertainment": "Entertainment",
-    "shopping": "Shopping",
-    "health": "Health",
-    "other": "Other",
-    "category_hint": "Choose the category",
-
     "change_user_currency": "Change default currency",
     "change_user_currency_explanation": "This is your default currency, the one in which the summary is shown.",
 
     "pin": "Pin",
     "confirm_pin": "Confirm pin",
 
-    "4_needed": "4 digits needed",
-
-    "we_are_concerned_your_privacy": "We keep your data safe",
-
     "char_not_allowed": "You are not allowed to use the „{}“ character",
     "username_taken": "The chosen username is already taken.",
-
-    "pins_not_match": "The two pins don't match",
 
     "change_to_password": "Use password instead",
     "change_to_pin": "Use pin instead",
@@ -407,21 +280,12 @@
 
     "member_to_merge_into": "Who to assign their transactions to:",
     "needs_member": "Choose the member first",
-    "guest": "Guest",
-
-    "warning_wont_see": "Since you did not buy and you are not paying, you will not see the transaction in your history!",
 
     "thank_you": "Thank you",
     "even_one_rating_helps": "We're really glad you like the app. Please review it in store\uD83D\uDE0A. Every review helps to get more people to find it!",
     "to_store": "Rate it😎",
     "like_the_app": "Do you like the app?",
     "rate_app": "Rate the app",
-
-    "merge_with_guest": "Assign guest",
-    "merge_with_guest_explanation": "The group has guest user(s) whose transactions have been handled by other members. If you recognise yourself as one of them, you can now associate their previous transactions with you.\n(If you don't know what this means, skip this step.)",
-    "guests_in_group": "Guest(s) in the group:",
-    "skip": "Skip",
-    "merge": "Assign",
 
     "dual_tone_themes": "Dual tone themes",
 
@@ -430,7 +294,6 @@
     "old_pin": "Old pin",
     "new_pin": "New pin",
     "new_pin_confirm": "Confirm new pin",
-    "change_pin_scf": "Changed pin successfully.",
 
     "trial-ended.dialog.title": "Trial has ended",
     "trial-ended.dialog.subtitle": "Starting now, you'll see ads and have access only to simple color themes.",
@@ -445,8 +308,6 @@
 
     "report_bug": "Report a bug",
     "report_bug_explanation": "Tell us if you found something not working as intended.",
-
-    "bills": "Bills",
 
     "category": "Category",
 
@@ -552,5 +413,68 @@
     "theme-preview.request.2": "Cereals",
     "theme-preview.request.3": "Coffee",
 
-    "invitation_field.selected_group": "Selected group"
+    "invitation-field.selected-group": "Selected group",
+
+    "new-expense": "Add expense",
+
+    "balances.display-currency": "Display currency",
+    "balances.collapse": "Collapse members",
+    "balances.expand": "Expand members",
+
+    "group_settings": "Group settings",
+
+    "group-info": "Group info",
+    "group-info.name": "Name",
+    "group-info.currency": "Currency",
+    "group-info.boosted": "Boosted",
+    "group-info.boosted.perks": "Statistics inside the app are available in boosted groups.",
+    "group-info.boosted.boosts-available": "Number of available group-boosting Dodos: {}",
+    "group-info.boosted.no-boosts": "Boosts can be bought in the",
+    "group-info.boosted.no-boosts.store": "Dodo Store",
+    "group-info.delete-group": "Delete group",
+    "group-info.delete-group.explanation": "If you delete the group, all the data will be lost and cannot be restored. Are you sure you want to delete the group?",
+
+    "finances": "Group finances",
+
+    "member-all-info.member-is-admin": "{name} is an admin of the group",
+    "balances.add-member": "Add member",
+
+    "add-member": "Add or invite members",
+    "add-member.invite": "Invite",
+    "add-member.create": "Add",
+    "add-member.invite.with_link": "Or through a message",
+    "add-member.invite.with_qr": "Invite your friends by scanning a QR code",
+    "add-member.create.description": "Add members to the group without them needing to use the app",
+    "add-member.create.note": "They can join always the group by invitation if they decide to use the app",
+
+    "history.show-all": "Show all",
+
+    "statistics.no-data-for-period": "No data for this period",
+    "statistics.legend.payments.first": "You paid",
+    "statistics.legend.payments.second": "You received",
+    "statistics.legend.purchases.first": "You bought",
+    "statistics.legend.purchases.second": "You received",
+    "statistics.legend.group.first": "Purchases",
+    "statistics.legend.group.second": "Payments",
+
+    "statistics.legend.sum-of": "Sum of",
+
+    "statistics.daily": "1D",
+    "statistics.weekly": "1W",
+    "statistics.monthly": "1M",
+    "statistics.yearly": "1Y",
+
+    "statistics.payments": "Payments",
+    "statistics.purchases": "Purchases",
+    "statistics.group": "Group's statistics",
+
+    "invitation-field.who-are-you": "Who are you?",
+    "invitation-field.none": "Neither of them",
+    "nickname-in-group": "Nickname in group",
+
+    "join-group.qr-scan": "Scan QR code",
+
+    "payment-methods.add-new": "Add new",
+    "payment-methods.save.loading": "Saving...",
+    "payment-methods.save.ready": "Done"
 }

@@ -38,7 +38,7 @@ class _ShareGroupDialogState extends State<ShareGroupDialog> {
               constraints: BoxConstraints(maxWidth: 400),
               padding: EdgeInsets.all(10),
               child: PrettyQrView.data(
-                data: 'dodo://${widget.inviteCode}',
+                data: 'https://dodoapp.net/join/${widget.inviteCode}',
                 decoration: PrettyQrDecoration(
                   shape: PrettyQrSmoothSymbol(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),

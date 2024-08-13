@@ -1,12 +1,20 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:csocsort_szamla/helpers/currencies.dart';
-import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
-import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
+
+import 'package:collection/collection.dart';
+import 'package:csocsort_szamla/common.dart' as common;
 import 'package:csocsort_szamla/components/helpers/category_picker_icon_button.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
+import 'package:csocsort_szamla/components/statistics/interval_picker.dart';
+import 'package:csocsort_szamla/components/statistics/legend.dart';
+import 'package:csocsort_szamla/helpers/currencies.dart';
+import 'package:csocsort_szamla/helpers/date_time.dart';
+import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:csocsort_szamla/helpers/models.dart';
+import 'package:csocsort_szamla/helpers/navigator_service.dart';
+import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/main.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -21,13 +29,22 @@ class StatisticsPage extends StatefulWidget {
 }
 
 class _StatisticsPageState extends State<StatisticsPage> {
-  Future<List<Map<DateTime, double?>>>? _paymentStats;
-  Future<List<Map<DateTime, double?>>>? _purchaseStats;
-  Future<List<Map<DateTime, double?>>>? _groupStats;
+  late Future<PaymentStatisticsData> _paymentStats;
+  late Future<PurchaseStatisticsData> _purchaseStats;
+  late Future<GroupStatisticsData> _groupStats;
 
   DateTime? _startDate = DateTime.now().subtract(Duration(days: 30));
   DateTime _endDate = DateTime.now();
   Category? _category = Category.fromType(null);
+
+  void refreshStatistics() {
+    _paymentStats =
+        _getStats(StatisticsType.payments);
+    _purchaseStats =
+        _getStats(StatisticsType.purchases);
+    _groupStats =
+        _getStats(StatisticsType.group);
+  }
 
   @override
   void initState() {
@@ -37,12 +54,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
         _startDate!.isBefore(widget.groupCreation!)) {
       _startDate = widget.groupCreation;
     }
-    _paymentStats = _getPaymentStats();
-    _purchaseStats = _getPurchaseStats();
-    _groupStats = _getGroupStats();
+    refreshStatistics();
   }
 
-  Future<List<Map<DateTime, double?>>> _getPaymentStats() async {
+  Future<T> _getStats<T extends StatisticsData>(StatisticsType type) async {
     try {
       String startDate = DateFormat('yyyy-MM-dd').format(_startDate!);
       String endDate = DateFormat('yyyy-MM-dd').format(_endDate);
@@ -50,7 +65,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
           useCache: false,
           overwriteCache: true,
           uri: generateUri(
-            GetUriKeys.statisticsPayments,
+            type == StatisticsType.payments
+                ? GetUriKeys.statisticsPayments
+                : type == StatisticsType.purchases
+                    ? GetUriKeys.statisticsPurchases
+                    : GetUriKeys.statisticsAll,
             context,
             queryParams: {
               'from_date': startDate,
@@ -60,136 +79,86 @@ class _StatisticsPageState extends State<StatisticsPage> {
           ));
       Map<String, dynamic> decoded = jsonDecode(response.body);
 
-      Map<DateTime, double?> payed =
-          (decoded['data']['payed'] as Map<String, dynamic>)
-              .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
-      Map<DateTime, double?> taken =
-          (decoded['data']['taken'] as Map<String, dynamic>)
-              .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
-      return [
-        payed,
-        taken,
-        ({DateTime.now(): decoded['data']['sum']['payed'] * 1.0}),
-        ({DateTime.now(): decoded['data']['sum']['taken'] * 1.0})
-      ];
+      if (type == StatisticsType.payments) {
+        return PaymentStatisticsData.fromJson(decoded['data']) as T;
+      } else if (type == StatisticsType.purchases) {
+        return PurchaseStatisticsData.fromJson(decoded['data']) as T;
+      } else {
+        return GroupStatisticsData.fromJson(decoded['data']) as T;
+      }
     } catch (_) {
       throw _;
     }
   }
 
-  Future<List<Map<DateTime, double?>>> _getPurchaseStats() async {
-    try {
-      String startDate = DateFormat('yyyy-MM-dd').format(_startDate!);
-      String endDate = DateFormat('yyyy-MM-dd').format(_endDate);
-      Response response = await Http.get(
-          useCache: false,
-          overwriteCache: true,
-          uri: generateUri(
-            GetUriKeys.statisticsPurchases,
-            context,
-            queryParams: {
-              'from_date': startDate,
-              'until_date': endDate,
-              ...(_category != null ? {'category': _category?.text} : {}),
-            },
-          ));
-      Map<String, dynamic> decoded = jsonDecode(response.body);
+  BarTooltipItem? Function(BarChartGroupData, int, BarChartRodData, int)
+      _purchasePaymentGetTooltipItem(PurchasePaymentStatisticsData data) =>
+          (BarChartGroupData group, int groupIndex, BarChartRodData rod,
+              int rodIndex) {
+            final entry = data.groupedEntries[groupIndex];
+            double value = rodIndex == 0 ? entry.given : entry.received;
+            Color color = rodIndex == 0
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.tertiary;
+            if (value == 0) {
+              return null;
+            }
+            return BarTooltipItem(
+              value.toMoneyString(
+                context.read<UserState>().currentGroup!.currency,
+                withSymbol: true,
+              ),
+              Theme.of(context).textTheme.bodySmall!.copyWith(color: color),
+            );
+          };
 
-      Map<DateTime, double?> bought =
-          (decoded['data']['bought'] as Map<String, dynamic>)
-              .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
-      Map<DateTime, double?> received =
-          (decoded['data']['received'] as Map<String, dynamic>)
-              .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
-      return [
-        bought,
-        received,
-        ({DateTime.now(): decoded['data']['sum']['bought'] * 1.0}),
-        ({DateTime.now(): decoded['data']['sum']['received'] * 1.0})
-      ];
-    } catch (_) {
-      throw _;
-    }
-  }
+  BarTooltipItem? Function(BarChartGroupData, int, BarChartRodData, int)
+      _groupGetTooltipItem(GroupStatisticsData data) =>
+          (BarChartGroupData group, int groupIndex, BarChartRodData rod,
+              int rodIndex) {
+            final entry = data.groupedEntries[groupIndex];
+            double value = rodIndex == 0 ? entry.purchases : entry.payments;
+            Color color = rodIndex == 0
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.tertiary;
+            if (value == 0) {
+              return null;
+            }
+            return BarTooltipItem(
+              value.toMoneyString(
+                context.read<UserState>().currentGroup!.currency,
+                withSymbol: true,
+              ),
+              Theme.of(context).textTheme.bodySmall!.copyWith(color: color),
+            );
+          };
 
-  Future<List<Map<DateTime, double?>>> _getGroupStats() async {
-    try {
-      String startDate = DateFormat('yyyy-MM-dd').format(_startDate!);
-      String endDate = DateFormat('yyyy-MM-dd').format(_endDate);
-      Response response = await Http.get(
-          useCache: false,
-          overwriteCache: true,
-          uri: generateUri(
-            GetUriKeys.statisticsAll,
-            context,
-            queryParams: {
-              'from_date': startDate,
-              'until_date': endDate,
-              ...(_category != null ? {'category': _category?.text} : {}),
-            },
-          ));
-      Map<String, dynamic> decoded = jsonDecode(response.body);
-
-      Map<DateTime, double?> purchases =
-          (decoded['data']['purchases'] as Map<String, dynamic>)
-              .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
-      Map<DateTime, double?> payments =
-          (decoded['data']['payments'] as Map<String, dynamic>)
-              .map((key, value) => MapEntry(DateTime.parse(key), value * 1.0));
-      return [
-        purchases,
-        payments,
-        ({DateTime.now(): decoded['data']['sum']['purchases'] * 1.0}),
-        ({DateTime.now(): decoded['data']['sum']['payments'] * 1.0})
-      ];
-    } catch (_) {
-      throw _;
-    }
-  }
-
-  LineChartBarData _generateLineChartBarData(
-      Map<DateTime, double?> map, int index) {
-    return LineChartBarData(
-      spots: (map.keys.map<FlSpot>((DateTime key) {
-        return FlSpot(key.millisecondsSinceEpoch.toDouble(), map[key]!);
-      }).toList()),
-      color: (index == 0)
-          ? Theme.of(context).colorScheme.primary
-          : Theme.of(context).colorScheme.tertiary,
-      barWidth: 2.5,
-      isCurved: false,
-      preventCurveOverShooting: true,
-      isStrokeCapRound: true,
-      dotData: FlDotData(show: false),
-      belowBarData: BarAreaData(
-        show: true,
-        color: (index == 0)
-            ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
-            : Theme.of(context).colorScheme.tertiary.withOpacity(0.2),
-      ),
-    );
-  }
-
-  LineChartData _generateLineChartData(
-      List<Map<DateTime, double?>> maps, List<String> keywords) {
-    int minX = maps[0].keys.toList()[0].millisecondsSinceEpoch;
-    int maxX = maps[0].keys.toList()[maps[0].length - 1].millisecondsSinceEpoch;
-    double minY = 0;
-    double maxY = max(
-        maps[0].values.reduce((value1, value2) => max(value1!, value2!))!,
-        maps[1].values.reduce((value1, value2) => max(value1!, value2!))!);
+  BarChartData _generateChartData(StatisticsData data) {
+    print('generate chart data');
+    print(data.groupedEntries.length);
+    int minX = data.startDate.millisecondsSinceEpoch;
+    int maxX = data.endDate.millisecondsSinceEpoch;
+    double minY = data.minY;
+    double maxY = data.maxY;
     double sideScale = 1;
+    double difference = maxY - minY;
     if (maxY > 0) {
-      sideScale = pow(10, (log(maxY) / log(10)).floor() - 1).toDouble();
-    } else {
-      maxY = 1;
+      sideScale = pow(10, (log(difference) / log(10)).floor() - 1).toDouble();
     }
-    maxY += sideScale;
-    double sideInterval =
-        ((maxY / sideScale).round() + (3 - (maxY / sideScale).round()) % 3)
-                .toDouble() *
-            sideScale /
-            3;
+    if (difference == 0) {
+      maxY = 1;
+      minY = -1;
+      difference = 2;
+    }
+
+    maxY += maxY * 0.2;
+    minY += minY * 0.2;
+
+    double? sideInterval = ((difference / sideScale).round() +
+                (3 - (difference / sideScale).round()) % 3)
+            .toDouble() *
+        sideScale /
+        3;
 
     int bottomDivider;
     Duration bottomDuration = Duration(milliseconds: maxX - minX);
@@ -202,688 +171,725 @@ class _StatisticsPageState extends State<StatisticsPage> {
       }
     }
 
-    return LineChartData(
+    return BarChartData(
       minY: minY,
       maxY: maxY,
-      minX: minX.toDouble(),
-      maxX: maxX.toDouble(),
-      borderData: FlBorderData(show: false),
-      lineTouchData: LineTouchData(
-          enabled: true,
-          handleBuiltInTouches: true,
-          getTouchedSpotIndicator:
-              (LineChartBarData barData, List<int> spotIndexes) {
-            return spotIndexes.map((index) {
-              return TouchedSpotIndicatorData(
-                FlLine(
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-                FlDotData(
-                  show: true,
-                ),
-              );
-            }).toList();
-          },
-          touchTooltipData: LineTouchTooltipData(
-            showOnTopOfTheChartBoxArea: true,
-            tooltipRoundedRadius: 15,
-            tooltipBgColor: ElevationOverlay.applyOverlay(
-                context, Theme.of(context).colorScheme.surface, 10),
-            getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
-              lineBarsSpot.sort((a, b) => a.barIndex.compareTo(b.barIndex));
-              return lineBarsSpot.map((lineBarSpot) {
-                String date = DateFormat('yyyy-MM-dd').format(
-                    DateTime.fromMillisecondsSinceEpoch(lineBarSpot.x.toInt()));
-                return LineTooltipItem(
-                  (lineBarSpot.barIndex == 0 ? date + '\n' : '') +
-                      (lineBarSpot.barIndex == 0
-                          ? keywords[0].tr() + ' '
-                          : keywords[1].tr() + ' ') +
-                      lineBarSpot.y.toMoneyString(
-                          context
-                              .read<UserState>()
-                              .currentGroup!
-                              .currency,
-                          withSymbol: true),
-                  Theme.of(context).textTheme.bodySmall!.copyWith(
-                      height: lineBarSpot.barIndex == 0 ? 1.5 : 1,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
-                );
-              }).toList();
-            },
-          )),
-      // backgroundColor: Theme.of(context).cardTheme.color,
-      lineBarsData: [
-        _generateLineChartBarData(maps[0], 0),
-        _generateLineChartBarData(maps[1], 1)
-      ],
+      gridData: FlGridData(
+        drawVerticalLine: false,
+        horizontalInterval: sideInterval,
+      ),
+      borderData: FlBorderData(
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outlineVariant,
+          width: 1,
+        ),
+      ),
+      barTouchData: BarTouchData(
+        enabled: true,
+        touchTooltipData: BarTouchTooltipData(
+          direction: TooltipDirection.top,
+          getTooltipColor: (group) =>
+              Theme.of(context).colorScheme.surfaceContainerHigh,
+          tooltipRoundedRadius: 8,
+          getTooltipItem: data.type == StatisticsType.group
+              ? _groupGetTooltipItem(data as GroupStatisticsData)
+              : _purchasePaymentGetTooltipItem(
+                  data as PurchasePaymentStatisticsData),
+        ),
+      ),
       titlesData: FlTitlesData(
+        topTitles: AxisTitles(),
+        rightTitles: AxisTitles(),
+        leftTitles: AxisTitles(
+          axisNameSize: 22,
+          axisNameWidget: Text(
+            'amount'.tr() +
+                ' (${context.watch<UserState>().currentGroup!.currency.symbol})',
+          ),
+          sideTitles: SideTitles(
+            reservedSize: 50,
+            interval: sideInterval,
+            showTitles: true,
+            getTitlesWidget: (value, meta) => SideTitleWidget(
+              child: value == maxY || value == minY
+                  ? Container()
+                  : Text(
+                      value.abs().toMoneyString(
+                            context.watch<UserState>().currentGroup!.currency,
+                          ),
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
+                    ),
+              axisSide: AxisSide.left,
+            ),
+          ),
+        ),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            getTitlesWidget: (value, titleMeta) {
-              String text = '';
-              DateTime date =
-                  DateTime.fromMillisecondsSinceEpoch(value.toInt());
-              if (bottomDuration.inDays < 65) {
-                if (date.day == 1) {
-                  text = DateFormat.d().format(date);
-                }
-                if (date.day % bottomDivider == 0 && date.day < 29) {
-                  if (!(date.month == 2 && date.day > 26)) {
-                    text = DateFormat.d().format(date);
-                  }
-                }
-                if ((value == minX || value == maxX) &&
-                    (date.day % bottomDivider > 3 &&
-                        date.day % bottomDivider < bottomDivider - 2)) {
-                  if (date.day < 29 && date.day > 2) {
-                    if (!(date.month == 2 && date.day > 26)) {
-                      text = DateFormat.d().format(date);
-                    }
-                  }
-                }
-              }
-              return Text(text,
-                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant));
-            },
-            interval: Duration(days: 1).inMilliseconds.toDouble(),
-          ),
-        ),
-        topTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            getTitlesWidget: (value, titleMeta) {
-              String text = '';
-              DateTime date =
-                  DateTime.fromMillisecondsSinceEpoch(value.toInt());
-              if ((bottomDuration.inDays < 270 && date.day == 1) ||
-                  (date.month % 3 == 1 && date.day == 1)) {
-                if (date.month == 1) {
-                  text = DateFormat.y().format(date);
-                } else {
-                  if (bottomDuration.inDays < 90) {
-                    text = DateFormat.MMM().format(date);
-                  } else {
-                    text = DateFormat.MMM().format(date);
-                  }
-                }
-              }
-              return Text(text,
-                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant));
-            },
-            interval: Duration(days: 1).inMilliseconds.toDouble(),
-          ),
-        ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            getTitlesWidget: (value, titleMeta) {
-              if (value == maxY && value % sideInterval != 0) {
-                return Container();
-              }
-              return Padding(
-                padding: const EdgeInsets.all(0),
+            interval: Duration(days: 10).inMilliseconds * 1.0,
+            getTitlesWidget: (value, meta) {
+              final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
+              final entry = data.groupedEntries
+                  .firstWhere((element) => element.dateRange.start == date);
+              return SideTitleWidget(
                 child: Text(
-                  value.toMoneyString(
-                      context.read<UserState>().currentGroup!.currency),
+                  data.groupingInterval.formattedDate(entry.start, entry.end),
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
+                axisSide: AxisSide.bottom,
               );
             },
-            reservedSize: maxY.toString().length * 7.0,
-            interval: sideInterval,
           ),
         ),
-        rightTitles: AxisTitles(),
       ),
-      gridData: FlGridData(
-        show: true,
-        getDrawingHorizontalLine: (value) {
-          return FlLine(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-            strokeWidth: 1,
-          );
-        },
-        checkToShowVerticalLine: (value) {
-          DateTime date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
-          return date.day == 1;
-        },
-        getDrawingVerticalLine: (value) {
-          DateTime date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
-          if (date.month == 1) {
-            return FlLine(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              // dashArray: [5, 2],
-              strokeWidth: 3,
-            );
-          }
-          return FlLine(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-            dashArray: [5, 2],
-            strokeWidth: 2,
-          );
-        },
-        verticalInterval: Duration(days: 1).inMilliseconds.toDouble(),
-        horizontalInterval: sideInterval,
-      ),
-    );
-  }
-
-  Widget _sumOf(double amount, int type) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Text(
-              'sum_of'.tr() + ' ',
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+      barGroups: data.groupedEntries
+          .map(
+            (entry) => BarChartGroupData(
+              x: entry.start.millisecondsSinceEpoch,
+              groupVertically: data.type != StatisticsType.group,
+              barRods: [
+                BarChartRodData(
+                  width: 20,
+                  fromY: data.type != StatisticsType.group
+                      ? (entry as GroupedPurchasePaymentStatisticsDataEntry)
+                          .given
+                      : (entry as GroupedGroupStatisticsDataEntry).purchases,
+                  toY: 0,
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(2),
+                  ),
+                ),
+                BarChartRodData(
+                  width: 20,
+                  fromY: data.type != StatisticsType.group
+                      ? -(entry as GroupedPurchasePaymentStatisticsDataEntry)
+                          .received
+                      : (entry as GroupedGroupStatisticsDataEntry).payments,
+                  toY: 0,
+                  color: Theme.of(context).colorScheme.tertiary,
+                  borderRadius: BorderRadius.vertical(
+                    bottom: data.type != StatisticsType.group
+                        ? Radius.circular(2)
+                        : Radius.zero,
+                    top: data.type == StatisticsType.group
+                        ? Radius.circular(2)
+                        : Radius.zero,
+                  ),
+                ),
+              ],
             ),
-            Container(
-              width: 15,
-              height: 15,
-              decoration: BoxDecoration(
-                  color: type == 1
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.tertiary,
-                  borderRadius: BorderRadius.circular(15)),
-            ),
-          ],
-        ),
-        Flexible(
-            child: Text(
-          amount.toMoneyString(
-              context.watch<UserState>().currentGroup!.currency,
-              withSymbol: true),
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge!
-              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-        ))
-      ],
+          )
+          .toList(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        scrolledUnderElevation: 0,
         title: Text(
           'statistics'.tr(),
         ),
-      ),
-      body: context.watch<ScreenSize>().isMobile
-          ? SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: _widgets(),
-              ),
-            )
-          : Row(
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(110),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: Column(
               children: [
-                Expanded(
-                  child: ListView(
-                    controller: ScrollController(),
-                    children: _widgets().take(2).toList(),
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        DateFormat.yMd(context.locale.languageCode)
+                                .format(_startDate!) +
+                            ' - ' +
+                            DateFormat.yMd(context.locale.languageCode)
+                                .format(_endDate),
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.date_range,
+                          color: Theme.of(context).colorScheme.primary),
+                      onPressed: () async {
+                        DateTimeRange? range = await showDateRangePicker(
+                            context: context,
+                            firstDate: widget.groupCreation!,
+                            lastDate: DateTime.now(),
+                            currentDate: DateTime.now(),
+                            initialDateRange: DateTimeRange(
+                                start: _startDate!, end: _endDate),
+                            builder: (context, child) {
+                              return child!;
+                            });
+                        if (range != null) {
+                          _startDate = range.start;
+                          _endDate = range.end;
+                          setState(refreshStatistics);
+                        }
+                      },
+                    )
+                  ],
                 ),
-                Expanded(
-                  child: ListView(
-                    controller: ScrollController(),
-                    children:
-                        _widgets().reversed.take(2).toList().reversed.toList(),
-                  ),
-                )
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'category'.tr(),
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
+                    ),
+                    CategoryPickerIconButton(
+                      selectedCategory: _category,
+                      onCategoryChanged: (category) {
+                        if (_category?.type == category?.type) {
+                          _category = null;
+                        } else {
+                          _category = category;
+                        }
+                        setState(refreshStatistics);
+                      },
+                    )
+                  ],
+                ),
+                SizedBox(height: 5),
               ],
             ),
+          ),
+        ),
+      ),
+      body: Container(
+        color: Theme.of(context).colorScheme.surface,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainer,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(20),
+            ),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: StatisticsType.values
+                  .mapIndexed(
+                    (index, type) => Column(
+                      children: [
+                        Text(
+                          'statistics.${type.name}'.tr(),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge!
+                              .copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        FutureBuilder(
+                          future: type == StatisticsType.payments
+                              ? _paymentStats
+                              : type == StatisticsType.purchases
+                                  ? _purchaseStats
+                                  : _groupStats,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState !=
+                                ConnectionState.done) {
+                              return CircularProgressIndicator();
+                            }
+                            if (!snapshot.hasData) {
+                              return ErrorMessage(
+                                error: snapshot.error.toString(),
+                                errorLocation: 'statistics',
+                                onTap: () => setState(() {
+                                  if (type == StatisticsType.payments) {
+                                    _paymentStats = _getStats(type);
+                                  } else if (type == StatisticsType.purchases) {
+                                    _purchaseStats = _getStats(type);
+                                  } else {
+                                    _groupStats = _getStats(type);
+                                  }
+                                }),
+                              );
+                            }
+                            if (snapshot.data!.isEmpty) {
+                              return Text(
+                                'statistics.no-data-for-period'.tr(),
+                                style: Theme.of(context).textTheme.bodySmall,
+                              );
+                            }
+                            final calculatedWidth =
+                                snapshot.data!.groupedEntries.length * (type == StatisticsType.group ? 60.0 : 40.0);
+                            final availableWidth =
+                                context.watch<ScreenSize>().width - 30;
+                            final physics = calculatedWidth > availableWidth
+                                ? BouncingScrollPhysics()
+                                : NeverScrollableScrollPhysics();
+                            return Column(
+                              children: [
+                                StatisticsIntervalPicker(
+                                  data: snapshot.data!,
+                                  onIntervalChanged: (interval) => setState(() {
+                                    snapshot.data!.groupingInterval = interval;
+                                  }),
+                                ),
+                                SizedBox(height: 15),
+                                SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  physics: physics,
+                                  child: Container(
+                                    height: 250,
+                                    width: max(calculatedWidth, availableWidth),
+                                    child: BarChart(
+                                      _generateChartData(snapshot.data!),
+                                      swapAnimationCurve: Curves.easeInOutCubic,
+                                      swapAnimationDuration:
+                                          Duration(milliseconds: 500),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Legend(
+                                    type: LegendFor.fromStatisticsType(type),
+                                    sums: type == StatisticsType.group
+                                        ? [
+                                            (snapshot.data!
+                                                    as GroupStatisticsData)
+                                                .sumPurchases,
+                                            (snapshot.data!
+                                                    as GroupStatisticsData)
+                                                .sumPayments,
+                                          ]
+                                        : [
+                                            (snapshot.data!
+                                                    as PurchasePaymentStatisticsData)
+                                                .sumGiven,
+                                            (snapshot.data!
+                                                    as PurchasePaymentStatisticsData)
+                                                .sumReceived,
+                                          ]),
+                              ],
+                            );
+                          },
+                        ),
+                        ...(index != StatisticsType.values.length - 1
+                            ? [
+                                SizedBox(height: 10),
+                                Divider(),
+                                SizedBox(height: 10),
+                              ]
+                            : []),
+                      ],
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+enum StatisticsType { payments, purchases, group }
+
+enum GroupingInterval {
+  daily,
+  weekly,
+  monthly,
+  yearly;
+
+  static fromIntervalLength(int length) {
+    if (length < 14) {
+      return daily;
+    }
+    if (length < 60) {
+      return weekly;
+    }
+    if (length < 730) {
+      return monthly;
+    }
+    return yearly;
+  }
+
+  Duration get duration {
+    switch (this) {
+      case daily:
+        return Duration(days: 0);
+      case weekly:
+        return Duration(days: 6);
+      case monthly:
+        return Duration(days: 29);
+      case yearly:
+        return Duration(days: 364);
+    }
+  }
+
+  DateTime periodStart(DateTime date) {
+    switch (this) {
+      case daily:
+        return date;
+      case weekly:
+        return date.firstDayOf(DayOfModifier.week);
+      case monthly:
+        return date.firstDayOf(DayOfModifier.month);
+      case yearly:
+        return date.firstDayOf(DayOfModifier.year);
+    }
+  }
+
+  DateTime periodEnd(DateTime date) {
+    DateTime end = date;
+    switch (this) {
+      case daily:
+        end = date;
+        break;
+      case weekly:
+        end = end.lastDayOf(DayOfModifier.week);
+        break;
+      case monthly:
+        end = end.lastDayOf(DayOfModifier.month);
+        break;
+      case yearly:
+        end = end.lastDayOf(DayOfModifier.year);
+        break;
+    }
+    return end.endOfDay();
+  }
+
+  String formattedDate(DateTime start, DateTime end) {
+    BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
+    switch (this) {
+      case daily:
+        return DateFormat.d(context.locale.languageCode).format(start);
+      case weekly:
+        return DateFormat.d(context.locale.languageCode).format(start) + '-' + DateFormat.d(context.locale.languageCode).format(end);
+      case monthly:
+        return DateFormat.MMM(context.locale.languageCode).format(start);
+      case yearly:
+        return DateFormat.y(context.locale.languageCode).format(start);
+    }
+  }
+}
+
+abstract class StatisticsDataEntry {
+  final DateTime date;
+  const StatisticsDataEntry(this.date);
+}
+
+class PurchasePaymentStatisticsDataEntry extends StatisticsDataEntry {
+  final double given;
+  final double received;
+  const PurchasePaymentStatisticsDataEntry(
+    super.date,
+    this.given,
+    this.received,
+  );
+}
+
+abstract class GroupedStatisticsDataEntry {
+  final DateTimeRange dateRange;
+  const GroupedStatisticsDataEntry(this.dateRange);
+
+  DateTime get start => dateRange.start;
+  DateTime get end => dateRange.end;
+}
+
+class GroupedPurchasePaymentStatisticsDataEntry
+    extends GroupedStatisticsDataEntry {
+  final double given;
+  final double received;
+
+  GroupedPurchasePaymentStatisticsDataEntry(
+    super.dateRange,
+    this.given,
+    this.received,
+  );
+
+  GroupedPurchasePaymentStatisticsDataEntry add(
+    double given,
+    double received,
+  ) {
+    return GroupedPurchasePaymentStatisticsDataEntry(
+      dateRange,
+      this.given + given,
+      this.received + received,
+    );
+  }
+}
+
+class GroupedGroupStatisticsDataEntry extends GroupedStatisticsDataEntry {
+  final double purchases;
+  final double payments;
+
+  GroupedGroupStatisticsDataEntry(
+    super.dateRange,
+    this.purchases,
+    this.payments,
+  );
+
+  DateTime get start => dateRange.start;
+  DateTime get end => dateRange.end;
+
+  GroupedGroupStatisticsDataEntry add(
+    double purchases,
+    double payments,
+  ) {
+    return GroupedGroupStatisticsDataEntry(
+      dateRange,
+      this.purchases + purchases,
+      this.payments + payments,
+    );
+  }
+}
+
+class GroupStatisticsDataEntry extends StatisticsDataEntry {
+  final double purchases;
+  final double payments;
+  const GroupStatisticsDataEntry(super.date, this.purchases, this.payments);
+}
+
+abstract class StatisticsData {
+  GroupingInterval groupingInterval;
+  final DateTime startDate;
+  final DateTime endDate;
+  final List<StatisticsDataEntry> _entries;
+  final StatisticsType type;
+  StatisticsData({
+    required this.groupingInterval,
+    required this.startDate,
+    required this.endDate,
+    required List<StatisticsDataEntry> entries,
+    required this.type,
+  }) : _entries = entries;
+
+  List<GroupedStatisticsDataEntry> get groupedEntries;
+  double get maxY;
+  double get minY;
+  bool get isEmpty;
+}
+
+abstract class PurchasePaymentStatisticsData extends StatisticsData {
+  @override
+  final List<PurchasePaymentStatisticsDataEntry> _entries;
+
+  PurchasePaymentStatisticsData({
+    required super.groupingInterval,
+    required super.startDate,
+    required super.endDate,
+    required List<PurchasePaymentStatisticsDataEntry> super.entries,
+    required super.type,
+  }) : _entries = entries;
+
+  double get sumGiven {
+    return _entries.fold<double>(0, (previousValue, element) {
+      return previousValue + element.given;
+    });
+  }
+
+  double get sumReceived {
+    return _entries.fold<double>(0, (previousValue, element) {
+      return previousValue + element.received;
+    });
+  }
+
+  List<GroupedPurchasePaymentStatisticsDataEntry> get groupedEntries =>
+      _entries.fold<List<GroupedPurchasePaymentStatisticsDataEntry>>([],
+          (previousValue, element) {
+        if (previousValue.isEmpty ||
+            previousValue.last.end.isBefore(element.date)) {
+          return [
+            ...previousValue,
+            GroupedPurchasePaymentStatisticsDataEntry(
+              DateTimeRange(
+                start: common.maxDateTime(
+                    groupingInterval.periodStart(element.date), this.startDate),
+                end: common.minDateTime(
+                    groupingInterval.periodEnd(element.date), this.endDate),
+              ),
+              element.given,
+              element.received,
+            )
+          ];
+        }
+        return [
+          ...previousValue.sublist(0, previousValue.length - 1),
+          previousValue.last.add(element.given, element.received)
+        ];
+      }).toList();
+
+  double get maxY => groupedEntries.fold<double>(
+      0, (value, element) => max(value, element.given));
+
+  double get minY => -groupedEntries.fold<double>(
+      0, (value, element) => max(value, element.received));
+  bool get isEmpty => sumGiven == 0 && sumReceived == 0;
+}
+
+class PaymentStatisticsData extends PurchasePaymentStatisticsData {
+  PaymentStatisticsData._internal({
+    required super.groupingInterval,
+    required super.startDate,
+    required super.endDate,
+    required super.type,
+    required super.entries,
+  });
+
+  factory PaymentStatisticsData(
+      List<PurchasePaymentStatisticsDataEntry> entries,
+      [GroupingInterval? interval]) {
+    return PaymentStatisticsData._internal(
+      groupingInterval:
+          interval ?? GroupingInterval.fromIntervalLength(entries.length),
+      startDate: entries[0].date,
+      endDate: entries[entries.length - 1].date,
+      type: StatisticsType.payments,
+      entries: entries,
     );
   }
 
-  List<Widget> _widgets() {
-    return [
-      Card(
-        child: Padding(
-          padding: EdgeInsets.all(15),
-          child: Column(
-            children: [
-              Text(
-                'filter_statistics'.tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                'filter_statistics_explanation'.tr(),
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    DateFormat.yMMMd().format(_startDate!) +
-                        ' - ' +
-                        DateFormat.yMMMd().format(_endDate),
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.date_range,
-                        color: Theme.of(context).colorScheme.primary),
-                    onPressed: () async {
-                      DateTimeRange? range = await showDateRangePicker(
-                          context: context,
-                          firstDate: widget.groupCreation!,
-                          lastDate: DateTime.now(),
-                          currentDate: DateTime.now(),
-                          initialDateRange:
-                              DateTimeRange(start: _startDate!, end: _endDate),
-                          builder: (context, child) {
-                            return child!;
-                          });
-                      if (range != null) {
-                        _startDate = range.start;
-                        _endDate = range.end;
-                        setState(() {
-                          _paymentStats = null;
-                          _purchaseStats = null;
-                          _groupStats = null;
-                          _paymentStats = _getPaymentStats();
-                          _purchaseStats = _getPurchaseStats();
-                          _groupStats = _getGroupStats();
-                        });
-                      }
-                    },
-                  )
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text(
-                  'category'.tr(),
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
-                ),
-                CategoryPickerIconButton(
-                  selectedCategory: _category,
-                  onCategoryChanged: (category) {
-                    if (_category?.type == category?.type) {
-                      _category = null;
-                    } else {
-                      _category = category;
-                    }
-                    setState(() {
-                      _paymentStats = _getPaymentStats();
-                      _purchaseStats = _getPurchaseStats();
-                      _groupStats = _getGroupStats();
-                    });
-                  },
-                )
-              ])
-            ],
-          ),
-        ),
-      ),
-      Card(
-        child: Padding(
-          padding: EdgeInsets.all(15),
-          child: Column(
-            children: [
-              Text(
-                'payments_stats'.tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                'payments_stats_explanation'.tr(),
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              FutureBuilder(
-                future: _paymentStats,
-                builder: (context,
-                    AsyncSnapshot<List<Map<DateTime, double?>>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasData) {
-                      return Column(
-                        children: [
-                          AspectRatio(
-                            aspectRatio: 21 / 9,
-                            child: LineChart(_generateLineChartData(
-                                snapshot.data!, ['payed', 'taken'])),
-                          ),
-                          SizedBox(height: 5),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(15)),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                'you_payed'.tr(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant),
-                              )
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    borderRadius: BorderRadius.circular(15)),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                'you_took'.tr(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant),
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          _sumOf(snapshot.data![2].values.first!, 1),
-                          _sumOf(snapshot.data![3].values.first!, 2),
-                        ],
-                      );
-                    }
-                    if (snapshot.hasError) {
-                      return ErrorMessage(
-                          error: snapshot.error.toString(),
-                          errorLocation: 'statistics',
-                          onTap: () {
-                            setState(() {
-                              _paymentStats = _getPaymentStats();
-                            });
-                          });
-                    }
-                  }
-                  return CircularProgressIndicator();
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-      Card(
-        child: Padding(
-          padding: EdgeInsets.all(15),
-          child: Column(
-            children: [
-              Text(
-                'purchases_stats'.tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                'purchases_stats_explanation'.tr(),
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              FutureBuilder(
-                future: _purchaseStats,
-                builder: (context,
-                    AsyncSnapshot<List<Map<DateTime, double?>>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasData) {
-                      return Column(
-                        children: [
-                          AspectRatio(
-                            aspectRatio: 21 / 9,
-                            child: LineChart(_generateLineChartData(
-                                snapshot.data!, ['stat_bought', 'received'])),
-                          ),
-                          SizedBox(height: 5),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(15)),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                'you_bought'.tr(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant),
-                              )
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    borderRadius: BorderRadius.circular(15)),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                'you_received'.tr(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant),
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          _sumOf(snapshot.data![2].values.first!, 1),
-                          _sumOf(snapshot.data![3].values.first!, 2),
-                        ],
-                      );
-                    }
-                    if (snapshot.hasError) {
-                      return ErrorMessage(
-                          error: snapshot.error.toString(),
-                          errorLocation: 'statistics',
-                          onTap: () {
-                            setState(() {
-                              _purchaseStats = _getPurchaseStats();
-                            });
-                          });
-                    }
-                  }
-                  return CircularProgressIndicator();
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-      Card(
-        child: Padding(
-          padding: EdgeInsets.all(15),
-          child: Column(
-            children: [
-              Text(
-                'group_stats'.tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                'group_stats_explanation'.tr(),
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              FutureBuilder(
-                future: _groupStats,
-                builder: (context,
-                    AsyncSnapshot<List<Map<DateTime, double?>>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasData) {
-                      return Column(
-                        children: [
-                          AspectRatio(
-                            aspectRatio: 21 / 9,
-                            child: LineChart(_generateLineChartData(
-                                snapshot.data!,
-                                ['stats_purchases', 'stats_payments'])),
-                          ),
-                          SizedBox(height: 5),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(15)),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                'purchases_stats'.tr(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant),
-                              )
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 20,
-                                height: 20,
-                                decoration: BoxDecoration(
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary,
-                                    borderRadius: BorderRadius.circular(15)),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                'payments_stats'.tr(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant),
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          _sumOf(snapshot.data![2].values.first!, 1),
-                          _sumOf(snapshot.data![3].values.first!, 2),
-                        ],
-                      );
-                    }
-                    if (snapshot.hasError) {
-                      return ErrorMessage(
-                          error: snapshot.error.toString(),
-                          errorLocation: 'statistics',
-                          onTap: () {
-                            setState(() {
-                              _groupStats = _getGroupStats();
-                            });
-                          });
-                    }
-                  }
-                  return CircularProgressIndicator();
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    ];
+  factory PaymentStatisticsData.fromJson(Map<String, dynamic> data,
+      [GroupingInterval? interval]) {
+    return PaymentStatisticsData(
+      (data['payed'] as Map<String, dynamic>).keys.map((dateString) {
+        return PurchasePaymentStatisticsDataEntry(
+          DateTime.parse(dateString),
+          data['payed'][dateString] * 1.0,
+          data['taken'][dateString] * 1.0,
+        );
+      }).toList(),
+    );
+  }
+}
+
+class PurchaseStatisticsData extends PurchasePaymentStatisticsData {
+  PurchaseStatisticsData._internal({
+    required super.groupingInterval,
+    required super.startDate,
+    required super.endDate,
+    required super.type,
+    required super.entries,
+  });
+
+  factory PurchaseStatisticsData(
+      List<PurchasePaymentStatisticsDataEntry> entries) {
+    return PurchaseStatisticsData._internal(
+      groupingInterval: GroupingInterval.fromIntervalLength(entries.length),
+      startDate: entries[0].date,
+      endDate: entries[entries.length - 1].date,
+      type: StatisticsType.purchases,
+      entries: entries,
+    );
+  }
+
+  factory PurchaseStatisticsData.fromJson(Map<String, dynamic> data) {
+    return PurchaseStatisticsData(
+      (data['bought'] as Map<String, dynamic>).keys.map((dateString) {
+        return PurchasePaymentStatisticsDataEntry(
+          DateTime.parse(dateString),
+          data['bought'][dateString] * 1.0,
+          data['received'][dateString] * 1.0,
+        );
+      }).toList(),
+    );
+  }
+}
+
+class GroupStatisticsData extends StatisticsData {
+  @override
+  final List<GroupStatisticsDataEntry> _entries;
+
+  GroupStatisticsData._internal({
+    required super.groupingInterval,
+    required super.startDate,
+    required super.endDate,
+    required List<GroupStatisticsDataEntry> super.entries,
+    required super.type,
+  }) : _entries = entries;
+
+  double get sumPurchases {
+    return _entries.fold<double>(0, (previousValue, element) {
+      return previousValue + element.purchases;
+    });
+  }
+
+  double get sumPayments {
+    return _entries.fold<double>(0, (previousValue, element) {
+      return previousValue + element.payments;
+    });
+  }
+
+  bool get isEmpty => sumPurchases == 0 && sumPayments == 0;
+
+  List<GroupedGroupStatisticsDataEntry> get groupedEntries {
+    return _entries.fold<List<GroupedGroupStatisticsDataEntry>>([],
+        (previousValue, element) {
+      if (previousValue.isEmpty ||
+          previousValue.last.end.isBefore(element.date)) {
+        return [
+          ...previousValue,
+          GroupedGroupStatisticsDataEntry(
+            DateTimeRange(
+              start: common.maxDateTime(
+                  groupingInterval.periodStart(element.date), this.startDate),
+              end: common.minDateTime(
+                  groupingInterval.periodEnd(element.date), this.endDate),
+            ),
+            element.purchases,
+            element.payments,
+          )
+        ];
+      }
+      return [
+        ...previousValue.sublist(0, previousValue.length - 1),
+        previousValue.last.add(element.purchases, element.payments)
+      ];
+    }).toList();
+  }
+
+  double get maxY => groupedEntries.fold<double>(0, (value, element) {
+        return max(value, max(element.purchases, element.payments));
+      });
+
+  double get minY => 0;
+
+  factory GroupStatisticsData(List<GroupStatisticsDataEntry> entries) {
+    return GroupStatisticsData._internal(
+      type: StatisticsType.group,
+      groupingInterval: GroupingInterval.fromIntervalLength(entries.length),
+      startDate: entries[0].date,
+      endDate: entries[entries.length - 1].date,
+      entries: entries,
+    );
+  }
+
+  factory GroupStatisticsData.fromJson(Map<String, dynamic> data) {
+    return GroupStatisticsData(
+      (data['purchases'] as Map<String, dynamic>).keys.map((dateString) {
+        return GroupStatisticsDataEntry(
+          DateTime.parse(dateString),
+          data['purchases'][dateString] * 1.0,
+          data['payments'][dateString] * 1.0,
+        );
+      }).toList(),
+    );
   }
 }

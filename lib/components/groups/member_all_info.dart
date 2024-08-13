@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/event_bus.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/components/groups/dialogs/select_member_to_merge_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/helpers/member_payment_methods.dart';
-import 'package:csocsort_szamla/components/groups/dialogs/select_member_to_merge_dialog.dart';
+import 'package:csocsort_szamla/helpers/event_bus.dart';
+import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:csocsort_szamla/helpers/models.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/pages/app/history_page.dart';
 import 'package:csocsort_szamla/pages/app/join_group_page.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -16,9 +16,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
+import '../../pages/app/main_page.dart';
 import 'dialogs/change_nickname_dialog.dart';
 import 'dialogs/confirm_leave_dialog.dart';
-import '../../pages/app/main_page.dart';
 
 class MemberAllInfo extends StatefulWidget {
   final Member member;
@@ -56,14 +56,15 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
           selector: (context, provider) => provider.user!,
           builder: (context, user, _) {
             return Padding(
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.fromLTRB(15, 30, 15, 15),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "${'member-info.username'.tr()} - ",
+                        'member-info.username'.tr(),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Flexible(
@@ -75,9 +76,10 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                     height: 10,
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "${'member-info.nickname'.tr()} - ",
+                        'member-info.nickname'.tr(),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Flexible(
@@ -86,11 +88,6 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                     ],
                   ),
                   SizedBox(height: 10),
-                  Text(
-                    'member-info.payment-methods'.tr(),
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  SizedBox(height: 5),
                   Center(
                     child: ConstrainedBox(
                       constraints: BoxConstraints(maxWidth: 400),
@@ -103,7 +100,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                       child: Padding(
                         padding: const EdgeInsets.only(top: 10),
                         child: Text(
-                          'Admin',
+                          'member-all-info.member-is-admin'.tr(namedArgs: {'name': widget.member.nickname}),
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                       ),
@@ -114,7 +111,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Admin', style: Theme.of(context).textTheme.titleMedium),
                           Switch(
@@ -127,7 +124,8 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                   outputCallbacks: {
                                     BoolFutureOutput.True: () {
                                       Navigator.pop(context);
-                                      Navigator.pop(context, 'madeAdmin');
+                                      Navigator.pop(context);
+                                      setState(() => widget.member.isAdmin = value);
                                     }
                                   });
                             },
@@ -194,6 +192,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                       EventBus.instance.fire(EventBus.refreshPayments);
                                       EventBus.instance.fire(EventBus.refreshShopping);
                                       EventBus.instance.fire(EventBus.refreshGroupMembers);
+                                      EventBus.instance.fire(EventBus.refreshGroupInfo);
                                       Navigator.of(context).pop();
                                       Navigator.of(context).pop();
                                     }
@@ -259,7 +258,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                       context: context,
                                       future: _removeMember(null),
                                       outputCallbacks: {
-                                        LeftOrRemovedFromGroupFutureOutput.LeftHasOutherGroup: () async {
+                                        LeftOrRemovedFromGroupFutureOutput.LeftHasOtherGroup: () async {
                                           await Navigator.of(context).pushAndRemoveUntil(
                                             MaterialPageRoute(builder: (context) => MainPage()),
                                             (r) => false,
@@ -270,9 +269,9 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                           EventBus.instance.fire(EventBus.refreshPurchases);
                                           EventBus.instance.fire(EventBus.refreshPayments);
                                           EventBus.instance.fire(EventBus.refreshShopping);
+                                          EventBus.instance.fire(EventBus.refreshGroupInfo);
                                         },
-                                        LeftOrRemovedFromGroupFutureOutput.LeftNoOutherGroup: () async {
-                                          print('left no outher group');
+                                        LeftOrRemovedFromGroupFutureOutput.LeftNoOtherGroup: () async {
                                           Navigator.of(context).pushAndRemoveUntil(
                                             MaterialPageRoute(
                                               builder: (context) => JoinGroupPage(
@@ -284,7 +283,6 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                           UserState provider = context.read<UserState>();
                                           provider.setGroups([]);
                                           provider.setGroup(null);
-                                          print(provider.user!.groups);
                                           clearAllCache();
                                         },
                                       },
@@ -327,16 +325,16 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
       UserState provider = context.read<UserState>();
       provider.setGroups(provider.user!.groups.where((group) => group.id != provider.user!.group!.id).toList());
       provider.setGroup(Group.fromJson(decoded['data']));
-      return LeftOrRemovedFromGroupFutureOutput.LeftHasOutherGroup;
+      return LeftOrRemovedFromGroupFutureOutput.LeftHasOtherGroup;
     }
-    return LeftOrRemovedFromGroupFutureOutput.LeftNoOutherGroup;
+    return LeftOrRemovedFromGroupFutureOutput.LeftNoOtherGroup;
   }
 }
 
 class LeftOrRemovedFromGroupFutureOutput extends FutureOutput {
   const LeftOrRemovedFromGroupFutureOutput(super.value, super.name);
 
-  static const LeftHasOutherGroup = LeftOrRemovedFromGroupFutureOutput(true, 'hasOutherGroup');
-  static const LeftNoOutherGroup = LeftOrRemovedFromGroupFutureOutput(true, 'noOutherGroup');
+  static const LeftHasOtherGroup = LeftOrRemovedFromGroupFutureOutput(true, 'hasOutherGroup');
+  static const LeftNoOtherGroup = LeftOrRemovedFromGroupFutureOutput(true, 'noOutherGroup');
   static const RemovedFromGroup = LeftOrRemovedFromGroupFutureOutput(true, 'removedFromGroup');
 }

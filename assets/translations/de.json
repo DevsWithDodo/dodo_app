@@ -7,25 +7,18 @@
     "username":"Benutzername",
     "password":"Passwort",
 
-    "name":"Name",
-    "confirm_password":"Passwort bestätigen",
-
     "balances":"Kontostand",
     "history":"Verlauf",
-    "home":"Start",
     "shopping_list":"Einkaufszettel",
-    "group":"Gruppe",
     "purchase":"Einkauf",
     "payment":"Zahlung",
 
     "wish":"Mein Wunsch",
 
     "nickname":"Spitzname",
-    "new_nickname":"Neuer Spitzname",
     "rename_group":"Gruppe umbenennen",
     "new_name":"Neuer Name",
     "invitation":"Einladung",
-    "members":"Mitglieder",
 
     "groups":"Gruppen",
     "join_group":"Gruppe beitreten",
@@ -33,17 +26,11 @@
     "settings":"Einstellungen",
     "logout":"Abmelden",
 
-    "join":"Beitreten",
-    "nickname_in_group":"Spitzname in der Gruppe",
     "no_group_yet":"Noch keine Gruppe?",
     
     "group_name":"Name der Gruppe",
     "create":"Erstellen",
 
-    "change_password":"Passwort ändern",
-    "old_password":"Dein Passwort",
-    "new_password":"Neues Passwort",
-    "new_password_confirm":"Passwort bestätigen",
     "change_theme":"Farbe ändern",
     "change_language": "Sprache ändern",
 
@@ -52,9 +39,6 @@
 
     "amount":"Betrag",
 
-    "passwords_not_match": "Die zwei Passwörter sind nicht gleich!",
-    "okay": "Okay",
-    "error": "Ein Fehler ist aufgetreten!",
     "back": "Zurück",
 
     "yes": "Ja",
@@ -64,19 +48,12 @@
     "purchases": "Einkäufe",
     "payments": "Zahlungen",
 
-    "more": "Mehr",
-
     "person_not_chosen": "Du hast niemanden ausgewählt!",
-    "payment_scf": "Die Zahlung wurde gebucht!",
-    "add_new": "Neues hinzufügen",
 
     "no_note": "Keine Notiz",
-    "want_delete": "Möchtest du den Artikel zurückziehen?",
     "delete": "Löschen",
 
     "per_person": " {}/Person",
-    "no_amount": "Du hast keine Summe angegeben!",
-    "purchase_scf": "Der Einkauf wurde erfolgreich gebucht!",
     "invitation_to_lender": "Einladung zu einer Dodo Gruppe",
 
     "field_empty": "Dieses Feld darf nicht leer sein!",
@@ -86,53 +63,26 @@
     "payment_explanation": "Du hast an jemanden Geld gezahlt",
     "purchase_explanation": "Du hast etwas gekauft",
 
-    "members.subtitle": "Sehe dir die Zahlungsmethoden und andere Details der Mitglieder an, oder verlasse die Gruppe.",
-    "members.hint": "Tippe auf ein Mitglied um die Details zu sehen.",
-    "members.admin.hint": "Tippe auf ein Mitdlied um die Details zu sehen, sie zu einem Admin zu machen oder zu entfernen.",
-
     "modify": "Ändern",
-    "invitation_explanation": "Lade jemanden in die Gruppe ein",
-    "rename_group_explanation": "Wenn dir der Name nicht gefällt",
     "history_explanation": "Tippe Eintrag an, um ihn zu bearbeiten und weitere Details anzuzeigen. Halte ihn gedrückt, um zu reagieren",
 
-    "pay": "Zahlen",
-    "who_to_pay": "An wen soll ich zahlen?",
     "payments_needed": "Nötige Zahlungen",
 
     "remove_from_list": "Abgehakt",
     "add_as_expense": "Schreibe es als Ausgabe auf",
-    "revoke": "Zurückziehen",
 
     "change_username": "Benutzername ändern",
 
-    "hi": "Hallo",
+    "hi": "Hallo {}!",
 
     "report_a_bug": "Melde einen Fehler",
     "bug": "Fehler",
-    "what_is_wrong": "Was ist der Fehler?",
 
     "nothing_to_show": "Hier ist noch nichts...",
 
-    "i_m_shopping" : "Ich bin in einem Laden",
     "where" : "Wo?",
 
-    "discovery_add_floating_title": "Einkauf und Zahlung hinzufügen",
-    "discovery_add_floating_description": "\nEinkauf:\nSchreibe hier die Summe auf, wenn du was für einen Mitglied oder mehrere Mitglieder gekauft hast, die App wird es dann gleichmäßig verteilen.\n\nZahlung:\nHier kannst du die Summe aufschreiben, falls du an jemanden gezahlt hast.",
-    "discovery_drawer_title": "Nutzereinstellungen",
-    "discovery_drawer_description": "\nOben wechselst du zwischen deinen Gruppen\n\nDarunter findest du deine persönlichen Einstellungen.",
-    "discovery_settings_title": "Persönliche Einstellungen",
-    "discovery_settings_description": "\nHier kannst du deinen Benutzernamen oder Passwort ändern, und dich zwischen mehreren Farbthemen entscheiden. 😉",
-    "discover_shopping_title": "Gemeinsame Einkaufsliste",
-    "discover_shopping_description" : "\nDiese Einkaufsliste sehen alle Mitglieder der Gruppe.\n\nIhr könnt sie zum Beispiel auf einer gemeinsamen Reise oder in einer WG benutzen.",
-    "discover_group_settings_title": "Gruppeneinstellungen",
-    "discover_group_settings_description" : "\nUnter anderem kannst du hier neue Mitglieder zur Gruppe einladen, deinen Spitznamen ändern oder dir die Statistiken ansehen.",
-
-    "reset_tutorial": "Tutorial neu anschauen",
-    "reset_tutorial_explanation": "Dafür musst du die App neustarten",
-
-    "password_reminder": "Passworterinnerung",
     "forgot_password": "Vergessenes Passwort",
-    "your_password_reminder": "Deine passworterinnerung:",
 
     "cannot_connect": "Die Verbingung zum Server ist fehlgeschlagen. Prüfe deine Netzwerkeinstellungen und versuche es noch einmal.",
     "format_exception": "Fehler bei der Verarbeitung der Daten. Probiere es noch einmal.",
@@ -155,11 +105,9 @@
     "details": "Detaillierte Beschreibung",
 
     "change_username_explanation": "Ändere deinen Benutzernamen mit dem du dich einlogst",
-    "change_password_explanation": "Ändere dein Passwort mit dem du dich einlogst",
 
     "change_group_currency": "Ändere die Gruppenwährung",
-    "change_group_currency_explanation": "Ändere die Währung der Gruppe, aber achte darauf, dass die bisherigen Kontostände nicht umgerechnet werden!",
-    
+
     "add_guest": "Gast hinzufügen",
     "merge_guest": "Gast zuweisen",
     "sure_merge_guest": "Bist du sicher, dass du den Gast jemanden zuweisen möchtest?",
@@ -169,7 +117,7 @@
 
     "about_us": "Über uns",
     "about_us_explanation": "Infos über die Entwickler und die App",
-    "about_us_text": "Die App wurde von zwei Studenten entwickelt.\n\nEin großes Dankeschön an Anna Hegyi, und Sára Kata Kovács für die Übersetzungen und and Ábel Kocsis für die Hilfe bei der Datenschutzerklärung. Und außerdem an allen, die die App getestet haben!\uD83D\uDE09\n\nAlles gute, deine Entwickler",
+    "about_us_text": "Die App wurde von zwei Studenten entwickelt.\n\nEin großes Dankeschön an Anna Hegyi, und Sára Kata Kovács für die Übersetzungen, und Ábel Kocsis für die Hilfe mit der Datenschutzerklärung. Außerdem an alle, die die App getestet haben!\uD83D\uDE09\n\nAlles gute, deine Entwickler",
 
     "reactions": "Reaktionen",
     "add_reaction": "Reaktion hinzufügen",
@@ -207,23 +155,8 @@
     "price": "Preis: ",
     "buy": "Kaufen",
 
-    "boost-group": "Booste die Gruppe",
-    "boost-group.subtitle": "In einer geboosteten Gruppe sind die Statistiken in der App verfügbar. Du kannst Gruppenboosts im Shop kaufen.",
-    "boost-group.boosted.subtitle": "Diese Gruppe wurde bereits geboostet \uD83D\uDE0E. Das bedeutet, dass du die Statistiken der Gruppe in der App nutzen kannst.",
-    "boost-group.boosts-available": "Anzahl der verfügbaren Gruppenboostenden Dodos: {}",
-    "boost-group.hint": "Die Funktionen von geboosteten Gruppen stehen allen Mitgliedern der Gruppe zur Verfügung.",
-
-
-    "sure_boost": "Bist du sicher, dass du die Gruppe boosten möchtest?",
-    "already_boosted": "Diese Gruppe wurde schon geboostet!",
-
     "delete_all_data": "Lösche alle Benutzerdaten",
     "delete_all_data_explanation": "Keine Daten, die mit dir in Verbindung gebracht werden können werden auf unseren Servern bleiben.",
-
-    "you_seem_lonely": "Bist du einsam?",
-    "invite_friends": "Lade deine Freunde ein",
-    "add_guests_offline": "Oder füge neue Gäste hinzu",
-    "you_seem_lonely_explanation": "Nachher wirst du diese Optionen in den Gruppeneinstellungen erreichen können",
 
     "undo": "Rückgängig",
     "request_deleted": "Gelöscht!",
@@ -231,31 +164,6 @@
     "sure_user_delete": "Später wirst du dein Account nicht mehr wiederherstellen können! Möchtest du fortfahren?",
 
     "statistics": "Statistiken",
-    "payments_stats": "Zahlungen",
-    "payments_stats_explanation": "Hier siehst du deine Zahlungsstatistiken",
-    "payed": "Gezahlt:",
-    "taken": "Bekommen:",
-    "you_payed": "Du zahltest",
-    "you_took": "Du bekamst",
-
-    "purchases_stats": "Einkäufe",
-    "purchases_stats_explanation": "Hier siehst du deine Einkaufsstatistiken",
-    "stat_bought": "Gekauft:",
-    "received": "Bekommen:",
-    "you_bought": "Du kauftest",
-    "you_received": "Du bekamst",
-
-    "group_stats": "Statistiken der Gruppe",
-    "group_stats_explanation": "Hier siehst du alle ",
-    "stats_purchases": "Einkäufe:",
-    "stats_payments": "Zahlungen:",
-
-    "sum_of": "Summe von",
-
-    "select_date": "Wähle ein Datum",
-    "select_date_explanation": "Wähle ein Bereich in dem du die Statistiken sehen möchtest",
-
-    "personalised_ads": "Ich möchte personalisierte Anzeigen sehen",
 
     "statistics_not_available": "Statistiken nicht verfügbar",
     "statistics_not_available_explanation": "Diese Gruppe ist noch nicht geboostet, deshalb sind die Statistiken nicht verfügbar. Booste die Gruppe oder kaufe Gruppenboostende Dodos im Laden!",
@@ -270,22 +178,12 @@
     "calculator": "Rechner",
     "calculator_explanation": "Ein kleiner Taschenrechner falls du einen brauchst 😉",
 
-    "approve_members": "Mitgliedsanfragen genehmigen",
-    "approve_members_explanation": "Genehmige das Beitreten von neuen Mitgliedern. Unten kannst du auswählen ob eine Genehmigung nötig ist",
-    "needs_approval": "Admin Genehmigung nötig",
     "download_export": "Daten runterladen",
     "download_export_explanation": "Lade alle Daten dieser Gruppe runter",
     "download_xls": "Als Excel Tabelle runterladen",
     "download_xls_explanation": "Benutze dies wenn du die Daten selber ordnen möchtest",
     "download_pdf": "Als PDF runterladen",
     "download_pdf_explanation": "Benutze dies wenn du einen übersichtlichen Überblick der Gruppe erhalten möchtest",
-    "export": "Daten runterladen",
-    "export_explanation": "Lade die Daten der Gruppe als PDF oder XLS",
-    "statistics_explanation": "Die Statistiken der Gruppe graphisch dargestellt",
-    "coming_soon": "Kommt demnächst",
-
-    "cannot_modify_element_deleted_member": "Du kannst das Element nicht ändern, weil ein entferntes Mitglied dabei ist",
-    "cannot_delete_element_deleted_member": "Du kannst das Element nicht zurückziehen, weil ein entferntes Mitglied dabei ist",
 
     "modify_payment": "Zahlung bearbeiten",
     "modify_payment_explanation": "Bearbeite die Zahlung, falls sich etwas geändert hat",
@@ -293,10 +191,6 @@
     "modify_purchase_explanation": "Bearbeite den Einkauf, falls sich etwas geändert hat",
 
     "not_in_group": "Du bist nicht Mitglied dieser Gruppe!",
-
-    "approve_still_needed": "Deine Mitgliedsanfrage wurde gesendet und muss jetzt von den Admins genehmingt werden. Wir werden dir eine Benachrichtigung senden wenn das passiert.",
-    "approve": "Genehmigen",
-    "disapprove": "Ablehnen",
 
     "purchase_notification": "Einkäufe",
 
@@ -341,11 +235,6 @@
 
     "im_shopping_explanation": "Deine Freunde werden benachrichtigt, dass du gerade in einem Laden bist",
 
-    "group_needs_approval": "Admin Genehmigung",
-    "group_needs_approval_explanation": "Entscheide ob eine Genehmigung eines Admins nötig ist um der Gruppe beizutreten",
-
-    "boost_group_boosted_explanation": "Diese Gruppe wurde schon geboostet 😎. Das heißt, dass du dir die Statistiken ansehen kannst.",
-
     "share": "Teile die Gruppe",
     "share_url": "Oder lade deine Freunde mit einer Message ein",
     "scan_code": "Lese den QR-Code einer Gruppe ein um ihr beizutreten",
@@ -376,22 +265,12 @@
     "custom-amount.dialog.subtitle": "Setze fest wie viel das Mitglied zahlen soll.",
     "custom-amount.dialog.hint": "Nutze das Eingabefeld oder den Slider um den Betrag einzustellen.",
     "reset": "Zurücksetzen",
-    "chosen_amount": "Ausgewählter Betrag: ",
 
     "from_who": "Wer:",
     "to_who": {
         "one": "Für wen:",
         "other": "Für wen:"
     },
-
-    "food": "Essen",
-    "groceries": "Lebesmittel",
-    "transport": "Transport",
-    "entertainment": "Unterhaltung",
-    "shopping": "Einkauf",
-    "health": "Gesundheit",
-    "other": "Sonstiges",
-    "category_hint": "Wähle die Kategorie aus",
 
     "change_user_currency": "Ändere die Standartwährung",
     "change_user_currency_explanation": "Dies ist Ihre Standardwährung, in der z.B. die Zusammenfassung angezeigt wird.",
@@ -406,8 +285,6 @@
     "char_not_allowed": "Sie dürfen das/die Zeichen „{}“ nicht verwenden",
     "username_taken": "Der gewählte Benutzername ist bereits vergeben.",
 
-    "pins_not_match": "Die beiden Pins stimmen nicht überein",
-
     "change_to_password": "Stattdessen Passwort verwenden",
     "change_to_pin": "Stattdessen Pin verwenden",
     "password_login_deprecated": "Die bevorzugte Anmeldemethode ist mit Pin",
@@ -415,21 +292,12 @@
 
     "member_to_merge_into": "Wem sollen die Transaktionen zugeordnet sein:",
     "needs_member": "Wähle zuerst ein Mitglied",
-    "guest": "Gast",
-
-    "warning_wont_see": "Da Sie nicht gekauft haben und nicht bezahlen, wird die Transaktion nicht in Ihrem Verlauf angezeigt.!",
 
     "thank_you": "Vielen Dank",
     "even_one_rating_helps": "Wir freuen uns sehr, dass dir die App gefällt. Bitte bewerte sie im Store.\uD83D\uDE0A Jede Bewertung hilft dabei, dass mehr Leute sie finden!",
     "to_store": "Klar😎",
     "like_the_app": "Gefällt dir die App?",
     "rate_app": "App bewerten",
-
-    "merge_with_guest": "Gast zuordnen",
-    "merge_with_guest_explanation": "Die Gruppe hat einen oder mehrere Gastnutzer, deren Transaktionen von anderen Mitgliedern bearbeitet wurden. Wenn du dich selbst als eines dieser Mitglieder wiedererkennst, kannst du nun deren frühere Transaktionen mit dir in Verbindung bringen.\n(Wenn du nicht weißt, was das bedeutet, überspringe diesen Schritt).",
-    "guests_in_group": "Gastnutzer in der Gruppe:",
-    "skip": "Überspringen",
-    "merge": "Zuordnen",
 
     "dual_tone_themes": "Zweifarbige Themen",
 
@@ -453,8 +321,6 @@
 
     "report_bug": "Einen Fehler melden",
     "report_bug_explanation": "Sag uns, wenn du etwas gefunden hast, das nicht so funktioniert wie geplant.",
-
-    "bills": "Rechnungen",
 
     "category": "Kategorie",
 
@@ -560,5 +426,66 @@
     "theme-preview.request.2": "Müsli",
     "theme-preview.request.3": "Kaffee",
 
-    "invitation_field.selected_group": "Ausgewählte Gruppe"
+    "invitation-field.selected-group": "Ausgewählte Gruppe",
+
+    "new-expense": "Neue Ausgabe",
+
+    "balances.display-currency": "Anzeigewährung",
+    "balances.collapse": "Mitglieder zusammenklappen",
+    "balances.expand": "Mitglieder ausklappen",
+
+    "group-info": "Gruppeninfo",
+    "group-info.name": "Name",
+    "group-info.currency": "Währung",
+    "group-info.boosted": "Geboostet",
+    "group-info.boosted.perks": "Mitglieder von geboosteten Gruppen können die Statistiken der Gruppe in der App sehen.",
+    "group-info.boosted.boosts-available": "Verfügbare gruppenboostende Dodos: {}",
+    "group-info.boosted.no-boosts": "Kaufe Boosts im",
+    "group-info.boosted.no-boosts.store": "Dodo Laden",
+    "group-info.delete-group": "Gruppe löschen",
+    "group-info.delete-group.explanation": "Alle Daten der Gruppe werden gelöscht und können nicht wiederhergestellt werden. Bist du sicher, dass du fortfahren möchtest?",
+
+    "finances": "Gruppenfinanzen",
+
+    "member-all-info.member-is-admin": "{name} ist Admin der Gruppe",
+    "balances.add-member": "Mitglied hinzufügen",
+
+    "add-member": "Mitglied hinzufügen",
+    "add-member.invite": "Einladen",
+    "add-member.create": "Hinzufügen",
+    "add-member.invite.with_link": "Oder mit einer Message",
+    "add-member.invite.with_qr": "Lade deine Freunde mit dem QR-Code ein",
+    "add-member.create.description": "Füge ein Mitglied zur Gruppe hinzu ohne dass sie sich registrieren müssen",
+    "add-member.create.note": "Sie können später noch der Gruppe beitreten falls sie es möchten",
+
+    "history.show-all": "Alle anzeigen",
+
+    "statistics.no-data-for-period": "Für diesen Zeitraum gibt es keine Daten",
+    "statistics.legend.payments.first": "Du hast gezahlt",
+    "statistics.legend.payments.second": "Du hast bekommen",
+    "statistics.legend.purchases.first": "Du hast gekauft",
+    "statistics.legend.purchases.second": "Du hast bekommen",
+    "statistics.legend.group.first": "Käufe",
+    "statistics.legend.group.second": "Zahlungen",
+
+    "statistics.legend.sum-of": "Summe von",
+
+    "statistics.daily": "1T",
+    "statistics.weekly": "1W",
+    "statistics.monthly": "1M",
+    "statistics.yearly": "1J",
+
+    "statistics.payments": "Zahlungen",
+    "statistics.purchases": "Käufe",
+    "statistics.group": "Gruppenstatistiken",
+
+    "invitation-field.who-are-you": "Wer bist du?",
+    "invitation-field.none": "Keiner von ihnen",
+    "nickname-in-group": "Name in der Gruppe",
+
+    "join-group.qr-scan": "QR code scannen",
+
+    "payment-methods.add-new": "Hinzufügen",
+    "payment-methods.save.loading": "Wird gespeichert...",
+    "payment-methods.save.ready": "Gespeichert"
 }

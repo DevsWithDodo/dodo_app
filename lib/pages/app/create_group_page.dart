@@ -109,7 +109,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                                 minimalLength(value, 1),
                               ]),
                               decoration: InputDecoration(
-                                labelText: 'nickname_in_group'.tr(),
+                                labelText: 'nickname-in-group'.tr(),
                                 filled: true,
                                 prefixIcon: Icon(
                                   Icons.account_circle,
@@ -177,6 +177,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                     EventBus.instance.fire(EventBus.refreshPurchases);
                     EventBus.instance.fire(EventBus.refreshShopping);
                     EventBus.instance.fire(EventBus.refreshStatistics);
+                    EventBus.instance.fire(EventBus.refreshGroupInfo);
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) => MainPage()),
                       (r) => false,
