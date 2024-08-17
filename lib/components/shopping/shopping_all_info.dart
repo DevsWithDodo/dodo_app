@@ -1,3 +1,5 @@
+import 'package:csocsort_szamla/components/helpers/add_reaction_dialog.dart';
+import 'package:csocsort_szamla/components/helpers/reaction_row.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
@@ -14,8 +16,9 @@ import '../purchase/add_modify_purchase.dart';
 
 class ShoppingAllInfo extends StatefulWidget {
   final ShoppingRequest shoppingRequest;
+  final Function(String reaction) onSendReaction;
 
-  ShoppingAllInfo(this.shoppingRequest);
+  ShoppingAllInfo(this.shoppingRequest, this.onSendReaction);
 
   @override
   _ShoppingAllInfoState createState() => _ShoppingAllInfoState();
@@ -55,6 +58,13 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                ReactionRow(
+                  type: ReactionType.request,
+                  reactToId: widget.shoppingRequest.id,
+                  onSendReaction: widget.onSendReaction,
+                  reactions: widget.shoppingRequest.reactions!,
+                ),
+                SizedBox(height: 10),
                 Row(
                   children: <Widget>[
                     Icon(Icons.account_circle, color: Theme.of(context).colorScheme.secondary),

@@ -1,6 +1,8 @@
+import 'package:csocsort_szamla/components/helpers/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
+import 'package:csocsort_szamla/components/helpers/reaction_row.dart';
 import 'package:csocsort_szamla/components/helpers/transaction_receivers.dart';
 import 'package:csocsort_szamla/components/payment/modify_payment_dialog.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
@@ -14,8 +16,9 @@ import '../../helpers/models.dart';
 
 class PaymentAllInfo extends StatefulWidget {
   final Payment payment;
+  final Function(String reaction) onSendReaction;
 
-  PaymentAllInfo(this.payment);
+  PaymentAllInfo(this.payment, this.onSendReaction);
 
   @override
   _PaymentAllInfoState createState() => _PaymentAllInfoState();
@@ -65,6 +68,13 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            ReactionRow(
+              type: ReactionType.payment,
+              reactToId: widget.payment.id,
+              onSendReaction: widget.onSendReaction,
+              reactions: widget.payment.reactions!,
+            ),
+            SizedBox(height: 10),
             Center(
               child: Text(
                 'payment-info.title'.tr(namedArgs: {

@@ -21,10 +21,10 @@ class NecessaryPaymentEntry extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 6),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(12),
                 color: payments[0].payerId == user.id
                     ? Theme.of(context).colorScheme.primaryContainer
-                    : Theme.of(context).colorScheme.surfaceVariant,
+                    : Theme.of(context).colorScheme.surfaceContainerHighest,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -83,7 +83,8 @@ class NecessaryPaymentEntry extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                TextButton(
+                                IconButton.filled(
+                                  visualDensity: VisualDensity.compact,
                                   onPressed: () {
                                     showDialog(
                                       context: context,
@@ -94,7 +95,7 @@ class NecessaryPaymentEntry extends StatelessWidget {
                                       },
                                     );
                                   },
-                                  child: Icon(Icons.payment),
+                                  icon: Icon(Icons.wallet)
                                 ),
                               ],
                             ),

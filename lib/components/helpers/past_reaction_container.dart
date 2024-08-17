@@ -6,7 +6,7 @@ import 'add_reaction_dialog.dart';
 class PastReactionContainer extends StatelessWidget {
   final List<Reaction> reactions;
   final int reactedToId;
-  final Function(String reaction, int userId) onSendReaction;
+  final Function(String reaction) onSendReaction;
   final bool isSecondaryColor;
   final ReactionType type;
   PastReactionContainer({

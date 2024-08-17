@@ -156,7 +156,7 @@ class _HistoryState extends State<History> {
                 ButtonSegment(
                   value: 1,
                   label: Text('payments'.tr()),
-                  enabled: true,
+                  // enabled: true,
                 ),
               ],
               selected: new Set()..add(_selectedIndex),

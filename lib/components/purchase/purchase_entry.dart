@@ -33,7 +33,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
     reactions = widget.purchase.reactions!;
   }
 
-  void handleSendReaction(String reaction, int userId) {
+  void handleSendReaction(String reaction) {
     setState(() {
       User user = context.read<UserState>().user!;
       Reaction? oldReaction = reactions.firstWhereOrNull((element) => element.userId == user.id);
@@ -139,19 +139,6 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                 child: Material(
                   type: MaterialType.transparency,
                   child: InkWell(
-                    onLongPress: selectedMemberId != user.id
-                        ? null
-                        : () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AddReactionDialog(
-                                type: ReactionType.purchase,
-                                reactions: widget.purchase.reactions!,
-                                reactToId: widget.purchase.id,
-                                onSend: this.handleSendReaction,
-                              ),
-                            );
-                          },
                     onTap: () async {
                       showModalBottomSheet<String>(
                         isScrollControlled: true,
@@ -160,6 +147,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                           child: PurchaseAllInfo(
                             widget.purchase,
                             widget.selectedMemberId,
+                            handleSendReaction,
                           ),
                         ),
                       ).then(

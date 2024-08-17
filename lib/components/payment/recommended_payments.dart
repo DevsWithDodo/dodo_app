@@ -11,7 +11,15 @@ class RecommendedPayments extends StatefulWidget {
   final List<Member> members;
   final void Function(Payment selectedPayment, bool selected) onChange;
   final bool onlyShowOwn;
-  const RecommendedPayments({super.key, required this.members, required this.onChange, this.onlyShowOwn = true});
+  final int? payerId;
+
+  const RecommendedPayments({
+    super.key,
+    required this.members,
+    required this.onChange,
+    this.onlyShowOwn = true,
+    this.payerId,
+  });
 
   @override
   State<RecommendedPayments> createState() => _RecommendedPaymentsState();
@@ -20,26 +28,45 @@ class RecommendedPayments extends StatefulWidget {
 class _RecommendedPaymentsState extends State<RecommendedPayments> {
   int? _selectedPayment = null;
   late List<Payment> _necessaryPayments;
+  late List<Payment> _necessaryPaymentsToShow;
 
   @override
   void initState() {
     super.initState();
-    List<Payment> payments = necessaryPayments(widget.members, context);
+    _necessaryPayments = necessaryPayments(widget.members, context);
     if (widget.onlyShowOwn) {
-      _necessaryPayments =
-          payments.where((payment) => payment.payerId == context.read<UserState>().user!.id).toList();
+      _necessaryPaymentsToShow = _necessaryPayments
+          .where((payment) => payment.payerId == (widget.payerId ?? context.read<UserState>().user!.id))
+          .toList();
     } else {
-      _necessaryPayments = payments;
+      _necessaryPaymentsToShow = _necessaryPayments;
     }
-    _necessaryPayments =
-        _necessaryPayments.where((payment) => payment.amount > payment.originalCurrency.threshold()).toList();
+    _necessaryPaymentsToShow =
+        _necessaryPaymentsToShow.where((payment) => payment.amount > payment.originalCurrency.threshold()).toList();
+  }
+
+  @override
+  void didUpdateWidget(covariant RecommendedPayments oldWidget) {
+    if (oldWidget.payerId != widget.payerId) {
+      _selectedPayment = null;
+    }
+    super.didUpdateWidget(oldWidget);
+    if (widget.onlyShowOwn) {
+      _necessaryPaymentsToShow = _necessaryPayments
+          .where((payment) => payment.payerId == (widget.payerId ?? context.read<UserState>().user!.id))
+          .toList();
+    } else {
+      _necessaryPaymentsToShow = _necessaryPayments;
+    }
+    _necessaryPaymentsToShow =
+        _necessaryPaymentsToShow.where((payment) => payment.amount > payment.originalCurrency.threshold()).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     necessaryPayments(widget.members, context);
     return Visibility(
-      visible: _necessaryPayments.isNotEmpty,
+      visible: _necessaryPaymentsToShow.isNotEmpty,
       child: Container(
         height: 50,
         child: SingleChildScrollView(
@@ -51,7 +78,7 @@ class _RecommendedPaymentsState extends State<RecommendedPayments> {
                 'payments.recommended-payments'.tr(),
                 style: Theme.of(context).textTheme.labelLarge,
               ),
-              ..._necessaryPayments.mapIndexed(
+              ..._necessaryPaymentsToShow.mapIndexed(
                 (index, payment) {
                   bool selected = _selectedPayment == index;
                   ThemeData themeData = Theme.of(context);

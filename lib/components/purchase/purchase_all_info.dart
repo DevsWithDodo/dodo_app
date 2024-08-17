@@ -1,11 +1,18 @@
+import 'dart:math';
+
+import 'package:collection/collection.dart';
+import 'package:csocsort_szamla/components/helpers/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
+import 'package:csocsort_szamla/components/helpers/reaction_row.dart';
 import 'package:csocsort_szamla/components/helpers/transaction_receivers.dart';
 import 'package:csocsort_szamla/components/purchase/modify_purchase_dialog.dart';
+import 'package:csocsort_szamla/helpers/app_theme.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +21,9 @@ import 'package:provider/provider.dart';
 class PurchaseAllInfo extends StatefulWidget {
   final Purchase purchase;
   final int? selectedMemberId;
+  final Function(String reaction) onSendReaction;
 
-  PurchaseAllInfo(this.purchase, this.selectedMemberId);
+  PurchaseAllInfo(this.purchase, this.selectedMemberId, this.onSendReaction);
 
   @override
   _PurchaseAllInfoState createState() => _PurchaseAllInfoState();
@@ -39,22 +47,30 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
     }
   }
 
+  Future<bool> _sendReaction(String reaction) async {
+    try {
+      Map<String, dynamic> body = {"purchase_id": widget.purchase.id, "reaction": reaction};
+      await Http.post(uri: '/purchases/reaction', body: body);
+      return true;
+    } catch (_) {
+      throw _;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String note = '';
     if (widget.purchase.name == '') {
       note = 'no_note'.tr();
     } else {
-      note = widget.purchase.name[0].toUpperCase() +
-          widget.purchase.name.substring(1);
+      note = widget.purchase.name[0].toUpperCase() + widget.purchase.name.substring(1);
     }
 
     TextStyle titleStyle = Theme.of(context).textTheme.titleMedium!.copyWith(
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         );
 
-    Currency groupCurrency = context.select<UserState, Currency>(
-        (provider) => provider.currentGroup!.currency);
+    Currency groupCurrency = context.select<UserState, Currency>((provider) => provider.currentGroup!.currency);
 
     return DefaultTextStyle(
       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -65,6 +81,13 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
+            ReactionRow(
+              type: ReactionType.purchase,
+              reactToId: widget.purchase.id,
+              onSendReaction: widget.onSendReaction,
+              reactions: widget.purchase.reactions!,
+            ),
+            SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -152,9 +175,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                       children: [
                         Center(
                           child: Text(
-                            'info.purchase-currency'.tr(namedArgs: {
-                              "currency": widget.purchase.originalCurrency.code
-                            }),
+                            'info.purchase-currency'.tr(namedArgs: {"currency": widget.purchase.originalCurrency.code}),
                             style: titleStyle,
                             textAlign: TextAlign.center,
                           ),
@@ -163,9 +184,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                           child: Switch(
                             value: displayCurrency == groupCurrency,
                             onChanged: (value) => setState(() {
-                              displayCurrency = value
-                                  ? groupCurrency
-                                  : widget.purchase.originalCurrency;
+                              displayCurrency = value ? groupCurrency : widget.purchase.originalCurrency;
                             }),
                           ),
                         ),

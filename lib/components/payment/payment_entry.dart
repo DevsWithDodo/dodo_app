@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 class PaymentEntry extends StatefulWidget {
   final Payment payment;
   final int? selectedMemberId;
+
   PaymentEntry({
     required this.payment,
     this.selectedMemberId,
@@ -33,7 +34,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
     reactions = widget.payment.reactions!;
   }
 
-  void handleSendReaction(String reaction, int userId) {
+  void handleSendReaction(String reaction) {
     setState(() {
       User user = context.read<UserState>().user!;
       Reaction? oldReaction = reactions.firstWhereOrNull((element) => element.userId == user.id);
@@ -87,7 +88,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
               : BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(15),
-              );
+                );
 
           TextStyle mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(color: textColor);
           TextStyle subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(color: textColor);
@@ -134,18 +135,21 @@ class _PaymentEntryState extends State<PaymentEntry> {
                                 context: context);
                           },
                     onTap: () async {
-                      showModalBottomSheet<String>(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) => SingleChildScrollView(child: PaymentAllInfo(widget.payment))).then(
-                        (value) {
-                          if (value == 'deleted') {
-                            final bus = EventBus.instance;
-                            bus.fire(EventBus.refreshPayments);
-                            bus.fire(EventBus.refreshBalances);
-                          }
-                        },
+                      final value = await showModalBottomSheet<String>(
+                        context: context,
+                        isScrollControlled: true,
+                        builder: (context) => SingleChildScrollView(
+                          child: PaymentAllInfo(
+                            widget.payment,
+                            handleSendReaction,
+                          ),
+                        ),
                       );
+                      if (value == 'deleted') {
+                        final bus = EventBus.instance;
+                        bus.fire(EventBus.refreshPayments);
+                        bus.fire(EventBus.refreshBalances);
+                      }
                     },
                     borderRadius: BorderRadius.circular(15),
                     child: Padding(

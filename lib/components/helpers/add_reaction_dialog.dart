@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:csocsort_szamla/components/helpers/reaction_row.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ enum ReactionType {
   request("requests", "request");
 
   const ReactionType(this.path, this.reactsTo);
+
   final String path;
   final String reactsTo;
 }
@@ -25,7 +27,8 @@ class AddReactionDialog extends StatelessWidget {
   final ReactionType type;
   final List<Reaction> reactions;
   final int reactToId;
-  final Function(String reaction, int userId) onSend;
+  final Function(String reaction) onSend;
+
   AddReactionDialog({
     required this.type,
     required this.reactions,
@@ -106,42 +109,12 @@ class AddReactionDialog extends StatelessWidget {
                   SizedBox(
                     height: 10,
                   ),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: Reaction.possibleReactions
-                          .map(
-                            (reaction) => InkWell(
-                              borderRadius: BorderRadius.circular(12),
-                              onTap: () {
-                                _sendReaction(reaction);
-                                Navigator.pop(context);
-                                this.onSend(reaction, userId);
-                              },
-                              child: Ink(
-                                padding: EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: reactions.firstWhereOrNull(
-                                              (el) => el.userId == userId && el.reaction == reaction) !=
-                                          null
-                                      ? Theme.of(context).colorScheme.secondaryContainer
-                                      : Colors.transparent,
-                                ),
-                                child: Container(
-                                  constraints:
-                                      BoxConstraints(maxWidth: min(50, MediaQuery.of(context).size.width / 2 / 6)),
-                                  child: FittedBox(
-                                    fit: BoxFit.fitWidth,
-                                    child: Text(
-                                      reaction,
-                                      style: TextStyle(fontSize: 50),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList()),
+                  ReactionRow(
+                    type: type,
+                    reactToId: reactToId,
+                    onSendReaction: onSend,
+                    reactions: reactions,
+                  ),
                   Visibility(
                     visible: reactions.length != 0,
                     child: Column(

@@ -159,12 +159,45 @@ class _AddMemberPageState extends State<AddMemberPage>
                               }),
                             );
                           }
-                          return ListView(
+                          return SingleChildScrollView(
                             padding: EdgeInsets.only(top: 16),
-                            children: [
-                              Center(
-                                child: Text(
-                                  'add-member.invite.with_qr'.tr(),
+                            child: Column(
+                              children: [
+                                Center(
+                                  child: Text(
+                                    'add-member.invite.with_qr'.tr(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge!
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Center(
+                                  child: Container(
+                                    constraints: BoxConstraints(
+                                        maxWidth: 250, maxHeight: 250),
+                                    padding: EdgeInsets.all(10),
+                                    child: PrettyQrView.data(
+                                      data:
+                                          'http://dodoapp.net/join/${snapshot.data}',
+                                      decoration: PrettyQrDecoration(
+                                        shape: PrettyQrSmoothSymbol(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Text(
+                                  'add-member.invite.with_link'.tr(),
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyLarge!
@@ -172,53 +205,22 @@ class _AddMemberPageState extends State<AddMemberPage>
                                           color: Theme.of(context)
                                               .colorScheme
                                               .onSurfaceVariant),
+                                  textAlign: TextAlign.center,
                                 ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Center(
-                                child: Container(
-                                  constraints: BoxConstraints(
-                                      maxWidth: 250, maxHeight: 250),
-                                  padding: EdgeInsets.all(10),
-                                  child: PrettyQrView.data(
-                                    data:
-                                        'http://dodoapp.net/join/${snapshot.data}',
-                                    decoration: PrettyQrDecoration(
-                                      shape: PrettyQrSmoothSymbol(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant),
-                                    ),
+                                SizedBox(height: 5),
+                                Center(
+                                  child: GradientButton(
+                                    onPressed: () {
+                                      Share.share(
+                                        'https://dodoapp.net/join/${snapshot.data}',
+                                        subject: 'invitation_to_lender'.tr(),
+                                      );
+                                    },
+                                    child: Icon(Icons.share),
                                   ),
                                 ),
-                              ),
-                              SizedBox(height: 10),
-                              Text(
-                                'add-member.invite.with_link'.tr(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant),
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(height: 5),
-                              Center(
-                                child: GradientButton(
-                                  onPressed: () {
-                                    Share.share(
-                                      'https://dodoapp.net/join/${snapshot.data}',
-                                      subject: 'invitation_to_lender'.tr(),
-                                    );
-                                  },
-                                  child: Icon(Icons.share),
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           );
                         }),
                     ConstrainedBox(

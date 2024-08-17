@@ -68,6 +68,7 @@ class _PaymentPageState extends State<PaymentPage>
                       builder: (context, AsyncSnapshot<List<Member>> snapshot) {
                         if (snapshot.hasData) {
                           return RecommendedPayments(
+                            payerId: payerId,
                             members: snapshot.data!,
                             onChange: (payment, selected) => setState(() {
                                 if (selected) {

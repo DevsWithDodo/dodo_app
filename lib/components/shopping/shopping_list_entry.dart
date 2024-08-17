@@ -38,9 +38,10 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
     reactions = widget.shoppingRequest.reactions!;
   }
 
-  void handleSendReaction(String reaction, int userId) {
+  void handleSendReaction(String reaction) {
     setState(() {
-      Reaction? oldReaction = reactions.firstWhereOrNull((element) => element.userId == userId);
+      User user = context.read<UserState>().user!;
+      Reaction? oldReaction = reactions.firstWhereOrNull((element) => element.userId == user.id);
       bool alreadyReacted = oldReaction != null;
       bool sameReaction = alreadyReacted ? oldReaction.reaction == reaction : false;
       if (sameReaction) {
@@ -49,13 +50,13 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
         reactions.add(Reaction(
           nickname: context.read<UserState>().user!.username,
           reaction: reaction,
-          userId: userId,
+          userId: user.id,
         ));
       } else {
         reactions.add(Reaction(
           nickname: oldReaction.nickname,
           reaction: reaction,
-          userId: userId,
+          userId: user.id,
         ));
         reactions.remove(oldReaction);
       }
@@ -152,34 +153,29 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
         children: [
           Container(
             decoration: boxDecoration,
-            margin: EdgeInsets.only(top: widget.shoppingRequest.reactions!.length == 0 ? 2 : 8, bottom: 5, left: 12, right: 12),
+            margin: EdgeInsets.only(
+                top: widget.shoppingRequest.reactions!.length == 0 ? 2 : 8, bottom: 5, left: 12, right: 12),
             child: Material(
               type: MaterialType.transparency,
               child: InkWell(
-                onLongPress: () {
-                  showDialog(
-                      builder: (context) => AddReactionDialog(
-                            type: ReactionType.request,
-                            reactions: widget.shoppingRequest.reactions!,
-                            reactToId: widget.shoppingRequest.id,
-                            onSend: this.handleSendReaction,
-                          ),
-                      context: context);
-                },
                 onTap: () async {
-                  showModalBottomSheet<Map<String, dynamic>>(
+                  final value = await showModalBottomSheet<Map<String, dynamic>?>(
                     context: context,
                     isScrollControlled: true,
-                    builder: (context) => SingleChildScrollView(child: ShoppingAllInfo(widget.shoppingRequest)),
-                  ).then((value) {
-                    if (value != null) {
-                      if (value['type'] == 'deleted') {
-                        this.widget.onDeleteRequest(widget.shoppingRequest.id);
-                      } else {
-                        this.widget.onEditRequest(value['request']);
-                      }
+                    builder: (context) => SingleChildScrollView(
+                      child: ShoppingAllInfo(
+                        widget.shoppingRequest,
+                        handleSendReaction,
+                      ),
+                    ),
+                  );
+                  if (value != null) {
+                    if (value['type'] == 'deleted') {
+                      this.widget.onDeleteRequest(widget.shoppingRequest.id);
+                    } else {
+                      this.widget.onEditRequest(value['request']);
                     }
-                  });
+                  }
                 },
                 borderRadius: BorderRadius.circular(15),
                 child: Padding(

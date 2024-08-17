@@ -51,96 +51,144 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        scrolledUnderElevation: 0,
         title: Text('payments_needed'.tr()),
-      ),
-      body: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: 500,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'payments-needed.page.subtitle'.tr(),
-                textAlign: TextAlign.center,
-                style:
-                    Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).colorScheme.onSurface),
-              ),
-              SizedBox(height: 15),
-              Text(
-                'payments-needed.page.payment-method-hint'.tr(),
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurface),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 5),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(5, 8, 5, 0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: ElevationOverlay.applyOverlay(
-                      context,
-                      Theme.of(context).colorScheme.surface,
-                      2,
-                    ),
+        bottom: PreferredSize(
+            preferredSize: Size.fromHeight(100),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                children: [
+                  Text(
+                    'payments-needed.page.subtitle'.tr(),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(color: Theme.of(context).colorScheme.onSurface),
                   ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: _generatePaymentEntries(),
-                    ),
+                  SizedBox(height: 15),
+                  Text(
+                    'payments-needed.page.payment-method-hint'.tr(),
+                    style:
+                        Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurface),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )),
+      ),
+      body: Container(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: Theme.of(context).colorScheme.surfaceContainer,
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+                  child: Column(
+                    children: _generatePaymentEntries(),
                   ),
                 ),
               ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            ),
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Column(
                 children: [
-                  Flexible(child: Text('payments-needed.page.copy-hint'.tr())),
-                  GradientButton(
-                    child: Icon(Icons.copy),
-                    onPressed: () {
-                      Currency currency = context.read<UserState>().currentGroup!.currency;
-                      int longestPayerNick = this
-                          .widget.necessaryPayments
-                          .map((e) => e.payerNickname.length)
-                          .reduce((value, element) => value > element ? value : element);
-                      int longestTakerNick = this
-                          .widget.necessaryPayments
-                          .map((e) => e.takerNickname.length)
-                          .reduce((value, element) => value > element ? value : element);
-                      Clipboard.setData(
-                        ClipboardData(
-                          text: this.widget.necessaryPayments.map((payment) {
-                            String firstSpaces = ' ' * (longestPayerNick - payment.payerNickname.length);
-                            String secondSpaces = ' ' * (longestTakerNick - payment.takerNickname.length);
-                            return "${payment.payerNickname}${firstSpaces}\t➡️\t${payment.takerNickname}:${secondSpaces}\t${payment.amount.toMoneyString(currency, withSymbol: true)}";
-                          }).join('\n'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(child: Text('payments-needed.page.copy-hint'.tr())),
+                      IconButton.filled(
+                        icon: Icon(Icons.copy, size: 20),
+                        onPressed: () {
+                          Currency currency = context.read<UserState>().currentGroup!.currency;
+                          int longestPayerNick = this
+                              .widget
+                              .necessaryPayments
+                              .map((e) => e.payerNickname.length)
+                              .reduce((value, element) => value > element ? value : element);
+                          int longestTakerNick = this
+                              .widget
+                              .necessaryPayments
+                              .map((e) => e.takerNickname.length)
+                              .reduce((value, element) => value > element ? value : element);
+                          String paymentsPart = this.widget.necessaryPayments.map(
+                            (payment) {
+                              String firstSpaces = ' ' * (longestPayerNick - payment.payerNickname.length);
+                              String secondSpaces = ' ' * (longestTakerNick - payment.takerNickname.length);
+                              return "${payment.payerNickname}${firstSpaces}\t➡️\t${payment.takerNickname}:${secondSpaces}\t${payment.amount.toMoneyString(currency, withSymbol: true)}";
+                            },
+                          ).join('\n');
+                          String paymentMethodsPart = "";
+                          List<Member> membersToCopy = widget.members
+                              .where(
+                                (element) =>
+                                    element.paymentMethods != null &&
+                                    element.paymentMethods!.isNotEmpty &&
+                                    widget.necessaryPayments.any((payment) => payment.takerId == element.id),
+                              )
+                              .toList();
+                          if (this
+                              .widget
+                              .members
+                              .any((element) => element.paymentMethods != null && element.paymentMethods!.isNotEmpty)) {
+                            paymentMethodsPart = "\n\n${'payment-methods.title'.tr()}\n" +
+                                membersToCopy
+                                    .map(
+                                      (member) {
+                                        return member.paymentMethods!.isEmpty
+                                            ? null
+                                            : "${member.nickname}: \n" +
+                                                member.paymentMethods!
+                                                    .map(
+                                                      (method) =>
+                                                          "  ${method.name}: ${method.value} ${method.priority ? "(⭐)" : ""}",
+                                                    )
+                                                    .join('\n');
+                                      },
+                                    )
+                                    .where((e) => e != null)
+                                    .join('\n');
+                          }
+                          Clipboard.setData(
+                            ClipboardData(
+                              text: paymentsPart + paymentMethodsPart,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(child: Text('payments-needed.page.payment-page-hint'.tr())),
+                      IconButton.filled(
+                        icon: Icon(Icons.payments, size: 20),
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PaymentPage(),
+                          ),
                         ),
-                      );
-                    },
+                      )
+                    ],
                   ),
                 ],
               ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(child: Text('payments-needed.page.payment-page-hint'.tr())),
-                  GradientButton(
-                    child: Icon(Icons.payments),
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PaymentPage(),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
