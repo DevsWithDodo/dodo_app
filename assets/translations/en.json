@@ -476,5 +476,11 @@
 
     "payment-methods.add-new": "Add new",
     "payment-methods.save.loading": "Saving...",
-    "payment-methods.save.ready": "Done"
+    "payment-methods.save.ready": "Done",
+
+    "add-member.create.submit": "Save",
+
+    "profile": "Profile",
+    "customization": "Language & Customization",
+    "customize-page.preview": "Tap and hold any theme to preview it."
 }

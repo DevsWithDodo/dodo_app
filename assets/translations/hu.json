@@ -479,5 +479,11 @@
 
     "payment-methods.add-new": "Hozzáadás",
     "payment-methods.save.loading": "Mentés folyamatban...",
-    "payment-methods.save.ready": "Kész"
+    "payment-methods.save.ready": "Kész",
+
+    "add-member.create.submit": "Mentés",
+
+    "profile": "Profil",
+    "customization": "Nyelv & témák",
+    "customize-page.preview": "Nyomj hosszan egy témára az előnézet megtekintéséhez"
 }

@@ -38,12 +38,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
   Category? _category = Category.fromType(null);
 
   void refreshStatistics() {
-    _paymentStats =
-        _getStats(StatisticsType.payments);
-    _purchaseStats =
-        _getStats(StatisticsType.purchases);
-    _groupStats =
-        _getStats(StatisticsType.group);
+    _paymentStats = _getStats(StatisticsType.payments);
+    _purchaseStats = _getStats(StatisticsType.purchases);
+    _groupStats = _getStats(StatisticsType.group);
   }
 
   @override
@@ -289,8 +286,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = context.watch<ScreenSize>().isMobile;
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         scrolledUnderElevation: 0,
@@ -299,212 +296,263 @@ class _StatisticsPageState extends State<StatisticsPage> {
         ),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(110),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 550),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Column(
                   children: [
-                    Expanded(
-                      child: Text(
-                        DateFormat.yMd(context.locale.languageCode)
-                                .format(_startDate!) +
-                            ' - ' +
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
                             DateFormat.yMd(context.locale.languageCode)
-                                .format(_endDate),
-                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant),
-                      ),
+                                    .format(_startDate!) +
+                                ' - ' +
+                                DateFormat.yMd(context.locale.languageCode)
+                                    .format(_endDate),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge!
+                                .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.date_range,
+                              color: Theme.of(context).colorScheme.primary),
+                          onPressed: () async {
+                            DateTimeRange? range = await showDateRangePicker(
+                                context: context,
+                                firstDate: widget.groupCreation!,
+                                lastDate: DateTime.now(),
+                                currentDate: DateTime.now(),
+                                initialDateRange: DateTimeRange(
+                                    start: _startDate!, end: _endDate),
+                                builder: (context, child) {
+                                  return child!;
+                                });
+                            if (range != null) {
+                              _startDate = range.start;
+                              _endDate = range.end;
+                              setState(refreshStatistics);
+                            }
+                          },
+                        )
+                      ],
                     ),
-                    IconButton(
-                      icon: Icon(Icons.date_range,
-                          color: Theme.of(context).colorScheme.primary),
-                      onPressed: () async {
-                        DateTimeRange? range = await showDateRangePicker(
-                            context: context,
-                            firstDate: widget.groupCreation!,
-                            lastDate: DateTime.now(),
-                            currentDate: DateTime.now(),
-                            initialDateRange: DateTimeRange(
-                                start: _startDate!, end: _endDate),
-                            builder: (context, child) {
-                              return child!;
-                            });
-                        if (range != null) {
-                          _startDate = range.start;
-                          _endDate = range.end;
-                          setState(refreshStatistics);
-                        }
-                      },
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'category'.tr(),
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color:
-                              Theme.of(context).colorScheme.onSurfaceVariant),
+                    SizedBox(
+                      height: 10,
                     ),
-                    CategoryPickerIconButton(
-                      selectedCategory: _category,
-                      onCategoryChanged: (category) {
-                        if (_category?.type == category?.type) {
-                          _category = null;
-                        } else {
-                          _category = category;
-                        }
-                        setState(refreshStatistics);
-                      },
-                    )
-                  ],
-                ),
-                SizedBox(height: 5),
-              ],
-            ),
-          ),
-        ),
-      ),
-      body: Container(
-        color: Theme.of(context).colorScheme.surface,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(20),
-            ),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: StatisticsType.values
-                  .mapIndexed(
-                    (index, type) => Column(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'statistics.${type.name}'.tr(),
+                          'category'.tr(),
                           style: Theme.of(context)
                               .textTheme
-                              .titleLarge!
+                              .bodyLarge!
                               .copyWith(
                                   color: Theme.of(context)
                                       .colorScheme
                                       .onSurfaceVariant),
-                          textAlign: TextAlign.center,
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        FutureBuilder(
-                          future: type == StatisticsType.payments
-                              ? _paymentStats
-                              : type == StatisticsType.purchases
-                                  ? _purchaseStats
-                                  : _groupStats,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState !=
-                                ConnectionState.done) {
-                              return CircularProgressIndicator();
+                        CategoryPickerIconButton(
+                          selectedCategory: _category,
+                          onCategoryChanged: (category) {
+                            if (_category?.type == category?.type) {
+                              _category = null;
+                            } else {
+                              _category = category;
                             }
-                            if (!snapshot.hasData) {
-                              return ErrorMessage(
-                                error: snapshot.error.toString(),
-                                errorLocation: 'statistics',
-                                onTap: () => setState(() {
-                                  if (type == StatisticsType.payments) {
-                                    _paymentStats = _getStats(type);
-                                  } else if (type == StatisticsType.purchases) {
-                                    _purchaseStats = _getStats(type);
-                                  } else {
-                                    _groupStats = _getStats(type);
-                                  }
-                                }),
-                              );
-                            }
-                            if (snapshot.data!.isEmpty) {
-                              return Text(
-                                'statistics.no-data-for-period'.tr(),
-                                style: Theme.of(context).textTheme.bodySmall,
-                              );
-                            }
-                            final calculatedWidth =
-                                snapshot.data!.groupedEntries.length * (type == StatisticsType.group ? 60.0 : 40.0);
-                            final availableWidth =
-                                context.watch<ScreenSize>().width - 30;
-                            final physics = calculatedWidth > availableWidth
-                                ? BouncingScrollPhysics()
-                                : NeverScrollableScrollPhysics();
-                            return Column(
-                              children: [
-                                StatisticsIntervalPicker(
-                                  data: snapshot.data!,
-                                  onIntervalChanged: (interval) => setState(() {
-                                    snapshot.data!.groupingInterval = interval;
-                                  }),
-                                ),
-                                SizedBox(height: 15),
-                                SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  physics: physics,
-                                  child: Container(
-                                    height: 250,
-                                    width: max(calculatedWidth, availableWidth),
-                                    child: BarChart(
-                                      _generateChartData(snapshot.data!),
-                                      swapAnimationCurve: Curves.easeInOutCubic,
-                                      swapAnimationDuration:
-                                          Duration(milliseconds: 500),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Legend(
-                                    type: LegendFor.fromStatisticsType(type),
-                                    sums: type == StatisticsType.group
-                                        ? [
-                                            (snapshot.data!
-                                                    as GroupStatisticsData)
-                                                .sumPurchases,
-                                            (snapshot.data!
-                                                    as GroupStatisticsData)
-                                                .sumPayments,
-                                          ]
-                                        : [
-                                            (snapshot.data!
-                                                    as PurchasePaymentStatisticsData)
-                                                .sumGiven,
-                                            (snapshot.data!
-                                                    as PurchasePaymentStatisticsData)
-                                                .sumReceived,
-                                          ]),
-                              ],
-                            );
+                            setState(refreshStatistics);
                           },
-                        ),
-                        ...(index != StatisticsType.values.length - 1
-                            ? [
-                                SizedBox(height: 10),
-                                Divider(),
-                                SizedBox(height: 10),
-                              ]
-                            : []),
+                        )
                       ],
                     ),
-                  )
-                  .toList(),
+                    SizedBox(height: 5),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
       ),
+      body: isMobile
+          ? Container(
+              color: Theme.of(context).colorScheme.surface,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  ),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: StatisticsType.values
+                        .mapIndexed((index, type) => childFromType(type, index == StatisticsType.values.length - 1))
+                        .toList(),
+                  ),
+                ),
+              ),
+            )
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Container(
+                    clipBehavior: Clip.antiAlias,
+                    margin: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainer,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.all(15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: StatisticsType.values
+                            .take(2)
+                            .mapIndexed(
+                                (index, type) => childFromType(type, index == 0))
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    clipBehavior: Clip.antiAlias,
+                    margin: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainer,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.all(15),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          childFromType(StatisticsType.group),
+                        ]
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+
+  Widget childFromType(StatisticsType type, [bool showDivider = false]) {
+    final screenSize = context.watch<ScreenSize>();
+    return Column(
+      children: [
+        Text(
+          'statistics.${type.name}'.tr(),
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        FutureBuilder(
+          future: type == StatisticsType.payments
+              ? _paymentStats
+              : type == StatisticsType.purchases
+                  ? _purchaseStats
+                  : _groupStats,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return CircularProgressIndicator();
+            }
+            if (!snapshot.hasData) {
+              return ErrorMessage(
+                error: snapshot.error.toString(),
+                errorLocation: 'statistics',
+                onTap: () => setState(() {
+                  if (type == StatisticsType.payments) {
+                    _paymentStats = _getStats(type);
+                  } else if (type == StatisticsType.purchases) {
+                    _purchaseStats = _getStats(type);
+                  } else {
+                    _groupStats = _getStats(type);
+                  }
+                }),
+              );
+            }
+            if (snapshot.data!.isEmpty) {
+              return Text(
+                'statistics.no-data-for-period'.tr(),
+                style: Theme.of(context).textTheme.bodySmall,
+              );
+            }
+            final calculatedWidth = snapshot.data!.groupedEntries.length *
+                (type == StatisticsType.group ? 60.0 : 40.0);
+            final availableWidth = screenSize.isMobile ? screenSize.width - 30 : (screenSize.width - 40) / 2 - 30;
+            final physics = calculatedWidth > availableWidth
+                ? BouncingScrollPhysics()
+                : NeverScrollableScrollPhysics();
+            return Column(
+              children: [
+                StatisticsIntervalPicker(
+                  data: snapshot.data!,
+                  onIntervalChanged: (interval) => setState(() {
+                    snapshot.data!.groupingInterval = interval;
+                  }),
+                ),
+                SizedBox(height: 15),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: physics,
+                  child: Container(
+                    height: 250,
+                    width: max(calculatedWidth, availableWidth),
+                    child: BarChart(
+                      _generateChartData(snapshot.data!),
+                      swapAnimationCurve: Curves.easeInOutCubic,
+                      swapAnimationDuration: Duration(milliseconds: 500),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 5),
+                Legend(
+                    type: LegendFor.fromStatisticsType(type),
+                    sums: type == StatisticsType.group
+                        ? [
+                            (snapshot.data! as GroupStatisticsData)
+                                .sumPurchases,
+                            (snapshot.data! as GroupStatisticsData).sumPayments,
+                          ]
+                        : [
+                            (snapshot.data! as PurchasePaymentStatisticsData)
+                                .sumGiven,
+                            (snapshot.data! as PurchasePaymentStatisticsData)
+                                .sumReceived,
+                          ]),
+              ],
+            );
+          },
+        ),
+        ...(showDivider
+            ? [
+                SizedBox(height: 10),
+                Divider(),
+                SizedBox(height: 10),
+              ]
+            : []),
+      ],
     );
   }
 }
@@ -576,12 +624,15 @@ enum GroupingInterval {
   }
 
   String formattedDate(DateTime start, DateTime end) {
-    BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
+    BuildContext context =
+        getIt.get<NavigationService>().navigatorKey.currentContext!;
     switch (this) {
       case daily:
         return DateFormat.d(context.locale.languageCode).format(start);
       case weekly:
-        return DateFormat.d(context.locale.languageCode).format(start) + '-' + DateFormat.d(context.locale.languageCode).format(end);
+        return DateFormat.d(context.locale.languageCode).format(start) +
+            '-' +
+            DateFormat.d(context.locale.languageCode).format(end);
       case monthly:
         return DateFormat.MMM(context.locale.languageCode).format(start);
       case yearly:

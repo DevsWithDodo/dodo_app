@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show Platform;
 
 import 'package:collection/collection.dart';
 import 'package:connectivity_widget/connectivity_widget.dart';
@@ -19,6 +18,7 @@ import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/pages/app/create_group_page.dart';
+import 'package:csocsort_szamla/pages/app/customize_page.dart';
 import 'package:csocsort_szamla/pages/app/join_group_page.dart';
 import 'package:csocsort_szamla/pages/app/store_page.dart';
 import 'package:csocsort_szamla/pages/app/user_settings_page.dart';
@@ -29,7 +29,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../components/balance/balances.dart';
 import '../../components/helpers/ad_unit.dart';
@@ -202,7 +201,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
     _selectedIndex = widget.selectedIndex;
     _tabController = TabController(
-        length: 2, vsync: this, initialIndex: widget.selectedIndex);
+        length: 3, vsync: this, initialIndex: widget.selectedIndex);
     _groups = _getGroups();
     _sumBalance = _getSumBalance();
     _invitation = _getInvitation();
@@ -341,27 +340,22 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   Widget _body(bool isOnline) {
     ScreenSize size = context.watch<ScreenSize>();
-    bool bigScreen = !size.isMobile;
     List<Widget> tabWidgets = _tabWidgets(isOnline);
     return Column(
       children: [
         Expanded(
-          child: TabBarView(
-            physics: NeverScrollableScrollPhysics(),
-            controller: _tabController,
-            children: !bigScreen
-                ? tabWidgets
-                : [
-                    Row(
-                      children: tabWidgets
-                          .take(2)
-                          .map((child) => Expanded(child: child))
-                          .toList(),
-                    ),
-                    tabWidgets.reversed.first,
-                    Container(),
-                  ],
-          ),
+          child: size.isMobile
+              ? TabBarView(
+                  physics: NeverScrollableScrollPhysics(),
+                  controller: _tabController,
+                  children: tabWidgets,
+                )
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: tabWidgets
+                      .map((child) => Expanded(child: child))
+                      .toList(),
+                ),
         ),
         AdUnit(site: 'home_screen'),
       ],
@@ -595,41 +589,46 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            Visibility(
-              visible: !kIsWeb,
-              child: DrawerTile(
-                dense: true,
-                icon: Icons.rate_review,
-                label: 'rate_app'.tr(),
-                onTap: () {
-                  String url = "";
-                  String platform = kIsWeb ? "web" : Platform.operatingSystem;
-                  switch (platform) {
-                    case "android":
-                      url =
-                          "market://details?id=csocsort.hu.machiato32.csocsort_szamla";
-                      break;
-                    case "windows":
-                      url = "ms-windows-store://pdp/?productid=9NVB4CZJDSQ7";
-                      break;
-                    case "ios":
-                      url =
-                          "itms-apps://itunes.apple.com/app/id1558223634?action=write-review";
-                      break;
-                    default:
-                      url =
-                          "https://play.google.com/store/apps/details?id=csocsort.hu.machiato32.csocsort_szamla";
-                      break;
-                  }
-                  launchUrlString(url);
-                  context.read<UserState>().setRatedApp(true);
-                },
-              ),
+            // Visibility(
+            //   visible: !kIsWeb,
+            //   child: DrawerTile(
+            //     dense: true,
+            //     icon: Icons.rate_review,
+            //     label: 'rate_app'.tr(),
+            //     onTap: () {
+            //       String url = "";
+            //       String platform = kIsWeb ? "web" : Platform.operatingSystem;
+            //       switch (platform) {
+            //         case "android":
+            //           url =
+            //               "market://details?id=csocsort.hu.machiato32.csocsort_szamla";
+            //           break;
+            //         case "windows":
+            //           url = "ms-windows-store://pdp/?productid=9NVB4CZJDSQ7";
+            //           break;
+            //         case "ios":
+            //           url =
+            //               "itms-apps://itunes.apple.com/app/id1558223634?action=write-review";
+            //           break;
+            //         default:
+            //           url =
+            //               "https://play.google.com/store/apps/details?id=csocsort.hu.machiato32.csocsort_szamla";
+            //           break;
+            //       }
+            //       launchUrlString(url);
+            //       context.read<UserState>().setRatedApp(true);
+            //     },
+            //   ),
+            // ),
+            DrawerTile(
+              icon: Icons.palette,
+              label: 'customization'.tr(),
+              builder: (context) => CustomizePage(),
             ),
             DrawerTile(
               dense: true,
-              icon: Icons.settings,
-              label: 'settings'.tr(),
+              icon: Icons.account_circle,
+              label: 'profile'.tr(),
               builder: (context) => UserSettingsPage(),
             ),
             Divider(),

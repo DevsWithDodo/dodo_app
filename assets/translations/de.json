@@ -487,5 +487,11 @@
 
     "payment-methods.add-new": "Hinzufügen",
     "payment-methods.save.loading": "Wird gespeichert...",
-    "payment-methods.save.ready": "Gespeichert"
+    "payment-methods.save.ready": "Gespeichert",
+
+    "add-member.create.submit": "Speichern",
+
+    "profile": "Profil",
+    "customization": "Sprache und Design",
+    "customize-page.preview": "Tippe und halte ein Design um eine Vorschau zu sehen"
 }

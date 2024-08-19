@@ -1,12 +1,13 @@
+import 'package:csocsort_szamla/components/main/dialogs/iapp_not_supported_dialog.dart';
 import 'package:csocsort_szamla/components/user_settings/components/theme_preview.dart';
 import 'package:csocsort_szamla/helpers/app_theme.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
-import 'package:csocsort_szamla/components/main/dialogs/iapp_not_supported_dialog.dart';
 import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/pages/app/customize_page.dart';
 import 'package:csocsort_szamla/pages/app/store_page.dart';
-import 'package:csocsort_szamla/pages/app/user_settings_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -265,13 +266,15 @@ class ColorElement extends StatelessWidget {
                     }
                   },
                   onLongPressStart: (details) => stackWidgetState.setWidget(
-                    ThemePreview(
+                    context.read<ScreenSize>().isMobile ? ThemePreview(
                       themeName: themeName,
                       offset: details.globalPosition,
+                    ) : ThemePreviewContent(
+                      themeName: themeName,
                     ),
                   ),
-                  onLongPressEnd: (_) => stackWidgetState.hideWidget(),
-                  onLongPressCancel: () => stackWidgetState.hideWidget(),
+                  onLongPressEnd: (_) => context.read<ScreenSize>().isMobile ? stackWidgetState.hideWidget() : stackWidgetState.setWidget(null),
+                  onLongPressCancel: () => context.read<ScreenSize>().isMobile ? stackWidgetState.hideWidget() : stackWidgetState.setWidget(null),
                   child: SizedBox.square(
                     dimension: dualColor ? 40 : 30,
                   ),

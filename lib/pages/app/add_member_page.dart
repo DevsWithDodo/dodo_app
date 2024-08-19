@@ -6,6 +6,7 @@ import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -70,9 +71,11 @@ class _AddMemberPageState extends State<AddMemberPage>
         "username": username
       };
       await Http.post(
-            uri: '/groups/' + context.read<UserState>().currentGroup!.id.toString() + '/add_guest',
-            body: body,
-          );
+        uri: '/groups/' +
+            context.read<UserState>().currentGroup!.id.toString() +
+            '/add_guest',
+        body: body,
+      );
       return BoolFutureOutput.True;
     } catch (_) {
       throw _;
@@ -91,238 +94,244 @@ class _AddMemberPageState extends State<AddMemberPage>
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = context.watch<ScreenSize>().isMobile;
+    final children = _children();
     return Scaffold(
       appBar: AppBar(
         title: Text('add-member.title'.tr()),
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(80),
-          child: Column(
-            children: [
-              SegmentedButton<AddMemberPageTabs>(
-                selectedIcon: Icon(
-                    _tabController.index == 0 ? Icons.qr_code : Icons.person_add),
-                segments: [
-                  ButtonSegment(
-                    value: AddMemberPageTabs.invite,
-                    label: Text('add-member.invite'.tr()),
-                    icon: Icon(Icons.qr_code),
-                  ),
-                  ButtonSegment(
-                    value: AddMemberPageTabs.create,
-                    label: Text('add-member.create'.tr()),
-                    icon: Icon(Icons.person_add),
-                  ),
-                ],
-                selected:
-                    Set.from([AddMemberPageTabs.fromIndex(_tabController.index)]),
-                onSelectionChanged: (selected) {
-                  setState(() {
-                    _tabController.animateTo(selected.first.index);
-                  });
-                },
-              ),
-              SizedBox(height: 22),
-            ],
-          ),
-        ),
-      ),
-      body: Container(
-        color: Theme.of(context).colorScheme.surface,
-        child: Column(
-          children: [
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(20),
-                  ),
-                ), // TODO: responsive layout
-                child: TabBarView(
-                  controller: _tabController,
-                  physics: NeverScrollableScrollPhysics(),
+        bottom: isMobile
+            ? PreferredSize(
+                preferredSize: Size.fromHeight(80),
+                child: Column(
                   children: [
-                    FutureBuilder(
-                        future: _invitation,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState != ConnectionState.done) {
-                            return Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          if (snapshot.hasError) {
-                            return ErrorMessage(
-                              error: snapshot.error.toString(),
-                              onTap: () => setState(() {
-                                _invitation = _getInvitation();
-                              }),
-                            );
-                          }
-                          return SingleChildScrollView(
-                            padding: EdgeInsets.only(top: 16),
-                            child: Column(
-                              children: [
-                                Center(
-                                  child: Text(
-                                    'add-member.invite.with_qr'.tr(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Center(
-                                  child: Container(
-                                    constraints: BoxConstraints(
-                                        maxWidth: 250, maxHeight: 250),
-                                    padding: EdgeInsets.all(10),
-                                    child: PrettyQrView.data(
-                                      data:
-                                          'http://dodoapp.net/join/${snapshot.data}',
-                                      decoration: PrettyQrDecoration(
-                                        shape: PrettyQrSmoothSymbol(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                  'add-member.invite.with_link'.tr(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant),
-                                  textAlign: TextAlign.center,
-                                ),
-                                SizedBox(height: 5),
-                                Center(
-                                  child: GradientButton(
-                                    onPressed: () {
-                                      Share.share(
-                                        'https://dodoapp.net/join/${snapshot.data}',
-                                        subject: 'invitation_to_lender'.tr(),
-                                      );
-                                    },
-                                    child: Icon(Icons.share),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                    ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: 500),
-                      child: ListView(
-                        padding: EdgeInsets.only(top: 16),
-                        children: [
-                          Text(
-                            'add-member.create.description'.tr(),
-                            textAlign: TextAlign.center,
-                            style:
-                                Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurfaceVariant,
-                                    ),
-                          ),
-                          SizedBox(height: 10),
-                          ...nicknames.mapIndexed(
-                            (index, nickname) => NicknameField(
-                              nickname: nickname,
-                              onChanged: (value) => setState(() {
-                                nicknames[index] = value;
-                              }),
-                              onAdd: index == nicknames.length - 1
-                                  ? addNickname
-                                  : null,
-                              onRemove: nicknames.length == 1
-                                  ? null
-                                  : () => setState(() {
-                                        nicknames.removeAt(index);
-                                      }),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Center(
-                            child: GradientButton(
-                                onPressed: () {
-                                  List<String> usableNicknames = nicknames
-                                      .where((nickname) => nickname.trim().isNotEmpty).toList();
-                                  if (usableNicknames.isEmpty) return;
-                                  usableNicknames = usableNicknames.toSet().toList(); // remove duplicates
-                                  Future<BoolFutureOutput> future = Future.wait(usableNicknames.map((nickname) => _addGuest(nickname))).then((value) => value.contains(BoolFutureOutput.False) ? BoolFutureOutput.False : BoolFutureOutput.True);
-                                  showFutureOutputDialog(
-                                    context: context, 
-                                    future: future,
-                                    outputCallbacks: {
-                                      BoolFutureOutput.True: () {
-                                        EventBus.instance.fire(EventBus.refreshBalances);
-                                        EventBus.instance.fire(EventBus.refreshGroupMembers);
-                                        Navigator.pop(context);
-                                        Navigator.pop(context);
-                                      }
-                                    }
-                                  );
-                                },
-                                child: Icon(nicknames
-                                            .where((nickname) =>
-                                                nickname.trim().isNotEmpty)
-                                            .length >
-                                        1
-                                    ? Icons.group_add
-                                    : Icons.person_add)),
-                          ),
-                          SizedBox(height: 15),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                size: 25,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
-                              ),
-                              SizedBox(width: 5),
-                              Expanded(
-                                child: Text(
-                                  textAlign: TextAlign.center,
-                                  'add-member.create.note'.tr(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onSurfaceVariant),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                    SegmentedButton<AddMemberPageTabs>(
+                      selectedIcon: Icon(_tabController.index == 0
+                          ? Icons.qr_code
+                          : Icons.person_add),
+                      segments: [
+                        ButtonSegment(
+                          value: AddMemberPageTabs.invite,
+                          label: Text('add-member.invite'.tr()),
+                          icon: Icon(Icons.qr_code),
+                        ),
+                        ButtonSegment(
+                          value: AddMemberPageTabs.create,
+                          label: Text('add-member.create'.tr()),
+                          icon: Icon(Icons.person_add),
+                        ),
+                      ],
+                      selected: Set.from(
+                          [AddMemberPageTabs.fromIndex(_tabController.index)]),
+                      onSelectionChanged: (selected) {
+                        setState(() {
+                          _tabController.animateTo(selected.first.index);
+                        });
+                      },
                     ),
+                    SizedBox(height: 22),
                   ],
                 ),
+              )
+            : null,
+      ),
+      body: isMobile
+          ? Container(
+              color: Theme.of(context).colorScheme.surface,
+              child: Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
+                  ),
+                  child: TabBarView(
+                    controller: _tabController,
+                    physics: NeverScrollableScrollPhysics(),
+                    children: children,
+                  ),
+                ),
               ),
+            )
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: children.map((child) => Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainer,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: child,
+                  ),
+                ),).toList(),
+              
+            ),
+    );
+  }
+
+  List<Widget> _children() {
+    return [
+      FutureBuilder(
+          future: _invitation,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (snapshot.hasError) {
+              return ErrorMessage(
+                error: snapshot.error.toString(),
+                onTap: () => setState(() {
+                  _invitation = _getInvitation();
+                }),
+              );
+            }
+            return SingleChildScrollView(
+              padding: EdgeInsets.only(top: 16),
+              child: Column(
+                children: [
+                  Center(
+                    child: Text(
+                      'add-member.invite.with_qr'.tr(),
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Center(
+                    child: Container(
+                      constraints:
+                          BoxConstraints(maxWidth: 250, maxHeight: 250),
+                      padding: EdgeInsets.all(10),
+                      child: PrettyQrView.data(
+                        data: 'http://dodoapp.net/join/${snapshot.data}',
+                        decoration: PrettyQrDecoration(
+                          shape: PrettyQrSmoothSymbol(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'add-member.invite.with_link'.tr(),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 5),
+                  Center(
+                    child: GradientButton(
+                      onPressed: () {
+                        Share.share(
+                          'https://dodoapp.net/join/${snapshot.data}',
+                          subject: 'invitation_to_lender'.tr(),
+                        );
+                      },
+                      child: Icon(Icons.share),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+      ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: 500),
+        child: ListView(
+          padding: EdgeInsets.only(top: 16),
+          children: [
+            Text(
+              'add-member.create.description'.tr(),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
+            SizedBox(height: 10),
+            ...nicknames.mapIndexed(
+              (index, nickname) => NicknameField(
+                nickname: nickname,
+                onChanged: (value) => setState(() {
+                  nicknames[index] = value;
+                }),
+                onAdd: index == nicknames.length - 1 ? addNickname : null,
+                onRemove: nicknames.length == 1
+                    ? null
+                    : () => setState(() {
+                          nicknames.removeAt(index);
+                        }),
+              ),
+            ),
+            SizedBox(height: 10),
+            Center(
+              child: GradientButton.icon(
+                  onPressed: () {
+                    List<String> usableNicknames = nicknames
+                        .where((nickname) => nickname.trim().isNotEmpty)
+                        .toList();
+                    if (usableNicknames.isEmpty) return;
+                    usableNicknames =
+                        usableNicknames.toSet().toList(); // remove duplicates
+                    Future<BoolFutureOutput> future = Future.wait(
+                        usableNicknames
+                            .map((nickname) => _addGuest(nickname))).then(
+                        (value) => value.contains(BoolFutureOutput.False)
+                            ? BoolFutureOutput.False
+                            : BoolFutureOutput.True);
+                    showFutureOutputDialog(
+                        context: context,
+                        future: future,
+                        outputCallbacks: {
+                          BoolFutureOutput.True: () {
+                            EventBus.instance.fire(EventBus.refreshBalances);
+                            EventBus.instance
+                                .fire(EventBus.refreshGroupMembers);
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          }
+                        });
+                  },
+                  label: Text('add-member.create.submit'.tr()),
+                  icon: Icon(nicknames
+                              .where((nickname) => nickname.trim().isNotEmpty)
+                              .length >
+                          1
+                      ? Icons.group_add
+                      : Icons.person_add)),
+            ),
+            SizedBox(height: 15),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 25,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                SizedBox(width: 5),
+                Expanded(
+                  child: Text(
+                    textAlign: TextAlign.center,
+                    'add-member.create.note'.tr(),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
       ),
-    );
+    ];
   }
 }
 

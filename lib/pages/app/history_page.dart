@@ -5,7 +5,6 @@ import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/components/history/history_filter.dart';
 import 'package:csocsort_szamla/components/payment/payment_entry.dart';
 import 'package:csocsort_szamla/components/purchase/purchase_entry.dart';
-import 'package:csocsort_szamla/config.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
@@ -195,43 +194,49 @@ class _HistoryPageState extends State<HistoryPage>
   @override
   Widget build(BuildContext context) {
     ScreenSize screenSize = context.watch<ScreenSize>();
-    double width = screenSize.width;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
+        scrolledUnderElevation: 0,
         title: Text('history'.tr()),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(180),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: HistoryFilter(
-              selectedCategory: _category,
-              endDate: _endDate,
-              startDate: _startDate,
-              selectedMemberId: _selectedMemberId,
-              onValuesChanged: (
-                  {category,
-                  startDate,
-                  endDate,
-                  selectedMemberId,
-                  removeCategory}) {
-                setState(() {
-                  _selectedMemberId = selectedMemberId ?? _selectedMemberId;
-                  _startDate = startDate ?? _startDate;
-                  _endDate = endDate ?? _endDate;
-                  _category =
-                      (removeCategory ?? false) ? null : category ?? _category;
-                });
-                _purchases = null;
-                _purchases = _getPurchases(overwriteCache: true);
-                _payments = null;
-                _payments = _getPayments(overwriteCache: true);
-              },
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 600),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: HistoryFilter(
+                  selectedCategory: _category,
+                  endDate: _endDate,
+                  startDate: _startDate,
+                  selectedMemberId: _selectedMemberId,
+                  onValuesChanged: (
+                      {category,
+                      startDate,
+                      endDate,
+                      selectedMemberId,
+                      removeCategory}) {
+                    setState(() {
+                      _selectedMemberId = selectedMemberId ?? _selectedMemberId;
+                      _startDate = startDate ?? _startDate;
+                      _endDate = endDate ?? _endDate;
+                      _category = (removeCategory ?? false)
+                          ? null
+                          : category ?? _category;
+                    });
+                    _purchases = null;
+                    _purchases = _getPurchases(overwriteCache: true);
+                    _payments = null;
+                    _payments = _getPayments(overwriteCache: true);
+                  },
+                ),
+              ),
             ),
           ),
         ),
       ),
-      bottomNavigationBar: width > tabletViewWidth
+      bottomNavigationBar: !screenSize.isMobile
           ? null
           : NavigationBar(
               backgroundColor: Theme.of(context).cardTheme.color,
@@ -251,41 +256,60 @@ class _HistoryPageState extends State<HistoryPage>
                     icon: Icon(Icons.attach_money), label: 'payments'.tr())
               ],
             ),
-      body: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerLow,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        ),        
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          children: [
-            Expanded(
-              child: screenSize.isMobile
-                  ? TabBarView(
+      body: Column(
+        children: [
+          Expanded(
+            child: screenSize.isMobile
+                ? Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainerLow,
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: TabBarView(
                       controller: _tabController,
                       physics: NeverScrollableScrollPhysics(),
                       children: [
                         _buildPurchases(),
                         _buildPayments(),
                       ],
-                    )
-                  : Row(
-                      children: [
-                        Expanded(
-                          child: _buildPurchases(),
-                        ),
-                        Expanded(
-                          child: _buildPayments(),
-                        ),
-                      ],
                     ),
-            ),
-            Visibility(
-              visible: MediaQuery.of(context).viewInsets.bottom == 0,
-              child: AdUnit(site: 'history'),
-            ),
-          ],
-        ),
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: Container(
+                            margin: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerLow,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: _buildPurchases()),
+                      ),
+                      Expanded(
+                        child: Container(
+                          margin: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerLow,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          child: _buildPayments()
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+          Visibility(
+            visible: MediaQuery.of(context).viewInsets.bottom == 0,
+            child: AdUnit(site: 'history'),
+          ),
+        ],
       ),
     );
   }
@@ -370,10 +394,8 @@ class _HistoryPageState extends State<HistoryPage>
                   ' - ' +
                   DateFormat.yMMMd(context.locale.countryCode)
                       .format(startDate.subtract(Duration(days: 1))),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ),
         ),
@@ -422,10 +444,8 @@ class _HistoryPageState extends State<HistoryPage>
                   ' - ' +
                   DateFormat.yMMMd(context.locale.languageCode)
                       .format(startDate.subtract(Duration(days: 1))),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ),
         ),
@@ -450,10 +470,8 @@ class _HistoryPageState extends State<HistoryPage>
           padding: EdgeInsets.all(25),
           child: Text(
             'statistics.no-data-for-period'.tr(),
-            style: Theme.of(context)
-                .textTheme
-                .bodyLarge!
-                .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
             textAlign: TextAlign.center,
           ),
         )
