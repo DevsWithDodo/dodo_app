@@ -117,7 +117,7 @@
 
     "about_us": "Rólunk",
     "about_us_explanation": "Az alkalmazás névjegye",
-    "about_us_text": "Ezt az alkalmazást két egyetemista fejlesztette.\n\nKülön köszönet Hegyi Annának és Kovács Sára Katának a fordításokhoz, valamint Kocsis Ábelnek az adatvédelmi nyilatkozattal kapcsolatos segítségért. Emellett mindenkinek, aki tesztelte, és visszajelzést küldött az alkalmazásról.\n\nMinden jót, a fejlesztők",
+    "about_us_text": "Két egyetemista vagyunk, akik hobbiprojektként fejlesztik ezt az appot. Fő célunk egy olyan alkalmazás léterehozása, amit mi is szívesen használunk. Reméljük, hogy tudtunk segíteni a barátaiddal való közös költségekkel 🦤\n\nKülön köszönet jár Hegyi Annának és Kovács Sára Katának a fordításokhoz, valamint Kocsis Ábelnek az adatvédelmi nyilatkozattal kapcsolatos segítségért. Emellett mindenkinek szeretnénk megköszönni, aki tesztelte, és visszajelzést küldött az alkalmazásról.\n\nMinden jót,\na fejlesztők\n\nUI. Ha annyira tetszik az app, hogy idáig elolvastad, akkor légyszi értékeld az Áruházban 😁",
 
     "reactions": "Reakciók",
     "add_reaction": "Reakció hozzáadása",
@@ -182,10 +182,8 @@
     "download_pdf": "Letöltés PDF-ként",
     "download_pdf_explanation": "Használd ezt, hogyha gyorsan átlátható összegzést szeretnél",
 
-    "modify_payment": "Fizetés módosítása",
-    "modify_payment_explanation": "Módosítsd a fizetést, ha változtak a részletei",
-    "modify_purchase": "Vásárlás módósítása",
-    "modify_purchase_explanation": "Módosítsd a vásárlást, ha változtak a részletei",
+    "payment.modify": "Fizetés módosítása",
+    "purchase.modify": "Vásárlás módósítása",
 
     "not_in_group": "Nem vagy a csoport tagja!",
 
@@ -485,5 +483,15 @@
 
     "profile": "Profil",
     "customization": "Nyelv & témák",
-    "customize-page.preview": "Nyomj hosszan egy témára az előnézet megtekintéséhez"
+    "customize-page.preview": "Nyomj hosszan egy témára az előnézet megtekintéséhez",
+
+    "speed-dial.purchase": "Vásárlás",
+    "speed-dial.payment": "Fizetés",
+    "speed-dial.purchase.description": "Valaki fizetett valamiért vagy vett valamit",
+    "speed-dial.payment.description": "Valakinek fizettek",
+
+    "purchase.page.custom-amount.switch": "Egyéni összegek",
+    "purchase.page.custom-amount.hint": "Az összeg megadása után kattints a beviteli mezőn kívülre a mentéshez",
+
+    "confirm-delete": "Biztosan törölni szeretnéd az elemet?"
 }

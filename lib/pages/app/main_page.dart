@@ -201,7 +201,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
     _selectedIndex = widget.selectedIndex;
     _tabController = TabController(
-        length: 3, vsync: this, initialIndex: widget.selectedIndex);
+        length: 2, vsync: this, initialIndex: widget.selectedIndex);
     _groups = _getGroups();
     _sumBalance = _getSumBalance();
     _invitation = _getInvitation();

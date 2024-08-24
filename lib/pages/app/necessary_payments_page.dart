@@ -1,5 +1,4 @@
 import 'package:csocsort_szamla/components/balance/necessary_payment_entry.dart';
-import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
@@ -55,140 +54,136 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
         scrolledUnderElevation: 0,
         title: Text('payments_needed'.tr()),
         bottom: PreferredSize(
-            preferredSize: Size.fromHeight(100),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
-                children: [
-                  Text(
-                    'payments-needed.page.subtitle'.tr(),
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(color: Theme.of(context).colorScheme.onSurface),
-                  ),
-                  SizedBox(height: 15),
-                  Text(
-                    'payments-needed.page.payment-method-hint'.tr(),
-                    style:
-                        Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurface),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            )),
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-                  child: Column(
-                    children: _generatePaymentEntries(),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(child: Text('payments-needed.page.copy-hint'.tr())),
-                      IconButton.filled(
-                        icon: Icon(Icons.copy, size: 20),
-                        onPressed: () {
-                          Currency currency = context.read<UserState>().currentGroup!.currency;
-                          int longestPayerNick = this
-                              .widget
-                              .necessaryPayments
-                              .map((e) => e.payerNickname.length)
-                              .reduce((value, element) => value > element ? value : element);
-                          int longestTakerNick = this
-                              .widget
-                              .necessaryPayments
-                              .map((e) => e.takerNickname.length)
-                              .reduce((value, element) => value > element ? value : element);
-                          String paymentsPart = this.widget.necessaryPayments.map(
-                            (payment) {
-                              String firstSpaces = ' ' * (longestPayerNick - payment.payerNickname.length);
-                              String secondSpaces = ' ' * (longestTakerNick - payment.takerNickname.length);
-                              return "${payment.payerNickname}${firstSpaces}\t➡️\t${payment.takerNickname}:${secondSpaces}\t${payment.amount.toMoneyString(currency, withSymbol: true)}";
-                            },
-                          ).join('\n');
-                          String paymentMethodsPart = "";
-                          List<Member> membersToCopy = widget.members
-                              .where(
-                                (element) =>
-                                    element.paymentMethods != null &&
-                                    element.paymentMethods!.isNotEmpty &&
-                                    widget.necessaryPayments.any((payment) => payment.takerId == element.id),
-                              )
-                              .toList();
-                          if (this
-                              .widget
-                              .members
-                              .any((element) => element.paymentMethods != null && element.paymentMethods!.isNotEmpty)) {
-                            paymentMethodsPart = "\n\n${'payment-methods.title'.tr()}\n" +
-                                membersToCopy
-                                    .map(
-                                      (member) {
-                                        return member.paymentMethods!.isEmpty
-                                            ? null
-                                            : "${member.nickname}: \n" +
-                                                member.paymentMethods!
-                                                    .map(
-                                                      (method) =>
-                                                          "  ${method.name}: ${method.value} ${method.priority ? "(⭐)" : ""}",
-                                                    )
-                                                    .join('\n');
-                                      },
-                                    )
-                                    .where((e) => e != null)
-                                    .join('\n');
-                          }
-                          Clipboard.setData(
-                            ClipboardData(
-                              text: paymentsPart + paymentMethodsPart,
-                            ),
-                          );
-                        },
+          preferredSize: Size.fromHeight(100),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              children: [
+                Text(
+                  'payments-needed.page.subtitle'.tr(),
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 15),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(child: Text('payments-needed.page.payment-page-hint'.tr())),
-                      IconButton.filled(
-                        icon: Icon(Icons.payments, size: 20),
-                        onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PaymentPage(),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
+                ),
+                SizedBox(height: 15),
+                Text(
+                  'payments-needed.page.payment-method-hint'.tr(),
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
-          ],
+          ),
+        ),
+      ),
+      body: Center(
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 550),
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    color: Theme.of(context).colorScheme.surfaceContainer,
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+                    child: Column(
+                      children: _generatePaymentEntries(),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(child: Text('payments-needed.page.copy-hint'.tr())),
+                        IconButton.filled(
+                          icon: Icon(Icons.copy, size: 20),
+                          onPressed: () {
+                            Currency currency = context.read<UserState>().currentGroup!.currency;
+                            int longestPayerNick = this.widget.necessaryPayments.map((e) => e.payerNickname.length).reduce(
+                                  (value, element) => value > element ? value : element,
+                                );
+                            int longestTakerNick = this.widget.necessaryPayments.map((e) => e.takerNickname.length).reduce(
+                                  (value, element) => value > element ? value : element,
+                                );
+                            String paymentsPart = this.widget.necessaryPayments.map(
+                              (payment) {
+                                String firstSpaces = ' ' * (longestPayerNick - payment.payerNickname.length);
+                                String secondSpaces = ' ' * (longestTakerNick - payment.takerNickname.length);
+                                return "${payment.payerNickname}${firstSpaces}\t➡️\t${payment.takerNickname}:${secondSpaces}\t${payment.amount.toMoneyString(
+                                  currency,
+                                  withSymbol: true,
+                                )}";
+                              },
+                            ).join('\n');
+                            String paymentMethodsPart = "";
+                            List<Member> membersToCopy = widget.members
+                                .where(
+                                  (element) => element.paymentMethods != null && element.paymentMethods!.isNotEmpty && widget.necessaryPayments.any((payment) => payment.takerId == element.id),
+                                )
+                                .toList();
+                            if (this.widget.members.any((element) => element.paymentMethods != null && element.paymentMethods!.isNotEmpty)) {
+                              paymentMethodsPart = "\n\n${'payment-methods.title'.tr()}\n" +
+                                  membersToCopy
+                                      .map(
+                                        (member) {
+                                          return member.paymentMethods!.isEmpty
+                                              ? null
+                                              : "${member.nickname}: \n" +
+                                                  member.paymentMethods!
+                                                      .map(
+                                                        (method) => "  ${method.name}: ${method.value} ${method.priority ? "(⭐)" : ""}",
+                                                      )
+                                                      .join('\n');
+                                        },
+                                      )
+                                      .where((e) => e != null)
+                                      .join('\n');
+                            }
+                            Clipboard.setData(
+                              ClipboardData(
+                                text: paymentsPart + paymentMethodsPart,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(child: Text('payments-needed.page.payment-page-hint'.tr())),
+                        IconButton.filled(
+                          icon: Icon(Icons.payments, size: 20),
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PaymentPage(),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -196,8 +191,7 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
 
   List<Widget> _generatePaymentEntries() {
     Map<int, List<Payment>> paymentsByPayer = {};
-    for (Payment payment
-        in this.widget.necessaryPayments.where((payment) => payment.amount > payment.originalCurrency.threshold())) {
+    for (Payment payment in this.widget.necessaryPayments.where((payment) => payment.amount > payment.originalCurrency.threshold())) {
       if (paymentsByPayer.containsKey(payment.payerId)) {
         paymentsByPayer[payment.payerId]!.add(payment);
       } else {
@@ -209,9 +203,7 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
       paymentEntries.add(
         NecessaryPaymentEntry(
           payments: paymentsByPayer[payerId]!,
-          takers: widget.members
-              .where((element) => paymentsByPayer[payerId]!.any((payment) => payment.takerId == element.id))
-              .toList(),
+          takers: widget.members.where((element) => paymentsByPayer[payerId]!.any((payment) => payment.takerId == element.id)).toList(),
         ),
       );
     }

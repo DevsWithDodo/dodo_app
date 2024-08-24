@@ -133,7 +133,7 @@ class _PinPadState extends State<PinPad> {
                 ['1', '2', '3'],
                 ['4', '5', '6'],
                 ['7', '8', '9'],
-                ['', '0', 'C']
+                ['C', '0', '']
               ]
                   .map((row) => TableRow(
                         children: row

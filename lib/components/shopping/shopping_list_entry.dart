@@ -11,7 +11,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../purchase/add_modify_purchase.dart';
 import 'edit_request_dialog.dart';
 
 class ShoppingListEntry extends StatefulWidget {
@@ -113,7 +112,6 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => PurchasePage(
-                    type: PurchaseType.fromShopping,
                     shoppingData: widget.shoppingRequest,
                   ),
                 ),

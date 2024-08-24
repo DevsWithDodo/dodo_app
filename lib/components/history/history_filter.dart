@@ -145,13 +145,13 @@ class _HistoryFilterState extends State<HistoryFilter> {
                           scrollDirection: Axis.horizontal,
                           child: MemberChips(
                             allMembers: snapshot.data!,
-                            chosenMembers:
-                                snapshot.data!.where((element) => element.id == _selectedMemberId).toList(),
-                            setChosenMembers: (newMembersChosen) {
+                            chosenMemberIds:
+                                snapshot.data!.where((element) => element.id == _selectedMemberId).map((e) => e.id).toList(),
+                            setChosenMemberIds: (newMembersChosen) {
                               if (newMembersChosen.isNotEmpty) {
-                                widget.onValuesChanged(selectedMemberId: newMembersChosen.first.id);
+                                widget.onValuesChanged(selectedMemberId: newMembersChosen.first);
                                 setState(() {
-                                  _selectedMemberId = newMembersChosen.first.id;
+                                  _selectedMemberId = newMembersChosen.first;
                                 });
                               }
                             },

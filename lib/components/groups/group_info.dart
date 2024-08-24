@@ -47,9 +47,13 @@ class _GroupInfoState extends State<GroupInfo> {
   Future<Map<String, dynamic>> _getBoostNumber() async {
     try {
       Response response = await Http.get(
-          uri: generateUri(GetUriKeys.groupBoost, context,
-              params: [context.read<UserState>().user!.group!.id.toString()]),
-          useCache: false);
+        uri: generateUri(
+          GetUriKeys.groupBoost,
+          context,
+          params: [context.read<UserState>().user!.group!.id.toString()],
+        ),
+        useCache: false,
+      );
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data'];
     } catch (_) {
@@ -60,9 +64,8 @@ class _GroupInfoState extends State<GroupInfo> {
   Future<BoolFutureOutput> _postBoost() async {
     try {
       await Http.post(
-          uri: '/groups/' +
-              context.read<UserState>().user!.group!.id.toString() +
-              '/boost');
+        uri: '/groups/' + context.read<UserState>().user!.group!.id.toString() + '/boost',
+      );
       return BoolFutureOutput.True;
     } catch (_) {
       throw _;
@@ -76,9 +79,7 @@ class _GroupInfoState extends State<GroupInfo> {
       );
       UserState provider = context.read<UserState>();
       if (provider.user!.groups.length > 1) {
-        provider.setGroups(provider.user!.groups
-            .where((group) => group.id != provider.user!.group!.id)
-            .toList());
+        provider.setGroups(provider.user!.groups.where((group) => group.id != provider.user!.group!.id).toList());
         provider.setGroup(provider.user!.groups.first);
         return LeftOrRemovedFromGroupFutureOutput.LeftHasOtherGroup;
       }
@@ -115,14 +116,12 @@ class _GroupInfoState extends State<GroupInfo> {
     super.initState();
     _isUserAdmin = _getIsUserAdmin();
     _boostNumber = _getBoostNumber();
-    EventBus.instance
-        .register(EventBus.refreshGroupInfo, onRefreshGroupInfoEvent);
+    EventBus.instance.register(EventBus.refreshGroupInfo, onRefreshGroupInfoEvent);
   }
 
   @override
   void dispose() {
-    EventBus.instance
-        .unregister(EventBus.refreshGroupInfo, onRefreshGroupInfoEvent);
+    EventBus.instance.unregister(EventBus.refreshGroupInfo, onRefreshGroupInfoEvent);
     super.dispose();
   }
 
@@ -136,8 +135,7 @@ class _GroupInfoState extends State<GroupInfo> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Center(
-              child: Text('group-info'.tr(),
-                  style: Theme.of(context).textTheme.titleLarge),
+              child: Text('group-info'.tr(), style: Theme.of(context).textTheme.titleLarge),
             ),
             const SizedBox(height: 10),
             FutureBuilder(
@@ -146,14 +144,12 @@ class _GroupInfoState extends State<GroupInfo> {
                 return FutureBuilder(
                   future: _boostNumber,
                   builder: (context, boostSnapshot) {
-                    if (adminSnapshot.connectionState != ConnectionState.done ||
-                        boostSnapshot.connectionState != ConnectionState.done) {
+                    if (adminSnapshot.connectionState != ConnectionState.done || boostSnapshot.connectionState != ConnectionState.done) {
                       return Center(child: CircularProgressIndicator());
                     }
                     if (adminSnapshot.hasError || boostSnapshot.hasError) {
                       return ErrorMessage(
-                          error: (adminSnapshot.error ?? boostSnapshot.error)
-                              .toString(),
+                          error: (adminSnapshot.error ?? boostSnapshot.error).toString(),
                           onTap: () {
                             setState(() {
                               _isUserAdmin = _getIsUserAdmin();
@@ -161,14 +157,11 @@ class _GroupInfoState extends State<GroupInfo> {
                             });
                           });
                     }
-                    final bool isBoosted =
-                        boostSnapshot.data!['is_boosted'] == 1;
-                    final int boostsAvailable =
-                        boostSnapshot.data!['available_boosts'];
+                    final bool isBoosted = boostSnapshot.data!['is_boosted'] == 1;
+                    final int boostsAvailable = boostSnapshot.data!['available_boosts'];
                     final bool isAdmin = adminSnapshot.data!;
 
-                    final TapGestureRecognizer recognizer =
-                        TapGestureRecognizer();
+                    final TapGestureRecognizer recognizer = TapGestureRecognizer();
                     recognizer.onTap = onTapStore;
                     return Column(
                       children: [
@@ -181,15 +174,10 @@ class _GroupInfoState extends State<GroupInfo> {
                                 text: TextSpan(
                                   style: Theme.of(context).textTheme.labelLarge,
                                   children: [
-                                    TextSpan(
-                                        text: 'group-info.name'.tr() + ': '),
+                                    TextSpan(text: 'group-info.name'.tr() + ': '),
                                     TextSpan(
                                       text: group.name,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelLarge!
-                                          .copyWith(
-                                              fontWeight: FontWeight.bold),
+                                      style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.bold),
                                     ),
                                   ],
                                 ),
@@ -197,6 +185,7 @@ class _GroupInfoState extends State<GroupInfo> {
                             ),
                             if (isAdmin)
                               IconButton.filledTonal(
+                                visualDensity: VisualDensity.compact,
                                 icon: Icon(Icons.edit),
                                 onPressed: () => showDialog(
                                   builder: (context) => RenameGroupDialog(),
@@ -214,17 +203,10 @@ class _GroupInfoState extends State<GroupInfo> {
                                 text: TextSpan(
                                   style: Theme.of(context).textTheme.labelLarge,
                                   children: [
+                                    TextSpan(text: 'group-info.currency'.tr() + ': '),
                                     TextSpan(
-                                        text:
-                                            'group-info.currency'.tr() + ': '),
-                                    TextSpan(
-                                      text: group.currency.code +
-                                          "(${group.currency.symbol})",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelLarge!
-                                          .copyWith(
-                                              fontWeight: FontWeight.bold),
+                                      text: group.currency.code + "(${group.currency.symbol})",
+                                      style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.bold),
                                     ),
                                   ],
                                 ),
@@ -241,22 +223,12 @@ class _GroupInfoState extends State<GroupInfo> {
                                 Expanded(
                                   child: RichText(
                                     text: TextSpan(
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelLarge,
+                                      style: Theme.of(context).textTheme.labelLarge,
                                       children: [
+                                        TextSpan(text: 'group-info.boosted'.tr() + ': '),
                                         TextSpan(
-                                            text: 'group-info.boosted'.tr() +
-                                                ': '),
-                                        TextSpan(
-                                          text: isBoosted
-                                              ? 'yes'.tr()
-                                              : 'no'.tr(),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelLarge!
-                                              .copyWith(
-                                                  fontWeight: FontWeight.bold),
+                                          text: isBoosted ? 'yes'.tr() : 'no'.tr(),
+                                          style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.bold),
                                         ),
                                       ],
                                     ),
@@ -264,6 +236,7 @@ class _GroupInfoState extends State<GroupInfo> {
                                 ),
                                 if (!isBoosted)
                                   IconButton.filledTonal(
+                                    visualDensity: VisualDensity.compact,
                                     icon: Icon(Icons.insights),
                                     onPressed: boostsAvailable == 0
                                         ? () => Navigator.push(
@@ -278,30 +251,20 @@ class _GroupInfoState extends State<GroupInfo> {
                                             })
                                         : () {
                                             showDialog(
-                                                    builder: (context) =>
-                                                        ConfirmChoiceDialog(
+                                                    builder: (context) => ConfirmChoiceDialog(
                                                           choice: 'sure_boost',
                                                         ),
                                                     context: context)
                                                 .then((value) {
                                               if (value ?? false) {
-                                                showFutureOutputDialog(
-                                                    future: _postBoost(),
-                                                    context: context,
-                                                    outputCallbacks: {
-                                                      BoolFutureOutput.True:
-                                                          () async {
-                                                        await clearGroupCache(
-                                                            context);
-                                                        EventBus.instance.fire(
-                                                            EventBus
-                                                                .refreshStatistics);
-                                                        EventBus.instance.fire(
-                                                            EventBus
-                                                                .refreshGroupInfo);
-                                                        Navigator.pop(context);
-                                                      }
-                                                    });
+                                                showFutureOutputDialog(future: _postBoost(), context: context, outputCallbacks: {
+                                                  BoolFutureOutput.True: () async {
+                                                    await clearGroupCache(context);
+                                                    EventBus.instance.fire(EventBus.refreshStatistics);
+                                                    EventBus.instance.fire(EventBus.refreshGroupInfo);
+                                                    Navigator.pop(context);
+                                                  }
+                                                });
                                               }
                                             });
                                           },
@@ -321,34 +284,19 @@ class _GroupInfoState extends State<GroupInfo> {
                                       ),
                                       if (boostsAvailable != 0)
                                         Text(
-                                          'group-info.boosted.boosts-available'
-                                              .tr(args: [
-                                            boostsAvailable.toString()
-                                          ]),
+                                          'group-info.boosted.boosts-available'.tr(args: [boostsAvailable.toString()]),
                                         ),
                                       if (boostsAvailable == 0)
                                         RichText(
                                           text: TextSpan(
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall,
+                                            style: Theme.of(context).textTheme.bodySmall,
                                             children: [
                                               TextSpan(
-                                                text:
-                                                    'group-info.boosted.no-boosts'
-                                                            .tr() +
-                                                        ' ',
+                                                text: 'group-info.boosted.no-boosts'.tr() + ' ',
                                               ),
                                               TextSpan(
-                                                text:
-                                                    'group-info.boosted.no-boosts.store'
-                                                        .tr(),
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primary,
-                                                    fontWeight:
-                                                        FontWeight.bold),
+                                                text: 'group-info.boosted.no-boosts.store'.tr(),
+                                                style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),
                                                 recognizer: recognizer,
                                               )
                                             ],
@@ -363,21 +311,14 @@ class _GroupInfoState extends State<GroupInfo> {
                         if (isAdmin) ...[
                           const SizedBox(height: 10),
                           FilledButton.icon(
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .error,
-                                foregroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .onError),
+                            style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error, foregroundColor: Theme.of(context).colorScheme.onError),
                             icon: Icon(Icons.delete_forever),
                             label: Text('group-info.delete-group'.tr()),
                             onPressed: () async {
                               final value = await showDialog<bool>(
                                 context: context,
                                 builder: (context) => ConfirmChoiceDialog(
-                                  choice: 'group-info.delete-group.explanation'
-                                      .tr(),
+                                  choice: 'group-info.delete-group.explanation'.tr(),
                                 ),
                               );
 
@@ -386,8 +327,7 @@ class _GroupInfoState extends State<GroupInfo> {
                                   future: _deleteGroup(),
                                   context: context,
                                   outputCallbacks: {
-                                    LeftOrRemovedFromGroupFutureOutput
-                                        .LeftHasOtherGroup: () async {
+                                    LeftOrRemovedFromGroupFutureOutput.LeftHasOtherGroup: () async {
                                       Navigator.pop(context);
                                       final bus = EventBus.instance;
                                       bus.fire(EventBus.refreshBalances);
@@ -399,17 +339,17 @@ class _GroupInfoState extends State<GroupInfo> {
                                     },
                                     LeftOrRemovedFromGroupFutureOutput.LeftNoOtherGroup: () async {
                                       Navigator.of(context).pushAndRemoveUntil(
-                                            MaterialPageRoute(
-                                              builder: (context) => JoinGroupPage(
-                                                fromAuth: true,
-                                              ),
-                                            ),
-                                            (r) => false,
-                                          );
-                                          UserState provider = context.read<UserState>();
-                                          provider.setGroups([]);
-                                          provider.setGroup(null);
-                                          clearAllCache();
+                                        MaterialPageRoute(
+                                          builder: (context) => JoinGroupPage(
+                                            fromAuth: true,
+                                          ),
+                                        ),
+                                        (r) => false,
+                                      );
+                                      UserState provider = context.read<UserState>();
+                                      provider.setGroups([]);
+                                      provider.setGroup(null);
+                                      clearAllCache();
                                     }
                                   },
                                 );

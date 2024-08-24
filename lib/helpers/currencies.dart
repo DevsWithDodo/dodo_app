@@ -87,9 +87,9 @@ class Currency {
     _currencies[this.code]!['rate'] = rate;
   }
 
-  double threshold() {
-    return (this.hasSubunit ? 0.01 : 1) / 2;
-  }
+  double get smallestUnit => this.hasSubunit ? 0.01 : 1;
+
+  double threshold() => smallestUnit / 2;
 
   @override
   String toString() {

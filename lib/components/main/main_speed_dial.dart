@@ -1,4 +1,3 @@
-import 'package:csocsort_szamla/components/purchase/add_modify_purchase.dart';
 import 'package:csocsort_szamla/pages/app/payment_page.dart';
 import 'package:csocsort_szamla/pages/app/purchase_page.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -35,7 +34,7 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
             );
             widget.onReturn?.call();
           },
-          label: 'payment'.tr(),
+          label: 'speed-dial.payment',
           icon: Icons.payments,
         ),
         MainSpeedDialChild(
@@ -44,14 +43,12 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
             await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => PurchasePage(
-                  type: PurchaseType.newPurchase,
-                ),
+                builder: (context) => PurchasePage(),
               ),
             );
             widget.onReturn?.call();
           },
-          label: 'purchase'.tr(),
+          label: 'speed-dial.purchase',
           icon: Icons.shopping_cart,
         ),
       ],
@@ -68,13 +65,25 @@ class MainSpeedDialChild extends SpeedDialChild {
   }) : super(
           foregroundColor: Theme.of(context).colorScheme.onTertiaryContainer,
           backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+          elevation: 2,
           child: Icon(icon),
-          label: label,
-          labelBackgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
-          labelStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                color: Theme.of(context).colorScheme.onTertiaryContainer,
-                fontSize: 18,
-              ),
+          labelWidget: Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  label.tr(),
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                Text(
+                  '$label.description'.tr(),
+                  style: Theme.of(context).textTheme.bodySmall,
+                )
+              ],
+            ),
+          ),
           onTap: onTap,
         );
 }

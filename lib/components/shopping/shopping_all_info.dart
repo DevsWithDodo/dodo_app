@@ -1,18 +1,15 @@
 import 'package:csocsort_szamla/components/helpers/add_reaction_dialog.dart';
+import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
+import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/helpers/reaction_row.dart';
+import 'package:csocsort_szamla/components/shopping/edit_request_dialog.dart';
+import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
-import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/pages/app/purchase_page.dart';
-import 'package:csocsort_szamla/components/shopping/edit_request_dialog.dart';
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-
-import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
-import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../purchase/add_modify_purchase.dart';
 
 class ShoppingAllInfo extends StatefulWidget {
   final ShoppingRequest shoppingRequest;
@@ -227,7 +224,6 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => PurchasePage(
-                                          type: PurchaseType.fromShopping,
                                           shoppingData: widget.shoppingRequest,
                                         ),
                                       ),

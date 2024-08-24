@@ -1,14 +1,15 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/helpers/event_bus.dart';
-import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:collection/collection.dart';
 import 'package:csocsort_szamla/components/helpers/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/helpers/member_chips.dart';
+import 'package:csocsort_szamla/helpers/event_bus.dart';
+import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:csocsort_szamla/helpers/models.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -28,8 +29,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
 
   Future<BoolFutureOutput> _mergeGuest() async {
     Map<String, dynamic> body = {'member_id': _selectedMember!.id, 'guest_id': widget.guestId};
-    await Http.post(
-        uri: '/groups/' + context.read<UserState>().currentGroup!.id.toString() + '/merge_guest', body: body);
+    await Http.post(uri: '/groups/' + context.read<UserState>().currentGroup!.id.toString() + '/merge_guest', body: body);
     return BoolFutureOutput.True;
   }
 
@@ -91,12 +91,14 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
                           child: MemberChips(
                             multiple: false,
                             allMembers: snapshot.data!.where((element) => !element.isGuest!).toList(),
-                            setChosenMembers: (newMembers) {
+                            setChosenMemberIds: (newMemberIds) {
                               setState(() {
-                                _selectedMember = newMembers.firstOrNull;
+                                _selectedMember = snapshot.data!.firstWhereOrNull(
+                                  (element) => element.id == newMemberIds.firstOrNull,
+                                );
                               });
                             },
-                            chosenMembers: _selectedMember == null ? [] : [_selectedMember!],
+                            chosenMemberIds: _selectedMember == null ? [] : [_selectedMember!.id],
                           ),
                         ),
                       ],

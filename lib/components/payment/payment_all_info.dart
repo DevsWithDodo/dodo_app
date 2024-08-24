@@ -4,10 +4,10 @@ import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/helpers/reaction_row.dart';
 import 'package:csocsort_szamla/components/helpers/transaction_receivers.dart';
-import 'package:csocsort_szamla/components/payment/modify_payment_dialog.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/pages/app/payment_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -48,16 +48,14 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
     if (widget.payment.note == '') {
       note = 'no_note'.tr();
     } else {
-      note = widget.payment.note[0].toUpperCase() +
-          widget.payment.note.substring(1);
+      note = widget.payment.note[0].toUpperCase() + widget.payment.note.substring(1);
     }
 
     TextStyle titleStyle = Theme.of(context).textTheme.titleMedium!.copyWith(
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         );
 
-    Currency groupCurrency = context.select<UserState, Currency>(
-        (provider) => provider.currentGroup!.currency);
+    Currency groupCurrency = context.select<UserState, Currency>((provider) => provider.currentGroup!.currency);
 
     return DefaultTextStyle(
       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
@@ -112,9 +110,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                       children: [
                         Center(
                           child: Text(
-                            'info.purchase-currency'.tr(namedArgs: {
-                              "currency": widget.payment.originalCurrency.code
-                            }),
+                            'info.purchase-currency'.tr(namedArgs: {"currency": widget.payment.originalCurrency.code}),
                             style: titleStyle,
                             textAlign: TextAlign.center,
                           ),
@@ -123,9 +119,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                           child: Switch(
                             value: displayCurrency == groupCurrency,
                             onChanged: (value) => setState(() {
-                              displayCurrency = value
-                                  ? groupCurrency
-                                  : widget.payment.originalCurrency;
+                              displayCurrency = value ? groupCurrency : widget.payment.originalCurrency;
                             }),
                           ),
                         ),
@@ -155,8 +149,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                         nickname: widget.payment.takerNickname,
                         username: widget.payment.takerUsername,
                         balance: widget.payment.amount,
-                        balanceOriginalCurrency:
-                            widget.payment.amountOriginalCurrency,
+                        balanceOriginalCurrency: widget.payment.amountOriginalCurrency,
                       )
                     ]
                   },
@@ -169,17 +162,14 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 GradientButton.icon(
-                  onPressed: () {
-                    showDialog(
-                            builder: (context) => ModifyPaymentDialog(
-                                  savedPayment: widget.payment,
-                                ),
-                            context: context)
-                        .then((value) {
-                      if (value ?? false) {
-                        Navigator.pop(context, 'deleted');
-                      }
-                    });
+                  onPressed: () async {
+                    final modified = await Navigator.push<bool>(
+                      context,
+                      MaterialPageRoute(builder: (context) => PaymentPage(payment: widget.payment)),
+                    );
+                    if (modified ?? false) {
+                      Navigator.pop(context);
+                    }
                   },
                   icon: Icon(Icons.edit),
                   label: Text('modify'.tr()),
@@ -188,7 +178,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                   onPressed: () {
                     showDialog(
                       builder: (context) => ConfirmChoiceDialog(
-                        choice: 'want_delete',
+                        choice: 'confirm-delete',
                       ),
                       context: context,
                     ).then((value) {

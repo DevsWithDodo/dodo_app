@@ -1,19 +1,14 @@
-import 'dart:math';
-
-import 'package:collection/collection.dart';
 import 'package:csocsort_szamla/components/helpers/add_reaction_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/helpers/reaction_row.dart';
 import 'package:csocsort_szamla/components/helpers/transaction_receivers.dart';
-import 'package:csocsort_szamla/components/purchase/modify_purchase_dialog.dart';
-import 'package:csocsort_szamla/helpers/app_theme.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/pages/app/purchase_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -149,10 +144,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                 ),
                 Flexible(
                   child: Text(
-                    (displayCurrency == widget.purchase.originalCurrency
-                            ? widget.purchase.totalAmountOriginalCurrency
-                            : widget.purchase.totalAmount)
-                        .toMoneyString(
+                    (displayCurrency == widget.purchase.originalCurrency ? widget.purchase.totalAmountOriginalCurrency : widget.purchase.totalAmount).toMoneyString(
                       displayCurrency,
                       withSymbol: true,
                     ),
@@ -224,17 +216,14 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 GradientButton.icon(
-                  onPressed: () {
-                    showDialog(
-                      builder: (context) => ModifyPurchaseDialog(
-                        savedPurchase: widget.purchase,
-                      ),
-                      context: context,
-                    ).then((value) {
-                      if (value ?? false) {
-                        Navigator.pop(context, 'deleted');
-                      }
-                    });
+                  onPressed: () async {
+                    bool? edited = await Navigator.push<bool>(
+                      context,
+                      MaterialPageRoute(builder: (context) => PurchasePage(purchase: widget.purchase)),
+                    );
+                    if (edited ?? false) {
+                      Navigator.pop(context);
+                    }
                   },
                   icon: Icon(Icons.edit),
                   label: Text('modify'.tr()),
@@ -242,21 +231,18 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                 GradientButton.icon(
                   onPressed: () {
                     showDialog(
-                            builder: (context) => ConfirmChoiceDialog(
-                                  choice: 'want_delete',
-                                ),
-                            context: context)
-                        .then((value) {
+                      builder: (context) => ConfirmChoiceDialog(
+                        choice: 'confirm-delete',
+                      ),
+                      context: context,
+                    ).then((value) {
                       if (value != null && value) {
-                        showFutureOutputDialog(
-                            context: context,
-                            future: _deleteElement(widget.purchase.id),
-                            outputCallbacks: {
-                              BoolFutureOutput.True: () {
-                                Navigator.pop(context);
-                                Navigator.pop(context, 'deleted');
-                              }
-                            });
+                        showFutureOutputDialog(context: context, future: _deleteElement(widget.purchase.id), outputCallbacks: {
+                          BoolFutureOutput.True: () {
+                            Navigator.pop(context);
+                            Navigator.pop(context, true); // Refresh the list
+                          }
+                        });
                       }
                     });
                   },

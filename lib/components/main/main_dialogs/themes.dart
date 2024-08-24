@@ -1,7 +1,7 @@
-import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/components/main/main_dialogs/bottom_dialog.dart';
 import 'package:csocsort_szamla/components/main/main_dialogs/main_dialog.dart';
-import 'package:csocsort_szamla/pages/app/user_settings_page.dart';
+import 'package:csocsort_szamla/helpers/event_bus.dart';
+import 'package:csocsort_szamla/pages/app/customize_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +24,7 @@ class ThemesMainDialog extends MainDialog {
       button: TextButton.icon(
         onPressed: () {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => UserSettingsPage()),
+            MaterialPageRoute(builder: (context) => CustomizePage()),
           );
           EventBus.instance.fire(EventBus.hideMainDialog);
         },

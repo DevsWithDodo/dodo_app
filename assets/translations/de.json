@@ -493,5 +493,15 @@
 
     "profile": "Profil",
     "customization": "Sprache und Design",
-    "customize-page.preview": "Tippe und halte ein Design um eine Vorschau zu sehen"
+    "customize-page.preview": "Tippe und halte ein Design um eine Vorschau zu sehen",
+
+    "speed-dial.purchase": "Einkauf",
+    "speed-dial.payment": "Zahlung",
+    "speed-dial.purchase.description": "Jemend hat für etwas bezahlt oder etwas gekauft",
+    "speed-dial.payment.description": "Jemand hat Geld erhalten",
+
+    "purchase.page.custom-amount.switch": "Individuelle Beträge",
+    "purchase.page.custom-amount.hint": "Nachdem du den Betrag angegeben hast, tippe aus dem Feld um es zu speichern.",
+
+    "confirm-delete": "Bist du sicher, dass du dieses Element löschen möchtest?"
 }

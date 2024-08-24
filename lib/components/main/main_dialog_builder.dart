@@ -1,15 +1,5 @@
 import 'dart:math';
 
-import 'package:csocsort_szamla/helpers/app_theme.dart';
-import 'package:csocsort_szamla/helpers/event_bus.dart';
-import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/navigator_service.dart';
-import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
-import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
-import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
-import 'package:csocsort_szamla/main.dart';
 import 'package:csocsort_szamla/components/main/dialogs/iapp_not_supported_dialog.dart';
 import 'package:csocsort_szamla/components/main/dialogs/personalised_ads_dialog.dart';
 import 'package:csocsort_szamla/components/main/main_dialogs/like_app.dart';
@@ -18,6 +8,16 @@ import 'package:csocsort_szamla/components/main/main_dialogs/payment_method.dart
 import 'package:csocsort_szamla/components/main/main_dialogs/pin_verification.dart';
 import 'package:csocsort_szamla/components/main/main_dialogs/themes.dart';
 import 'package:csocsort_szamla/components/main/main_dialogs/trial_ended_dialog.dart';
+import 'package:csocsort_szamla/helpers/app_theme.dart';
+import 'package:csocsort_szamla/helpers/event_bus.dart';
+import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:csocsort_szamla/helpers/models.dart';
+import 'package:csocsort_szamla/helpers/navigator_service.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/main.dart';
 import 'package:csocsort_szamla/pages/app/store_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -47,9 +47,7 @@ class MainDialogBuilder extends StatefulWidget {
           ));
           EventBus.instance.fire(EventBus.hideMainDialog);
           ThemeName currentTheme = appTheme.themeName;
-          if (currentTheme.type == ThemeType.dualColor ||
-              currentTheme.type == ThemeType.gradient ||
-              currentTheme.type == ThemeType.dynamic) {
+          if (currentTheme.type == ThemeType.dualColor || currentTheme.type == ThemeType.gradient || currentTheme.type == ThemeType.dynamic) {
             appTheme.themeName = currentTheme.brightness == Brightness.light ? ThemeName.greenLight : ThemeName.greenDark;
           }
           if (payload == 'shop') {
@@ -78,7 +76,6 @@ class MainDialogBuilder extends StatefulWidget {
           int verificationCount = status.pinVerificationCount;
           Duration difference = DateTime.now().difference(status.pinVerifiedAt);
           if (verificationCount <= 1 && difference.inDays >= 1) {
-            
             return true;
           }
           if (verificationCount == 2 && difference.inDays >= 3) {
@@ -103,10 +100,7 @@ class MainDialogBuilder extends StatefulWidget {
       LikeTheAppMainDialog(
         canShow: (context) {
           User? user = context.read<UserState>().user;
-          return user != null &&
-              user.userStatus.trialStatus != TrialStatus.trial &&
-              !user.ratedApp &&
-              Random().nextDouble() <= 0.15;
+          return user != null && user.userStatus.trialStatus != TrialStatus.trial && !user.ratedApp && Random().nextDouble() <= 0.15;
         },
         type: DialogType.modal,
         showTime: DialogShowTime.onBuild,
@@ -127,7 +121,8 @@ class MainDialogBuilder extends StatefulWidget {
         canShow: (context) {
           UserState provider = context.read<UserState>();
           User? user = provider.user;
-          ThemeName currentTheme = context.read<AppThemeState>().themeName;;
+          ThemeName currentTheme = context.read<AppThemeState>().themeName;
+          ;
           if (user == null) return false;
           late double chance;
           if (user.userStatus.trialStatus == TrialStatus.trial) {
@@ -145,10 +140,7 @@ class MainDialogBuilder extends StatefulWidget {
   }
 
   MainDialog? chooseWidget(DialogShowTime showTime, BuildContext context) {
-    return dialogs
-        .where((dialog) =>
-            (dialog.showTime == showTime || dialog.showTime == DialogShowTime.both) && dialog.canShow(context))
-        .firstOrNull;
+    return dialogs.where((dialog) => (dialog.showTime == showTime || dialog.showTime == DialogShowTime.both) && dialog.canShow(context)).firstOrNull;
   }
 
   @override
@@ -162,8 +154,7 @@ class _MainDialogBuilderState extends State<MainDialogBuilder> {
   void onRefreshMainDialog() {
     if (!visible) {
       setState(() {
-        _dialog =
-            widget.chooseWidget(DialogShowTime.onBuild, getIt.get<NavigationService>().navigatorKey.currentContext!);
+        _dialog = widget.chooseWidget(DialogShowTime.onBuild, getIt.get<NavigationService>().navigatorKey.currentContext!);
         visible = _dialog != null;
       });
     }
@@ -202,8 +193,7 @@ class _MainDialogBuilderState extends State<MainDialogBuilder> {
             child: Visibility(
               visible: _dialog?.type == DialogType.modal,
               child: GestureDetector(
-                onTap: () =>
-                    _dialog!.onDismiss != null ? _dialog!.onDismiss!(context) : setState(() => visible = false),
+                onTap: () => _dialog!.onDismiss != null ? _dialog!.onDismiss!(context) : setState(() => visible = false),
                 child: Container(
                   color: Colors.black54,
                 ),
@@ -214,11 +204,10 @@ class _MainDialogBuilderState extends State<MainDialogBuilder> {
             child: Align(
               alignment: _dialog?.type == DialogType.modal ? Alignment.center : Alignment.bottomCenter,
               child: Padding(
-                padding: EdgeInsets.only(
-                    bottom: _dialog?.type == DialogType.bottom ? (context.select<ScreenSize, bool>((provider) => provider.isMobile) ? 95 : 15) : 0),
+                padding: EdgeInsets.only(bottom: _dialog?.type == DialogType.bottom ? (context.select<ScreenSize, bool>((provider) => provider.isMobile) ? 95 : 15) : 0),
                 child: Provider.value(
                   value: () => setState(() {
-                    visible = false; 
+                    visible = false;
                     _dialog?.onDismiss?.call(context);
                   }),
                   builder: (context, _) {

@@ -113,7 +113,7 @@
 
     "about_us": "About us",
     "about_us_explanation": "Information about us and the app",
-    "about_us_text": "The app was developed by two students.\n\nA big thank you to Anna Hegyi, and Sára Kata Kovács for the translations and to Ábel Kocsis for the help with the privacy policy. And also to everyone who tested the app!\uD83D\uDE09\n\nAll the best, your devs",
+    "about_us_text": "Hi there,\n\nwe hope we could help you in splitting your bills with your friends 🦤 We are two students creating this app as a hobby project, always focusing on making an app we would want to use ourselves.\nA big thank you to Anna Hegyi and Sára Kata Kovács for the translations, and to Ábel Kocsis for helping with the privacy policy; also to everyone who tested the app!\uD83D\uDE09\n\nAll the best,\nYour devs\n\nPS. If you like our app so much that you are reading this, please consider rating it 😁",
 
     "reactions": "Reactions",
     "add_reaction": "Add reaction",
@@ -178,10 +178,8 @@
     "download_pdf": "Download as a PDF file",
     "download_pdf_explanation": "Use this if you want to get a quick overview of the group",
 
-    "modify_payment": "Modify payment",
-    "modify_payment_explanation": "Modify a payment if its details changed",
-    "modify_purchase": "Modify purchase",
-    "modify_purchase_explanation": "Modify a purchase if its details changed",
+    "payment.modify": "Modify payment",
+    "purchase.modify": "Modify purchase",
 
     "not_in_group": "You are not a member of this group!",
 
@@ -482,5 +480,15 @@
 
     "profile": "Profile",
     "customization": "Language & Customization",
-    "customize-page.preview": "Tap and hold any theme to preview it."
+    "customize-page.preview": "Tap and hold any theme to preview it.",
+
+    "speed-dial.purchase": "Purchase",
+    "speed-dial.payment": "Payment",
+    "speed-dial.purchase.description": "Someone paid for or bought something",
+    "speed-dial.payment.description": "Someone received money",
+
+    "purchase.page.custom-amount.switch": "Set custom amount",
+    "purchase.page.custom-amount.hint": "After setting the custom amount tap outside the textfield to save",
+
+    "confirm-delete": "Are you sure you want to delete this item?"
 }
