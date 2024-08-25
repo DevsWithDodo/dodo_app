@@ -38,8 +38,7 @@ class AddMemberPage extends StatefulWidget {
   State<AddMemberPage> createState() => _AddMemberPageState();
 }
 
-class _AddMemberPageState extends State<AddMemberPage>
-    with SingleTickerProviderStateMixin {
+class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProviderStateMixin {
   late final _tabController;
   List<String> nicknames = [''];
   Future<String>? _invitation = null;
@@ -66,14 +65,9 @@ class _AddMemberPageState extends State<AddMemberPage>
 
   Future<BoolFutureOutput> _addGuest(String username) async {
     try {
-      Map<String, dynamic> body = {
-        "language": context.locale.languageCode,
-        "username": username
-      };
+      Map<String, dynamic> body = {"language": context.locale.languageCode, "username": username};
       await Http.post(
-        uri: '/groups/' +
-            context.read<UserState>().currentGroup!.id.toString() +
-            '/add_guest',
+        uri: '/groups/' + context.read<UserState>().currentGroup!.id.toString() + '/add_guest',
         body: body,
       );
       return BoolFutureOutput.True;
@@ -105,9 +99,7 @@ class _AddMemberPageState extends State<AddMemberPage>
                 child: Column(
                   children: [
                     SegmentedButton<AddMemberPageTabs>(
-                      selectedIcon: Icon(_tabController.index == 0
-                          ? Icons.qr_code
-                          : Icons.person_add),
+                      selectedIcon: Icon(_tabController.index == 0 ? Icons.qr_code : Icons.person_add),
                       segments: [
                         ButtonSegment(
                           value: AddMemberPageTabs.invite,
@@ -120,8 +112,7 @@ class _AddMemberPageState extends State<AddMemberPage>
                           icon: Icon(Icons.person_add),
                         ),
                       ],
-                      selected: Set.from(
-                          [AddMemberPageTabs.fromIndex(_tabController.index)]),
+                      selected: Set.from([AddMemberPageTabs.fromIndex(_tabController.index)]),
                       onSelectionChanged: (selected) {
                         setState(() {
                           _tabController.animateTo(selected.first.index);
@@ -137,37 +128,36 @@ class _AddMemberPageState extends State<AddMemberPage>
       body: isMobile
           ? Container(
               color: Theme.of(context).colorScheme.surface,
-              child: Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainer,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(20),
-                    ),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(20),
                   ),
-                  child: TabBarView(
-                    controller: _tabController,
-                    physics: NeverScrollableScrollPhysics(),
-                    children: children,
-                  ),
+                ),
+                child: TabBarView(
+                  controller: _tabController,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: children,
                 ),
               ),
             )
           : Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: children.map((child) => Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.all(10),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainer,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: child,
-                  ),
-                ),).toList(),
-              
+              children: children
+                  .map((child) => Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surfaceContainer,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: child,
+                        ),
+                      ))
+                  .toList(),
             ),
     );
   }
@@ -197,9 +187,7 @@ class _AddMemberPageState extends State<AddMemberPage>
                   Center(
                     child: Text(
                       'add-member.invite.with_qr'.tr(),
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color:
-                              Theme.of(context).colorScheme.onSurfaceVariant),
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                   ),
                   SizedBox(
@@ -207,16 +195,12 @@ class _AddMemberPageState extends State<AddMemberPage>
                   ),
                   Center(
                     child: Container(
-                      constraints:
-                          BoxConstraints(maxWidth: 250, maxHeight: 250),
+                      constraints: BoxConstraints(maxWidth: 250, maxHeight: 250),
                       padding: EdgeInsets.all(10),
                       child: PrettyQrView.data(
                         data: 'http://dodoapp.net/join/${snapshot.data}',
                         decoration: PrettyQrDecoration(
-                          shape: PrettyQrSmoothSymbol(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant),
+                          shape: PrettyQrSmoothSymbol(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ),
                     ),
@@ -224,8 +208,7 @@ class _AddMemberPageState extends State<AddMemberPage>
                   SizedBox(height: 10),
                   Text(
                     'add-member.invite.with_link'.tr(),
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 5),
@@ -275,38 +258,21 @@ class _AddMemberPageState extends State<AddMemberPage>
             Center(
               child: GradientButton.icon(
                   onPressed: () {
-                    List<String> usableNicknames = nicknames
-                        .where((nickname) => nickname.trim().isNotEmpty)
-                        .toList();
+                    List<String> usableNicknames = nicknames.where((nickname) => nickname.trim().isNotEmpty).toList();
                     if (usableNicknames.isEmpty) return;
-                    usableNicknames =
-                        usableNicknames.toSet().toList(); // remove duplicates
-                    Future<BoolFutureOutput> future = Future.wait(
-                        usableNicknames
-                            .map((nickname) => _addGuest(nickname))).then(
-                        (value) => value.contains(BoolFutureOutput.False)
-                            ? BoolFutureOutput.False
-                            : BoolFutureOutput.True);
-                    showFutureOutputDialog(
-                        context: context,
-                        future: future,
-                        outputCallbacks: {
-                          BoolFutureOutput.True: () {
-                            EventBus.instance.fire(EventBus.refreshBalances);
-                            EventBus.instance
-                                .fire(EventBus.refreshGroupMembers);
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          }
-                        });
+                    usableNicknames = usableNicknames.toSet().toList(); // remove duplicates
+                    Future<BoolFutureOutput> future = Future.wait(usableNicknames.map((nickname) => _addGuest(nickname))).then((value) => value.contains(BoolFutureOutput.False) ? BoolFutureOutput.False : BoolFutureOutput.True);
+                    showFutureOutputDialog(context: context, future: future, outputCallbacks: {
+                      BoolFutureOutput.True: () {
+                        EventBus.instance.fire(EventBus.refreshBalances);
+                        EventBus.instance.fire(EventBus.refreshGroupMembers);
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      }
+                    });
                   },
                   label: Text('add-member.create.submit'.tr()),
-                  icon: Icon(nicknames
-                              .where((nickname) => nickname.trim().isNotEmpty)
-                              .length >
-                          1
-                      ? Icons.group_add
-                      : Icons.person_add)),
+                  icon: Icon(nicknames.where((nickname) => nickname.trim().isNotEmpty).length > 1 ? Icons.group_add : Icons.person_add)),
             ),
             SizedBox(height: 15),
             Row(
@@ -322,8 +288,7 @@ class _AddMemberPageState extends State<AddMemberPage>
                   child: Text(
                     textAlign: TextAlign.center,
                     'add-member.create.note'.tr(),
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 ),
               ],

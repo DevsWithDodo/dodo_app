@@ -185,10 +185,8 @@
     "download_pdf": "Als PDF runterladen",
     "download_pdf_explanation": "Benutze dies wenn du einen übersichtlichen Überblick der Gruppe erhalten möchtest",
 
-    "modify_payment": "Zahlung bearbeiten",
-    "modify_payment_explanation": "Bearbeite die Zahlung, falls sich etwas geändert hat",
-    "modify_purchase": "Einkauf bearbeiten",
-    "modify_purchase_explanation": "Bearbeite den Einkauf, falls sich etwas geändert hat",
+    "payment.modify": "Zahlung bearbeiten",
+    "purchase.modify": "Einkauf bearbeiten",
 
     "not_in_group": "Du bist nicht Mitglied dieser Gruppe!",
 
@@ -497,7 +495,7 @@
 
     "speed-dial.purchase": "Einkauf",
     "speed-dial.payment": "Zahlung",
-    "speed-dial.purchase.description": "Jemend hat für etwas bezahlt oder etwas gekauft",
+    "speed-dial.purchase.description": "Jemend hat etwas gekauft",
     "speed-dial.payment.description": "Jemand hat Geld erhalten",
 
     "purchase.page.custom-amount.switch": "Individuelle Beträge",
