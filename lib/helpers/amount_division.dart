@@ -51,8 +51,15 @@ class AmountDivision {
     return amountDivision;
   }
 
-  bool isValid() {
-    if (amounts.where((element) => element.parsedAmount == null || element.parsedAmount! <= 0).isNotEmpty) {
+  bool isValid([bool setErrors = false]) {
+    final invalidAmounts = amounts.where((element) => element.parsedAmount == null || element.parsedAmount! <= 0);
+    if (invalidAmounts.isNotEmpty) {
+      if (setErrors) {
+        for (PurchaseReceiver amount in invalidAmounts) {
+          amount.error = true;
+        }
+        setState();
+      }
       return false;
     }
 
@@ -229,7 +236,7 @@ class AmountDivision {
 extension on Iterable<PurchaseReceiver> {
   double total() => this.fold(
         0,
-        (previousValue, element) => previousValue + double.parse(element.customAmountController.text),
+        (previousValue, element) => previousValue + (double.tryParse(element.customAmountController.text) ?? 0),
       );
 }
 
@@ -243,6 +250,7 @@ class PurchaseReceiver {
   VoidCallback setAmount;
   VoidCallback setPercentage;
   VoidCallback resetCustom;
+  bool error = false;
 
   PurchaseReceiver({
     required this.memberId,
@@ -280,6 +288,7 @@ class PurchaseReceiver {
   void handleSetAmount() {
     if (parsedAmount != null) {
       customizedThroughAmount = true;
+      error = false;
       setAmount();
     }
   }
@@ -287,6 +296,7 @@ class PurchaseReceiver {
   void handleSetPercentage() {
     if (parsedPercentage != null && parsedPercentage! > 0 && parsedPercentage! < 100) {
       customizedThroughAmount = false;
+      error = false;
       setPercentage();
     }
   }

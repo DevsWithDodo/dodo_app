@@ -501,5 +501,7 @@
     "purchase.page.custom-amount.switch": "Individuelle Beträge",
     "purchase.page.custom-amount.hint": "Nachdem du den Betrag angegeben hast, tippe aus dem Feld um es zu speichern.",
 
-    "confirm-delete": "Bist du sicher, dass du dieses Element löschen möchtest?"
+    "confirm-delete": "Bist du sicher, dass du dieses Element löschen möchtest?",
+
+    "custom-amount-field.error": "Ungültiger Betrag"
 }

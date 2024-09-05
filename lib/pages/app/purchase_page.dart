@@ -266,9 +266,13 @@ class _PurchasePageState extends State<PurchasePage> {
                                             initialNumber: amountController.text,
                                             onCalculationReady: (String fromCalc) {
                                               setState(() {
-                                                amountController.text = (double.tryParse(fromCalc) ?? 0.0).toMoneyString(
+                                                double? value = double.tryParse(fromCalc);
+                                                amountController.text = (value ?? 0.0).toMoneyString(
                                                   selectedCurrency,
                                                 );
+                                                if (value != null && value > 0) {
+                                                  amountDivision.setTotal(value);
+                                                }
                                               });
                                             },
                                           ),
@@ -534,7 +538,7 @@ class _PurchasePageState extends State<PurchasePage> {
 
   void submit(BuildContext context) {
     FocusScope.of(context).unfocus();
-    if (_formKey.currentState!.validate() && (!useCustomAmounts || amountDivision.isValid())) {
+    if (_formKey.currentState!.validate() && (!useCustomAmounts || amountDivision.isValid(true))) {
       if (amountDivision.amounts.isEmpty) {
         FToast ft = FToast();
         ft.init(context);

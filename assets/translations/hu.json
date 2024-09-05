@@ -493,5 +493,7 @@
     "purchase.page.custom-amount.switch": "Egyéni összegek",
     "purchase.page.custom-amount.hint": "Az összeg megadása után kattints a beviteli mezőn kívülre a mentéshez",
 
-    "confirm-delete": "Biztosan törölni szeretnéd az elemet?"
+    "confirm-delete": "Biztosan törölni szeretnéd az elemet?",
+
+    "custom-amount-field.error": "Érvénytelen összeg"
 }

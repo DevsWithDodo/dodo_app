@@ -197,10 +197,10 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
             Builder(builder: (context) {
               Map<double, List<Member>> groupedReceivers = {};
               widget.purchase.receivers.forEach((receiver) {
-                if (!groupedReceivers.containsKey(receiver.balance)) {
-                  groupedReceivers[receiver.balance] = [];
+                if (!groupedReceivers.containsKey(receiver.balanceOriginalCurrency)) {
+                  groupedReceivers[receiver.balanceOriginalCurrency] = [];
                 }
-                groupedReceivers[receiver.balance]!.add(receiver);
+                groupedReceivers[receiver.balanceOriginalCurrency]!.add(receiver);
               });
               return TransactionReceivers(
                 type: TransactionType.purchase,
