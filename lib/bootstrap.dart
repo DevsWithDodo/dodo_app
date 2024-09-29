@@ -55,10 +55,8 @@ class _BootstrapState extends State<Bootstrap> {
                           builder: (context) => ScreenSizeProvider(
                             builder: (context) => EasyLocalization(
                               child: ShowCaseWidget(
-                                builder: Builder(
-                                  builder: (context) => SupportedVersionInitializer(
-                                    builder: (context) => App(),
-                                  ),
+                                builder: (context) => SupportedVersionInitializer(
+                                  builder: (context) => App(),
                                 ),
                               ),
                               supportedLocales: [Locale('en'), Locale('de'), Locale('hu')],
