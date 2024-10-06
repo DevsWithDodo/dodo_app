@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:csocsort_szamla/pages/app/qr_scanner_page.dart';
 import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
 import 'package:csocsort_szamla/components/helpers/drawer_tile.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
@@ -16,6 +15,7 @@ import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
 import 'package:csocsort_szamla/pages/app/create_group_page.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
+import 'package:csocsort_szamla/pages/app/qr_scanner_page.dart';
 import 'package:csocsort_szamla/pages/app/user_settings_page.dart';
 import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -105,8 +105,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
         errorText = null;
         loading = true;
       });
-      final response =
-          await Http.get(uri: generateUri(GetUriKeys.groupFromToken, context, params: [token]), useCache: false);
+      final response = await Http.get(uri: generateUri(GetUriKeys.groupFromToken, context, params: [token]), useCache: false);
       final decoded = jsonDecode(response.body);
       group = Group(
         currency: Currency.fromCode(decoded['currency']),
@@ -162,8 +161,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
             leading: (user.group != null)
                 ? IconButton(
                     icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
-                    onPressed: () => Navigator.pushAndRemoveUntil(
-                        context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false),
+                    onPressed: () => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false),
                   )
                 : null,
           ),
@@ -185,20 +183,14 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                 children: <Widget>[
                                   Text(
                                     'DODO',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineSmall!
-                                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                    style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                                   ),
                                   SizedBox(
                                     height: 5,
                                   ),
                                   Text(
                                     'hi'.tr(args: [user.username]),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(color: Theme.of(context).colorScheme.primary),
+                                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary),
                                   ),
                                 ],
                               ),
@@ -217,8 +209,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                         label: 'logout'.tr(),
                         onTap: () {
                           context.read<UserState>().logout();
-                          Navigator.pushAndRemoveUntil(
-                              context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
                         },
                       ),
                     ],
@@ -285,9 +276,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                   Column(
                                     children: [
                                       Visibility(
-                                        visible: widget.inviteURL == null &&
-                                            !kIsWeb &&
-                                            (Platform.isAndroid || Platform.isIOS),
+                                        visible: widget.inviteURL == null && !kIsWeb && (Platform.isAndroid || Platform.isIOS),
                                         child: Column(
                                           children: [
                                             GradientButton.icon(
@@ -304,20 +293,17 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                                   if (scanResult != null) {
                                                     setState(() => token = scanResult!);
                                                     print('scanned: $scanResult');
+                                                    checkInvitation();
                                                   }
                                                 } else {
-                                                  Fluttertoast.showToast(
-                                                      msg: 'no_camera_access'.tr(), toastLength: Toast.LENGTH_LONG);
+                                                  Fluttertoast.showToast(msg: 'no_camera_access'.tr(), toastLength: Toast.LENGTH_LONG);
                                                 }
                                               },
                                             ),
                                             SizedBox(height: 10),
                                             Text(
                                               'paste_code'.tr(),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyLarge!
-                                                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                              style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                                             ),
                                             SizedBox(
                                               height: 10,
@@ -408,8 +394,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                                                     label: Text(guest.nickname),
                                                                     selected: selectedGuestId == guest.id,
                                                                     onSelected: (value) => setState(() {
-                                                                      selectedGuestId =
-                                                                          selectedGuestId == guest.id ? null : guest.id;
+                                                                      selectedGuestId = selectedGuestId == guest.id ? null : guest.id;
                                                                     }),
                                                                   ),
                                                                 ),
@@ -462,8 +447,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                                 token = '';
                                                 group = null;
                                                 selectedGuestId = null;
-                                                _nicknameController.text =
-                                                    user.username[0].toUpperCase() + user.username.substring(1);
+                                                _nicknameController.text = user.username[0].toUpperCase() + user.username.substring(1);
                                               });
                                             },
                                           ),
@@ -491,9 +475,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
             ),
             onPressed: () {
               if (_formKey.currentState!.validate() && (selectedGuestId != null || (guests?.isEmpty ?? false))) {
-                String nickname = (selectedGuestId == null || selectedGuestId == -1)
-                    ? _nicknameController.text[0].toUpperCase() + _nicknameController.text.substring(1)
-                    : guests!.firstWhere((element) => element.id == selectedGuestId).nickname;
+                String nickname = (selectedGuestId == null || selectedGuestId == -1) ? _nicknameController.text[0].toUpperCase() + _nicknameController.text.substring(1) : guests!.firstWhere((element) => element.id == selectedGuestId).nickname;
                 showFutureOutputDialog(
                   context: context,
                   future: _joinGroup(token, nickname, selectedGuestId == -1 ? null : selectedGuestId),
