@@ -495,5 +495,31 @@
 
     "confirm-delete": "Biztosan törölni szeretnéd az elemet?",
 
-    "custom-amount-field.error": "Érvénytelen összeg"
+    "custom-amount-field.error": "Érvénytelen összeg",
+
+    "edit": "Szerkesztés",
+    "save": "Mentés",
+    "currency": "Pénznem",
+
+    "receipt-scanner.title": "Blokk beolvasása",
+    "receipt-scanner.experimental": "Kísérleti funkció",
+    "receipt-scanner.select-image": "Válassz egy képet a szkenneléshez",
+    "receipt-scanner.processing": "A blokk feldolgozása folyamatban van...",
+    "receipt-scanner.error": "A blokk feldolgozása közben hiba történt. Próbáld meg néhány perc múlva újra.",
+    "receipt-scanner.warning": "Az alábbi információkat AI generálta, és nem biztos, hogy pontosak. Kattints az alábbi gombra a hibák kijavításához.",
+    "receipt-scanner.members": "Tagok:",
+    "receipt-scanner.not-assigned": "Még nincs hozzárendelve",
+    "receipt-scanner.total": "Összesen",
+    "receipt-scanner.no-items": "Nincsenek tételek",
+    "receipt-scanner.no-information": "Nincs információ",
+    "receipt-scanner.assign-description": "A tételek hozzárendeléséhez kattints a tagkörökre!",
+    "receipt-scanner.add-item": "Tétel hozzáadása",
+    "receipt-scanner.item-dialog.add": "Tétel hozzáadása",
+    "receipt-scanner.item-dialog.edit": "Tétel szerkesztése",
+    "receipt-scanner.item-dialog.item.name": "Tétel neve",
+    "receipt-scanner.item-dialog.item.cost": "Ár",
+    "receipt-scanner.store-dialog.name": "Bolt neve",
+
+    "purchase.scan-receipt.new": "Blokk beolvasása",
+    "purchase.scan-receipt.modify": "Beolvasottak szerkesztése"
 }

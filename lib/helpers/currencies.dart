@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 extension Money on double {
-  String toMoneyString(Currency currency, {withSymbol = false}) {
+  String toMoneyString(Currency currency, {bool withSymbol = false}) {
     if (!withSymbol) {
       double d = this;
       if (this > -currency.threshold() && this < 0) {
@@ -37,13 +37,7 @@ class CurrencyNotFoundException implements Exception {
 }
 
 class Currency {
-  const Currency._(
-    this.code,
-    this.hasSubunit,
-    this.symbol,
-    this.symbolBeforeAmount,
-    [this.rate = 1]
-  );
+  const Currency._(this.code, this.hasSubunit, this.symbol, this.symbolBeforeAmount, [this.rate = 1]);
 
   factory Currency.fromCodeSafe(String code) {
     if (!_unorderedCurrencies.containsKey(code)) {

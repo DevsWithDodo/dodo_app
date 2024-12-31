@@ -503,5 +503,32 @@
 
     "confirm-delete": "Bist du sicher, dass du dieses Element löschen möchtest?",
 
-    "custom-amount-field.error": "Ungültiger Betrag"
+    "custom-amount-field.error": "Ungültiger Betrag",
+
+    "edit": "Bearbeiten",
+    "save": "Speichern",
+    "currency": "Währung",
+
+    "receipt-scanner.title": "Belegscanner",
+    "receipt-scanner.experimental": "Experimentelle Funktion",
+    "receipt-scanner.select-image": "Wähle ein Bild zum Scannen aus",
+    "receipt-scanner.processing": "Dein Beleg wird gerade verarbeitet...",
+    "receipt-scanner.error": "Beim verarbeiten deines Belegs ist ein Fehler aufgetreten. Versuche es in ein paar Minuten noch einmal.",
+    "receipt-scanner.warning": "Alle untenstehenden Infos wurden von KI erstellt und könnten falsch sein. Tipp auf den Button, um Fehler zu korrigieren.",
+    "receipt-scanner.members": "Mitglieder:",
+    "receipt-scanner.not-assigned": "Nicht zugewiesen",
+    "receipt-scanner.total": "Gesamt",
+    "receipt-scanner.no-items": "Keine Artikel",
+    "receipt-scanner.no-information": "Keine Beleginformationen",
+    "receipt-scanner.assign-description": "Weise Artikel zu, indem du auf die Mitgliedskreise tippst!",
+    "receipt-scanner.add-item": "Artikel hinzufügen",
+    "receipt-scanner.item-dialog.add": "Belegartikel hinzufügen",
+    "receipt-scanner.item-dialog.edit": "Belegartikel bearbeiten",
+    "receipt-scanner.item-dialog.item.name": "Artikelname",
+    "receipt-scanner.item-dialog.item.cost": "Preis",
+    "receipt-scanner.store-dialog.name": "Laden",
+
+    "purchase.scan-receipt.new": "Beleg scannen",
+    "purchase.scan-receipt.modify": "Gescannten bearbeiten"
+    
 }

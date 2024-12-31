@@ -9,6 +9,7 @@ import 'package:csocsort_szamla/components/helpers/currency_picker_icon_button.d
 import 'package:csocsort_szamla/components/helpers/custom_choice_chip.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
+import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/helpers/member_chips.dart';
 import 'package:csocsort_szamla/components/purchase/custom_amount_field.dart';
 import 'package:csocsort_szamla/helpers/amount_division.dart';
@@ -18,6 +19,7 @@ import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
+import 'package:csocsort_szamla/pages/app/receipt_scanner_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
@@ -58,6 +60,8 @@ class _PurchasePageState extends State<PurchasePage> {
   GlobalKey _noteKey = GlobalKey();
   GlobalKey _currencyKey = GlobalKey();
   GlobalKey _calculatorKey = GlobalKey();
+
+  ReceiptInformation? receiptInformation;
 
   Future<BoolFutureOutput> _postPurchase() async {
     try {
@@ -167,6 +171,73 @@ class _PurchasePageState extends State<PurchasePage> {
                       constraints: BoxConstraints(maxWidth: 500),
                       child: Column(
                         children: <Widget>[
+                          FutureBuilder(
+                            future: members,
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return Container();
+                              }
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  GradientButton.icon(
+                                    icon: Icon(Icons.receipt),
+                                    label: Text('purchase.scan-receipt.${receiptInformation == null ? 'new' : 'modify'}'.tr()),
+                                    onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ReceiptScannerPage(
+                                          initialInformation: receiptInformation,
+                                          members: snapshot.data!,
+                                          onReceiptInformationReady: (information) {
+                                            setState(() {
+                                              selectedCurrency = information.currency;
+                                              noteController.text = information.storeName;
+                                              amountController.text = information.items
+                                                  .where(
+                                                    (element) => element.assignedAmounts.isNotEmpty,
+                                                  )
+                                                  .map((e) => e.cost)
+                                                  .fold(0.0, (previousValue, element) => previousValue + element)
+                                                  .toMoneyString(selectedCurrency);
+                                              amountDivision = AmountDivision.fromReceiptInformation(
+                                                information,
+                                                snapshot.data!,
+                                                () => setState(() {}),
+                                              );
+                                              useCustomAmounts = true;
+                                              receiptInformation = information;
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  if (receiptInformation != null)
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 10),
+                                      child: IconButton.outlined(
+                                        onPressed: () => setState(() {
+                                          receiptInformation = null;
+                                          amountDivision = AmountDivision(
+                                            amounts: [],
+                                            currency: selectedCurrency,
+                                            setState: () => setState(() {}),
+                                          );
+                                          noteController.text = "";
+                                          amountController.text = "";
+                                          selectedCurrency = context.read<UserState>().user!.group!.currency;
+                                          useCustomAmounts = false;
+                                        }),
+                                        icon: Icon(Icons.delete),
+                                      ),
+                                    )
+                                ],
+                              );
+                            },
+                          ),
+                          SizedBox(height: 20),
                           Row(
                             children: [
                               Expanded(

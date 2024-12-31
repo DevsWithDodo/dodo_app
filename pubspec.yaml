@@ -18,8 +18,7 @@ environment:
   sdk: '>=3.0.0'
 
 dependencies:
-  firebase_core: ^2.24.2
-  firebase_analytics: ^10.10.7
+  firebase_core: ^3.9.0
   http: ^1.2.2
   shared_preferences: ^2.1.0
   intl: ^0.19.0
@@ -28,9 +27,9 @@ dependencies:
   flutter_speed_dial: ^7.0.0
   easy_localization: ^3.0.1
   app_links: ^3.5.0
-  share_plus: ^9.0.0
-  firebase_messaging: ^14.7.9
-  flutter_local_notifications: ^16.2.0
+  share_plus: ^10.1.3
+  firebase_messaging: ^15.1.6
+  flutter_local_notifications: ^17.2.4
   connectivity_widget: ^3.0.0
   path_provider: ^2.0.14
   get_it: ^7.2.0
@@ -38,14 +37,17 @@ dependencies:
   url_launcher: ^6.1.10
   in_app_purchase: ^3.1.5
   fl_chart: ^0.68.0
-  rive: ^0.13.12
+  rive: ^0.13.20
   pretty_qr_code: ^3.0.0
   permission_handler: ^11.1.0
-  google_mobile_ads: ^5.1.0
+  google_mobile_ads: ^5.2.0
   dynamic_color: ^1.7.0
-  mobile_scanner: ^3.2.0
+  mobile_scanner: ^6.0.2
   showcaseview: ^3.0.0
   material_color_utilities: ^0.11.1
+  image_picker: ^1.1.2
+  firebase_vertexai: ^1.0.4
+  diacritic: ^0.1.6
   flutter:
     sdk: flutter
   flutter_localizations:

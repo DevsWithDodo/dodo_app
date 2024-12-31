@@ -51,6 +51,55 @@ class AmountDivision {
     return amountDivision;
   }
 
+  factory AmountDivision.fromReceiptInformation(ReceiptInformation information, List<Member> allMembers, VoidCallback setState) {
+    final totalAmount = information.items
+        .where(
+          (element) => element.assignedAmounts.isNotEmpty,
+        )
+        .map((e) => e.cost)
+        .fold(0.0, (previousValue, element) => previousValue + element);
+    AmountDivision amountDivision = AmountDivision(
+      amounts: [],
+      currency: information.currency,
+      setState: setState,
+      totalAmount: totalAmount,
+    );
+
+    List<int> memberIds = information.items.fold([], (current, item) => [...current, ...item.assignedAmounts.keys]);
+    List<Member> members = allMembers.where((member) => memberIds.contains(member.id)).toList();
+    double assignedAmount = 0;
+    for (int i = 0; i < members.length; i++) {
+      Member member = members[i];
+      PurchaseReceiver receiver = PurchaseReceiver.fromMember(
+        member.id,
+        member.nickname,
+        () => amountDivision.setAmount(member.id, false),
+        () => amountDivision.setAmount(member.id, true),
+        () => amountDivision.resetCustom(member.id),
+      );
+
+      if (i != members.length - 1) {
+        final memberAmount = information.items.fold(
+          0.0,
+          (previousValue, element) {
+            if (element.assignedAmounts.values.sum == 0) return previousValue;
+            return previousValue + (element.assignedAmounts[member.id] ?? 0) / element.assignedAmounts.values.sum * element.cost;
+          },
+        );
+        assignedAmount += memberAmount;
+        receiver.customAmountController.text = memberAmount.toMoneyString(information.currency);
+        receiver.percentageController.text = (memberAmount / totalAmount * 100).toInt().toString();
+        receiver.customizedAt = DateTime.now();
+      } else {
+        receiver.customAmountController.text = (totalAmount - assignedAmount).toMoneyString(information.currency);
+        receiver.percentageController.text = ((totalAmount - assignedAmount) / totalAmount * 100).toInt().toString();
+      }
+      amountDivision.amounts.add(receiver);
+    }
+
+    return amountDivision;
+  }
+
   bool isValid([bool setErrors = false]) {
     final invalidAmounts = amounts.where((element) => element.parsedAmount == null || element.parsedAmount! <= 0);
     if (invalidAmounts.isNotEmpty) {

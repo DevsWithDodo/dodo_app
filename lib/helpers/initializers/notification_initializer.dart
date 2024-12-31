@@ -73,18 +73,12 @@ class NotificationInitializer extends StatelessWidget {
     }
   }
 
-  void _createNotificationChannels(
-      String groupId, List<String> channels, FlutterLocalNotificationsPlugin plugin) async {
-    AndroidNotificationChannelGroup androidNotificationChannelGroup =
-        AndroidNotificationChannelGroup(groupId, (groupId + '_notification').tr());
-    plugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!
-        .createNotificationChannelGroup(androidNotificationChannelGroup);
+  void _createNotificationChannels(String groupId, List<String> channels, FlutterLocalNotificationsPlugin plugin) async {
+    AndroidNotificationChannelGroup androidNotificationChannelGroup = AndroidNotificationChannelGroup(groupId, (groupId + '_notification').tr());
+    plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.createNotificationChannelGroup(androidNotificationChannelGroup);
 
     for (String channel in channels) {
-      plugin
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!
-          .createNotificationChannel(AndroidNotificationChannel(
+      plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.createNotificationChannel(AndroidNotificationChannel(
             channel,
             (channel + '_notification').tr(),
             description: (channel + '_notification_explanation').tr(),
@@ -108,28 +102,21 @@ class NotificationInitializer extends StatelessWidget {
     );
 
     if (Platform.isAndroid) {
-      notifications
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!
-          .requestNotificationsPermission();
+      notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.requestNotificationsPermission();
     }
     Future.delayed(Duration(seconds: 1)).then((value) {
       if (Platform.isAndroid) {
         Future.delayed(Duration(seconds: 2)).then((value) {
           _createNotificationChannels('group_system', ['other', 'group_update'], notifications);
-          _createNotificationChannels(
-              'purchase', ['purchase_created', 'purchase_modified', 'purchase_deleted'], notifications);
-          _createNotificationChannels(
-              'payment', ['payment_created', 'payment_modified', 'payment_deleted'], notifications);
-          _createNotificationChannels(
-              'shopping', ['shopping_created', 'shopping_fulfilled', 'shopping_shop'], notifications);
+          _createNotificationChannels('purchase', ['purchase_created', 'purchase_modified', 'purchase_deleted'], notifications);
+          _createNotificationChannels('payment', ['payment_created', 'payment_modified', 'payment_deleted'], notifications);
+          _createNotificationChannels('shopping', ['shopping_created', 'shopping_fulfilled', 'shopping_shop'], notifications);
         });
       }
       FirebaseMessaging.instance.getInitialMessage().then((message) {
         if (message != null) {
           onSelectNotification(
-            NotificationResponse(
-                notificationResponseType: NotificationResponseType.selectedNotification,
-                payload: message.data['payload']),
+            NotificationResponse(notificationResponseType: NotificationResponseType.selectedNotification, payload: message.data['payload']),
             context,
           );
         }

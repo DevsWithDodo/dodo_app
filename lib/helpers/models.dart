@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:core';
+import 'dart:io';
 
-import 'package:collection/collection.dart' show IterableExtension;
+import 'package:collection/collection.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -107,12 +109,10 @@ class PaymentMethod {
   String value;
   bool priority;
 
-  PaymentMethod(
-      {required this.name, required this.value, required this.priority});
+  PaymentMethod({required this.name, required this.value, required this.priority});
 
   factory PaymentMethod.fromJson(Map<String, dynamic> json) {
-    return PaymentMethod(
-        name: json['name'], value: json['value'], priority: json['priority']);
+    return PaymentMethod(name: json['name'], value: json['value'], priority: json['priority']);
   }
 
   Map<String, dynamic> toJson() {
@@ -138,7 +138,6 @@ class PaymentMethod {
       priority: false,
     );
   }
-
 }
 
 class Member {
@@ -174,16 +173,10 @@ class Member {
       nickname: json['nickname'],
       balance: json['balance'] * 1.0,
       isAdmin: json['is_admin'] == 1,
-      balanceOriginalCurrency:
-          (json['original_balance'] ?? json['balance']) * 1.0,
+      balanceOriginalCurrency: (json['original_balance'] ?? json['balance']) * 1.0,
       isCustomAmount: json['custom_amount'] ?? false,
       isGuest: json['is_guest'] == 1,
-      paymentMethods: json['payment_details'] != null
-          ? (jsonDecode(json['payment_details']) as List)
-              .map<PaymentMethod>(
-                  (paymentMethod) => PaymentMethod.fromJson(paymentMethod))
-              .toList()
-          : null,
+      paymentMethods: json['payment_details'] != null ? (jsonDecode(json['payment_details']) as List).map<PaymentMethod>((paymentMethod) => PaymentMethod.fromJson(paymentMethod)).toList() : null,
     );
   }
 
@@ -219,14 +212,7 @@ class Group {
 }
 
 class Reaction {
-  static const List<String> possibleReactions = [
-    '👍',
-    '❤',
-    '😲',
-    '😥',
-    '❗',
-    '❓'
-  ];
+  static const List<String> possibleReactions = ['👍', '❤', '😲', '😥', '❗', '❓'];
   String reaction;
   String nickname;
   int userId;
@@ -236,10 +222,7 @@ class Reaction {
     required this.userId,
   });
   factory Reaction.fromJson(Map<String, dynamic> reaction) {
-    return Reaction(
-        reaction: reaction['reaction'],
-        nickname: reaction['user_nickname'],
-        userId: reaction['user_id']);
+    return Reaction(reaction: reaction['reaction'], nickname: reaction['user_nickname'], userId: reaction['user_id']);
   }
   @override
   String toString() {
@@ -276,30 +259,22 @@ class Purchase {
     this.category,
   }) {
     this.buyerNickname = buyerNickname ?? buyerUsername;
-    this.totalAmountOriginalCurrency =
-        totalAmountOriginalCurrency ?? totalAmount;
+    this.totalAmountOriginalCurrency = totalAmountOriginalCurrency ?? totalAmount;
   }
 
   factory Purchase.fromJson(Map<String, dynamic> json) {
     return Purchase(
       id: json['purchase_id'],
       name: json['name'],
-      updatedAt: json['updated_at'] == null
-          ? DateTime.now()
-          : DateTime.parse(json['updated_at']).toLocal(),
+      updatedAt: json['updated_at'] == null ? DateTime.now() : DateTime.parse(json['updated_at']).toLocal(),
       originalCurrency: Currency.fromCode(json['original_currency']),
       buyerUsername: json['buyer_username'] ?? json['buyer_nickname'],
       buyerId: json['buyer_id'],
       buyerNickname: json['buyer_nickname'],
       totalAmount: (json['total_amount'] * 1.0),
-      totalAmountOriginalCurrency:
-          (json['original_total_amount'] ?? json['original_currency']) * 1.0,
-      receivers: json['receivers']
-          .map<Member>((element) => Member.fromJson(element))
-          .toList(),
-      reactions: json['reactions']
-          .map<Reaction>((reaction) => Reaction.fromJson(reaction))
-          .toList(),
+      totalAmountOriginalCurrency: (json['original_total_amount'] ?? json['original_currency']) * 1.0,
+      receivers: json['receivers'].map<Member>((element) => Member.fromJson(element)).toList(),
+      reactions: json['reactions'].map<Reaction>((reaction) => Reaction.fromJson(reaction)).toList(),
       category: Category.fromName(json["category"]),
     );
   }
@@ -355,9 +330,7 @@ class Payment {
     return Payment(
       id: json['payment_id'],
       amount: (json['amount'] * 1.0),
-      updatedAt: json['updated_at'] == null
-          ? DateTime.now()
-          : DateTime.parse(json['updated_at']).toLocal(),
+      updatedAt: json['updated_at'] == null ? DateTime.now() : DateTime.parse(json['updated_at']).toLocal(),
       payerId: json['payer_id'],
       payerUsername: json['payer_username'] ?? json['payer_nickname'],
       payerNickname: json['payer_nickname'],
@@ -367,9 +340,7 @@ class Payment {
       note: json['note'],
       originalCurrency: Currency.fromCode(json['original_currency']),
       amountOriginalCurrency: (json['original_amount'] ?? json['amount']) * 1.0,
-      reactions: json['reactions']
-          .map<Reaction>((reaction) => Reaction.fromJson(reaction))
-          .toList(),
+      reactions: json['reactions'].map<Reaction>((reaction) => Reaction.fromJson(reaction)).toList(),
     );
   }
 }
@@ -396,13 +367,11 @@ class Category {
   }
 
   static Category? fromName(String? categoryName) {
-    return Category.categories
-        .firstWhereOrNull((category) => category.text == categoryName);
+    return Category.categories.firstWhereOrNull((category) => category.text == categoryName);
   }
 
   static Category? fromType(CategoryType? type) {
-    return Category.categories
-        .firstWhereOrNull((category) => category.type == type);
+    return Category.categories.firstWhereOrNull((category) => category.type == type);
   }
 
   static List<Category> categories = [
@@ -412,8 +381,7 @@ class Category {
       icon: Icons.shopping_basket,
       text: 'groceries',
     ),
-    Category(
-        type: CategoryType.transport, icon: Icons.train, text: 'transport'),
+    Category(type: CategoryType.transport, icon: Icons.train, text: 'transport'),
     Category(
       type: CategoryType.entertainment,
       icon: Icons.movie_filter,
@@ -434,13 +402,7 @@ class Category {
   ];
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Category &&
-          runtimeType == other.runtimeType &&
-          type == other.type &&
-          icon == other.icon &&
-          text == other.text;
+  bool operator ==(Object other) => identical(this, other) || other is Category && runtimeType == other.runtimeType && type == other.type && icon == other.icon && text == other.text;
 }
 
 class ShoppingRequest {
@@ -467,9 +429,7 @@ class ShoppingRequest {
       requesterNickname: json['requester_nickname'] ?? 'asda',
       name: json['name'],
       updatedAt: DateTime.parse(json['updated_at']).toLocal(),
-      reactions: (json['reactions'] ?? [])
-          .map<Reaction>((reaction) => Reaction.fromJson(reaction))
-          .toList(),
+      reactions: (json['reactions'] ?? []).map<Reaction>((reaction) => Reaction.fromJson(reaction)).toList(),
     );
   }
 
@@ -486,5 +446,89 @@ class ShoppingRequest {
   @override
   String toString() {
     return name + '; ' + updatedAt.toString() + '; ' + reactions!.join(', ');
+  }
+}
+
+class ReceiptInformation {
+  File imageFile;
+  String storeName;
+  Currency currency;
+  List<ReceiptItem> items;
+
+  ReceiptInformation({
+    required this.imageFile,
+    required this.storeName,
+    required this.currency,
+    required this.items,
+  });
+
+  double get totalCost => this.items.fold(0, (prev, current) => prev + current.cost);
+
+  factory ReceiptInformation.fromJson(Map<String, dynamic> json, File imageFile) {
+    json['items'] = (json['items'] as List<dynamic>).map((item) => item as Map<String, dynamic>).toList();
+    var groupedByName = groupBy(json['items'] as List<Map<String, dynamic>>, (Map<String, dynamic> item) => item['item_name']).values.toList();
+    List<List<Map<String, dynamic>>> groupedByNameCost = [];
+    for (var group in groupedByName) {
+      var groupedByCost = groupBy(group, (Map<String, dynamic> item) => item['cost']).values.toList();
+      for (var groupCost in groupedByCost) {
+        groupedByNameCost.add(groupCost);
+      }
+    }
+
+    List<ReceiptItem> items = groupedByNameCost.map<ReceiptItem>((group) {
+      var item = group.first;
+      item['cost'] *= group.length; // Same cost items are grouped together
+      item['discount'] *= group.length;
+      return ReceiptItem.fromJson(item);
+    }).toList();
+
+    return ReceiptInformation(
+      storeName: json['store_name'],
+      currency: Currency.fromCodeSafe(json['currency_code_iso_4217']),
+      items: items,
+      imageFile: imageFile,
+    );
+  }
+
+  factory ReceiptInformation.dummy(File imageFile) {
+    return ReceiptInformation(
+      storeName: 'Dummy Store',
+      currency: Currency.fromCode('HUF'),
+      items: [
+        ReceiptItem(itemName: 'Item 1', baseCost: 100000, discount: 0, assignedAmounts: {}),
+        ReceiptItem(itemName: 'Item 2', baseCost: 200000, discount: 0, assignedAmounts: {}),
+        ReceiptItem(itemName: 'Item 3', baseCost: 300000, discount: 0, assignedAmounts: {}),
+        ReceiptItem(itemName: 'Item 4', baseCost: 400000, discount: 0, assignedAmounts: {}),
+        ReceiptItem(itemName: 'Item 5', baseCost: 500000, discount: 0, assignedAmounts: {}),
+        ReceiptItem(itemName: 'Item 6', baseCost: 600000, discount: 0, assignedAmounts: {}),
+      ],
+      imageFile: imageFile,
+    );
+  }
+}
+
+class ReceiptItem {
+  String itemName;
+  double baseCost;
+  double discount;
+  double cost;
+
+  /// Map from member id to amount assigned to that member
+  Map<int, int> assignedAmounts = {};
+
+  ReceiptItem({
+    required this.itemName,
+    required this.baseCost,
+    required this.discount,
+    required this.assignedAmounts,
+  }) : cost = baseCost - discount;
+
+  factory ReceiptItem.fromJson(Map<String, dynamic> json) {
+    return ReceiptItem(
+      itemName: json['item_name'],
+      baseCost: json['cost'] * 1.0,
+      discount: ((json['discount'] ?? 0) as num).abs() * 1.0,
+      assignedAmounts: {},
+    );
   }
 }
