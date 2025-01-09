@@ -105,7 +105,7 @@ Map<String, Map<String, dynamic>> _unorderedCurrencies = {
   "PHP": {"subunit": 0, "symbol": "₱", "before": 1},
   "DKK": {"subunit": 1, "symbol": "Kr.", "before": 0},
   "HUF": {"subunit": 0, "symbol": "Ft", "before": 0},
-  "CZK": {"subunit": 0, "symbol": "Kč", "before": 0},
+  "CZK": {"subunit": 1, "symbol": "Kč", "before": 0},
   "AUD": {"subunit": 1, "symbol": "A\$", "before": 1},
   "RON": {"subunit": 1, "symbol": "lei", "before": 0},
   "SEK": {"subunit": 1, "symbol": "kr", "before": 0},
