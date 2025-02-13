@@ -4,16 +4,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ChangePassword extends StatefulWidget {
+class LoginOptions extends StatefulWidget {
   @override
-  _ChangePasswordState createState() => _ChangePasswordState();
+  _LoginOptionsState createState() => _LoginOptionsState();
 }
 
-class _ChangePasswordState extends State<ChangePassword> {
+class _LoginOptionsState extends State<LoginOptions> {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<UserState>().user!;
-    print(user.hasPassword);
     return Card(
       child: Padding(
         padding: EdgeInsets.all(15),
@@ -94,11 +93,15 @@ class _ChangePasswordState extends State<ChangePassword> {
                       ),
                     ),
                     if (user.googleConnected)
-                      Text('user-settings.login-options.option-set'.tr())
+                      Icon(
+                        Icons.check_circle_outline_rounded,
+                        color: Colors.green,
+                        size: 30,
+                      )
                     else
                       TextButton(
                         onPressed: () {},
-                        child: Text('user-settings.login-options.set-option'.tr()),
+                        child: Text('user-settings.login-options.social.link'.tr()),
                       ),
                   ],
                 ),
@@ -115,11 +118,15 @@ class _ChangePasswordState extends State<ChangePassword> {
                       ),
                     ),
                     if (user.appleConnected)
-                      Text('user-settings.login-options.option-set'.tr())
+                      Icon(
+                        Icons.check_circle_outline_rounded,
+                        color: Colors.green,
+                        size: 30,
+                      )
                     else
                       TextButton(
                         onPressed: () {},
-                        child: Text('user-settings.login-options.set-option'.tr()),
+                        child: Text('user-settings.login-options.social.link'.tr()),
                       ),
                   ],
                 ),

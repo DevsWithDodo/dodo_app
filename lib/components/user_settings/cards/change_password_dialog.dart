@@ -2,7 +2,6 @@ import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
-import 'package:csocsort_szamla/pages/app/main_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,8 +19,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
   int _index = 0;
   List<TextFormField> textFields = <TextFormField>[];
 
-  Future<BoolFutureOutput> _updatePassword(
-      String oldPassword, String newPassword) async {
+  Future<BoolFutureOutput> _updatePassword(String oldPassword, String newPassword) async {
     try {
       Map<String, dynamic> body = {
         'old_password': oldPassword,
@@ -109,8 +107,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
             children: <Widget>[
               Text(
                 'change_pin'.tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
               SizedBox(
@@ -154,10 +151,8 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                             ),
                             outputCallbacks: {
                               BoolFutureOutput.True: () {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(builder: (context) => MainPage()),
-                                  (route) => false,
-                                );
+                                Navigator.pop(context);
+                                Navigator.pop(context);
                               }
                             },
                           );

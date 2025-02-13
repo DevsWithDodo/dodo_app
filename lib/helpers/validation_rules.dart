@@ -35,8 +35,7 @@ Function minimalLength(String? value, int length) => () {
 ///  Optional parameters:
 ///  * [type] of number.
 ///  * boolean if the number needs to be greater than 0.
-Function notValidNumber(String? value, {String type = 'double', bool needsGreaterZero = true}) =>
-    () {
+Function notValidNumber(String? value, {String type = 'double', bool needsGreaterZero = true}) => () {
       switch (type) {
         case 'double':
           if (double.tryParse(value!) == null) {
@@ -61,8 +60,7 @@ Function notValidNumber(String? value, {String type = 'double', bool needsGreate
 ///
 ///  Optional parameters:
 ///  * [problem] String to print out to the user.
-Function matchString(String? value, String otherValue, {String problem = 'passwords_not_match'}) =>
-    () {
+Function matchString(String? value, String otherValue, {String problem = 'validation.passwords.no-match'}) => () {
       if (value != otherValue) {
         return problem.tr();
       }

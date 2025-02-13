@@ -542,7 +542,9 @@
     "user-settings.login-options.description": "Verwalte die Methoden, mit denen du dich in der App anmelden kannst.",
     "user-settings.login-options.pin": "Pin",
 
-    "user-settings.login-options.option-set": "Gesetzt",
-    "user-settings.login-options.set-option": "Einstellen"
+    "user-settings.login-options.set-option": "Erstellen",
+    "user-settings.login-options.social.link": "Verknüpfen",
+
+    "validation.passwords.no-match": "Die Passwörter stimmen nicht überein"
     
 }
