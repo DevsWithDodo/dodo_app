@@ -1,8 +1,8 @@
-import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
-import 'package:flutter/material.dart';
+import 'package:csocsort_szamla/components/user_settings/cards/change_password_dialog.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-
-import 'change_password_dialog.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ChangePassword extends StatefulWidget {
   @override
@@ -12,6 +12,8 @@ class ChangePassword extends StatefulWidget {
 class _ChangePasswordState extends State<ChangePassword> {
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<UserState>().user!;
+    print(user.hasPassword);
     return Card(
       child: Padding(
         padding: EdgeInsets.all(15),
@@ -20,38 +22,109 @@ class _ChangePasswordState extends State<ChangePassword> {
           children: <Widget>[
             Center(
               child: Text(
-                'change_pin'.tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                'user-settings.login-options'.tr(),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
             SizedBox(
-              height: 10,
+              height: 5,
             ),
             Center(
                 child: Text(
-              'change_pin_explanation'.tr(),
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+              'user-settings.login-options.description'.tr(),
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             )),
             SizedBox(
               height: 10,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                GradientButton(
-                  child: Icon(Icons.edit),
-                  onPressed: () {
-                    showDialog(
-                        builder: (context) => ChangePasswordDialog(),
-                        context: context);
-                  },
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: 5),
+                      child: Text(
+                        'user-settings.login-options.pin'.tr(),
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ),
+                    if (user.hasPassword)
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle_outline_rounded,
+                            color: Colors.green,
+                            size: 30,
+                          ),
+                          SizedBox(width: 10),
+                          IconButton.filled(
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => ChangePasswordDialog(),
+                              );
+                            },
+                            visualDensity: VisualDensity.compact,
+                            icon: Icon(Icons.edit),
+                          ),
+                        ],
+                      )
+                    else
+                      TextButton(
+                        onPressed: () {},
+                        child: Text('user-settings.login-options.set-option'.tr()),
+                      ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox.fromSize(
+                      size: Size(35, 35),
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
+                        child: Image.asset(
+                          'assets/google.png',
+                        ),
+                      ),
+                    ),
+                    if (user.googleConnected)
+                      Text('user-settings.login-options.option-set'.tr())
+                    else
+                      TextButton(
+                        onPressed: () {},
+                        child: Text('user-settings.login-options.set-option'.tr()),
+                      ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: Image.asset(
+                        'assets/apple.png',
+                        height: 35,
+                        width: 35,
+                      ),
+                    ),
+                    if (user.appleConnected)
+                      Text('user-settings.login-options.option-set'.tr())
+                    else
+                      TextButton(
+                        onPressed: () {},
+                        child: Text('user-settings.login-options.set-option'.tr()),
+                      ),
+                  ],
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

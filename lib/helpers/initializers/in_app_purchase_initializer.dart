@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
 class IAPInitializer extends StatefulWidget {
   IAPInitializer({
@@ -21,7 +22,6 @@ class IAPInitializer extends StatefulWidget {
 }
 
 class _IAPInitializerState extends State<IAPInitializer> {
-
   late StreamSubscription _subscription;
 
   @override
@@ -38,7 +38,6 @@ class _IAPInitializerState extends State<IAPInitializer> {
 
   void init(BuildContext context) {
     if (context.read<AppConfig>().isIAPPlatformEnabled) {
-      
       _subscription = InAppPurchase.instance.purchaseStream.listen((purchases) {
         UserState userState = context.read<UserState>();
         for (PurchaseDetails details in purchases) {
@@ -51,7 +50,7 @@ class _IAPInitializerState extends State<IAPInitializer> {
             Map<String, dynamic> body = {};
             switch (details.productID) {
               case 'remove_ads':
-                userState.setShownAds(false);
+                userState.setShowAds(false);
                 body['ad_free'] = 1;
                 break;
               case 'gradients':
@@ -59,7 +58,7 @@ class _IAPInitializerState extends State<IAPInitializer> {
                 body['gradients_enabled'] = 1;
                 break;
               case 'ad_gradient_bundle':
-                userState.setShownAds(false);
+                userState.setShowAds(false);
                 body['ad_free'] = 1;
                 userState.setUseGradients(true);
                 body['gradients_enabled'] = 1;
@@ -68,7 +67,7 @@ class _IAPInitializerState extends State<IAPInitializer> {
                 body['boosts'] = 2;
                 break;
               case 'big_lender_bundle':
-                userState.setShownAds(false);
+                userState.setShowAds(false);
                 body['ad_free'] = 1;
                 userState.setUseGradients(true);
                 body['gradients_enabled'] = 1;

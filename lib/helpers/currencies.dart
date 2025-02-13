@@ -39,15 +39,11 @@ class CurrencyNotFoundException implements Exception {
 class Currency {
   const Currency._(this.code, this.hasSubunit, this.symbol, this.symbolBeforeAmount, [this.rate = 1]);
 
-  factory Currency.fromCodeSafe(String code) {
+  factory Currency.fromCode(String code, {bool safe = false}) {
     if (!_unorderedCurrencies.containsKey(code)) {
-      return Currency.fromCode('EUR');
-    }
-    return Currency._fromEntry(code, _unorderedCurrencies[code]!);
-  }
-
-  factory Currency.fromCode(String code) {
-    if (!_unorderedCurrencies.containsKey(code)) {
+      if (safe) {
+        return Currency.fromCode('EUR');
+      }
       throw CurrencyNotFoundException(code);
     }
     return Currency._fromEntry(code, _unorderedCurrencies[code]!);

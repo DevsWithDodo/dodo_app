@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
-import 'package:csocsort_szamla/helpers/models.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/user_settings/components/payment_method_field.dart';
+import 'package:csocsort_szamla/helpers/models.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,13 +26,7 @@ class _PaymentMethodFieldListState extends State<PaymentMethodFieldList> {
   @override
   void initState() {
     super.initState();
-    paymentMethods = context
-        .read<UserState>()
-        .user!
-        .paymentMethods
-        .map((paymentMethod) => PaymentMethodFieldModel.fromPaymentMethod(paymentMethod))
-        .sorted(compare)
-        .toList();
+    paymentMethods = context.read<UserState>().user!.paymentMethods.map((paymentMethod) => PaymentMethodFieldModel.fromPaymentMethod(paymentMethod)).sorted(compare).toList();
   }
 
   int compare(PaymentMethodFieldModel a, PaymentMethodFieldModel b) {
@@ -54,8 +48,7 @@ class _PaymentMethodFieldListState extends State<PaymentMethodFieldList> {
   void onTimerEnd() {
     final validPaymentMethods = paymentMethods
         .where(
-          (paymentMethod) =>
-              paymentMethod.valueController.text.isNotEmpty && paymentMethod.nameController.text.isNotEmpty,
+          (paymentMethod) => paymentMethod.valueController.text.isNotEmpty && paymentMethod.nameController.text.isNotEmpty,
         )
         .toList();
     widget.onSubmit(validPaymentMethods
@@ -101,6 +94,18 @@ class _PaymentMethodFieldListState extends State<PaymentMethodFieldList> {
       key: formKey,
       child: Column(
         children: [
+          if (paymentMethods.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Text(
+                  'payment-methods.no-payment-methods'.tr(),
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ),
+            ),
           Column(
             children: paymentMethods
                 .map((paymentMethod) => Padding(
@@ -114,12 +119,14 @@ class _PaymentMethodFieldListState extends State<PaymentMethodFieldList> {
                     ))
                 .toList(),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: GradientButton.icon(
-              label: Text('payment-methods.add-new'.tr()),
-              icon: Icon(Icons.add),
-              onPressed: addPaymentMethod,
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: GradientButton.icon(
+                label: Text('payment-methods.add-new'.tr()),
+                icon: Icon(Icons.add),
+                onPressed: addPaymentMethod,
+              ),
             ),
           ),
         ],

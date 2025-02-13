@@ -1,12 +1,11 @@
 import 'dart:convert';
 
+import 'package:csocsort_szamla/components/user_settings/components/payment_method_field_list.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/payment_method_list_extension.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
-import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
-import 'package:csocsort_szamla/components/user_settings/components/payment_method_field_list.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -60,10 +59,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
             Center(
               child: Text(
                 'payment-methods.title'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -71,10 +67,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
             Center(
               child: Text(
                 'payment-methods.subtitle'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -89,20 +82,22 @@ class _PaymentMethodsState extends State<PaymentMethods> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    loading == LoadingState.loading ? SizedBox.fromSize(
-                      size: Size.square(18),
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ) : Icon(Icons.check, size: 18, color: Theme.of(context).colorScheme.primary),
+                    loading == LoadingState.loading
+                        ? SizedBox.fromSize(
+                            size: Size.square(18),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          )
+                        : Icon(Icons.check, size: 18, color: Theme.of(context).colorScheme.primary),
                     SizedBox(width: 10),
                     Text('payment-methods.save.${loading.name}'.tr(), style: Theme.of(context).textTheme.bodySmall),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            // SizedBox(height: 10),
             PaymentMethodFieldList(onSubmit: _updatePaymentMethods),
           ],
         ),

@@ -147,7 +147,6 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                       Member(
                         id: -1,
                         nickname: widget.payment.takerNickname,
-                        username: widget.payment.takerUsername,
                         balance: widget.payment.amount,
                         balanceOriginalCurrency: widget.payment.amountOriginalCurrency,
                       )

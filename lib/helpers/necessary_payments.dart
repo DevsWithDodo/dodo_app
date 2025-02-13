@@ -2,6 +2,7 @@ import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'models.dart';
 
 List<Payment> necessaryPayments(List<Member> members, BuildContext context) {
@@ -18,8 +19,7 @@ List<Payment> necessaryPayments(List<Member> members, BuildContext context) {
       ));
     }
     do {
-      memberCopy.sort(
-          (member1, member2) => member1.balance.compareTo(member2.balance));
+      memberCopy.sort((member1, member2) => member1.balance.compareTo(member2.balance));
       var minPerson = memberCopy[0];
       var maxPerson = memberCopy[memberCopy.length - 1];
       payments.add(
@@ -28,17 +28,11 @@ List<Payment> necessaryPayments(List<Member> members, BuildContext context) {
           id: -1,
           reactions: [],
           payerId: minPerson.id,
-          payerUsername: minPerson.username,
           payerNickname: minPerson.nickname,
           takerId: maxPerson.id,
-          takerUsername: maxPerson.username,
           takerNickname: maxPerson.nickname,
-          amount: maxPerson.balance > minPerson.balance.abs()
-              ? minPerson.balance.abs()
-              : maxPerson.balance.abs(),
-          amountOriginalCurrency: maxPerson.balance > minPerson.balance.abs()
-              ? minPerson.balance.abs()
-              : maxPerson.balance.abs(),
+          amount: maxPerson.balance > minPerson.balance.abs() ? minPerson.balance.abs() : maxPerson.balance.abs(),
+          amountOriginalCurrency: maxPerson.balance > minPerson.balance.abs() ? minPerson.balance.abs() : maxPerson.balance.abs(),
           originalCurrency: currentGroup.currency,
           updatedAt: DateTime.now(),
         ),
@@ -50,8 +44,7 @@ List<Payment> necessaryPayments(List<Member> members, BuildContext context) {
         minPerson.balance = minPerson.balance + maxPerson.balance;
         maxPerson.balance = 0;
       }
-    } while (memberCopy.where((member) => member.balance > 0).length > 0 &&
-        memberCopy.where((member) => member.balance < 0).length > 0);
+    } while (memberCopy.where((member) => member.balance > 0).length > 0 && memberCopy.where((member) => member.balance < 0).length > 0);
     return payments;
   } else {
     return payments;

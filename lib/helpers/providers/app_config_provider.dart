@@ -7,7 +7,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
 class AppConfigProvider extends StatelessWidget {
-  AppConfigProvider({required this.builder, super.key}){
+  AppConfigProvider({required this.builder, super.key}) {
     _appConfig = AppConfig(
       useTest: false,
       isIAPPlatformEnabled: !kIsWeb && (Platform.isAndroid || Platform.isIOS),
@@ -35,7 +35,6 @@ class AppConfigProvider extends StatelessWidget {
 }
 
 class AppConfig extends ChangeNotifier {
-  
   AppConfig({
     required bool useTest,
     required this.isIAPPlatformEnabled,

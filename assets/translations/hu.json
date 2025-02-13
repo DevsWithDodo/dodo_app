@@ -473,7 +473,7 @@
     "invitation-field.none": "Egyikük sem",
     "nickname-in-group": "Becenév a csoportban",
 
-    "join-group.qr-scan": "QR kód beolvasása",
+    "join-group.qr-scan": "Olvasd be a QR kódot",
 
     "payment-methods.add-new": "Hozzáadás",
     "payment-methods.save.loading": "Mentés folyamatban...",
@@ -521,5 +521,9 @@
     "receipt-scanner.store-dialog.name": "Bolt neve",
 
     "purchase.scan-receipt.new": "Blokk beolvasása",
-    "purchase.scan-receipt.modify": "Beolvasottak szerkesztése"
+    "purchase.scan-receipt.modify": "Beolvasottak szerkesztése",
+
+    "you": "Te",
+
+    "payment-methods.no-payment-methods": "Még nem adtál meg fizetési módot"
 }

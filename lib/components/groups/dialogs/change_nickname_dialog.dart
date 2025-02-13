@@ -11,9 +11,8 @@ import '../../helpers/future_output_dialog.dart';
 import '../../helpers/gradient_button.dart';
 
 class ChangeNicknameDialog extends StatefulWidget {
-  final String username;
   final int memberId;
-  ChangeNicknameDialog({required this.username, required this.memberId});
+  ChangeNicknameDialog({required this.memberId});
 
   @override
   _ChangeNicknameDialogState createState() => _ChangeNicknameDialogState();
@@ -27,9 +26,9 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
     try {
       Map<String, dynamic> body = {"member_id": memberId, "nickname": nickname};
       await Http.put(
-            uri: '/groups/' + context.read<UserState>().currentGroup!.id.toString() + '/members',
-            body: body,
-          );
+        uri: '/groups/' + context.read<UserState>().currentGroup!.id.toString() + '/members',
+        body: body,
+      );
       return BoolFutureOutput.True;
     } catch (_) {
       throw _;
@@ -47,8 +46,7 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
             Center(
               child: Text(
                 'edit_nickname'.tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
             SizedBox(
@@ -98,24 +96,19 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
   void _buttonPushed() {
     if (_nicknameFormKey.currentState!.validate()) {
       FocusScope.of(context).requestFocus(FocusNode());
-      String nickname = _nicknameController.text[0].toUpperCase() +
-          _nicknameController.text.substring(1);
-      showFutureOutputDialog(
-        context: context,
-        future: _updateNickname(nickname, widget.memberId),
-        outputCallbacks: {
-          BoolFutureOutput.True: () async {
-            _nicknameController.text = '';
-            Navigator.pop(context);
-            Navigator.pop(context, true);
-            EventBus.instance.fire(EventBus.refreshBalances);
-            EventBus.instance.fire(EventBus.refreshGroupMembers);
-            EventBus.instance.fire(EventBus.refreshPurchases);
-            EventBus.instance.fire(EventBus.refreshPayments);
-            EventBus.instance.fire(EventBus.refreshShopping);
-          }
+      String nickname = _nicknameController.text[0].toUpperCase() + _nicknameController.text.substring(1);
+      showFutureOutputDialog(context: context, future: _updateNickname(nickname, widget.memberId), outputCallbacks: {
+        BoolFutureOutput.True: () async {
+          _nicknameController.text = '';
+          Navigator.pop(context);
+          Navigator.pop(context, true);
+          EventBus.instance.fire(EventBus.refreshBalances);
+          EventBus.instance.fire(EventBus.refreshGroupMembers);
+          EventBus.instance.fire(EventBus.refreshPurchases);
+          EventBus.instance.fire(EventBus.refreshPayments);
+          EventBus.instance.fire(EventBus.refreshShopping);
         }
-      );
+      });
     }
   }
 }

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:csocsort_szamla/common.dart';
-import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/navigator_service.dart';
@@ -34,14 +33,12 @@ class NotificationInitializer extends StatelessWidget {
     try {
       Map<String, dynamic> decoded = jsonDecode(payload);
       int? groupId = decoded['group_id'];
-      String? groupName = decoded['group_name'];
-      String groupCurrency = decoded['currency'] ?? 'EUR';
       String? page = decoded['screen'];
       String? details = decoded['details'];
 
       if (userState.user != null) {
         if (groupId != null) {
-          userState.setGroup(Group(id: groupId, name: groupName!, currency: Currency.fromCodeSafe(groupCurrency)));
+          userState.setGroup(Group.fromJson(decoded, true));
         }
         clearAllCache();
         if (page == 'home') {

@@ -228,7 +228,7 @@
 
     "share": "Share the group",
     "share_url": "Or invite your friends with a message",
-    "paste_code": "or by pasting its invitation code:",
+    "paste_code": "or paste the invitation code:",
 
     "gradient_themes" : "Gradient themes",
     "change-theme.adaptive-theme" : "Adaptive theme",
@@ -470,7 +470,7 @@
     "invitation-field.none": "Neither of them",
     "nickname-in-group": "Nickname in group",
 
-    "join-group.qr-scan": "Scan QR code",
+    "join-group.qr-scan": "Scan the QR code",
 
     "payment-methods.add-new": "Add new",
     "payment-methods.save.loading": "Saving...",
@@ -518,5 +518,9 @@
     "receipt-scanner.store-dialog.name": "Store name",
 
     "purchase.scan-receipt.new": "Scan receipt",
-    "purchase.scan-receipt.modify": "Modify scanned"
+    "purchase.scan-receipt.modify": "Modify scanned",
+
+    "you": "You",
+    
+    "payment-methods.no-payment-methods": "No payment methods added yet"
 }

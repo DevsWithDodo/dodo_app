@@ -32,7 +32,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   void initState() {
     super.initState();
     User user = context.read<UserState>().user!;
-    _nicknameController = TextEditingController(text: user.username[0].toUpperCase() + user.username.substring(1));
+    _nicknameController = TextEditingController(); // TODO: initial value from cache
     _selectedCurrency = user.currency;
   }
 
@@ -42,12 +42,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
       http.Response response = await Http.post(uri: '/groups', body: body);
       Map<String, dynamic> decoded = jsonDecode(response.body);
       UserState userProvider = context.read<UserState>();
-      userProvider.setGroups(
-          userProvider.user!.groups +
-              [
-                Group.fromJson(decoded)
-              ],
-          notify: false);
+      userProvider.setGroups(userProvider.user!.groups + [Group.fromJson(decoded)], notify: false);
       userProvider.setGroup(userProvider.user!.groups.last);
       return BoolFutureOutput.True;
     } catch (_) {
@@ -126,11 +121,8 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                             Row(
                               children: <Widget>[
                                 Text(
-                                  'currency_of_group'.tr(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge!
-                                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                  'create-group.currency'.tr(),
+                                  style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                                 ),
                                 SizedBox(
                                   width: 20,
@@ -142,6 +134,11 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                                   ),
                                 ),
                               ],
+                            ),
+                            SizedBox(height: 5),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text('create-group.currency.hint'.tr(), style: Theme.of(context).textTheme.labelSmall),
                             ),
                           ],
                         ),

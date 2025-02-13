@@ -53,7 +53,7 @@ String generateUri(
   Map<String, String?>? queryParams,
 }) {
   if (type == HttpType.get) {
-    Group? currentGroup = context.read<UserState>().currentGroup;
+    Group? currentGroup = context.read<UserState?>()?.currentGroup;
     if (params == null && currentGroup != null) {
       params = [currentGroup.id.toString()];
     }
@@ -81,6 +81,24 @@ String generateUri(
   return '';
 }
 
+enum HttpStatusCodeRange { informational, success, redirection, clientError, serverError }
+
+extension HttpStatusCodeRangeExtension on int {
+  HttpStatusCodeRange get httpStatusCodeRange {
+    if (this < 200) {
+      return HttpStatusCodeRange.informational;
+    } else if (this < 300) {
+      return HttpStatusCodeRange.success;
+    } else if (this < 400) {
+      return HttpStatusCodeRange.redirection;
+    } else if (this < 500) {
+      return HttpStatusCodeRange.clientError;
+    } else {
+      return HttpStatusCodeRange.serverError;
+    }
+  }
+}
+
 class Http {
   static Future<http.Response> get({
     required String uri,
@@ -88,12 +106,10 @@ class Http {
     bool useCache = true,
   }) async {
     try {
-      BuildContext context =
-          getIt.get<NavigationService>().navigatorKey.currentContext!;
+      BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
       useCache = useCache && !kIsWeb;
       if (useCache) {
-        http.Response? responseFromCache = await fromCache(
-            uri: uri.substring(1), overwriteCache: overwriteCache);
+        http.Response? responseFromCache = await fromCache(uri: uri.substring(1), overwriteCache: overwriteCache);
         if (responseFromCache != null) {
           //print('de cache!');
           // await Future.delayed(Duration(
@@ -102,10 +118,10 @@ class Http {
           return responseFromCache;
         }
       }
+      String? apiToken = context.read<UserState?>()?.user?.apiToken;
       Map<String, String> header = {
         "Content-Type": "application/json",
-        "Authorization":
-            "Bearer " + (context.read<UserState>().user?.apiToken ?? '')
+        ...(apiToken == null ? {} : {"Authorization": "Bearer $apiToken"}),
       };
       http.Response response = await http.get(
         Uri.parse(context.read<AppConfig>().appUrl + uri),
@@ -124,14 +140,8 @@ class Http {
           FToast ft = FToast();
           ft.init(context);
           ft.removeQueuedCustomToasts();
-          ft.showToast(
-              child: errorToast('login_required', context),
-              toastDuration: Duration(seconds: 2),
-              gravity: ToastGravity.BOTTOM);
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
-              (r) => false);
+          ft.showToast(child: errorToast('login_required', context), toastDuration: Duration(seconds: 2), gravity: ToastGravity.BOTTOM);
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
         } else if (error['error'] == 'user_not_member') {
           memberNotInGroup(context);
         }
@@ -140,10 +150,7 @@ class Http {
     } on FormatException {
       throw 'format_exception';
     } on SocketException {
-      http.Response? response = await fromCache(
-          uri: uri.substring(1),
-          overwriteCache: false,
-          alwaysReturnCache: true);
+      http.Response? response = await fromCache(uri: uri.substring(1), overwriteCache: false, alwaysReturnCache: true);
       if (response != null) {
         return response;
       }
@@ -158,24 +165,14 @@ class Http {
     Map<String, dynamic>? body,
   }) async {
     try {
-      BuildContext context =
-          getIt.get<NavigationService>().navigatorKey.currentContext!;
-      Map<String, String> header = {
-        "Content-Type": "application/json",
-        "Authorization":
-            "Bearer " + (context.read<UserState>().user?.apiToken ?? '')
-      };
+      BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
+      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer " + (context.read<UserState>().user?.apiToken ?? '')};
       http.Response response;
       if (body != null) {
         String bodyEncoded = jsonEncode(body, toEncodable: (e) => e.toString());
-        response = await http.post(
-            Uri.parse(context.read<AppConfig>().appUrl + uri),
-            headers: header,
-            body: bodyEncoded);
+        response = await http.post(Uri.parse(context.read<AppConfig>().appUrl + uri), headers: header, body: bodyEncoded);
       } else {
-        response = await http.post(
-            Uri.parse(context.read<AppConfig>().appUrl + uri),
-            headers: header);
+        response = await http.post(Uri.parse(context.read<AppConfig>().appUrl + uri), headers: header);
       }
 
       if (response.statusCode < 300 && response.statusCode >= 200) {
@@ -187,14 +184,8 @@ class Http {
           FToast ft = FToast();
           ft.init(context);
           ft.removeQueuedCustomToasts();
-          ft.showToast(
-              child: errorToast('login_required', context),
-              toastDuration: Duration(seconds: 2),
-              gravity: ToastGravity.BOTTOM);
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
-              (r) => false);
+          ft.showToast(child: errorToast('login_required', context), toastDuration: Duration(seconds: 2), gravity: ToastGravity.BOTTOM);
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
         } else if (error['error'] == 'user_not_member') {
           memberNotInGroup(context);
         }
@@ -214,25 +205,18 @@ class Http {
     Map<String, dynamic>? body,
   }) async {
     try {
-      BuildContext context =
-          getIt.get<NavigationService>().navigatorKey.currentContext!;
-      Map<String, String> header = {
-        "Content-Type": "application/json",
-        "Authorization":
-            "Bearer " + (context.read<UserState>().user?.apiToken ?? '')
-      };
+      BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
+      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer " + (context.read<UserState>().user?.apiToken ?? '')};
       http.Response response;
       if (body != null) {
         String bodyEncoded = json.encode(body, toEncodable: (e) => e.toString());
         response = await http.put(
-            Uri.parse(context.read<AppConfig>().appUrl + uri),
-            headers: header,
-            body: bodyEncoded,
+          Uri.parse(context.read<AppConfig>().appUrl + uri),
+          headers: header,
+          body: bodyEncoded,
         );
       } else {
-        response = await http.put(
-            Uri.parse(context.read<AppConfig>().appUrl + uri),
-            headers: header);
+        response = await http.put(Uri.parse(context.read<AppConfig>().appUrl + uri), headers: header);
       }
 
       if (response.statusCode < 300 && response.statusCode >= 200) {
@@ -244,14 +228,8 @@ class Http {
           FToast ft = FToast();
           ft.init(context);
           ft.removeQueuedCustomToasts();
-          ft.showToast(
-              child: errorToast('login_required', context),
-              toastDuration: Duration(seconds: 2),
-              gravity: ToastGravity.BOTTOM);
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
-              (r) => false);
+          ft.showToast(child: errorToast('login_required', context), toastDuration: Duration(seconds: 2), gravity: ToastGravity.BOTTOM);
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
         } else if (error['error'] == 'user_not_member') {
           memberNotInGroup(context);
         }
@@ -268,16 +246,9 @@ class Http {
 
   static Future<http.Response> delete({required String uri}) async {
     try {
-      BuildContext context =
-          getIt.get<NavigationService>().navigatorKey.currentContext!;
-      Map<String, String> header = {
-        "Content-Type": "application/json",
-        "Authorization":
-            "Bearer " + (context.read<UserState>().user?.apiToken ?? '')
-      };
-      http.Response response = await http.delete(
-          Uri.parse(context.read<AppConfig>().appUrl + uri),
-          headers: header);
+      BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
+      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer " + (context.read<UserState>().user?.apiToken ?? '')};
+      http.Response response = await http.delete(Uri.parse(context.read<AppConfig>().appUrl + uri), headers: header);
 
       if (response.statusCode < 300 && response.statusCode >= 200) {
         return response;
@@ -287,14 +258,8 @@ class Http {
           clearAllCache();
           FToast ft = FToast();
           ft.init(context);
-          ft.showToast(
-              child: errorToast('login_required', context),
-              toastDuration: Duration(seconds: 2),
-              gravity: ToastGravity.BOTTOM);
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
-              (r) => false);
+          ft.showToast(child: errorToast('login_required', context), toastDuration: Duration(seconds: 2), gravity: ToastGravity.BOTTOM);
+          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
         } else if (error['error'] == 'user_not_member') {
           memberNotInGroup(context);
         }
@@ -316,14 +281,10 @@ class Http {
     FToast ft = FToast();
     ft.init(context);
     ft.removeQueuedCustomToasts();
-    ft.showToast(
-        child: errorToast('not_in_group'.tr(), context),
-        toastDuration: Duration(seconds: 2),
-        gravity: ToastGravity.BOTTOM);
+    ft.showToast(child: errorToast('not_in_group'.tr(), context), toastDuration: Duration(seconds: 2), gravity: ToastGravity.BOTTOM);
     if (userProvider.user!.groups.isNotEmpty) {
       userProvider.setGroup(userProvider.user!.groups[0]);
-      Navigator.pushAndRemoveUntil(context,
-          MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
     } else {
       Navigator.pushAndRemoveUntil(
           context,
@@ -353,12 +314,7 @@ Widget errorToast(String msg, BuildContext context) {
         SizedBox(
           width: 12.0,
         ),
-        Flexible(
-            child: Text(msg.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onError))),
+        Flexible(child: Text(msg.tr(), style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onError))),
       ],
     ),
   );
@@ -369,23 +325,16 @@ Future<Directory> _getCacheDir() async {
   return Directory((await getTemporaryDirectory()).path + delimiter + 'lender');
 }
 
-Future<http.Response?> fromCache(
-    {required String uri,
-    required bool overwriteCache,
-    bool alwaysReturnCache = false}) async {
+Future<http.Response?> fromCache({required String uri, required bool overwriteCache, bool alwaysReturnCache = false}) async {
   try {
     String s = Platform.isWindows ? '\\' : '/';
-    String fileName =
-        uri.replaceAll('/', '-').replaceAll('&', '-').replaceAll('?', '-');
+    String fileName = uri.replaceAll('/', '-').replaceAll('&', '-').replaceAll('?', '-');
     var cacheDir = await _getCacheDir();
     if (!cacheDir.existsSync()) {
       return null;
     }
     File file = File(cacheDir.path + s + fileName);
-    if (file.existsSync() && (alwaysReturnCache ||
-        (!overwriteCache &&
-            DateTime.now().difference(await file.lastModified()).inMinutes <
-                    5))) {
+    if (file.existsSync() && (alwaysReturnCache || (!overwriteCache && DateTime.now().difference(await file.lastModified()).inMinutes < 5))) {
       return http.Response(await file.readAsString(), 200);
     }
     // print('from API');
@@ -400,8 +349,7 @@ Future<http.Response?> fromCache(
 Future toCache({required String uri, required http.Response response}) async {
   // print('to cache');
   String s = Platform.isWindows ? '\\' : '/';
-  String fileName =
-      uri.replaceAll('/', '-').replaceAll('&', '-').replaceAll('?', '-');
+  String fileName = uri.replaceAll('/', '-').replaceAll('&', '-').replaceAll('?', '-');
   var cacheDir = await _getCacheDir();
   //print('itt');
   cacheDir.create();
@@ -416,8 +364,7 @@ Future toCache({required String uri, required http.Response response}) async {
 Future deleteCache({required String uri, bool multipleArgs = false}) async {
   if (!kIsWeb) {
     uri = uri.substring(1);
-    String fileName =
-        uri.replaceAll('/', '-').replaceAll('&', '-').replaceAll('?', '-');
+    String fileName = uri.replaceAll('/', '-').replaceAll('&', '-').replaceAll('?', '-');
     String separator = Platform.isWindows ? '\\' : '/';
     var cacheDir = await _getCacheDir();
     if (multipleArgs) {
@@ -450,12 +397,11 @@ Future clearGroupCache(BuildContext context) async {
       List<FileSystemEntity> files = cacheDir.listSync();
       for (var file in files) {
         if (file is File) {
-          if(!file.existsSync()) {
+          if (!file.existsSync()) {
             continue;
           }
           String fileName = file.path.split(s).last;
-          if (fileName.contains('groups-' + currentGroupId.toString()) ||
-              fileName.contains('group=' + currentGroupId.toString())) {
+          if (fileName.contains('groups-' + currentGroupId.toString()) || fileName.contains('group=' + currentGroupId.toString())) {
             file.deleteSync();
           }
         }

@@ -1,11 +1,11 @@
 import 'dart:collection';
 
 import 'package:csocsort_szamla/helpers/app_theme.dart';
-import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:csocsort_szamla/helpers/data_stack.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
+import 'package:csocsort_szamla/helpers/data_stack.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
@@ -38,13 +38,7 @@ enum ButtonText {
 
   bool get isOperator => operator != Operator.none;
 
-  bool get isNumber =>
-      !isOperator &&
-      this != ButtonText.empty &&
-      this != ButtonText.dot &&
-      this != ButtonText.backspace &&
-      this != ButtonText.clear &&
-      this != ButtonText.equals;
+  bool get isNumber => !isOperator && this != ButtonText.empty && this != ButtonText.dot && this != ButtonText.backspace && this != ButtonText.clear && this != ButtonText.equals;
 }
 
 class StringOrOperator {
@@ -156,8 +150,7 @@ class _CalculatorState extends State<Calculator> {
     _operators.pop();
     _operators.push(input.operator);
     setState(() {
-      if (_intermediateResult.length != 0 &&
-          _operatorsAndEquals.contains(_intermediateResult[_intermediateResult.length - 1])) {
+      if (_intermediateResult.length != 0 && _operatorsAndEquals.contains(_intermediateResult[_intermediateResult.length - 1])) {
         _intermediateResult = _intermediateResult.substring(0, _intermediateResult.length - 1) + input.text;
       }
       _lastOperator = input.operator;
@@ -248,10 +241,7 @@ class _CalculatorState extends State<Calculator> {
                 visible: _intermediateResult == '',
                 child: Text(
                   '0',
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall!
-                      .copyWith(color: Theme.of(context).colorScheme.tertiary),
+                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Theme.of(context).colorScheme.tertiary),
                 ),
               ),
               Visibility(
@@ -259,10 +249,7 @@ class _CalculatorState extends State<Calculator> {
                 child: Text(
                   _intermediateResult,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineSmall!
-                      .copyWith(color: Theme.of(context).colorScheme.tertiary),
+                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Theme.of(context).colorScheme.tertiary),
                 ),
               ),
             ],
@@ -291,9 +278,7 @@ class _CalculatorState extends State<Calculator> {
             width: 60,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: _operators.length != 0 && _isStillNum
-                  ? LinearGradient(colors: [Colors.grey, Colors.grey])
-                  : AppTheme.gradientFromTheme(context.watch<AppThemeState>().themeName),
+              gradient: _operators.length != 0 && _isStillNum ? LinearGradient(colors: [Colors.grey, Colors.grey]) : AppTheme.gradientFromTheme(context.watch<AppThemeState>().themeName),
             ),
             child: InkWell(
               borderRadius: BorderRadius.circular(100),
@@ -302,8 +287,7 @@ class _CalculatorState extends State<Calculator> {
                   : () {
                       Navigator.pop(context);
                       if (double.tryParse(_intermediateResult) != null) {
-                        widget.onCalculationReady(
-                            double.parse(_intermediateResult).toMoneyString(widget.selectedCurrency));
+                        widget.onCalculationReady(double.parse(_intermediateResult).toMoneyString(widget.selectedCurrency));
                       }
                     },
               child: Icon(
@@ -317,13 +301,7 @@ class _CalculatorState extends State<Calculator> {
     );
   }
 
-  List<ButtonText> _operatorsAndEquals = [
-    ButtonText.add,
-    ButtonText.subtract,
-    ButtonText.divide,
-    ButtonText.multiply,
-    ButtonText.equals
-  ];
+  List<ButtonText> _operatorsAndEquals = [ButtonText.add, ButtonText.subtract, ButtonText.divide, ButtonText.multiply, ButtonText.equals];
 
   List<List<ButtonText>> _rows = [
     [ButtonText.divide, ButtonText.one, ButtonText.two, ButtonText.three, ButtonText.clear],
@@ -351,7 +329,7 @@ class _CalculatorState extends State<Calculator> {
         color = Colors.transparent;
         textColor = Theme.of(context).colorScheme.onSurface;
       } else {
-        color = Theme.of(context).colorScheme.surfaceVariant;
+        color = Theme.of(context).colorScheme.surfaceContainer;
         textColor = Theme.of(context).colorScheme.onSurfaceVariant;
       }
 

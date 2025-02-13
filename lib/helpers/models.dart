@@ -6,10 +6,11 @@ import 'package:collection/collection.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class User {
   String apiToken;
-  String username;
+  String? username;
   int id;
   Currency currency;
   Group? group;
@@ -21,13 +22,19 @@ class User {
   bool trialVersion;
   List<PaymentMethod> paymentMethods;
   UserStatus userStatus;
+  bool googleConnected;
+  bool appleConnected;
+  bool hasPassword;
 
   User({
     required this.apiToken,
-    required this.username,
+    this.username,
     required this.id,
     required this.currency,
     required this.userStatus,
+    required this.googleConnected,
+    required this.appleConnected,
+    required this.hasPassword,
     this.group,
     this.groups = const [],
     this.ratedApp = false,
@@ -37,6 +44,100 @@ class User {
     this.trialVersion = false,
     this.paymentMethods = const [],
   });
+
+  factory User.fromJson(Map<String, dynamic> json, [bool? ratedApp]) {
+    return User(
+      apiToken: json['api_token'],
+      username: json['username'],
+      id: json['id'],
+      currency: Currency.fromCode(json['default_currency'], safe: true),
+      ratedApp: ratedApp ?? false,
+      personalisedAds: json['personalised_ads'] == 1,
+      showAds: json['ad_free'] == 0,
+      useGradients: json['gradients_enabled'] == 1,
+      trialVersion: json['trial'] == 1,
+      paymentMethods: json['payment_details'] != null
+          ? PaymentMethod.fromJsonList(
+              jsonDecode(json['payment_details']) as List,
+            )
+          : [],
+      userStatus: json['status'] != null
+          ? UserStatus.fromJson(json['status'])
+          : UserStatus(
+              // This should never happen, but just in case
+              trialStatus: TrialStatus.seen,
+              pinVerifiedAt: DateTime.now(),
+              pinVerificationCount: 100,
+            ),
+      googleConnected: json['google_connected'] == 1,
+      appleConnected: json['apple_connected'] == 1,
+      hasPassword: json['has_password'] == 1,
+    );
+  }
+
+  factory User.fromPreferences(SharedPreferences preferences) {
+    List<String> usersGroupNames = preferences.getStringList('users_groups') ?? [];
+    List<int> usersGroupIds = preferences.getStringList('users_group_ids')?.map((e) => int.parse(e)).toList() ?? [];
+    List<String> usersGroupCurrencies = preferences.getStringList('users_group_currencies') ?? [];
+    return User(
+      apiToken: preferences.getString('api_token')!,
+      username: preferences.getString('current_username'),
+      id: preferences.getInt('current_user_id')!,
+      currency: Currency.fromCode(preferences.getString('current_user_currency') ?? 'EUR', safe: true),
+      group: preferences.containsKey('current_group_id')
+          ? Group(
+              id: preferences.getInt('current_group_id')!,
+              name: preferences.getString('current_group_name')!,
+              currency: Currency.fromCode(preferences.getString('current_group_currency') ?? 'EUR', safe: true),
+            )
+          : null,
+      groups: usersGroupNames
+          .asMap()
+          .map((index, value) => MapEntry(
+              index,
+              Group(
+                id: usersGroupIds[index],
+                name: value,
+                currency: Currency.fromCode(
+                  usersGroupCurrencies.length > index ? usersGroupCurrencies[index] : 'EUR',
+                  safe: true,
+                ),
+              )))
+          .values
+          .toList(),
+      ratedApp: preferences.getBool('rated_app') ?? false,
+      paymentMethods: [],
+      userStatus: UserStatus(
+        pinVerificationCount: 100,
+        pinVerifiedAt: DateTime.now(),
+        trialStatus: TrialStatus.seen,
+      ),
+      googleConnected: false,
+      appleConnected: false,
+      hasPassword: false,
+    );
+  }
+
+  User mergeWith(User otherUser) {
+    return User(
+      apiToken: otherUser.apiToken,
+      username: otherUser.username ?? this.username,
+      id: otherUser.id,
+      currency: otherUser.currency,
+      group: otherUser.group ?? this.group,
+      groups: otherUser.groups.isNotEmpty ? otherUser.groups : this.groups,
+      ratedApp: otherUser.ratedApp,
+      showAds: otherUser.showAds,
+      useGradients: otherUser.useGradients,
+      personalisedAds: otherUser.personalisedAds,
+      trialVersion: otherUser.trialVersion,
+      paymentMethods: otherUser.paymentMethods.isNotEmpty ? otherUser.paymentMethods : this.paymentMethods,
+      userStatus: otherUser.userStatus,
+      googleConnected: otherUser.googleConnected,
+      appleConnected: otherUser.appleConnected,
+      hasPassword: otherUser.hasPassword,
+    );
+  }
 }
 
 enum TrialStatus {
@@ -112,7 +213,15 @@ class PaymentMethod {
   PaymentMethod({required this.name, required this.value, required this.priority});
 
   factory PaymentMethod.fromJson(Map<String, dynamic> json) {
-    return PaymentMethod(name: json['name'], value: json['value'], priority: json['priority']);
+    return PaymentMethod(
+      name: json['name'],
+      value: json['value'],
+      priority: json['priority'],
+    );
+  }
+
+  static List<PaymentMethod> fromJsonList(List<dynamic> json) {
+    return json.map((e) => PaymentMethod.fromJson(e)).toList();
   }
 
   Map<String, dynamic> toJson() {
@@ -142,7 +251,7 @@ class PaymentMethod {
 
 class Member {
   int id;
-  String username;
+  String? username;
   late String nickname;
   double balance;
   late double balanceOriginalCurrency;
@@ -153,8 +262,8 @@ class Member {
   List<PaymentMethod>? paymentMethods;
   Member({
     required this.id,
-    required this.username,
-    String? nickname,
+    this.username,
+    required this.nickname,
     required this.balance,
     this.isAdmin,
     this.apiToken,
@@ -164,11 +273,10 @@ class Member {
     this.paymentMethods,
   }) {
     this.balanceOriginalCurrency = balanceOriginalCurrency ?? balance;
-    this.nickname = nickname ?? username;
   }
   factory Member.fromJson(Map<String, dynamic> json) {
     return Member(
-      username: json['username'] ?? json['nickname'],
+      username: json['username'],
       id: json['user_id'],
       nickname: json['nickname'],
       balance: json['balance'] * 1.0,
@@ -202,12 +310,16 @@ class Group {
     this.adminApproval,
   });
 
-  factory Group.fromJson(Map<String, dynamic> json) {
+  factory Group.fromJson(Map<String, dynamic> json, [bool safeCurrency = false]) {
     return Group(
       name: json['group_name'],
       id: json['group_id'],
-      currency: Currency.fromCode(json['currency']),
+      currency: Currency.fromCode(json['currency'], safe: safeCurrency),
     );
+  }
+
+  static List<Group> fromJsonList(List<dynamic> json, [bool safeCurrency = false]) {
+    return json.map((e) => Group.fromJson(e, safeCurrency)).toList();
   }
 }
 
@@ -232,7 +344,6 @@ class Reaction {
 
 class Purchase {
   int id;
-  String buyerUsername;
   late String buyerNickname;
   int buyerId;
   List<Member> receivers;
@@ -248,8 +359,7 @@ class Purchase {
     required this.id,
     required this.name,
     required this.buyerId,
-    required this.buyerUsername,
-    String? buyerNickname,
+    required this.buyerNickname,
     required this.receivers,
     required this.totalAmount,
     double? totalAmountOriginalCurrency,
@@ -258,7 +368,6 @@ class Purchase {
     this.reactions,
     this.category,
   }) {
-    this.buyerNickname = buyerNickname ?? buyerUsername;
     this.totalAmountOriginalCurrency = totalAmountOriginalCurrency ?? totalAmount;
   }
 
@@ -268,7 +377,6 @@ class Purchase {
       name: json['name'],
       updatedAt: json['updated_at'] == null ? DateTime.now() : DateTime.parse(json['updated_at']).toLocal(),
       originalCurrency: Currency.fromCode(json['original_currency']),
-      buyerUsername: json['buyer_username'] ?? json['buyer_nickname'],
       buyerId: json['buyer_id'],
       buyerNickname: json['buyer_nickname'],
       totalAmount: (json['total_amount'] * 1.0),
@@ -285,7 +393,6 @@ class Purchase {
       name: name,
       updatedAt: DateTime.now(),
       originalCurrency: currency,
-      buyerUsername: buyer.username,
       buyerId: buyer.id,
       buyerNickname: buyer.nickname,
       totalAmount: amount,
@@ -301,7 +408,7 @@ class Payment {
   double amount;
   late double amountOriginalCurrency;
   DateTime updatedAt;
-  String payerUsername, payerNickname, takerUsername, takerNickname;
+  String payerNickname, takerNickname;
   late String note;
   int payerId, takerId;
   List<Reaction>? reactions;
@@ -311,10 +418,8 @@ class Payment {
     required this.id,
     required this.amount,
     double? amountOriginalCurrency,
-    required this.payerUsername,
     required this.payerId,
     required this.payerNickname,
-    required this.takerUsername,
     required this.takerId,
     required this.takerNickname,
     String? note,
@@ -332,10 +437,8 @@ class Payment {
       amount: (json['amount'] * 1.0),
       updatedAt: json['updated_at'] == null ? DateTime.now() : DateTime.parse(json['updated_at']).toLocal(),
       payerId: json['payer_id'],
-      payerUsername: json['payer_username'] ?? json['payer_nickname'],
       payerNickname: json['payer_nickname'],
       takerId: json['taker_id'],
-      takerUsername: json['taker_username'] ?? json['taker_nickname'],
       takerNickname: json['taker_nickname'],
       note: json['note'],
       originalCurrency: Currency.fromCode(json['original_currency']),
@@ -484,7 +587,7 @@ class ReceiptInformation {
 
     return ReceiptInformation(
       storeName: json['store_name'],
-      currency: Currency.fromCodeSafe(json['currency_code_iso_4217']),
+      currency: Currency.fromCode(json['currency_code_iso_4217'], safe: true),
       items: items,
       imageFile: imageFile,
     );

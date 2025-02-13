@@ -72,7 +72,9 @@ class MainDialogBuilder extends StatefulWidget {
         showTime: DialogShowTime.both,
         type: DialogType.bottom,
         canShow: (context) {
-          UserStatus status = context.read<UserState>().user!.userStatus;
+          User user = context.read<UserState>().user!;
+          if (user.username == null) return false; // No username means social login, no need for pin verification
+          UserStatus status = user.userStatus;
           int verificationCount = status.pinVerificationCount;
           Duration difference = DateTime.now().difference(status.pinVerifiedAt);
           if (verificationCount <= 1 && difference.inDays >= 1) {

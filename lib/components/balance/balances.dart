@@ -23,8 +23,7 @@ class Balances extends StatefulWidget {
   _BalancesState createState() => _BalancesState();
 }
 
-class _BalancesState extends State<Balances>
-    with AutomaticKeepAliveClientMixin {
+class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin {
   @override
   get wantKeepAlive => true;
 
@@ -33,21 +32,23 @@ class _BalancesState extends State<Balances>
   bool showAll = false;
 
   Future<List<Member>> _getMembers() async {
-    try {
-      Response response = await Http.get(
-          uri: generateUri(GetUriKeys.groupCurrent, context,
-              params: [context.read<UserState>().user!.group!.id.toString()]));
-      Map<String, dynamic> decoded = jsonDecode(response.body);
-      List<Member> members = [];
-      for (var member in decoded['data']['members']) {
-        members.add(Member.fromJson(member));
-      }
-      members.sort(
-          (member1, member2) => member2.balance.compareTo(member1.balance));
-      return members;
-    } catch (_) {
-      throw _;
+    Response response = await Http.get(
+      uri: generateUri(
+        GetUriKeys.groupCurrent,
+        context,
+        params: [
+          context.read<UserState>().user!.group!.id.toString(),
+        ],
+      ),
+    );
+    Map<String, dynamic> decoded = jsonDecode(response.body);
+    List<Member> members = [];
+    print(decoded);
+    for (var member in decoded['data']['members']) {
+      members.add(Member.fromJson(member));
     }
+    members.sort((member1, member2) => member2.balance.compareTo(member1.balance));
+    return members;
   }
 
   void onRefreshBalancesEvent() {
@@ -93,8 +94,7 @@ class _BalancesState extends State<Balances>
                 Center(
                   child: Text(
                     'balances'.tr(),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface),
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
                 SizedBox(height: 15),
@@ -103,12 +103,7 @@ class _BalancesState extends State<Balances>
                   builder: (context, AsyncSnapshot<List<Member>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
-                        final isCurrentUserAdmin = snapshot.data!
-                                .firstWhere((member) =>
-                                    member.id ==
-                                    context.read<UserState>().user!.id)
-                                .isAdmin ??
-                            false;
+                        final isCurrentUserAdmin = snapshot.data!.firstWhere((member) => member.id == context.read<UserState>().user!.id).isAdmin ?? false;
                         return Column(
                           children: [
                             NecessaryPaymentsButton(members: snapshot.data!),
@@ -130,34 +125,20 @@ class _BalancesState extends State<Balances>
                                 child: Ink(
                                   height: 48,
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .surfaceContainerHigh,
+                                    color: Theme.of(context).colorScheme.surfaceContainerHigh,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 12),
+                                    padding: const EdgeInsets.symmetric(horizontal: 12),
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
-                                        Icon(Icons.add,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurface),
+                                        Icon(Icons.add, color: Theme.of(context).colorScheme.onSurface),
                                         SizedBox(width: 5),
                                         Text(
                                           'balances.add-member'.tr(),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge!
-                                              .copyWith(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onSurface),
+                                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
                                         ),
                                       ],
                                     ),
@@ -170,22 +151,12 @@ class _BalancesState extends State<Balances>
                                 child: Center(
                                   child: ElevatedButton.icon(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .primaryContainer,
-                                      foregroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .onPrimaryContainer,
+                                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                                      foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
                                     ),
-                                    onPressed: () =>
-                                        setState(() => showAll = !showAll),
-                                    label: Text(showAll
-                                            ? 'balances.collapse'
-                                            : 'balances.expand')
-                                        .tr(),
-                                    icon: Icon(showAll
-                                        ? Icons.keyboard_arrow_up
-                                        : Icons.keyboard_arrow_down),
+                                    onPressed: () => setState(() => showAll = !showAll),
+                                    label: Text(showAll ? 'balances.collapse' : 'balances.expand').tr(),
+                                    icon: Icon(showAll ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
                                   ),
                                 ),
                               ),
@@ -215,8 +186,7 @@ class _BalancesState extends State<Balances>
               width: 70,
               child: SelectBalanceCurrency(
                 selectedCurrency: _selectedCurrency,
-                onCurrencyChanged: (currency) =>
-                    setState(() => _selectedCurrency = currency),
+                onCurrencyChanged: (currency) => setState(() => _selectedCurrency = currency),
               ),
             ),
             right: 10,
@@ -228,8 +198,7 @@ class _BalancesState extends State<Balances>
   }
 
   List<Widget> _generateBalances(List<Member> members) {
-    int currentMemberIndex = members.indexWhere(
-        (member) => member.id == context.read<UserState>().user!.id);
+    int currentMemberIndex = members.indexWhere((member) => member.id == context.read<UserState>().user!.id);
     final isCurrentUserAdmin = members[currentMemberIndex].isAdmin ?? false;
     if (members.length > 7 && !showAll) {
       List<Member> membersToShow = [];
@@ -302,8 +271,7 @@ class BalanceMemberEntry extends StatelessWidget {
           height: 48,
           decoration: member.id == context.read<UserState>().user!.id
               ? BoxDecoration(
-                  gradient:
-                      AppTheme.gradientFromTheme(themeName, useSecondary: true),
+                  gradient: AppTheme.gradientFromTheme(themeName, useSecondary: true),
                   borderRadius: BorderRadius.circular(12),
                 )
               : BoxDecoration(
@@ -321,11 +289,7 @@ class BalanceMemberEntry extends StatelessWidget {
                 duration: Duration(milliseconds: 300),
                 firstChild: Container(),
                 secondChild: Text(
-                  member.balance
-                      .exchange(
-                          context.watch<UserState>().currentGroup!.currency,
-                          selectedCurrency)
-                      .toMoneyString(selectedCurrency),
+                  member.balance.exchange(context.watch<UserState>().currentGroup!.currency, selectedCurrency).toMoneyString(selectedCurrency),
                   style: textStyle,
                 ),
                 crossFadeState: CrossFadeState.showSecond,

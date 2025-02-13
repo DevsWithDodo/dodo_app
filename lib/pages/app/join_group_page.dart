@@ -14,6 +14,7 @@ import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
 import 'package:csocsort_szamla/pages/app/create_group_page.dart';
+import 'package:csocsort_szamla/pages/app/customize_page.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
 import 'package:csocsort_szamla/pages/app/qr_scanner_page.dart';
 import 'package:csocsort_szamla/pages/app/user_settings_page.dart';
@@ -54,7 +55,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
     super.initState();
     user = context.read<UserState>().user!;
     final inviteUrl = context.read<InviteUrlState>().inviteUrl;
-    _nicknameController = TextEditingController(text: user.username[0].toUpperCase() + user.username.substring(1));
+    _nicknameController = TextEditingController(); // TODO: initial value from cache
     token = inviteUrl?.split('/').lastOrNull ?? "";
     checkInvitation();
   }
@@ -188,10 +189,11 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                   SizedBox(
                                     height: 5,
                                   ),
-                                  Text(
-                                    'hi'.tr(args: [user.username]),
-                                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary),
-                                  ),
+                                  if (user.username != null)
+                                    Text(
+                                      'hi'.tr(args: [user.username!]),
+                                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary),
+                                    ),
                                 ],
                               ),
                             ),
@@ -200,8 +202,14 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                       ),
                       Divider(),
                       DrawerTile(
-                        icon: Icons.settings,
-                        label: 'settings'.tr(),
+                        icon: Icons.palette,
+                        label: 'customization'.tr(),
+                        builder: (context) => CustomizePage(),
+                      ),
+                      DrawerTile(
+                        dense: true,
+                        icon: Icons.account_circle,
+                        label: 'profile'.tr(),
                         builder: (context) => UserSettingsPage(),
                       ),
                       DrawerTile(
@@ -222,10 +230,9 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
               children: [
                 Column(
                   children: [
-                    Visibility(
-                      visible: groups.length == 0,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
+                    if (groups.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
                         child: Text(
                           'join-group.first-hint'.tr(),
                           textAlign: TextAlign.center,
@@ -234,8 +241,6 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                               ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 10),
                     if (context.watch<InviteUrlState>().inviteUrl == null)
                       Wrap(
                         alignment: WrapAlignment.center,
@@ -447,7 +452,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                                 token = '';
                                                 group = null;
                                                 selectedGuestId = null;
-                                                _nicknameController.text = user.username[0].toUpperCase() + user.username.substring(1);
+                                                _nicknameController.text = ''; // TODO: initial value from cache
                                               });
                                             },
                                           ),

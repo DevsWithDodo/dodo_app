@@ -60,18 +60,19 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'member-info.username'.tr(),
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      Flexible(
-                        child: Text(widget.member.username),
-                      ),
-                    ],
-                  ),
+                  if (widget.member.username != null)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'member-info.username'.tr(),
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Flexible(
+                          child: Text(widget.member.username!),
+                        ),
+                      ],
+                    ),
                   SizedBox(
                     height: 10,
                   ),
@@ -118,16 +119,13 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                             value: widget.member.isAdmin!,
                             activeColor: Theme.of(context).colorScheme.secondary,
                             onChanged: (value) {
-                              showFutureOutputDialog(
-                                  context: context,
-                                  future: _changeAdmin(widget.member.id, value),
-                                  outputCallbacks: {
-                                    BoolFutureOutput.True: () {
-                                      Navigator.pop(context);
-                                      Navigator.pop(context);
-                                      setState(() => widget.member.isAdmin = value);
-                                    }
-                                  });
+                              showFutureOutputDialog(context: context, future: _changeAdmin(widget.member.id, value), outputCallbacks: {
+                                BoolFutureOutput.True: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  setState(() => widget.member.isAdmin = value);
+                                }
+                              });
                             },
                           ),
                         ],
@@ -137,8 +135,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                   SizedBox(height: 10),
                   Center(
                     child: TextButton(
-                      onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => HistoryPage(selectedMemberId: widget.member.id))),
+                      onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => HistoryPage(selectedMemberId: widget.member.id))),
                       child: Text('member-info.transactions'.tr(), textAlign: TextAlign.center),
                     ),
                   ),
@@ -152,7 +149,6 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                             showDialog(
                               context: context,
                               builder: (context) => ChangeNicknameDialog(
-                                username: widget.member.username,
                                 memberId: widget.member.id,
                               ),
                             ).then((value) {
@@ -234,15 +230,11 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                       child: Center(
                         child: GradientButton.icon(
                           onPressed: () {
-                            double currencyThreshold =
-                                context.read<UserState>().currentGroup!.currency.threshold();
+                            double currencyThreshold = context.read<UserState>().currentGroup!.currency.threshold();
                             if (widget.member.balance <= -currencyThreshold) {
                               FToast ft = FToast();
                               ft.init(context);
-                              ft.showToast(
-                                  child: errorToast('balance_at_least_0', context),
-                                  toastDuration: Duration(seconds: 2),
-                                  gravity: ToastGravity.BOTTOM);
+                              ft.showToast(child: errorToast('balance_at_least_0', context), toastDuration: Duration(seconds: 2), gravity: ToastGravity.BOTTOM);
                               return;
                             } else {
                               showDialog(

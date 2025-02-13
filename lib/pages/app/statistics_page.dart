@@ -47,8 +47,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
   void initState() {
     super.initState();
 
-    if (widget.groupCreation != null &&
-        _startDate!.isBefore(widget.groupCreation!)) {
+    if (widget.groupCreation != null && _startDate!.isBefore(widget.groupCreation!)) {
       _startDate = widget.groupCreation;
     }
     refreshStatistics();
@@ -88,47 +87,37 @@ class _StatisticsPageState extends State<StatisticsPage> {
     }
   }
 
-  BarTooltipItem? Function(BarChartGroupData, int, BarChartRodData, int)
-      _purchasePaymentGetTooltipItem(PurchasePaymentStatisticsData data) =>
-          (BarChartGroupData group, int groupIndex, BarChartRodData rod,
-              int rodIndex) {
-            final entry = data.groupedEntries[groupIndex];
-            double value = rodIndex == 0 ? entry.given : entry.received;
-            Color color = rodIndex == 0
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.tertiary;
-            if (value == 0) {
-              return null;
-            }
-            return BarTooltipItem(
-              value.toMoneyString(
-                context.read<UserState>().currentGroup!.currency,
-                withSymbol: true,
-              ),
-              Theme.of(context).textTheme.bodySmall!.copyWith(color: color),
-            );
-          };
+  BarTooltipItem? Function(BarChartGroupData, int, BarChartRodData, int) _purchasePaymentGetTooltipItem(PurchasePaymentStatisticsData data) => (BarChartGroupData group, int groupIndex, BarChartRodData rod, int rodIndex) {
+        final entry = data.groupedEntries[groupIndex];
+        double value = rodIndex == 0 ? entry.given : entry.received;
+        Color color = rodIndex == 0 ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.tertiary;
+        if (value == 0) {
+          return null;
+        }
+        return BarTooltipItem(
+          value.toMoneyString(
+            context.read<UserState>().currentGroup!.currency,
+            withSymbol: true,
+          ),
+          Theme.of(context).textTheme.bodySmall!.copyWith(color: color),
+        );
+      };
 
-  BarTooltipItem? Function(BarChartGroupData, int, BarChartRodData, int)
-      _groupGetTooltipItem(GroupStatisticsData data) =>
-          (BarChartGroupData group, int groupIndex, BarChartRodData rod,
-              int rodIndex) {
-            final entry = data.groupedEntries[groupIndex];
-            double value = rodIndex == 0 ? entry.purchases : entry.payments;
-            Color color = rodIndex == 0
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.tertiary;
-            if (value == 0) {
-              return null;
-            }
-            return BarTooltipItem(
-              value.toMoneyString(
-                context.read<UserState>().currentGroup!.currency,
-                withSymbol: true,
-              ),
-              Theme.of(context).textTheme.bodySmall!.copyWith(color: color),
-            );
-          };
+  BarTooltipItem? Function(BarChartGroupData, int, BarChartRodData, int) _groupGetTooltipItem(GroupStatisticsData data) => (BarChartGroupData group, int groupIndex, BarChartRodData rod, int rodIndex) {
+        final entry = data.groupedEntries[groupIndex];
+        double value = rodIndex == 0 ? entry.purchases : entry.payments;
+        Color color = rodIndex == 0 ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.tertiary;
+        if (value == 0) {
+          return null;
+        }
+        return BarTooltipItem(
+          value.toMoneyString(
+            context.read<UserState>().currentGroup!.currency,
+            withSymbol: true,
+          ),
+          Theme.of(context).textTheme.bodySmall!.copyWith(color: color),
+        );
+      };
 
   BarChartData _generateChartData(StatisticsData data) {
     print('generate chart data');
@@ -151,11 +140,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     maxY += maxY * 0.2;
     minY += minY * 0.2;
 
-    double? sideInterval = ((difference / sideScale).round() +
-                (3 - (difference / sideScale).round()) % 3)
-            .toDouble() *
-        sideScale /
-        3;
+    double? sideInterval = ((difference / sideScale).round() + (3 - (difference / sideScale).round()) % 3).toDouble() * sideScale / 3;
 
     int bottomDivider;
     Duration bottomDuration = Duration(milliseconds: maxX - minX);
@@ -185,13 +170,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
         enabled: true,
         touchTooltipData: BarTouchTooltipData(
           direction: TooltipDirection.top,
-          getTooltipColor: (group) =>
-              Theme.of(context).colorScheme.surfaceContainerHigh,
+          getTooltipColor: (group) => Theme.of(context).colorScheme.surfaceContainerHigh,
           tooltipRoundedRadius: 8,
-          getTooltipItem: data.type == StatisticsType.group
-              ? _groupGetTooltipItem(data as GroupStatisticsData)
-              : _purchasePaymentGetTooltipItem(
-                  data as PurchasePaymentStatisticsData),
+          getTooltipItem: data.type == StatisticsType.group ? _groupGetTooltipItem(data as GroupStatisticsData) : _purchasePaymentGetTooltipItem(data as PurchasePaymentStatisticsData),
         ),
       ),
       titlesData: FlTitlesData(
@@ -200,8 +181,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         leftTitles: AxisTitles(
           axisNameSize: 22,
           axisNameWidget: Text(
-            'amount'.tr() +
-                ' (${context.watch<UserState>().currentGroup!.currency.symbol})',
+            'amount'.tr() + ' (${context.watch<UserState>().currentGroup!.currency.symbol})',
           ),
           sideTitles: SideTitles(
             reservedSize: 50,
@@ -214,9 +194,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       value.abs().toMoneyString(
                             context.watch<UserState>().currentGroup!.currency,
                           ),
-                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          color:
-                              Theme.of(context).colorScheme.onSurfaceVariant),
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
               axisSide: AxisSide.left,
             ),
@@ -228,13 +206,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
             interval: Duration(days: 10).inMilliseconds * 1.0,
             getTitlesWidget: (value, meta) {
               final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
-              final entry = data.groupedEntries
-                  .firstWhere((element) => element.dateRange.start == date);
+              final entry = data.groupedEntries.firstWhere((element) => element.dateRange.start == date);
               return SideTitleWidget(
                 child: Text(
                   data.groupingInterval.formattedDate(entry.start, entry.end),
-                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
                 axisSide: AxisSide.bottom,
               );
@@ -250,10 +226,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               barRods: [
                 BarChartRodData(
                   width: 20,
-                  fromY: data.type != StatisticsType.group
-                      ? (entry as GroupedPurchasePaymentStatisticsDataEntry)
-                          .given
-                      : (entry as GroupedGroupStatisticsDataEntry).purchases,
+                  fromY: data.type != StatisticsType.group ? (entry as GroupedPurchasePaymentStatisticsDataEntry).given : (entry as GroupedGroupStatisticsDataEntry).purchases,
                   toY: 0,
                   color: Theme.of(context).colorScheme.primary,
                   borderRadius: const BorderRadius.vertical(
@@ -262,19 +235,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 ),
                 BarChartRodData(
                   width: 20,
-                  fromY: data.type != StatisticsType.group
-                      ? -(entry as GroupedPurchasePaymentStatisticsDataEntry)
-                          .received
-                      : (entry as GroupedGroupStatisticsDataEntry).payments,
+                  fromY: data.type != StatisticsType.group ? -(entry as GroupedPurchasePaymentStatisticsDataEntry).received : (entry as GroupedGroupStatisticsDataEntry).payments,
                   toY: 0,
                   color: Theme.of(context).colorScheme.tertiary,
                   borderRadius: BorderRadius.vertical(
-                    bottom: data.type != StatisticsType.group
-                        ? Radius.circular(2)
-                        : Radius.zero,
-                    top: data.type == StatisticsType.group
-                        ? Radius.circular(2)
-                        : Radius.zero,
+                    bottom: data.type != StatisticsType.group ? Radius.circular(2) : Radius.zero,
+                    top: data.type == StatisticsType.group ? Radius.circular(2) : Radius.zero,
                   ),
                 ),
               ],
@@ -308,31 +274,19 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       children: [
                         Expanded(
                           child: Text(
-                            DateFormat.yMd(context.locale.languageCode)
-                                    .format(_startDate!) +
-                                ' - ' +
-                                DateFormat.yMd(context.locale.languageCode)
-                                    .format(_endDate),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge!
-                                .copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant),
+                            DateFormat.yMd(context.locale.languageCode).format(_startDate!) + ' - ' + DateFormat.yMd(context.locale.languageCode).format(_endDate),
+                            style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.date_range,
-                              color: Theme.of(context).colorScheme.primary),
+                          icon: Icon(Icons.date_range, color: Theme.of(context).colorScheme.primary),
                           onPressed: () async {
                             DateTimeRange? range = await showDateRangePicker(
                                 context: context,
                                 firstDate: widget.groupCreation!,
                                 lastDate: DateTime.now(),
                                 currentDate: DateTime.now(),
-                                initialDateRange: DateTimeRange(
-                                    start: _startDate!, end: _endDate),
+                                initialDateRange: DateTimeRange(start: _startDate!, end: _endDate),
                                 builder: (context, child) {
                                   return child!;
                                 });
@@ -353,13 +307,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       children: [
                         Text(
                           'category'.tr(),
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyLarge!
-                              .copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant),
+                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                         CategoryPickerIconButton(
                           selectedCategory: _category,
@@ -397,9 +345,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   padding: EdgeInsets.all(15),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: StatisticsType.values
-                        .mapIndexed((index, type) => childFromType(type, index == StatisticsType.values.length - 1))
-                        .toList(),
+                    children: StatisticsType.values.mapIndexed((index, type) => childFromType(type, index == StatisticsType.values.length - 1)).toList(),
                   ),
                 ),
               ),
@@ -419,11 +365,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       padding: EdgeInsets.all(15),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: StatisticsType.values
-                            .take(2)
-                            .mapIndexed(
-                                (index, type) => childFromType(type, index == 0))
-                            .toList(),
+                        children: StatisticsType.values.take(2).mapIndexed((index, type) => childFromType(type, index == 0)).toList(),
                       ),
                     ),
                   ),
@@ -438,12 +380,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     ),
                     child: SingleChildScrollView(
                       padding: EdgeInsets.all(15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          childFromType(StatisticsType.group),
-                        ]
-                      ),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                        childFromType(StatisticsType.group),
+                      ]),
                     ),
                   ),
                 ),
@@ -458,10 +397,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
       children: [
         Text(
           'statistics.${type.name}'.tr(),
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge!
-              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
           textAlign: TextAlign.center,
         ),
         SizedBox(
@@ -498,12 +434,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 style: Theme.of(context).textTheme.bodySmall,
               );
             }
-            final calculatedWidth = snapshot.data!.groupedEntries.length *
-                (type == StatisticsType.group ? 60.0 : 40.0);
+            final calculatedWidth = snapshot.data!.groupedEntries.length * (type == StatisticsType.group ? 60.0 : 40.0);
             final availableWidth = screenSize.isMobile ? screenSize.width - 30 : (screenSize.width - 40) / 2 - 30;
-            final physics = calculatedWidth > availableWidth
-                ? BouncingScrollPhysics()
-                : NeverScrollableScrollPhysics();
+            final physics = calculatedWidth > availableWidth ? BouncingScrollPhysics() : NeverScrollableScrollPhysics();
             return Column(
               children: [
                 StatisticsIntervalPicker(
@@ -531,15 +464,12 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     type: LegendFor.fromStatisticsType(type),
                     sums: type == StatisticsType.group
                         ? [
-                            (snapshot.data! as GroupStatisticsData)
-                                .sumPurchases,
+                            (snapshot.data! as GroupStatisticsData).sumPurchases,
                             (snapshot.data! as GroupStatisticsData).sumPayments,
                           ]
                         : [
-                            (snapshot.data! as PurchasePaymentStatisticsData)
-                                .sumGiven,
-                            (snapshot.data! as PurchasePaymentStatisticsData)
-                                .sumReceived,
+                            (snapshot.data! as PurchasePaymentStatisticsData).sumGiven,
+                            (snapshot.data! as PurchasePaymentStatisticsData).sumReceived,
                           ]),
               ],
             );
@@ -624,15 +554,12 @@ enum GroupingInterval {
   }
 
   String formattedDate(DateTime start, DateTime end) {
-    BuildContext context =
-        getIt.get<NavigationService>().navigatorKey.currentContext!;
+    BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
     switch (this) {
       case daily:
         return DateFormat.d(context.locale.languageCode).format(start);
       case weekly:
-        return DateFormat.d(context.locale.languageCode).format(start) +
-            '-' +
-            DateFormat.d(context.locale.languageCode).format(end);
+        return DateFormat.d(context.locale.languageCode).format(start) + '-' + DateFormat.d(context.locale.languageCode).format(end);
       case monthly:
         return DateFormat.MMM(context.locale.languageCode).format(start);
       case yearly:
@@ -664,8 +591,7 @@ abstract class GroupedStatisticsDataEntry {
   DateTime get end => dateRange.end;
 }
 
-class GroupedPurchasePaymentStatisticsDataEntry
-    extends GroupedStatisticsDataEntry {
+class GroupedPurchasePaymentStatisticsDataEntry extends GroupedStatisticsDataEntry {
   final double given;
   final double received;
 
@@ -762,36 +688,26 @@ abstract class PurchasePaymentStatisticsData extends StatisticsData {
     });
   }
 
-  List<GroupedPurchasePaymentStatisticsDataEntry> get groupedEntries =>
-      _entries.fold<List<GroupedPurchasePaymentStatisticsDataEntry>>([],
-          (previousValue, element) {
-        if (previousValue.isEmpty ||
-            previousValue.last.end.isBefore(element.date)) {
+  List<GroupedPurchasePaymentStatisticsDataEntry> get groupedEntries => _entries.fold<List<GroupedPurchasePaymentStatisticsDataEntry>>([], (previousValue, element) {
+        if (previousValue.isEmpty || previousValue.last.end.isBefore(element.date)) {
           return [
             ...previousValue,
             GroupedPurchasePaymentStatisticsDataEntry(
               DateTimeRange(
-                start: common.maxDateTime(
-                    groupingInterval.periodStart(element.date), this.startDate),
-                end: common.minDateTime(
-                    groupingInterval.periodEnd(element.date), this.endDate),
+                start: common.maxDateTime(groupingInterval.periodStart(element.date), this.startDate),
+                end: common.minDateTime(groupingInterval.periodEnd(element.date), this.endDate),
               ),
               element.given,
               element.received,
             )
           ];
         }
-        return [
-          ...previousValue.sublist(0, previousValue.length - 1),
-          previousValue.last.add(element.given, element.received)
-        ];
+        return [...previousValue.sublist(0, previousValue.length - 1), previousValue.last.add(element.given, element.received)];
       }).toList();
 
-  double get maxY => groupedEntries.fold<double>(
-      0, (value, element) => max(value, element.given));
+  double get maxY => groupedEntries.fold<double>(0, (value, element) => max(value, element.given));
 
-  double get minY => -groupedEntries.fold<double>(
-      0, (value, element) => max(value, element.received));
+  double get minY => -groupedEntries.fold<double>(0, (value, element) => max(value, element.received));
   bool get isEmpty => sumGiven == 0 && sumReceived == 0;
 }
 
@@ -804,12 +720,9 @@ class PaymentStatisticsData extends PurchasePaymentStatisticsData {
     required super.entries,
   });
 
-  factory PaymentStatisticsData(
-      List<PurchasePaymentStatisticsDataEntry> entries,
-      [GroupingInterval? interval]) {
+  factory PaymentStatisticsData(List<PurchasePaymentStatisticsDataEntry> entries, [GroupingInterval? interval]) {
     return PaymentStatisticsData._internal(
-      groupingInterval:
-          interval ?? GroupingInterval.fromIntervalLength(entries.length),
+      groupingInterval: interval ?? GroupingInterval.fromIntervalLength(entries.length),
       startDate: entries[0].date,
       endDate: entries[entries.length - 1].date,
       type: StatisticsType.payments,
@@ -817,8 +730,7 @@ class PaymentStatisticsData extends PurchasePaymentStatisticsData {
     );
   }
 
-  factory PaymentStatisticsData.fromJson(Map<String, dynamic> data,
-      [GroupingInterval? interval]) {
+  factory PaymentStatisticsData.fromJson(Map<String, dynamic> data, [GroupingInterval? interval]) {
     return PaymentStatisticsData(
       (data['payed'] as Map<String, dynamic>).keys.map((dateString) {
         return PurchasePaymentStatisticsDataEntry(
@@ -840,8 +752,7 @@ class PurchaseStatisticsData extends PurchasePaymentStatisticsData {
     required super.entries,
   });
 
-  factory PurchaseStatisticsData(
-      List<PurchasePaymentStatisticsDataEntry> entries) {
+  factory PurchaseStatisticsData(List<PurchasePaymentStatisticsDataEntry> entries) {
     return PurchaseStatisticsData._internal(
       groupingInterval: GroupingInterval.fromIntervalLength(entries.length),
       startDate: entries[0].date,
@@ -891,28 +802,21 @@ class GroupStatisticsData extends StatisticsData {
   bool get isEmpty => sumPurchases == 0 && sumPayments == 0;
 
   List<GroupedGroupStatisticsDataEntry> get groupedEntries {
-    return _entries.fold<List<GroupedGroupStatisticsDataEntry>>([],
-        (previousValue, element) {
-      if (previousValue.isEmpty ||
-          previousValue.last.end.isBefore(element.date)) {
+    return _entries.fold<List<GroupedGroupStatisticsDataEntry>>([], (previousValue, element) {
+      if (previousValue.isEmpty || previousValue.last.end.isBefore(element.date)) {
         return [
           ...previousValue,
           GroupedGroupStatisticsDataEntry(
             DateTimeRange(
-              start: common.maxDateTime(
-                  groupingInterval.periodStart(element.date), this.startDate),
-              end: common.minDateTime(
-                  groupingInterval.periodEnd(element.date), this.endDate),
+              start: common.maxDateTime(groupingInterval.periodStart(element.date), this.startDate),
+              end: common.minDateTime(groupingInterval.periodEnd(element.date), this.endDate),
             ),
             element.purchases,
             element.payments,
           )
         ];
       }
-      return [
-        ...previousValue.sublist(0, previousValue.length - 1),
-        previousValue.last.add(element.purchases, element.payments)
-      ];
+      return [...previousValue.sublist(0, previousValue.length - 1), previousValue.last.add(element.purchases, element.payments)];
     }).toList();
   }
 

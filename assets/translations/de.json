@@ -481,7 +481,7 @@
     "invitation-field.none": "Keiner von ihnen",
     "nickname-in-group": "Name in der Gruppe",
 
-    "join-group.qr-scan": "QR code scannen",
+    "join-group.qr-scan": "Scanne den QR code",
 
     "payment-methods.add-new": "Hinzufügen",
     "payment-methods.save.loading": "Wird gespeichert...",
@@ -529,6 +529,20 @@
     "receipt-scanner.store-dialog.name": "Laden",
 
     "purchase.scan-receipt.new": "Beleg scannen",
-    "purchase.scan-receipt.modify": "Gescannten bearbeiten"
+    "purchase.scan-receipt.modify": "Gescannten bearbeiten",
+
+    "you": "Du",
+    
+    "payment-methods.no-payment-methods": "Du hast noch keine Zahlungsmethoden angegeben",
+
+    "create-group.currency": "Die Währung der Gruppe",
+    "create-group.currency.hint": "Die Währung kann auch bei jedem Einkauf geändert werden",
+
+    "user-settings.login-options": "Anmeldeoptionen",
+    "user-settings.login-options.description": "Verwalte die Methoden, mit denen du dich in der App anmelden kannst.",
+    "user-settings.login-options.pin": "Pin",
+
+    "user-settings.login-options.option-set": "Gesetzt",
+    "user-settings.login-options.set-option": "Einstellen"
     
 }

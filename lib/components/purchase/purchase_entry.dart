@@ -43,7 +43,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
         reactions.remove(oldReaction);
       } else if (!alreadyReacted) {
         reactions.add(Reaction(
-          nickname: user.username,
+          nickname: 'you'.tr(),
           reaction: reaction,
           userId: user.id,
         ));

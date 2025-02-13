@@ -1,26 +1,27 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:collection/collection.dart';
+import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/helpers/app_theme.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
-import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
-import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
-import 'package:csocsort_szamla/pages/app/main_page.dart';
-import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
+import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/navigator_service.dart';
-import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
-import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/main.dart';
+import 'package:csocsort_szamla/pages/app/main_page.dart';
+import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+
+enum IdTokenType { google, apple }
 
 class UserProvider extends StatelessWidget {
   UserProvider({
@@ -48,93 +49,96 @@ class UserState extends ChangeNotifier {
   UserState(BuildContext context) {
     final preferences = context.read<SharedPreferences>();
     if (preferences.containsKey('api_token')) {
-      user = _getLocalUser(preferences);
-      _fetchUserData(context);
-      print(user);
+      user = User.fromPreferences(preferences);
+      _fetchUser(context);
     }
   }
 
-  User _getLocalUser(SharedPreferences preferences) {
-    List<String> usersGroupNames = preferences.getStringList('users_groups') ?? [];
-      List<int> usersGroupIds = preferences.getStringList('users_group_ids')?.map((e) => int.parse(e)).toList() ?? [];
-      List<String> usersGroupCurrencies = preferences.getStringList('users_group_currencies') ?? [];
-      return User(
-        apiToken: preferences.getString('api_token')!,
-        username: preferences.getString('current_username')!,
-        id: preferences.getInt('current_user_id')!,
-        currency: Currency.fromCodeSafe(preferences.getString('current_user_currency') ?? 'EUR'),
-        group: preferences.containsKey('current_group_id')
-            ? Group(
-                id: preferences.getInt('current_group_id')!,
-                name: preferences.getString('current_group_name')!,
-                currency: Currency.fromCodeSafe(preferences.getString('current_group_currency') ?? 'EUR'),
-              )
-            : null,
-        groups: usersGroupNames
-            .asMap()
-            .map((index, value) => MapEntry(
-                index,
-                Group(
-                  id: usersGroupIds[index],
-                  name: value,
-                  currency: Currency.fromCodeSafe(usersGroupCurrencies.length > index ? usersGroupCurrencies[index] : 'EUR'),
-                )))
-            .values
-            .toList(),
-        ratedApp: preferences.getBool('rated_app') ?? false,
-        paymentMethods: [],
-        userStatus: UserStatus(
-          pinVerificationCount: 100,
-          pinVerifiedAt: DateTime.now(),
-          trialStatus: TrialStatus.seen,
-        ),
-      );
+  Future _fetchUser(BuildContext context) async {
+    http.Response response = await http.get(Uri.parse(context.read<AppConfig>().appUrl + '/user'), headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer ${user!.apiToken}",
+    });
+    var decoded = jsonDecode(response.body);
+    if (response.statusCode.httpStatusCodeRange != HttpStatusCodeRange.success) {
+      if (response.statusCode == 401) {
+        await logout(withoutRequest: true);
+        BuildContext? context = getIt.get<NavigationService>().navigatorKey.currentContext;
+        if (context == null) return;
+        Navigator.of(getIt.get<NavigationService>().navigatorKey.currentContext!).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
+          (route) => false,
+        );
+        return;
+      }
+    }
+    User fetchedUser = User.fromJson(decoded['data']);
+    setUser(user!.mergeWith(fetchedUser), notify: false);
+    int? lastActiveGroup = decoded['data']['last_active_group'];
+
+    http.Response groupResponse = await Http.get(uri: generateUri(GetUriKeys.groups, context));
+    setGroups(Group.fromJsonList(jsonDecode(groupResponse.body)['data'], true));
+
+    if (currentGroup == null && user!.groups.isNotEmpty) {
+      Group group = user!.groups.firstWhere((element) => element.id == lastActiveGroup, orElse: () => user!.groups[0]);
+      setGroup(group);
+      getIt.get<NavigationService>().pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainPage()));
+    }
+    var themeState = context.read<AppThemeState>();
+    if (!user!.useGradients && themeState.themeName.type != ThemeType.simpleColor) {
+      themeState.themeName = themeState.themeName.brightness == Brightness.dark ? ThemeName.greenDark : ThemeName.greenLight;
+    }
   }
 
-  Future _fetchUserData(BuildContext context) async {
+  Future<LoginFutureOutputs> loginOrRegisterWithToken(String? idToken, String? authCode, IdTokenType tokenType, BuildContext context) async {
+    assert((idToken != null && tokenType == IdTokenType.google) || (authCode != null && tokenType == IdTokenType.apple));
     try {
-      http.Response response = await http.get(Uri.parse(context.read<AppConfig>().appUrl + '/user'),
-          headers: {"Content-Type": "application/json", "Authorization": "Bearer ${user!.apiToken}"});
-      var decoded = jsonDecode(response.body);
-      if (response.statusCode > 299 || response.statusCode < 200) {
-        if (response.statusCode == 401) {
-          await logout(withoutRequest: true);
-          BuildContext? context = getIt.get<NavigationService>().navigatorKey.currentContext;
-          if (context == null) return;
-          Navigator.of(getIt.get<NavigationService>().navigatorKey.currentContext!).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
-            (route) => false,
-          );
-          return;
+      String? fcmToken;
+      if (context.read<AppConfig>().isFirebasePlatformEnabled) {
+        FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+        fcmToken = await _firebaseMessaging.getToken();
+      }
+      Map<String, String?> body = {
+        ...(tokenType == IdTokenType.google ? {"id_token": idToken!} : {"auth_code": authCode!}),
+        'device_type': kIsWeb ? 'web' : Platform.operatingSystem,
+        "fcm_token": kIsWeb ? null : fcmToken,
+        "token_type": tokenType.name,
+        "language": context.locale.languageCode,
+      };
+      Map<String, String> header = {"Content-Type": "application/json"};
+      String bodyEncoded = jsonEncode(body);
+      http.Response response = await http.post(
+        Uri.parse(context.read<AppConfig>().appUrl + '/register-with-token'),
+        headers: header,
+        body: bodyEncoded,
+      );
+      if (response.statusCode.httpStatusCodeRange == HttpStatusCodeRange.success) {
+        Map<String, dynamic> decoded = jsonDecode(response.body);
+        int? lastActiveGroup = decoded['data']['last_active_group'];
+        user = User.fromJson(decoded['data'], false);
+        setUser(user, notify: false);
+
+        http.Response groupResponse = await Http.get(uri: generateUri(GetUriKeys.groups, context));
+        print(groupResponse.body);
+        List<Group> groups = Group.fromJsonList(jsonDecode(groupResponse.body)['data'], true);
+        setGroups(groups);
+        if (groups.isEmpty) {
+          return LoginFutureOutputs.joinGroupFromAuth;
         }
+
+        Group currentGroup = groups.firstWhere((group) => group.id == lastActiveGroup, orElse: () => groups[0]);
+        setGroup(currentGroup, notify: false);
+
+        String? inviteUrl = context.read<InviteUrlState>().inviteUrl;
+        return inviteUrl == null ? LoginFutureOutputs.main : LoginFutureOutputs.joinGroup;
+      } else {
+        Map<String, dynamic> error = jsonDecode(response.body);
+        throw error['error'];
       }
-      setShownAds(decoded['data']['ad_free'] == 0);
-      setUseGradients(decoded['data']['gradients_enabled'] == 1);
-      setPersonalisedAds(decoded['data']['personalised_ads'] == 1);
-      setTrialVersion(decoded['data']['trial'] == 1);
-      if (decoded['data']['payment_details'] != null) {
-        setPaymentMethods(
-            (jsonDecode(decoded['data']['payment_details']) as List).map((e) => PaymentMethod.fromJson(e)).toList());
-      }
-      if (decoded['data']['status'] != null) {
-        setUserStatus(UserStatus.fromJson(decoded['data']['status']));
-      }
-      if (currentGroup == null && decoded['data']['last_active_group'] != null) {
-        Group? group = user!.groups.firstWhereOrNull((element) => element.id == decoded['data']['last_active_group']);
-        group ??= user!.groups.isNotEmpty ? user!.groups[0] : null;
-        if (group != null) {
-          setGroup(group);
-        }
-        getIt.get<NavigationService>().pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => MainPage()),
-            );
-      }
-      var themeState = context.read<AppThemeState>();
-      if (!user!.useGradients && themeState.themeName.type != ThemeType.simpleColor) {
-        themeState.themeName = themeState.themeName.brightness == Brightness.dark
-            ? ThemeName.greenDark
-            : ThemeName.greenLight;
-      }
+    } on FormatException {
+      throw 'format_exception'.tr() + ' F01';
+    } on SocketException {
+      throw 'cannot_connect'.tr() + ' F02';
     } catch (_) {
       throw _;
     }
@@ -147,50 +151,24 @@ class UserState extends ChangeNotifier {
         FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
         token = await _firebaseMessaging.getToken();
       }
-      Map<String, String?> body = {"username": username, "password": password, "fcm_token": kIsWeb ? null : token};
+      Map<String, String?> body = {
+        "username": username,
+        "password": password,
+        "fcm_token": kIsWeb ? null : token,
+      };
       Map<String, String> header = {"Content-Type": "application/json"};
       String bodyEncoded = jsonEncode(body);
-      http.Response response =
-          await http.post(Uri.parse(context.read<AppConfig>().appUrl + '/login'), headers: header, body: bodyEncoded);
-      if (response.statusCode == 200) {
+      http.Response response = await http.post(Uri.parse(context.read<AppConfig>().appUrl + '/login'), headers: header, body: bodyEncoded);
+      if (response.statusCode.httpStatusCodeRange == HttpStatusCodeRange.success) {
         final preferences = context.read<SharedPreferences>();
 
         Map<String, dynamic> decoded = jsonDecode(response.body);
         int? lastActiveGroup = decoded['data']['last_active_group'];
-        user = User(
-          apiToken: decoded['data']['api_token'],
-          username: decoded['data']['username'],
-          id: decoded['data']['id'],
-          currency: Currency.fromCodeSafe(decoded['data']['default_currency']),
-          ratedApp: preferences.getBool('rated_app') ?? false,
-          personalisedAds: decoded['data']['personalised_ads'] == 1,
-          showAds: decoded['data']['ad_free'] == 0,
-          useGradients: decoded['data']['gradients_enabled'] == 1,
-          trialVersion: decoded['data']['trial'] == 1,
-          paymentMethods: decoded['data']['payment_details'] != null
-              ? (jsonDecode(decoded['data']['payment_details']) as List).map((e) => PaymentMethod.fromJson(e)).toList()
-              : [],
-          userStatus: decoded['data']['status'] != null
-              ? UserStatus.fromJson(decoded['data']['status'])
-              : UserStatus(
-                  trialStatus: TrialStatus.seen,
-                  pinVerifiedAt: DateTime.now(),
-                  pinVerificationCount: 100,
-                ),
-        );
+        user = User.fromJson(decoded['data'], preferences.getBool('rated_app'));
         setUser(user, notify: false);
 
         http.Response groupResponse = await Http.get(uri: generateUri(GetUriKeys.groups, context));
-        Map<String, dynamic> groupDecoded = jsonDecode(groupResponse.body);
-        List<Group> groups = [];
-        for (var group in groupDecoded['data']) {
-          groups.add(Group(
-            name: group['group_name'],
-            id: group['group_id'],
-            currency: Currency.fromCodeSafe(group['currency']),
-          ));
-        }
-        String? inviteUrl = context.read<InviteUrlState>().inviteUrl;
+        List<Group> groups = Group.fromJsonList(jsonDecode(groupResponse.body)['data'], true);
         setGroups(groups);
         if (groups.isEmpty) {
           return LoginFutureOutputs.joinGroupFromAuth;
@@ -199,6 +177,7 @@ class UserState extends ChangeNotifier {
         Group currentGroup = groups.firstWhere((group) => group.id == lastActiveGroup, orElse: () => groups[0]);
         setGroup(currentGroup, notify: false);
 
+        String? inviteUrl = context.read<InviteUrlState>().inviteUrl;
         return inviteUrl == null ? LoginFutureOutputs.main : LoginFutureOutputs.joinGroup;
       } else {
         Map<String, dynamic> error = jsonDecode(response.body);
@@ -238,23 +217,8 @@ class UserState extends ChangeNotifier {
         headers: header,
         body: bodyEncoded,
       );
-      if (response.statusCode == 201) {
-        Map<String, dynamic> decoded = jsonDecode(response.body);
-        setUser(User(
-          apiToken: decoded['api_token'],
-          username: decoded['username'],
-          id: decoded['id'],
-          currency: Currency.fromCodeSafe(decoded['default_currency']),
-          group: null,
-          groups: [],
-          ratedApp: false,
-          showAds: false,
-          useGradients: true,
-          personalisedAds: false,
-          trialVersion: true,
-          paymentMethods: [],
-          userStatus: UserStatus.fromJson(decoded['status']),
-        ));
+      if (response.statusCode.httpStatusCodeRange == HttpStatusCodeRange.success) {
+        setUser(User.fromJson(jsonDecode(response.body)));
         await clearAllCache();
         return BoolFutureOutput.True;
       } else {
@@ -265,7 +229,8 @@ class UserState extends ChangeNotifier {
       throw 'format_exception'.tr() + ' F01';
     } on SocketException {
       throw 'cannot_connect'.tr() + ' F02';
-    } catch (_) {
+    } catch (_, __) {
+      print(__);
       throw _;
     }
   }
@@ -345,7 +310,9 @@ class UserState extends ChangeNotifier {
         preferences.remove('rated_app');
         return;
       }
-      preferences.setString('current_username', user.username);
+      if (user.username != null) {
+        preferences.setString('current_username', user.username!);
+      }
       preferences.setInt('current_user_id', user.id);
       preferences.setString('current_user_currency', user.currency.code);
       preferences.setString('api_token', user.apiToken);
@@ -407,13 +374,12 @@ class UserState extends ChangeNotifier {
     }
   }
 
-  void setShownAds(bool showAds, {bool notify = true}) {
+  void setShowAds(bool showAds, {bool notify = true}) {
     user!.showAds = showAds;
     if (notify) {
       notifyListeners();
     }
   }
-
 
   void setPaymentMethods(List<PaymentMethod> paymentMethods, {bool notify = true}) {
     user!.paymentMethods = paymentMethods;

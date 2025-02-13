@@ -16,25 +16,21 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ThemePreview extends StatefulWidget {
-  const ThemePreview(
-      {required this.themeName, required this.offset, super.key});
+  const ThemePreview({required this.themeName, required this.offset, super.key});
 
   final ThemeName themeName;
   final Offset offset;
 
   static final List<Member> _members = [
-    Member(id: 1, username: 'theme-preview.member.1'.tr(), balance: 50),
-    Member(id: 2, username: 'theme-preview.member.2'.tr(), balance: 0),
-    Member(id: 3, username: 'theme-preview.member.3'.tr(), balance: -50),
+    Member(id: 1, nickname: 'theme-preview.member.1'.tr(), balance: 50),
+    Member(id: 2, nickname: 'theme-preview.member.2'.tr(), balance: 0),
+    Member(id: 3, nickname: 'theme-preview.member.3'.tr(), balance: -50),
   ];
 
   static final List<Purchase> _purchases = [
-    Purchase.example('theme-preview.purchase.1'.tr(), 15,
-        Currency.fromCode('EUR'), _members[0], _members),
-    Purchase.example('theme-preview.purchase.2'.tr(), 10,
-        Currency.fromCode('USD'), _members[1], _members),
-    Purchase.example('theme-preview.purchase.3'.tr(), 25,
-        Currency.fromCode('EUR'), _members[0], [_members[1], _members[2]]),
+    Purchase.example('theme-preview.purchase.1'.tr(), 15, Currency.fromCode('EUR'), _members[0], _members),
+    Purchase.example('theme-preview.purchase.2'.tr(), 10, Currency.fromCode('USD'), _members[1], _members),
+    Purchase.example('theme-preview.purchase.3'.tr(), 25, Currency.fromCode('EUR'), _members[0], [_members[1], _members[2]]),
   ];
 
   static final List<ShoppingRequest> _requests = [
@@ -68,8 +64,7 @@ class ThemePreview extends StatefulWidget {
   State<ThemePreview> createState() => _ThemePreviewState();
 }
 
-class _ThemePreviewState extends State<ThemePreview>
-    with SingleTickerProviderStateMixin {
+class _ThemePreviewState extends State<ThemePreview> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _left;
   late Animation<double> _top;
@@ -88,11 +83,7 @@ class _ThemePreviewState extends State<ThemePreview>
   void initState() {
     super.initState();
     final screenSize = context.read<ScreenSize>();
-    _controller = AnimationController(
-        duration: Duration(milliseconds: 400),
-        reverseDuration: Duration(milliseconds: 200),
-        vsync: this)
-      ..addListener(() => setState(() {}));
+    _controller = AnimationController(duration: Duration(milliseconds: 400), reverseDuration: Duration(milliseconds: 200), vsync: this)..addListener(() => setState(() {}));
 
     _maxHeight = screenSize.height - 2 * _paddingVertical;
     _maxWidth = min(screenSize.width - 2 * _paddingHorizontal, 500);
@@ -100,14 +91,9 @@ class _ThemePreviewState extends State<ThemePreview>
       _paddingHorizontal = (screenSize.width - 500) / 2;
     }
 
-    final animation =
-        CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic);
-    _left = Tween<double>(begin: widget.offset.dx, end: _paddingHorizontal)
-        .animate(animation);
-    _top = Tween<double>(
-            begin: widget.offset.dy,
-            end: _paddingVertical + screenSize.padding.top)
-        .animate(animation);
+    final animation = CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic);
+    _left = Tween<double>(begin: widget.offset.dx, end: _paddingHorizontal).animate(animation);
+    _top = Tween<double>(begin: widget.offset.dy, end: _paddingVertical + screenSize.padding.top).animate(animation);
     _animationValue = Tween<double>(begin: 0, end: 1).animate(animation);
     _borderRadius = Tween<double>(begin: 100, end: 15).animate(animation);
 
@@ -118,9 +104,7 @@ class _ThemePreviewState extends State<ThemePreview>
         if (_controller.isAnimating) {
           _controller.stop();
         }
-        _controller
-            .reverse()
-            .then((_) => context.read<StackWidgetState>().setWidget(null));
+        _controller.reverse().then((_) => context.read<StackWidgetState>().setWidget(null));
       }
     });
   }
@@ -146,9 +130,7 @@ class _ThemePreviewState extends State<ThemePreview>
               borderRadius: BorderRadius.circular(_borderRadius.value),
             ),
             clipBehavior: Clip.antiAlias,
-            child: _maxWidth * _animationValue.value < 250
-                ? SizedBox()
-                : ThemePreviewContent(themeName: widget.themeName),
+            child: _maxWidth * _animationValue.value < 250 ? SizedBox() : ThemePreviewContent(themeName: widget.themeName),
           ),
           GestureDetector(
             onTap: () => context.read<ScreenSize>().isMobile ? context.read<StackWidgetState>().hideWidget() : context.read<StackWidgetState>().setWidget(null),
@@ -198,8 +180,7 @@ class ThemePreviewContent extends StatelessWidget {
                         ...ThemePreview._members.map(
                           (member) => BalanceMemberEntry(
                             member: member,
-                            selectedCurrency:
-                                context.watch<UserState>().currentGroup!.currency,
+                            selectedCurrency: context.watch<UserState>().currentGroup!.currency,
                           ),
                         )
                       ],
@@ -217,10 +198,7 @@ class ThemePreviewContent extends StatelessWidget {
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         SizedBox(height: 15),
-                        ...ThemePreview._purchases.map((purchase) =>
-                            PurchaseEntry(
-                                purchase: purchase,
-                                selectedMemberId: ThemePreview._members[0].id))
+                        ...ThemePreview._purchases.map((purchase) => PurchaseEntry(purchase: purchase, selectedMemberId: ThemePreview._members[0].id))
                       ],
                     ),
                   ),

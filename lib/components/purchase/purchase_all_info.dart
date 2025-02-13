@@ -42,16 +42,6 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
     }
   }
 
-  Future<bool> _sendReaction(String reaction) async {
-    try {
-      Map<String, dynamic> body = {"purchase_id": widget.purchase.id, "reaction": reaction};
-      await Http.post(uri: '/purchases/reaction', body: body);
-      return true;
-    } catch (_) {
-      throw _;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     String note = '';

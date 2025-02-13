@@ -44,7 +44,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
         reactions.remove(oldReaction);
       } else if (!alreadyReacted) {
         reactions.add(Reaction(
-          nickname: user.username,
+          nickname: 'you'.tr(),
           reaction: reaction,
           userId: user.id,
         ));
@@ -74,12 +74,9 @@ class _PaymentEntryState extends State<PaymentEntry> {
                   ? Theme.of(context).colorScheme.onPrimary
                   : Theme.of(context).colorScheme.onPrimaryContainer
               : Theme.of(context).colorScheme.onSurfaceVariant;
-          String note = (widget.payment.note == '')
-              ? 'no_note'.tr()
-              : widget.payment.note[0].toUpperCase() + widget.payment.note.substring(1);
+          String note = (widget.payment.note == '') ? 'no_note'.tr() : widget.payment.note[0].toUpperCase() + widget.payment.note.substring(1);
           String takerName = paid ? widget.payment.takerNickname : widget.payment.payerNickname;
-          String amount = (paid ? '' : '-') +
-              widget.payment.amountOriginalCurrency.toMoneyString(widget.payment.originalCurrency, withSymbol: true);
+          String amount = (paid ? '' : '-') + widget.payment.amountOriginalCurrency.toMoneyString(widget.payment.originalCurrency, withSymbol: true);
           BoxDecoration boxDecoration = paid
               ? BoxDecoration(
                   gradient: AppTheme.gradientFromTheme(themeName, usePrimaryContainer: true),
