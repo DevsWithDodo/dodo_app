@@ -2,6 +2,8 @@ const String APP_URL =  'https://www.examp.le/api';
 const String TEST_URL = 'https://test.examp.le/api';
 int currentVersion=YOUR_CURRENT_VERSION;
 bool useTest = false;
+const String googleOAuthServerClientId = "1234-5678.apps.googleusercontent.com";
+
 
 Map<String, String> adUnitIds = {
   'create_group':'example',
@@ -11,7 +13,8 @@ Map<String, String> adUnitIds = {
   'payment':'example',
   'purchase':'example',
   'report_bug':'example',
-  'settings':'example'
+  'settings':'example',
+  'receipt_scanner': 'example'
 };
 
 double tabletViewWidth = 850;

@@ -419,7 +419,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                                   ),
                                                 ],
                                               ),
-                                            if (selectedGuestId == -1 || (guests?.isEmpty ?? false))
+                                            if (selectedGuestId == -1 || selectedGuestId == null || (guests?.isEmpty ?? false))
                                               Padding(
                                                 padding: EdgeInsets.only(top: (guests?.isEmpty ?? false) ? 16 : 8),
                                                 child: TextFormField(
@@ -479,7 +479,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
               color: Theme.of(context).colorScheme.onSecondaryContainer,
             ),
             onPressed: () {
-              if (_formKey.currentState!.validate() && (selectedGuestId != null || (guests?.isEmpty ?? false))) {
+              if (_formKey.currentState!.validate() && (selectedGuestId != null || (guests?.isEmpty ?? true))) {
                 String nickname = (selectedGuestId == null || selectedGuestId == -1) ? _nicknameController.text[0].toUpperCase() + _nicknameController.text.substring(1) : guests!.firstWhere((element) => element.id == selectedGuestId).nickname;
                 showFutureOutputDialog(
                   context: context,

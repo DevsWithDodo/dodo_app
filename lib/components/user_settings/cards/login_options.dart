@@ -1,8 +1,15 @@
+import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/user_settings/cards/change_password_dialog.dart';
+import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/pages/app/join_group_page.dart';
+import 'package:csocsort_szamla/pages/app/main_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginOptions extends StatefulWidget {
   @override
@@ -75,7 +82,7 @@ class _LoginOptionsState extends State<LoginOptions> {
                     else
                       TextButton(
                         onPressed: () {},
-                        child: Text('user-settings.login-options.set-option'.tr()),
+                        child: Text('TODO user-settings.login-options.set-pin'.tr()),
                       ),
                   ],
                 ),
@@ -100,7 +107,17 @@ class _LoginOptionsState extends State<LoginOptions> {
                       )
                     else
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          final GoogleSignInAccount? googleUser = await GoogleSignIn(
+                            serverClientId: context.read<AppConfig>().googleOAuthServerClientId,
+                            scopes: [
+                              'openid',
+                            ],
+                          ).signIn();
+                          final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+                          if (googleAuth?.idToken == null) return;
+                          _registerWithToken(IdTokenType.google, googleAuth!.idToken!);
+                        },
                         child: Text('user-settings.login-options.social.link'.tr()),
                       ),
                   ],
@@ -125,7 +142,16 @@ class _LoginOptionsState extends State<LoginOptions> {
                       )
                     else
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          final credential = await SignInWithApple.getAppleIDCredential(
+                        scopes: [],
+                        webAuthenticationOptions: WebAuthenticationOptions(
+                          clientId: 'net.dodoapp.dodo',
+                          redirectUri: Uri.parse(context.read<AppConfig>().appUrl + '/callbacks/sign-in-with-apple'),
+                        ),
+                      );
+                      _registerWithToken(IdTokenType.apple, credential.authorizationCode);
+                        },
                         child: Text('user-settings.login-options.social.link'.tr()),
                       ),
                   ],
@@ -135,6 +161,40 @@ class _LoginOptionsState extends State<LoginOptions> {
           ],
         ),
       ),
+    );
+  }
+  
+  void _registerWithToken(IdTokenType idTokenType, String code) {
+    showFutureOutputDialog(
+      context: context,
+      future: context.read<UserState>().loginOrRegisterWithToken(
+            idTokenType == IdTokenType.google ? code : null,
+            idTokenType == IdTokenType.apple ? code : null,
+            idTokenType,
+            context,
+          ),
+      outputCallbacks: {
+        LoginFutureOutputs.main: () => Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => MainPage(),
+            ),
+            (r) => false),
+        LoginFutureOutputs.joinGroup: () => Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (context) => JoinGroupPage(
+                        inviteURL: context.read<InviteUrlState>().inviteUrl,
+                      )),
+              (route) => false,
+            ),
+        LoginFutureOutputs.joinGroupFromAuth: () => Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (context) => JoinGroupPage(
+                        inviteURL: context.read<InviteUrlState>().inviteUrl,
+                        fromAuth: true,
+                      )),
+              (route) => false,
+            ),
+      },
     );
   }
 }

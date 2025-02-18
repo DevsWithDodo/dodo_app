@@ -521,6 +521,13 @@
     "purchase.scan-receipt.modify": "Modify scanned",
 
     "you": "You",
+
+    "user-settings.login-options": "Login options",
+    "user-settings.login-options.description": "Manage the methods you can use to log in to the app.",
+    "user-settings.login-options.pin": "Pin",
+
+    "user-settings.login-options.set-pin": "Create",
+    "user-settings.login-options.social.link": "Link",
     
     "payment-methods.no-payment-methods": "No payment methods added yet"
 }

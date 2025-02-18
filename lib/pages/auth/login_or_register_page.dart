@@ -222,6 +222,7 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                     ),
                     onTap: () async {
                       final GoogleSignInAccount? googleUser = await GoogleSignIn(
+                        serverClientId: context.read<AppConfig>().googleOAuthServerClientId,
                         scopes: [
                           'openid',
                         ],
