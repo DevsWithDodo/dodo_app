@@ -24,13 +24,13 @@ import 'package:provider/provider.dart';
 class PaymentPage extends StatefulWidget {
   final Payment? payment;
 
-  PaymentPage({this.payment});
+  const PaymentPage({super.key, this.payment});
   @override
-  _PaymentPageState createState() => _PaymentPageState();
+  State<PaymentPage> createState() => _PaymentPageState();
 }
 
 class _PaymentPageState extends State<PaymentPage> {
-  var _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   int? selectedMemberId;
   TextEditingController amountController = TextEditingController();
   TextEditingController noteController = TextEditingController();
@@ -53,7 +53,7 @@ class _PaymentPageState extends State<PaymentPage> {
       }
       return members;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -74,7 +74,7 @@ class _PaymentPageState extends State<PaymentPage> {
       }
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 

@@ -6,6 +6,7 @@ import 'package:csocsort_szamla/helpers/navigator_service.dart';
 import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/main.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -38,7 +39,9 @@ void log(
     error: error,
     stackTrace: stackTrace,
   );
-  print(message);
+  if (kDebugMode) {
+    debugPrint(message);
+  }
 }
 
 void showToast(

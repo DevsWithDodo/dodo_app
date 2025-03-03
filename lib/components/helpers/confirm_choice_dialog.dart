@@ -8,9 +8,9 @@ class ConfirmChoiceDialog extends StatefulWidget {
   ///A dialog to ask the user if they really want to do what they just clicked.
   ///Automatically translates the [choice] string given.
   ///Use with .then to get the value chosen by the user: true for confirmed, false for doesn't confirm, null when dismissed.
-  ConfirmChoiceDialog({required this.choice});
+  const ConfirmChoiceDialog({super.key, required this.choice});
   @override
-  _ConfirmChoiceDialogState createState() => _ConfirmChoiceDialogState();
+  State<ConfirmChoiceDialog> createState() => _ConfirmChoiceDialogState();
 }
 
 class _ConfirmChoiceDialogState extends State<ConfirmChoiceDialog> {
@@ -26,9 +26,7 @@ class _ConfirmChoiceDialogState extends State<ConfirmChoiceDialog> {
           children: <Widget>[
             Text(
               widget.choice.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge!,
+              style: Theme.of(context).textTheme.bodyLarge!,
               textAlign: TextAlign.center,
             ),
             SizedBox(

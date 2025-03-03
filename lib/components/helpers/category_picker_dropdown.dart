@@ -9,7 +9,7 @@ class CategoryPickerDropdown extends StatefulWidget {
   final bool showSymbol;
   final Color? dropdownColor;
   final Color? textColor;
-  CategoryPickerDropdown({
+  const CategoryPickerDropdown({super.key, 
     required this.defaultCategoryValue,
     required this.onCategoryChanged,
     this.filled = true,

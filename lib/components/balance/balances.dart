@@ -19,8 +19,10 @@ import '../../helpers/http.dart';
 import '../../helpers/models.dart';
 
 class Balances extends StatefulWidget {
+  const Balances({super.key});
+
   @override
-  _BalancesState createState() => _BalancesState();
+  State<Balances> createState() => _BalancesState();
 }
 
 class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin {
@@ -43,7 +45,6 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
     );
     Map<String, dynamic> decoded = jsonDecode(response.body);
     List<Member> members = [];
-    print(decoded);
     for (var member in decoded['data']['members']) {
       members.add(Member.fromJson(member));
     }
@@ -182,15 +183,15 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
             ),
           ),
           Positioned(
-            child: Container(
+            right: 10,
+            top: 10,
+            child: SizedBox(
               width: 70,
               child: SelectBalanceCurrency(
                 selectedCurrency: _selectedCurrency,
                 onCurrencyChanged: (currency) => setState(() => _selectedCurrency = currency),
               ),
             ),
-            right: 10,
-            top: 10,
           )
         ],
       ),

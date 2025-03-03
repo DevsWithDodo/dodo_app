@@ -12,14 +12,14 @@ import '../../../helpers/validation_rules.dart';
 class PasswordPage extends StatefulWidget {
   final String? inviteUrl;
   final String? username;
-  PasswordPage({this.inviteUrl, this.username});
+  const PasswordPage({super.key, this.inviteUrl, this.username});
 
   @override
   State<PasswordPage> createState() => _PasswordPageState();
 }
 
 class _PasswordPageState extends State<PasswordPage> {
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,8 +116,8 @@ class _PasswordPageState extends State<PasswordPage> {
                         },
                       ),
                       GradientButton(
-                        child: Icon(Icons.send),
                         onPressed: _pushButton,
+                        child: Icon(Icons.send),
                       ),
                     ],
                   ),

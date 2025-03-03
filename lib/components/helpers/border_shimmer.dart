@@ -6,14 +6,14 @@ class BorderShimmer extends StatefulWidget {
   final Duration duration;
 
   const BorderShimmer({
-    Key? key,
+    super.key,
     this.borderWidth = 20,
     required this.gradientColors,
     this.duration = const Duration(seconds: 2),
-  }) : super(key: key);
+  });
 
   @override
-  _BorderShimmerState createState() => _BorderShimmerState();
+  State<BorderShimmer> createState() => _BorderShimmerState();
 }
 
 class _BorderShimmerState extends State<BorderShimmer> with SingleTickerProviderStateMixin {

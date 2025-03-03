@@ -50,6 +50,7 @@ dependencies:
   diacritic: ^0.1.6
   google_sign_in: ^6.2.2
   sign_in_with_apple: ^6.1.4
+  path: ^1.9.1
 
 
   flutter:
@@ -66,6 +67,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   msix: ^3.11.1
+  flutter_lints: ^5.0.0
 
 
 # For information on the generic Dart part of this file, see the

@@ -112,14 +112,14 @@ class _ReceiptItemAssignerState extends State<ReceiptItemAssigner> with SingleTi
             Positioned(
               top: 0.5,
               left: 0.5,
-              child: Container(
+              child: SizedBox(
                 width: 55,
                 height: 55,
                 child: SegmentedCircularProgressIndicator(
                   color: widget.color,
                   numSegments: widget.sumQuantity,
                   activeSegments: widget.assignedQuantity,
-                  inactiveColor: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.2),
+                  inactiveColor: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.2),
                 ),
               ),
             ),
@@ -160,11 +160,11 @@ class _ReceiptItemAssignerState extends State<ReceiptItemAssigner> with SingleTi
                         return FadeTransition(
                           opacity: animation,
                           child: SlideTransition(
-                            child: child,
                             position: Tween<Offset>(
                               begin: Offset(0, 0.5),
                               end: Offset(0, 0),
                             ).animate(animation),
+                            child: child,
                           ),
                         );
                       },

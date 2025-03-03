@@ -25,7 +25,8 @@ class AddReactionDialog extends StatelessWidget {
   final int reactToId;
   final Function(String reaction) onSend;
 
-  AddReactionDialog({
+  const AddReactionDialog({
+    super.key,
     required this.type,
     required this.reactions,
     required this.reactToId,
@@ -62,7 +63,6 @@ class AddReactionDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('add_reaction_dialog.dart: ');
     return Selector<UserState, int>(
       selector: (_, userProvider) => userProvider.user!.id,
       builder: (context, userId, _) {
@@ -89,7 +89,7 @@ class AddReactionDialog extends StatelessWidget {
                     reactions: reactions,
                   ),
                   Visibility(
-                    visible: reactions.length != 0,
+                    visible: reactions.isNotEmpty,
                     child: Column(
                       children: [
                         SizedBox(

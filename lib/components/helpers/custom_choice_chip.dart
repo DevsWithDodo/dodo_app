@@ -15,7 +15,8 @@ class CustomChoiceChip extends StatefulWidget {
   final bool enabled;
   final bool showCheck;
   final bool showAnimation;
-  CustomChoiceChip({
+  const CustomChoiceChip({
+    super.key,
     required this.member,
     required this.selected,
     required this.selectedColor,
@@ -28,14 +29,13 @@ class CustomChoiceChip extends StatefulWidget {
     this.enabled = true,
     this.showCheck = true,
     this.showAnimation = true,
-  }) {}
+  });
 
   @override
   State<CustomChoiceChip> createState() => _CustomChoiceChipState();
 }
 
-class _CustomChoiceChipState extends State<CustomChoiceChip>
-    with SingleTickerProviderStateMixin {
+class _CustomChoiceChipState extends State<CustomChoiceChip> with SingleTickerProviderStateMixin {
   late Animation<double> ratioAnimation;
   late AnimationController controller;
 
@@ -43,11 +43,9 @@ class _CustomChoiceChipState extends State<CustomChoiceChip>
 
   void animateColor(bool forward) {
     if (forward) {
-      controller.animateTo(widget.fillRatio,
-          duration: Duration(milliseconds: widget.showAnimation ? 500 : 0));
+      controller.animateTo(widget.fillRatio, duration: Duration(milliseconds: widget.showAnimation ? 500 : 0));
     } else {
-      controller.animateBack(widget.fillRatio,
-          duration: Duration(milliseconds: widget.showAnimation ? 500 : 0));
+      controller.animateBack(widget.fillRatio, duration: Duration(milliseconds: widget.showAnimation ? 500 : 0));
     }
   }
 
@@ -60,8 +58,7 @@ class _CustomChoiceChipState extends State<CustomChoiceChip>
   @override
   void initState() {
     super.initState();
-    controller = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+    controller = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
     ratioAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(controller)
       ..addListener(() {
         setState(() {
@@ -84,25 +81,26 @@ class _CustomChoiceChipState extends State<CustomChoiceChip>
     return Ink(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-            width: 0.7,
-            color: widget.selected
-                ? Colors.transparent
-                : Theme.of(context).colorScheme.outline),
+        border: Border.all(width: 0.7, color: widget.selected ? Colors.transparent : Theme.of(context).colorScheme.outline),
         gradient: LinearGradient(
           colors: [widget.selectedColor, widget.notSelectedColor],
           stops: [ratioAnimation.value, ratioAnimation.value],
         ),
       ),
       child: InkWell(
-        splashFactory:
-            widget.enabled ? InkSplash.splashFactory : NoSplash.splashFactory,
+        splashFactory: widget.enabled ? InkSplash.splashFactory : NoSplash.splashFactory,
         borderRadius: BorderRadius.circular(8),
+        onTap: widget.enabled
+            ? () {
+                FocusScope.of(context).unfocus();
+                bool selected = !widget.selected;
+                widget.onSelected(selected);
+              }
+            : null,
+        onLongPress: widget.onLongPress,
         child: AnimatedPadding(
           duration: checkAnimationDuration,
-          padding: widget.selected
-              ? EdgeInsets.fromLTRB(8, 7.5, 16, 7.5)
-              : EdgeInsets.symmetric(horizontal: 16, vertical: 7.5),
+          padding: widget.selected ? EdgeInsets.fromLTRB(8, 7.5, 16, 7.5) : EdgeInsets.symmetric(horizontal: 16, vertical: 7.5),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -119,26 +117,12 @@ class _CustomChoiceChipState extends State<CustomChoiceChip>
                       : Container(),
                 ),
                 duration: checkAnimationDuration,
-                crossFadeState: widget.selected
-                    ? CrossFadeState.showSecond
-                    : CrossFadeState.showFirst,
+                crossFadeState: widget.selected ? CrossFadeState.showSecond : CrossFadeState.showFirst,
               ),
-              Text(widget.member.nickname,
-                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                      color: widget.selected
-                          ? widget.selectedFontColor
-                          : widget.notSelectedFontColor)),
+              Text(widget.member.nickname, style: Theme.of(context).textTheme.labelLarge!.copyWith(color: widget.selected ? widget.selectedFontColor : widget.notSelectedFontColor)),
             ],
           ),
         ),
-        onTap: widget.enabled
-            ? () {
-                FocusScope.of(context).unfocus();
-                bool selected = !widget.selected;
-                widget.onSelected(selected);
-              }
-            : null,
-        onLongPress: widget.onLongPress,
       ),
     );
   }

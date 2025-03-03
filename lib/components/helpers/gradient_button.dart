@@ -17,7 +17,7 @@ class GradientButton extends StatelessWidget {
   final double paddingRight;
   final double paddingLeft;
   final ThemeName? themeName; 
-  GradientButton({
+  const GradientButton({super.key, 
     required this.child,
     this.onPressed,
     this.useSecondary = false,
@@ -46,10 +46,6 @@ class GradientButton extends StatelessWidget {
     bool disabled = false,
   }) =>
       GradientButton(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [icon, SizedBox(width: 8), label],
-        ),
         onPressed: onPressed,
         useSecondary: useSecondary,
         borderRadius: borderRadius,
@@ -61,6 +57,10 @@ class GradientButton extends StatelessWidget {
         paddingLeft: 16,
         paddingRight: 16,
         themeName: themeName,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [icon, SizedBox(width: 8), label],
+        ),
       );
 
   @override
@@ -68,23 +68,23 @@ class GradientButton extends StatelessWidget {
     ThemeName themeName = this.themeName ?? context.watch<AppThemeState>().themeName;
     Color textColor = AppTheme.textColorOnGradient(
       themeName,
-      useSecondary: this.useSecondary,
-      usePrimaryContainer: this.usePrimaryContainer,
-      useTertiaryContainer: this.useTertiary,
-      useSecondaryContainer: this.useSecondaryContainer,
+      useSecondary: useSecondary,
+      usePrimaryContainer: usePrimaryContainer,
+      useTertiaryContainer: useTertiary,
+      useSecondaryContainer: useSecondaryContainer,
     );
     return Theme(
       data: Theme.of(context).copyWith(
         iconTheme: IconThemeData(
           size: 18,
-          color: this.disabled ? Colors.white : textColor,
+          color: disabled ? Colors.white : textColor,
         ),
       ),
       child: Material(
         color: Colors.transparent,
         child: DefaultTextStyle(
           style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                color: this.disabled ? Colors.white : textColor,
+                color: disabled ? Colors.white : textColor,
               ),
           child: Container(
             constraints: BoxConstraints(minWidth: 88.0, minHeight: 36.0),
@@ -96,24 +96,24 @@ class GradientButton extends StatelessWidget {
                     ? LinearGradient(colors: [Colors.grey, Colors.grey])
                     : AppTheme.gradientFromTheme(
                         themeName,
-                        useSecondary: this.useSecondary,
-                        usePrimaryContainer: this.usePrimaryContainer,
-                        useTertiaryContainer: this.useTertiary,
-                        useSecondaryContainer: this.useSecondaryContainer,
+                        useSecondary: useSecondary,
+                        usePrimaryContainer: usePrimaryContainer,
+                        useTertiaryContainer: useTertiary,
+                        useSecondaryContainer: useSecondaryContainer,
                       ),
-                borderRadius: BorderRadius.circular(this.borderRadius),
+                borderRadius: BorderRadius.circular(borderRadius),
               ),
               child: InkWell(
-                  borderRadius: BorderRadius.circular(this.borderRadius),
-                  onTap: this.disabled ? null : this.onPressed,
+                  borderRadius: BorderRadius.circular(borderRadius),
+                  onTap: disabled ? null : onPressed,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
                         padding: EdgeInsets.only(
-                            left: this.paddingLeft, right: this.paddingRight),
-                        child: this.child,
+                            left: paddingLeft, right: paddingRight),
+                        child: child,
                       ),
                     ],
                   )),

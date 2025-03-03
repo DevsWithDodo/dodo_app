@@ -13,8 +13,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class UserSettingsPage extends StatefulWidget {
+  const UserSettingsPage({super.key});
+
   @override
-  _UserSettingsPageState createState() => _UserSettingsPageState();
+  State<UserSettingsPage> createState() => _UserSettingsPageState();
 }
 
 class _UserSettingsPageState extends State<UserSettingsPage> {

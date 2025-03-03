@@ -32,10 +32,10 @@ class JoinGroupPage extends StatefulWidget {
   final bool fromAuth;
   final String? inviteURL;
 
-  JoinGroupPage({this.fromAuth = false, this.inviteURL});
+  const JoinGroupPage({super.key, this.fromAuth = false, this.inviteURL});
 
   @override
-  _JoinGroupPageState createState() => _JoinGroupPageState();
+  State<JoinGroupPage> createState() => _JoinGroupPageState();
 }
 
 class _JoinGroupPageState extends State<JoinGroupPage> {
@@ -46,8 +46,8 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
   bool loading = false;
   Group? group;
   List<Guest>? guests;
-  TextEditingController _tokenController = TextEditingController();
-  int? selectedGuestId = null;
+  final TextEditingController _tokenController = TextEditingController();
+  int? selectedGuestId;
   late TextEditingController _nicknameController;
 
   @override
@@ -60,7 +60,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
     checkInvitation();
   }
 
-  var _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   Future<BoolFutureOutput> _joinGroup(String token, String nickname, int? selectedGuestId) async {
     try {
@@ -89,7 +89,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
       userProvider.setGroup(userProvider.user!.groups.last);
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -297,7 +297,6 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                                       .then((value) => scanResult = value);
                                                   if (scanResult != null) {
                                                     setState(() => token = scanResult!);
-                                                    print('scanned: $scanResult');
                                                     checkInvitation();
                                                   }
                                                 } else {

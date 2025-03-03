@@ -9,16 +9,16 @@ class BugReportPage extends StatefulWidget {
   final String? location;
   final DateTime? date;
   final String? error;
-  BugReportPage({this.error, this.date, this.location});
+  const BugReportPage({super.key, this.error, this.date, this.location});
   @override
-  _BugReportPageState createState() => _BugReportPageState();
+  State<BugReportPage> createState() => _BugReportPageState();
 }
 
 class _BugReportPageState extends State<BugReportPage> {
-  TextEditingController _bugController = new TextEditingController();
-  TextEditingController _locationController = new TextEditingController();
-  TextEditingController _detailsController = new TextEditingController();
-  var _formKey = GlobalKey<FormState>();
+  final TextEditingController _bugController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _detailsController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
@@ -52,10 +52,8 @@ class _BugReportPageState extends State<BugReportPage> {
                             Padding(
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Text(
-                                DateFormat('yyyy/MM/dd - HH:mm')
-                                    .format(widget.date == null ? now : widget.date!),
-                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                DateFormat('yyyy/MM/dd - HH:mm').format(widget.date == null ? now : widget.date!),
+                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                               ),
                             ),
                             SizedBox(
@@ -78,8 +76,7 @@ class _BugReportPageState extends State<BugReportPage> {
                                     padding: const EdgeInsets.only(left: 8.0),
                                     child: Text(
                                       widget.error!.tr(),
-                                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                                     ),
                                   ),
                             SizedBox(
@@ -102,8 +99,7 @@ class _BugReportPageState extends State<BugReportPage> {
                                     padding: const EdgeInsets.only(left: 8.0),
                                     child: Text(
                                       widget.location!,
-                                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                                     ),
                                   ),
                             SizedBox(
@@ -145,16 +141,12 @@ class _BugReportPageState extends State<BugReportPage> {
               DateTime date = widget.date ?? now;
               String location = widget.location ?? _locationController.text;
               String details = _detailsController.text;
-              showFutureOutputDialog(
-                context: context,
-                future: _postBug(error, date, location, details),
-                outputCallbacks: {
-                  BoolFutureOutput.True: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  }
+              showFutureOutputDialog(context: context, future: _postBug(error, date, location, details), outputCallbacks: {
+                BoolFutureOutput.True: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
                 }
-              );
+              });
             }
           },
           child: Icon(Icons.send),
@@ -166,19 +158,13 @@ class _BugReportPageState extends State<BugReportPage> {
   Future<BoolFutureOutput> _postBug(String bugText, DateTime date, String location, String details) async {
     try {
       Map<String, dynamic> body = {
-        "description": bugText +
-            "\nTime: " +
-            DateFormat('yyyy/MM/dd - HH:mm').format(date) +
-            "\nLocation: " +
-            location +
-            "\nDetails: " +
-            details,
+        "description": "$bugText\nTime: ${DateFormat('yyyy/MM/dd - HH:mm').format(date)}\nLocation: $location\nDetails: $details",
       };
 
       await Http.post(uri: '/bug', body: body);
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 }

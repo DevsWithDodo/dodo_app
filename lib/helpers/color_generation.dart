@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 
 Color determineTextColor(Color backgroundColor) {
   // Normalize RGB values to the range [0, 1].
-  double r = backgroundColor.red / 255.0;
-  double g = backgroundColor.green / 255.0;
-  double b = backgroundColor.blue / 255.0;
+  double r = backgroundColor.r / 255.0;
+  double g = backgroundColor.g / 255.0;
+  double b = backgroundColor.b / 255.0;
 
   // Apply the luminance formula.
   double luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;

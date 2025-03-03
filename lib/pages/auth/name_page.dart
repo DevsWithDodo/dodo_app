@@ -1,4 +1,3 @@
-import 'package:csocsort_szamla/components/auth/forgot_password_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
 import 'package:csocsort_szamla/pages/auth/login/login_pin_page.dart';
@@ -17,16 +16,16 @@ import '../../helpers/validation_rules.dart';
 
 class NamePage extends StatefulWidget {
   final bool isLogin;
-  NamePage({this.isLogin = false});
+  const NamePage({super.key, this.isLogin = false});
   @override
   State<NamePage> createState() => _NamePageState();
 }
 
 class _NamePageState extends State<NamePage> {
-  TextEditingController _usernameController = TextEditingController();
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _usernameController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  ExpandableController _usernameExplanationController = ExpandableController();
+  final ExpandableController _usernameExplanationController = ExpandableController();
   bool _privacyPolicy = false;
   bool _showPrivacyPolicyValidation = false;
   bool _usernameTaken = false;
@@ -35,8 +34,7 @@ class _NamePageState extends State<NamePage> {
   void initState() {
     super.initState();
     if (widget.isLogin) {
-      _usernameController.text =
-          context.read<SharedPreferences>().getString('current_username') ?? '';
+      _usernameController.text = context.read<SharedPreferences>().getString('current_username') ?? '';
     }
   }
 
@@ -72,9 +70,7 @@ class _NamePageState extends State<NamePage> {
                                     isEmpty(value),
                                     minimalLength(value, 3),
                                     allowedRegEx(value, RegExp(r'[^a-z0-9.]+')),
-                                    ...(_usernameTaken
-                                        ? [throwError('username_taken'.tr())]
-                                        : []),
+                                    ...(_usernameTaken ? [throwError('username_taken'.tr())] : []),
                                   ]),
                                   onChanged: (value) => setState(() {}),
                                   onFieldSubmitted: (value) => _buttonPush(),
@@ -94,9 +90,7 @@ class _NamePageState extends State<NamePage> {
                                 IconButton.filledTonal(
                                   onPressed: () {
                                     setState(() {
-                                      _usernameExplanationController.expanded =
-                                          !_usernameExplanationController
-                                              .expanded;
+                                      _usernameExplanationController.expanded = !_usernameExplanationController.expanded;
                                     });
                                   },
                                   icon: Icon(
@@ -104,36 +98,6 @@ class _NamePageState extends State<NamePage> {
                                   ),
                                 ),
                             ],
-                          ),
-                          Visibility(
-                            visible: false && widget.isLogin,
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 20),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  TextButton(
-                                    onPressed: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) =>
-                                              ForgotPasswordDialog());
-                                    },
-                                    child: Text(
-                                      'forgot_password'.tr(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelLarge!
-                                          .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurface),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                           ),
                           Visibility(
                             visible: !widget.isLogin,
@@ -150,38 +114,22 @@ class _NamePageState extends State<NamePage> {
                                     padding: EdgeInsets.only(left: 8, right: 8),
                                     child: Text(
                                       'username_explanation'.tr(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurfaceVariant),
+                                      style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                                       textAlign: TextAlign.center,
                                     ),
                                   ),
                                 ),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Flexible(
                                       child: TextButton(
                                         onPressed: () {
-                                          launchUrlString(
-                                              'https://dodoapp.net/privacy-policy');
+                                          launchUrlString('https://dodoapp.net/privacy-policy');
                                         },
                                         child: Text(
-                                          'accept_privacy_policy'.tr() + '*',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelLarge!
-                                              .copyWith(
-                                                  decoration:
-                                                      TextDecoration.underline,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onSurface),
+                                          '${'accept_privacy_policy'.tr()}*',
+                                          style: Theme.of(context).textTheme.labelLarge!.copyWith(decoration: TextDecoration.underline, color: Theme.of(context).colorScheme.onSurface),
                                           textAlign: TextAlign.center,
                                         ),
                                       ),
@@ -198,21 +146,14 @@ class _NamePageState extends State<NamePage> {
                                 ),
                                 AnimatedCrossFade(
                                   duration: Duration(milliseconds: 100),
-                                  crossFadeState: _showPrivacyPolicyValidation
-                                      ? CrossFadeState.showSecond
-                                      : CrossFadeState.showFirst,
+                                  crossFadeState: _showPrivacyPolicyValidation ? CrossFadeState.showSecond : CrossFadeState.showFirst,
                                   firstChild: Container(),
                                   secondChild: Padding(
                                     padding: const EdgeInsets.only(left: 16),
                                     child: Text(
                                       'must_accept_privacy_policy'.tr(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .copyWith(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .error,
+                                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                            color: Theme.of(context).colorScheme.error,
                                           ),
                                     ),
                                   ),
@@ -229,8 +170,8 @@ class _NamePageState extends State<NamePage> {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: GradientButton(
-                        child: Icon(Icons.arrow_right),
                         onPressed: _buttonPush,
+                        child: Icon(Icons.arrow_right),
                       ),
                     ),
                   ),
@@ -260,25 +201,21 @@ class _NamePageState extends State<NamePage> {
       _usernameTaken = false;
       _showPrivacyPolicyValidation = false;
       if (_formKey.currentState!.validate() && _privacyPolicy) {
-        showFutureOutputDialog(
-            context: context,
-            future: _checkUsernameTaken(),
-            outputTexts: {
-              BoolFutureOutput.False: 'username_taken'
-            },
-            outputCallbacks: {
-              BoolFutureOutput.True: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SignUpPinPage(
-                      username: _usernameController.text,
-                    ),
-                  ),
-                );
-              }
-            });
+        showFutureOutputDialog(context: context, future: _checkUsernameTaken(), outputTexts: {
+          BoolFutureOutput.False: 'username_taken'
+        }, outputCallbacks: {
+          BoolFutureOutput.True: () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SignUpPinPage(
+                  username: _usernameController.text,
+                ),
+              ),
+            );
+          }
+        });
       } else if (!_privacyPolicy) {
         setState(() {
           _showPrivacyPolicyValidation = true;
@@ -289,7 +226,7 @@ class _NamePageState extends State<NamePage> {
 
   Future<BoolFutureOutput> _checkUsernameTaken() async {
     http.Response response = await http.post(
-      Uri.parse(context.read<AppConfig>().appUrl + '/validate_username'),
+      Uri.parse('${context.read<AppConfig>().appUrl}/validate_username'),
       body: {
         'username': _usernameController.text,
       },

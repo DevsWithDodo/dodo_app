@@ -14,7 +14,7 @@ class CustomAmountDialog extends StatefulWidget {
   final Currency? currency;
 
   const CustomAmountDialog(
-      {required this.initialValue, this.maxValue, this.maxMoney, this.alreadyCustom, this.currency, this.minValue = 0});
+      {super.key, required this.initialValue, this.maxValue, this.maxMoney, this.alreadyCustom, this.currency, this.minValue = 0});
 
   @override
   State<CustomAmountDialog> createState() => _CustomAmountDialogState();
@@ -81,7 +81,7 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
             TextFormField(
               controller: customAmountController,
               decoration: InputDecoration(
-                labelText: 'custom_amount'.tr() + ' (${currency.symbol}) ',
+                labelText: '${'custom_amount'.tr()} (${currency.symbol}) ',
                 suffixText: '${(sliderValue / widget.maxMoney! * 100).roundToDouble().toStringAsFixed(0)}%',
               ),
               style: Theme.of(context)

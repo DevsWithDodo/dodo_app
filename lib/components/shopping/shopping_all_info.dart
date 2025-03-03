@@ -15,28 +15,28 @@ class ShoppingAllInfo extends StatefulWidget {
   final ShoppingRequest shoppingRequest;
   final Function(String reaction) onSendReaction;
 
-  ShoppingAllInfo(this.shoppingRequest, this.onSendReaction);
+  const ShoppingAllInfo(this.shoppingRequest, this.onSendReaction, {super.key});
 
   @override
-  _ShoppingAllInfoState createState() => _ShoppingAllInfoState();
+  State<ShoppingAllInfo> createState() => _ShoppingAllInfoState();
 }
 
 class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
   Future<BoolFutureOutput> _fulfillShoppingRequest(int id) async {
     try {
-      await Http.delete(uri: '/requests/' + id.toString());
+      await Http.delete(uri: '/requests/$id');
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
   Future<BoolFutureOutput> _deleteShoppingRequest(int id) async {
     try {
-      await Http.delete(uri: '/requests/' + id.toString());
+      await Http.delete(uri: '/requests/$id');
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -67,11 +67,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                     Icon(Icons.account_circle, color: Theme.of(context).colorScheme.secondary),
                     Flexible(
                       child: Text(
-                        ' - ' + widget.shoppingRequest.requesterNickname,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                        ' - ${widget.shoppingRequest.requesterNickname}',
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
                       ),
                     ),
                   ],
@@ -83,11 +80,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                     Icon(Icons.receipt_long, color: Theme.of(context).colorScheme.secondary),
                     Flexible(
                       child: Text(
-                        ' - ' + widget.shoppingRequest.name,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                        ' - ${widget.shoppingRequest.name}',
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
                       ),
                     ),
                   ],
@@ -101,11 +95,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                     ),
                     Flexible(
                       child: Text(
-                        ' - ' + DateFormat('yyyy/MM/dd - HH:mm').format(widget.shoppingRequest.updatedAt),
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyLarge!
-                            .copyWith(color: Theme.of(context).colorScheme.onSurface),
+                        ' - ${DateFormat('yyyy/MM/dd - HH:mm').format(widget.shoppingRequest.updatedAt)}',
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
                       ),
                     ),
                   ],
@@ -123,21 +114,20 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             GradientButton.icon(
-                              onPressed: () {
-                                showDialog<ShoppingRequest>(
+                              onPressed: () async {
+                                final value = await showDialog<ShoppingRequest>(
                                   builder: (context) => EditRequestDialog(
                                     requestId: widget.shoppingRequest.id,
                                     textBefore: widget.shoppingRequest.name,
                                   ),
                                   context: context,
-                                ).then((value) {
-                                  if (value != null) {
-                                    Navigator.pop(context, {
-                                      'type': 'modified',
-                                      'request': value,
-                                    });
-                                  }
-                                });
+                                );
+                                if (value != null) {
+                                  Navigator.pop(context, {
+                                    'type': 'modified',
+                                    'request': value,
+                                  });
+                                }
                               },
                               icon: Icon(Icons.edit),
                               label: Text('modify'.tr()),
@@ -208,8 +198,8 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             GradientButton.icon(
-                              onPressed: () {
-                                showFutureOutputDialog<bool, BoolFutureOutput>(
+                              onPressed: () async {
+                                final value = await showFutureOutputDialog<bool, BoolFutureOutput>(
                                   context: context,
                                   future: _fulfillShoppingRequest(widget.shoppingRequest.id),
                                   outputCallbacks: {
@@ -218,18 +208,17 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
                                       Navigator.pop(context, {'type': 'deleted'});
                                     }
                                   },
-                                ).then((value) {
-                                  if (value == true) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => PurchasePage(
-                                          shoppingData: widget.shoppingRequest,
-                                        ),
+                                );
+                                if ((value ?? false)) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PurchasePage(
+                                        shoppingData: widget.shoppingRequest,
                                       ),
-                                    );
-                                  }
-                                });
+                                    ),
+                                  );
+                                }
                               },
                               icon: Icon(Icons.attach_money),
                               label: Text('add_as_expense'.tr()),

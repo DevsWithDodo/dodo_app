@@ -13,8 +13,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ThemePicker extends StatefulWidget {
+  const ThemePicker({super.key});
+
   @override
-  _ThemePickerState createState() => _ThemePickerState();
+  State<ThemePicker> createState() => _ThemePickerState();
 }
 
 class _ThemePickerState extends State<ThemePicker> {
@@ -59,6 +61,7 @@ class _ThemePickerState extends State<ThemePicker> {
   @override
   Widget build(BuildContext context) {
     // This line is important so that textTheme is updated, don't know why
+    // ignore: avoid_print, deprecated_member_use
     print(Theme.of(context).colorScheme.onSurfaceVariant.alpha);
     return Selector<UserState, bool>(
         selector: (context, provider) => provider.user!.useGradients,
@@ -176,6 +179,7 @@ class ColorElement extends StatelessWidget {
   final bool enabled;
   final bool dualColor;
   const ColorElement({
+    super.key,
     required this.theme,
     required this.themeName,
     this.enabled = true,

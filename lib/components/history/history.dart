@@ -17,10 +17,10 @@ import '../helpers/gradient_button.dart';
 
 class History extends StatefulWidget {
   final int? selectedIndex;
-  History({this.selectedIndex});
+  const History({super.key, this.selectedIndex});
 
   @override
-  _HistoryState createState() => _HistoryState();
+  State<History> createState() => _HistoryState();
 }
 
 class _HistoryState extends State<History> {
@@ -49,7 +49,7 @@ class _HistoryState extends State<History> {
       }
       return purchaseData;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -73,7 +73,7 @@ class _HistoryState extends State<History> {
       }
       return paymentData;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -122,20 +122,14 @@ class _HistoryState extends State<History> {
           children: <Widget>[
             Text(
               'history'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
             ),
             SizedBox(
               height: 10,
             ),
             Text(
               'history_explanation'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurface),
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurface),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -144,9 +138,7 @@ class _HistoryState extends State<History> {
             SegmentedButton<int>(
               emptySelectionAllowed: false,
               multiSelectionEnabled: false,
-              selectedIcon: _selectedIndex == 0
-                  ? Icon(Icons.shopping_cart)
-                  : Icon(Icons.payment),
+              selectedIcon: _selectedIndex == 0 ? Icon(Icons.shopping_cart) : Icon(Icons.payment),
               segments: [
                 ButtonSegment(
                   value: 0,
@@ -159,16 +151,14 @@ class _HistoryState extends State<History> {
                   // enabled: true,
                 ),
               ],
-              selected: new Set()..add(_selectedIndex),
+              selected: <int>{}..add(_selectedIndex),
               onSelectionChanged: (Set<dynamic> selected) {
                 _selectedIndex = selected.first;
                 setState(() {});
               },
             ),
             AnimatedCrossFade(
-              crossFadeState: _selectedIndex == 0
-                  ? CrossFadeState.showFirst
-                  : CrossFadeState.showSecond,
+              crossFadeState: _selectedIndex == 0 ? CrossFadeState.showFirst : CrossFadeState.showSecond,
               duration: Duration(milliseconds: 100),
               firstChild: FutureBuilder(
                 future: _purchases,
@@ -178,7 +168,7 @@ class _HistoryState extends State<History> {
                       return Column(
                         children: <Widget>[
                           SizedBox(height: 10),
-                          if (snapshot.data!.length == 0)
+                          if (snapshot.data!.isEmpty)
                             Padding(
                               padding: EdgeInsets.all(25),
                               child: Text(
@@ -197,8 +187,7 @@ class _HistoryState extends State<History> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => HistoryPage(
-                                        startingIndex: _selectedIndex),
+                                    builder: (context) => HistoryPage(startingIndex: _selectedIndex),
                                   ),
                                 );
                               },
@@ -237,7 +226,7 @@ class _HistoryState extends State<History> {
                           SizedBox(
                             height: 10,
                           ),
-                          if (snapshot.data!.length == 0)
+                          if (snapshot.data!.isEmpty)
                             Padding(
                               padding: EdgeInsets.all(25),
                               child: Text(

@@ -39,9 +39,9 @@ class AddMemberPage extends StatefulWidget {
 }
 
 class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProviderStateMixin {
-  late final _tabController;
+  late final TabController _tabController;
   List<String> nicknames = [''];
-  Future<String>? _invitation = null;
+  Future<String>? _invitation;
 
   void addNickname() {
     if (nicknames.last.isEmpty) return;
@@ -59,7 +59,7 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data']['invitation'];
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -67,12 +67,12 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
     try {
       Map<String, dynamic> body = {"language": context.locale.languageCode, "username": username};
       await Http.post(
-        uri: '/groups/' + context.read<UserState>().currentGroup!.id.toString() + '/add_guest',
+        uri: '/groups/${context.read<UserState>().currentGroup!.id}/add_guest',
         body: body,
       );
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -112,7 +112,7 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
                           icon: Icon(Icons.person_add),
                         ),
                       ],
-                      selected: Set.from([AddMemberPageTabs.fromIndex(_tabController.index)]),
+                      selected: {AddMemberPageTabs.fromIndex(_tabController.index)},
                       onSelectionChanged: (selected) {
                         setState(() {
                           _tabController.animateTo(selected.first.index);

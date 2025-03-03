@@ -46,7 +46,7 @@ class _HistoryFilterState extends State<HistoryFilter> {
       }
       return members;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -68,7 +68,7 @@ class _HistoryFilterState extends State<HistoryFilter> {
     return Selector<UserState, User>(
         selector: (context, provider) => provider.user!,
         builder: (context, user, _) {
-          return Container(
+          return SizedBox(
             height: 180,
             child: Material(
               color: Colors.transparent,
@@ -79,9 +79,7 @@ class _HistoryFilterState extends State<HistoryFilter> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        DateFormat.yMd(context.locale.languageCode).format(widget.startDate) +
-                            ' - ' +
-                            DateFormat.yMd(context.locale.languageCode).format(widget.endDate),
+                        '${DateFormat.yMd(context.locale.languageCode).format(widget.startDate)} - ${DateFormat.yMd(context.locale.languageCode).format(widget.endDate)}',
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       IconButton.filledTonal(

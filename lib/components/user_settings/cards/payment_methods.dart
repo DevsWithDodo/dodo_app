@@ -35,14 +35,16 @@ class _PaymentMethodsState extends State<PaymentMethods> {
       Map<String, dynamic> body = {"payment_details": jsonEncode(paymentMethods.map((e) => e.toJson()).toList())};
 
       await Http.put(uri: '/user', body: body);
-      context.read<UserState>().setPaymentMethods(paymentMethods);
-      EventBus.instance.fire(EventBus.refreshBalances);
-      EventBus.instance.fire(EventBus.refreshGroupMembers);
-      await Future.delayed(Duration(milliseconds: 500));
-      setState(() => loading = LoadingState.ready);
-      await Future.delayed(Duration(milliseconds: 500));
+      if (mounted) {
+        context.read<UserState>().setPaymentMethods(paymentMethods);
+        EventBus.instance.fire(EventBus.refreshBalances);
+        EventBus.instance.fire(EventBus.refreshGroupMembers);
+        await Future.delayed(Duration(milliseconds: 500));
+        setState(() => loading = LoadingState.ready);
+        await Future.delayed(Duration(milliseconds: 500));
+      }
     } catch (_) {
-      throw _;
+      rethrow;
     } finally {
       setState(() => loading = LoadingState.done);
     }

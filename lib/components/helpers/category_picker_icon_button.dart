@@ -6,7 +6,7 @@ class CategoryPickerIconButton extends StatefulWidget {
   final Category? selectedCategory;
   final Function(Category?)? onCategoryChanged;
 
-  const CategoryPickerIconButton({this.selectedCategory, this.onCategoryChanged, Key? key}) : super(key: key);
+  const CategoryPickerIconButton({this.selectedCategory, this.onCategoryChanged, super.key});
 
   @override
   State<CategoryPickerIconButton> createState() => _CategoryPickerIconButton();

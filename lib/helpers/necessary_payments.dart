@@ -9,9 +9,9 @@ List<Payment> necessaryPayments(List<Member> members, BuildContext context) {
   Group currentGroup = context.read<UserState>().currentGroup!;
   List<Payment> payments = <Payment>[];
   List<Member> memberCopy = <Member>[];
-  if (members.where((member) => member.balance != 0).length > 0) {
+  if (members.where((member) => member.balance != 0).isNotEmpty) {
     for (Member member in members) {
-      memberCopy.add(new Member(
+      memberCopy.add(Member(
         nickname: member.nickname,
         username: member.username,
         balance: member.balance,
@@ -23,7 +23,7 @@ List<Payment> necessaryPayments(List<Member> members, BuildContext context) {
       var minPerson = memberCopy[0];
       var maxPerson = memberCopy[memberCopy.length - 1];
       payments.add(
-        new Payment(
+        Payment(
           note: 'auto_payment'.tr(),
           id: -1,
           reactions: [],
@@ -44,7 +44,7 @@ List<Payment> necessaryPayments(List<Member> members, BuildContext context) {
         minPerson.balance = minPerson.balance + maxPerson.balance;
         maxPerson.balance = 0;
       }
-    } while (memberCopy.where((member) => member.balance > 0).length > 0 && memberCopy.where((member) => member.balance < 0).length > 0);
+    } while (memberCopy.where((member) => member.balance > 0).isNotEmpty && memberCopy.where((member) => member.balance < 0).isNotEmpty);
     return payments;
   } else {
     return payments;

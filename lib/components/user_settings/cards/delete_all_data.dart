@@ -1,18 +1,19 @@
-import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
-import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
-import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
-import 'package:flutter/material.dart';
+import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
+import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class DeleteAllData extends StatefulWidget {
+  const DeleteAllData({super.key});
+
   @override
-  _DeleteAllDataState createState() => _DeleteAllDataState();
+  State<DeleteAllData> createState() => _DeleteAllDataState();
 }
 
 class _DeleteAllDataState extends State<DeleteAllData> {
@@ -22,7 +23,7 @@ class _DeleteAllDataState extends State<DeleteAllData> {
       await clearAllCache();
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -37,10 +38,7 @@ class _DeleteAllDataState extends State<DeleteAllData> {
             Center(
                 child: Text(
               'delete_all_data'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             )),
             SizedBox(
@@ -49,10 +47,7 @@ class _DeleteAllDataState extends State<DeleteAllData> {
             Center(
               child: Text(
                 'delete_all_data_explanation'.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -72,7 +67,7 @@ class _DeleteAllDataState extends State<DeleteAllData> {
                       context: context,
                     ).then(
                       (value) {
-                        if (value ?? false) {
+                        if ((value ?? false)) {
                           showFutureOutputDialog(
                             context: context,
                             future: _deleteAllData(),

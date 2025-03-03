@@ -16,7 +16,7 @@ abstract class MainDialog extends StatelessWidget {
   final DialogType type;
   final bool Function(BuildContext context) canShow;
   final void Function(BuildContext context, {String? payload})? onDismiss;
-  const MainDialog({
+  const MainDialog({super.key, 
     required this.showTime,
     required this.type,
     required this.canShow,

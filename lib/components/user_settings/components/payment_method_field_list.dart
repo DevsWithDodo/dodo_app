@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 class PaymentMethodFieldList extends StatefulWidget {
   final void Function(List<PaymentMethod>) onSubmit;
 
-  PaymentMethodFieldList({super.key, required this.onSubmit});
+  const PaymentMethodFieldList({super.key, required this.onSubmit});
 
   @override
   State<PaymentMethodFieldList> createState() => _PaymentMethodFieldListState();
@@ -59,7 +59,9 @@ class _PaymentMethodFieldListState extends State<PaymentMethodFieldList> {
             ))
         .toList());
     setState(() {
-      validPaymentMethods.forEach((paymentMethod) => paymentMethod.saved = true);
+      for (var paymentMethod in validPaymentMethods) {
+        paymentMethod.saved = true;
+      }
       paymentMethods.sort(compare);
     });
     timer = null;

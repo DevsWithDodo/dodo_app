@@ -11,7 +11,7 @@ class ErrorMessage extends StatelessWidget {
   ///When tapped on, the [onTap] method is called.
   ///If the error isn't 'no internet', the user can decide to report the error.
   ///Then the 'report a bug' is navigated to with the given [errorLocation] as the location.
-  ErrorMessage({required this.error, required this.onTap, this.errorLocation});
+  const ErrorMessage({super.key, required this.error, required this.onTap, this.errorLocation});
   @override
   Widget build(BuildContext context) {
     return InkWell(

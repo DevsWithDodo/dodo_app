@@ -4,7 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class TrialEndedDialog extends MainDialog {
-  const TrialEndedDialog({
+  const TrialEndedDialog({super.key, 
     required super.canShow,
     required super.showTime,
     required super.type,

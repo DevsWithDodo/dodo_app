@@ -3,25 +3,25 @@ import 'package:csocsort_szamla/helpers/navigator_service.dart';
 import 'package:csocsort_szamla/main.dart';
 
 class EventBus {
-  static _RefreshGroupMembers refreshGroupMembers = _RefreshGroupMembers();
-  static _RefreshBalances refreshBalances = _RefreshBalances();
-  static _RefreshPurchases refreshPurchases = _RefreshPurchases();
-  static _RefreshPayments refreshPayments = _RefreshPayments();
-  static _RefreshShopping refreshShopping = _RefreshShopping();
-  static _RefreshStatistics refreshStatistics = _RefreshStatistics();
-  static _RefreshGroups refreshGroups = _RefreshGroups();
-  static _RefreshMainDialog refreshMainDialog = _RefreshMainDialog();
-  static _HideMainDialog hideMainDialog = _HideMainDialog();
-  static _RefreshGroupInfo refreshGroupInfo = _RefreshGroupInfo();
+  static final refreshGroupMembers = _RefreshGroupMembers();
+  static final refreshBalances = _RefreshBalances();
+  static final refreshPurchases = _RefreshPurchases();
+  static final refreshPayments = _RefreshPayments();
+  static final refreshShopping = _RefreshShopping();
+  static final refreshStatistics = _RefreshStatistics();
+  static final refreshGroups = _RefreshGroups();
+  static final refreshMainDialog = _RefreshMainDialog();
+  static final hideMainDialog = _HideMainDialog();
+  static final refreshGroupInfo = _RefreshGroupInfo();
 
   static final EventBus _instance = EventBus();
 
   static EventBus get instance => _instance;
 
-  List<_Event> events = [];
-  Map<_Event, List<Function>> listeners = {};
+  List<BaseEvent> events = [];
+  Map<BaseEvent, List<Function>> listeners = {};
 
-  void fire(_Event event) {
+  void fire(BaseEvent event) {
     if (!events.contains(event)) {
       events.add(event);
     }
@@ -31,12 +31,12 @@ class EventBus {
     if (event is _AppEvent) {
       event.onEvent();
     }
-    listeners[event]!.forEach((Function element) {
+    for (var element in listeners[event]!) {
       element();
-    });
+    }
   }
 
-  void register(_Event event, Function listener) {
+  void register(BaseEvent event, Function listener) {
     if (!events.contains(event)) {
       events.add(event);
     }
@@ -46,13 +46,13 @@ class EventBus {
     listeners[event]!.add(listener);
   }
 
-  void unregister(_Event event, Function listener) {
+  void unregister(BaseEvent event, Function listener) {
     if (listeners[event] != null) {
       listeners[event]!.remove(listener);
     }
   }
 
-  void unregisterAll(_Event event) {
+  void unregisterAll(BaseEvent event) {
     if (listeners[event] != null) {
       listeners[event]!.clear();
     }
@@ -64,11 +64,11 @@ class EventBus {
   }
 }
 
-abstract class _Event {}
+abstract class BaseEvent {}
 
-abstract class _EmptyEvent extends _Event {}
+abstract class _EmptyEvent extends BaseEvent {}
 
-abstract class _AppEvent extends _Event {
+abstract class _AppEvent extends BaseEvent {
   void onEvent();
 }
 
@@ -80,8 +80,7 @@ class _RefreshGroupMembers extends _AppEvent {
   @override
   void onEvent() {
     deleteCache(
-      uri: generateUri(GetUriKeys.groupCurrent,
-          getIt.get<NavigationService>().navigatorKey.currentContext!),
+      uri: generateUri(GetUriKeys.groupCurrent, getIt.get<NavigationService>().navigatorKey.currentContext!),
     );
   }
 }
@@ -89,42 +88,29 @@ class _RefreshGroupMembers extends _AppEvent {
 class _RefreshBalances extends _AppEvent {
   @override
   void onEvent() {
-    deleteCache(
-        uri: generateUri(GetUriKeys.userBalanceSum,
-            getIt.get<NavigationService>().navigatorKey.currentContext!));
-    deleteCache(
-        uri: generateUri(GetUriKeys.groupCurrent,
-            getIt.get<NavigationService>().navigatorKey.currentContext!));
+    deleteCache(uri: generateUri(GetUriKeys.userBalanceSum, getIt.get<NavigationService>().navigatorKey.currentContext!));
+    deleteCache(uri: generateUri(GetUriKeys.groupCurrent, getIt.get<NavigationService>().navigatorKey.currentContext!));
   }
 }
 
 class _RefreshPurchases extends _AppEvent {
   @override
   void onEvent() {
-    deleteCache(
-        uri: generateUri(GetUriKeys.purchases,
-            getIt.get<NavigationService>().navigatorKey.currentContext!),
-        multipleArgs: true);
+    deleteCache(uri: generateUri(GetUriKeys.purchases, getIt.get<NavigationService>().navigatorKey.currentContext!), multipleArgs: true);
   }
 }
 
 class _RefreshPayments extends _AppEvent {
   @override
   void onEvent() {
-    deleteCache(
-        uri: generateUri(GetUriKeys.payments,
-            getIt.get<NavigationService>().navigatorKey.currentContext!),
-        multipleArgs: true);
+    deleteCache(uri: generateUri(GetUriKeys.payments, getIt.get<NavigationService>().navigatorKey.currentContext!), multipleArgs: true);
   }
 }
 
 class _RefreshShopping extends _AppEvent {
   @override
   void onEvent() {
-    deleteCache(
-        uri: generateUri(GetUriKeys.requests,
-            getIt.get<NavigationService>().navigatorKey.currentContext!),
-        multipleArgs: true);
+    deleteCache(uri: generateUri(GetUriKeys.requests, getIt.get<NavigationService>().navigatorKey.currentContext!), multipleArgs: true);
   }
 }
 
@@ -134,8 +120,7 @@ class _RefreshGroups extends _AppEvent {
   @override
   void onEvent() {
     deleteCache(
-      uri: generateUri(GetUriKeys.groups,
-          getIt.get<NavigationService>().navigatorKey.currentContext!),
+      uri: generateUri(GetUriKeys.groups, getIt.get<NavigationService>().navigatorKey.currentContext!),
     );
   }
 }
@@ -144,12 +129,10 @@ class _RefreshGroupInfo extends _AppEvent {
   @override
   void onEvent() {
     deleteCache(
-      uri: generateUri(GetUriKeys.groupCurrent,
-          getIt.get<NavigationService>().navigatorKey.currentContext!),
+      uri: generateUri(GetUriKeys.groupCurrent, getIt.get<NavigationService>().navigatorKey.currentContext!),
     );
     deleteCache(
-      uri: generateUri(GetUriKeys.groupMember,
-          getIt.get<NavigationService>().navigatorKey.currentContext!),
+      uri: generateUri(GetUriKeys.groupMember, getIt.get<NavigationService>().navigatorKey.currentContext!),
     );
   }
 }

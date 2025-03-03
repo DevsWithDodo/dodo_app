@@ -3,8 +3,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class LanguagePicker extends StatefulWidget {
+  const LanguagePicker({super.key});
+
   @override
-  _LanguagePickerState createState() => _LanguagePickerState();
+  State<LanguagePicker> createState() => _LanguagePickerState();
 }
 
 class _LanguagePickerState extends State<LanguagePicker> {
@@ -27,8 +29,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
             Center(
                 child: Text(
               'change_language'.tr(),
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             )),
             SizedBox(height: 10),
             Center(
@@ -47,10 +48,10 @@ class _LanguagePickerState extends State<LanguagePicker> {
 class LanguageElement extends StatefulWidget {
   final String? localeName;
 
-  const LanguageElement({this.localeName});
+  const LanguageElement({super.key, this.localeName});
 
   @override
-  _LanguageElementState createState() => _LanguageElementState();
+  State<LanguageElement> createState() => _LanguageElementState();
 }
 
 class _LanguageElementState extends State<LanguageElement> {
@@ -75,17 +76,12 @@ class _LanguageElementState extends State<LanguageElement> {
             // gradient: (widget.localeName == context.locale.languageCode)
             //     ? AppTheme.gradientFromTheme(Theme.of(context))
             //     : LinearGradient(colors: [Colors.white, Colors.white]),
-            color: (widget.localeName == context.locale.languageCode)
-                ? Theme.of(context).colorScheme.secondary
-                : ElevationOverlay.applyOverlay(
-                    context, Theme.of(context).colorScheme.surface, 10),
+            color: (widget.localeName == context.locale.languageCode) ? Theme.of(context).colorScheme.secondary : ElevationOverlay.applyOverlay(context, Theme.of(context).colorScheme.surface, 10),
             borderRadius: BorderRadius.circular(15)),
         child: Center(
             child: Text(widget.localeName!.toUpperCase(),
                 style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                      color: (widget.localeName == context.locale.languageCode)
-                          ? Theme.of(context).colorScheme.onSecondary
-                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                      color: (widget.localeName == context.locale.languageCode) ? Theme.of(context).colorScheme.onSecondary : Theme.of(context).colorScheme.onSurfaceVariant,
                     ))),
       ),
     );

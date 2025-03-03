@@ -8,7 +8,7 @@ class CustomAmountField extends StatefulWidget {
   final PurchaseReceiver amount;
   final Currency currency;
 
-  CustomAmountField({
+  const CustomAmountField({
     super.key,
     required this.amount,
     required this.currency,
@@ -54,7 +54,7 @@ class _CustomAmountFieldState extends State<CustomAmountField> {
         children: [
           Row(
             children: [
-              Container(
+              SizedBox(
                 width: 80,
                 child: Text(
                   widget.amount.memberNickname,
@@ -63,7 +63,7 @@ class _CustomAmountFieldState extends State<CustomAmountField> {
                 ),
               ),
               SizedBox(width: 10),
-              Container(
+              SizedBox(
                 width: 70,
                 child: TextField(
                   focusNode: percentageNode,

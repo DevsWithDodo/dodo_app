@@ -57,7 +57,7 @@ class Legend extends StatelessWidget {
                 width: 10,
               ),
               Text(
-                "${type.translationKey}.${entry}".tr(),
+                "${type.translationKey}.$entry".tr(),
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant),
               )
@@ -73,7 +73,7 @@ class Legend extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      'statistics.legend.sum-of'.tr() + ' ',
+                      '${'statistics.legend.sum-of'.tr()} ',
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           color:
                               Theme.of(context).colorScheme.onSurfaceVariant),

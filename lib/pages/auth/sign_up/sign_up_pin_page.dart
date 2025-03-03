@@ -6,7 +6,7 @@ import '../../../components/helpers/gradient_button.dart';
 
 class SignUpPinPage extends StatefulWidget {
   final String username;
-  SignUpPinPage({required this.username});
+  const SignUpPinPage({super.key, required this.username});
   @override
   State<SignUpPinPage> createState() => _SignUpPinPageState();
 }
@@ -15,7 +15,7 @@ class _SignUpPinPageState extends State<SignUpPinPage> {
   bool _isPinInput = true;
   String _pin = '';
   String _pinConfirm = '';
-  String? _validationText = null;
+  String? _validationText;
   @override
   Widget build(BuildContext context) {
     return Scaffold(

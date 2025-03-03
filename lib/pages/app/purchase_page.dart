@@ -34,17 +34,17 @@ class PurchasePage extends StatefulWidget {
   final ShoppingRequest? shoppingData;
   final Purchase? purchase;
 
-  PurchasePage({this.purchase, this.shoppingData});
+  const PurchasePage({super.key, this.purchase, this.shoppingData});
 
   @override
-  _PurchasePageState createState() => _PurchasePageState();
+  State<PurchasePage> createState() => _PurchasePageState();
 }
 
 class _PurchasePageState extends State<PurchasePage> {
   _PurchasePageState() : super();
 
-  var _formKey = GlobalKey<FormState>();
-  ExpandableController _expandableController = ExpandableController();
+  final _formKey = GlobalKey<FormState>();
+  final ExpandableController _expandableController = ExpandableController();
   bool useCustomAmounts = false;
 
   late Future<List<Member>> members;
@@ -57,9 +57,9 @@ class _PurchasePageState extends State<PurchasePage> {
   CrossFadeState purchaserCrossFadeState = CrossFadeState.showFirst;
   bool saveInitialized = false;
 
-  GlobalKey _noteKey = GlobalKey();
-  GlobalKey _currencyKey = GlobalKey();
-  GlobalKey _calculatorKey = GlobalKey();
+  final GlobalKey _noteKey = GlobalKey();
+  final GlobalKey _currencyKey = GlobalKey();
+  final GlobalKey _calculatorKey = GlobalKey();
 
   ReceiptInformation? receiptInformation;
 
@@ -70,7 +70,7 @@ class _PurchasePageState extends State<PurchasePage> {
         "group": context.read<UserState>().currentGroup!.id,
         "amount": amountDivision.totalAmount,
         "currency": selectedCurrency,
-        "category": selectedCategory != null ? selectedCategory!.text : null,
+        "category": selectedCategory?.text,
         "buyer_id": purchaserId,
         "receivers": amountDivision.generateReceivers(useCustomAmounts),
       };
@@ -81,7 +81,7 @@ class _PurchasePageState extends State<PurchasePage> {
       }
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -99,7 +99,7 @@ class _PurchasePageState extends State<PurchasePage> {
       }
       return members;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -263,6 +263,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                 targetBorderRadius: BorderRadius.circular(10),
                                 targetPadding: EdgeInsets.all(0),
                                 description: "pick_category".tr(),
+                                scaleAnimationDuration: Duration(milliseconds: 200),
                                 child: Padding(
                                   padding: EdgeInsets.only(left: 5),
                                   child: CategoryPickerIconButton(
@@ -278,7 +279,6 @@ class _PurchasePageState extends State<PurchasePage> {
                                     },
                                   ),
                                 ),
-                                scaleAnimationDuration: Duration(milliseconds: 200),
                               ),
                             ],
                           ),
@@ -291,6 +291,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                 targetBorderRadius: BorderRadius.circular(10),
                                 targetPadding: EdgeInsets.all(0),
                                 description: "pick_currency".tr(),
+                                scaleAnimationDuration: Duration(milliseconds: 200),
                                 child: Padding(
                                   padding: EdgeInsets.only(right: 5),
                                   child: CurrencyPickerIconButton(
@@ -301,7 +302,6 @@ class _PurchasePageState extends State<PurchasePage> {
                                     }),
                                   ),
                                 ),
-                                scaleAnimationDuration: Duration(milliseconds: 200),
                               ),
                               Expanded(
                                 child: TextFormField(
@@ -357,8 +357,8 @@ class _PurchasePageState extends State<PurchasePage> {
                                     targetBorderRadius: BorderRadius.circular(10),
                                     targetPadding: EdgeInsets.all(10),
                                     description: "use_calculator".tr(),
-                                    child: Icon(Icons.calculate),
                                     scaleAnimationDuration: Duration(milliseconds: 200),
+                                    child: Icon(Icons.calculate),
                                   ),
                                 ),
                               ),

@@ -58,10 +58,10 @@ class MainPage extends StatefulWidget {
   final int selectedIndex;
   final String? scrollTo;
 
-  MainPage({this.selectedHistoryIndex = 0, this.selectedIndex = 0, this.scrollTo});
+  const MainPage({super.key, this.selectedHistoryIndex = 0, this.selectedIndex = 0, this.scrollTo});
 
   @override
-  _MainPageState createState() => _MainPageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
@@ -73,7 +73,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   TabController? _tabController;
   int _selectedIndex = 0;
 
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String? scrollTo;
 
@@ -82,7 +82,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   Future<List<Group>> _getGroups() async {
-    if (!this.mounted) {
+    if (!mounted) {
       return [];
     }
     Response response = await Http.get(uri: generateUri(GetUriKeys.groups, context), overwriteCache: true);
@@ -113,7 +113,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data'];
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -126,7 +126,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data']['invitation'];
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -205,6 +205,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     });
   }
 
+  @override
   void dispose() {
     _tabController!.dispose();
     final bus = EventBus.instance;
@@ -268,11 +269,11 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
           bottomNavigationBar: !isMobile
               ? null
               : NavigationBar(
-                  onDestinationSelected: (_index) {
-                    if (_index != 3) {
+                  onDestinationSelected: (index) {
+                    if (index != 3) {
                       setState(() {
-                        _selectedIndex = _index;
-                        _tabController!.animateTo(_index);
+                        _selectedIndex = index;
+                        _tabController!.animateTo(index);
                         ScaffoldMessenger.of(context).removeCurrentSnackBar();
                       });
                     } else {
@@ -480,7 +481,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   if (snapshot.hasData) {
                     Currency currency = Currency.fromCode(snapshot.data!['currency']);
                     double balance = snapshot.data!['balance'] * 1.0;
-                    return Text('Σ: ' + balance.toMoneyString(currency, withSymbol: true), style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.secondary));
+                    return Text('Σ: ${balance.toMoneyString(currency, withSymbol: true)}', style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.secondary));
                   }
                 }
                 return Text(

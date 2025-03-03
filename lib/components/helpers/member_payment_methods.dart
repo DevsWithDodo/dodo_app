@@ -44,7 +44,7 @@ class MemberPaymentMethods extends StatelessWidget {
                                         Text("${paymentMethod.name}: "),
                                         Flexible(
                                           child: Text(
-                                            "${paymentMethod.value}",
+                                            paymentMethod.value,
                                             style: TextStyle(fontWeight: FontWeight.w600),
                                           ),
                                         )

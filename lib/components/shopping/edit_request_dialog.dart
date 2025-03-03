@@ -14,16 +14,16 @@ import '../../helpers/validation_rules.dart';
 class EditRequestDialog extends StatefulWidget {
   final String? textBefore;
   final int? requestId;
-  EditRequestDialog({this.textBefore, this.requestId});
+  const EditRequestDialog({super.key, this.textBefore, this.requestId});
 
   @override
-  _EditRequestDialogState createState() => _EditRequestDialogState();
+  State<EditRequestDialog> createState() => _EditRequestDialogState();
 }
 
 class _EditRequestDialogState extends State<EditRequestDialog> {
-  var _requestFormKey = GlobalKey<FormState>();
+  final _requestFormKey = GlobalKey<FormState>();
 
-  TextEditingController _requestController = TextEditingController();
+  final TextEditingController _requestController = TextEditingController();
 
   late ShoppingRequest _updatedReqest;
 
@@ -31,14 +31,13 @@ class _EditRequestDialogState extends State<EditRequestDialog> {
     try {
       Map<String, dynamic> body = {'name': newRequest};
       http.Response response = await Http.put(
-        uri: '/requests/' + widget.requestId.toString(),
+        uri: '/requests/${widget.requestId}',
         body: body,
       );
-      _updatedReqest =
-          ShoppingRequest.fromJson(jsonDecode(response.body)['data']);
+      _updatedReqest = ShoppingRequest.fromJson(jsonDecode(response.body)['data']);
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -46,15 +45,12 @@ class _EditRequestDialogState extends State<EditRequestDialog> {
     if (_requestFormKey.currentState!.validate()) {
       FocusScope.of(context).unfocus();
       String newRequest = _requestController.text;
-      showFutureOutputDialog(
-          context: context,
-          future: _updateRequest(newRequest),
-          outputCallbacks: {
-            BoolFutureOutput.True: () async {
-              Navigator.pop(context);
-              Navigator.pop(context, _updatedReqest);
-            }
-          });
+      showFutureOutputDialog(context: context, future: _updateRequest(newRequest), outputCallbacks: {
+        BoolFutureOutput.True: () async {
+          Navigator.pop(context);
+          Navigator.pop(context, _updatedReqest);
+        }
+      });
     }
   }
 

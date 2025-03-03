@@ -8,7 +8,7 @@ class ConfirmLeaveDialog extends StatelessWidget {
 
   /// Confirms user choice. Has border and title.
   /// Translates the required [title] and [choice] automatically.
-  ConfirmLeaveDialog({required this.choice, required this.title});
+  const ConfirmLeaveDialog({super.key, required this.choice, required this.title});
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -21,8 +21,7 @@ class ConfirmLeaveDialog extends StatelessWidget {
           children: <Widget>[
             Text(
               title.tr(),
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             SizedBox(
@@ -30,8 +29,7 @@ class ConfirmLeaveDialog extends StatelessWidget {
             ),
             Text(
               choice.tr(),
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             SizedBox(

@@ -12,12 +12,12 @@ import 'package:image_picker/image_picker.dart';
 enum ProcessingState { idle, processing, done, error }
 
 class ReceiptReader extends StatefulWidget {
-  ReceiptReader({
-    Key? key,
+  const ReceiptReader({
+    super.key,
     required this.onInformation,
     required this.maxPictureSize,
     this.initialInformation,
-  }) : super(key: key);
+  });
 
   final double maxPictureSize;
   final Function(ReceiptInformation? information) onInformation;
@@ -242,7 +242,6 @@ class _ReceiptReaderState extends State<ReceiptReader> with SingleTickerProvider
         _processingState = ProcessingState.done;
       });
     } catch (e) {
-      print(e);
       setState(() {
         _processingState = ProcessingState.error;
       });

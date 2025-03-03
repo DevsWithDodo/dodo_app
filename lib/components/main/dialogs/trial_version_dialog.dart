@@ -4,6 +4,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 
 class TrialVersionDialog extends StatelessWidget {
+  const TrialVersionDialog({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Dialog(

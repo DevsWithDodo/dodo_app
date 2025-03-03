@@ -17,14 +17,14 @@ import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginOrRegisterPage extends StatefulWidget {
-  LoginOrRegisterPage();
+  const LoginOrRegisterPage({super.key});
 
   @override
-  _LoginOrRegisterPageState createState() => _LoginOrRegisterPageState();
+  State<LoginOrRegisterPage> createState() => _LoginOrRegisterPageState();
 }
 
 class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
-  var _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _doubleTapped = false;
   bool _tapped = false;
   // final List<String> scopes = <String>[
@@ -240,7 +240,7 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                         scopes: [],
                         webAuthenticationOptions: WebAuthenticationOptions(
                           clientId: 'net.dodoapp.dodo',
-                          redirectUri: Uri.parse(context.read<AppConfig>().appUrl + '/callbacks/sign-in-with-apple'),
+                          redirectUri: Uri.parse('${context.read<AppConfig>().appUrl}/callbacks/sign-in-with-apple'),
                         ),
                       );
                       _registerWithToken(IdTokenType.apple, credential.authorizationCode);

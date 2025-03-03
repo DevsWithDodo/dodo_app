@@ -59,10 +59,11 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> with SingleTick
   void setLargeView(LargeView view) {
     setState(() {
       largeView = view;
-      if (view == LargeView.pictureSelection)
+      if (view == LargeView.pictureSelection) {
         _flexController!.reverse();
-      else
+      } else {
         _flexController!.forward(from: 0);
+      }
     });
   }
 

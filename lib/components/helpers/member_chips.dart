@@ -16,7 +16,7 @@ class MemberChips extends StatelessWidget {
   final Currency? selectedCurrency;
   final bool showAnimation;
 
-  MemberChips({
+  MemberChips({super.key, 
     required this.multiple,
     required this.allMembers,
     required this.chosenMemberIds,
@@ -49,7 +49,7 @@ class MemberChips extends StatelessWidget {
             } else {
               double maxAmount = fullAmount!;
               if (maxAmount == 0) {
-                chipFillRatio = 1 / (chosenMemberIds.length == 0 ? 1 : chosenMemberIds.length);
+                chipFillRatio = 1 / (chosenMemberIds.isEmpty ? 1 : chosenMemberIds.length);
               } else {
                 double memberAmount;
                 if (customAmounts!.containsKey(member.id)) {

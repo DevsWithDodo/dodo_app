@@ -12,7 +12,7 @@ import '../../../components/helpers/gradient_button.dart';
 class CurrencyPage extends StatefulWidget {
   final String username;
   final String pin;
-  CurrencyPage({required this.username, required this.pin});
+  const CurrencyPage({super.key, required this.username, required this.pin});
   @override
   State<CurrencyPage> createState() => _CurrencyPageState();
 }

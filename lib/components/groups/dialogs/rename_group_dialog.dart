@@ -14,29 +14,32 @@ import '../../helpers/future_output_dialog.dart';
 import '../../helpers/gradient_button.dart';
 
 class RenameGroupDialog extends StatefulWidget {
+  const RenameGroupDialog({super.key});
+
   @override
-  _RenameGroupDialogState createState() => _RenameGroupDialogState();
+  State<RenameGroupDialog> createState() => _RenameGroupDialogState();
 }
 
 class _RenameGroupDialogState extends State<RenameGroupDialog> {
-  var _groupNameFormKey = GlobalKey<FormState>();
-  var _groupNameController = TextEditingController();
+  final _groupNameFormKey = GlobalKey<FormState>();
+  final _groupNameController = TextEditingController();
 
   Future<BoolFutureOutput> _updateGroupName(String groupName) async {
     try {
       Map<String, dynamic> body = {"name": groupName};
 
       http.Response response = await Http.put(
-        uri: '/groups/' +
-            context.read<UserState>().currentGroup!.id.toString(),
+        uri: '/groups/${context.read<UserState>().currentGroup!.id}',
         body: body,
       );
 
       Map<String, dynamic> decoded = jsonDecode(response.body);
-      context.read<UserState>().setGroupName(decoded['group_name']);
+      if (mounted) {
+        context.read<UserState>().setGroupName(decoded['group_name']);
+      }
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -52,8 +55,7 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
             children: <Widget>[
               Text(
                 'rename_group'.tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               SizedBox(
                 height: 10,
@@ -101,18 +103,14 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
     if (_groupNameFormKey.currentState!.validate()) {
       FocusScope.of(context).unfocus();
       String groupName = _groupNameController.text;
-      showFutureOutputDialog(
-        context: context,
-        future: _updateGroupName(groupName),
-        outputCallbacks: {
-          BoolFutureOutput.True: () async {
-            _groupNameController.text = '';
-            EventBus.instance.fire(EventBus.refreshGroups);
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();
-          }
+      showFutureOutputDialog(context: context, future: _updateGroupName(groupName), outputCallbacks: {
+        BoolFutureOutput.True: () async {
+          _groupNameController.text = '';
+          EventBus.instance.fire(EventBus.refreshGroups);
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
         }
-      );
+      });
     }
   }
 }

@@ -27,7 +27,7 @@ class _SupportedVersionInitializerState extends State<SupportedVersionInitialize
         "Content-Type": "application/json",
       };
       http.Response response = await http.get(
-        Uri.parse(context.read<AppConfig>().appUrl + '/supported?version=' + currentVersion.toString()),
+        Uri.parse('${context.read<AppConfig>().appUrl}/supported?version=$currentVersion'),
         headers: header,
       );
       bool decoded = jsonDecode(response.body) ?? true;

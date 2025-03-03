@@ -124,7 +124,6 @@ class MainDialogBuilder extends StatefulWidget {
           UserState provider = context.read<UserState>();
           User? user = provider.user;
           ThemeName currentTheme = context.read<AppThemeState>().themeName;
-          ;
           if (user == null) return false;
           late double chance;
           if (user.userStatus.trialStatus == TrialStatus.trial) {

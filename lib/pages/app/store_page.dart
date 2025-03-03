@@ -10,25 +10,25 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
 
 class StorePage extends StatefulWidget {
-  const StorePage({Key? key}) : super(key: key);
+  const StorePage({super.key});
   @override
-  _StorePageState createState() => _StorePageState();
+  State<StorePage> createState() => _StorePageState();
 }
 
 class _StorePageState extends State<StorePage> {
-  Set<String> _ids = {
+  final Set<String> _ids = {
     'gradients',
     'remove_ads',
     Platform.isAndroid ? 'ad_gradient_bundle' : 'ad_gradient_bundle_2',
     'group_boost',
-    'big_lender_bundle'
+    'big_lender_bundle',
   };
   Map<String, int> sortBasic = {
     'remove_ads': 1,
     'gradients': 2,
     Platform.isAndroid ? 'ad_gradient_bundle' : 'ad_gradient_bundle_2': 3,
     'group_boost': 4,
-    'big_lender_bundle': 5
+    'big_lender_bundle': 5,
   };
   var iap = InAppPurchase.instance;
 
@@ -78,30 +78,17 @@ class _StorePageState extends State<StorePage> {
             children: [
               Text(
                 e.id.tr(),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge!
-                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
               SizedBox(
                 height: 10,
               ),
-              Text((e.id + '_explanation').tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleSmall!
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                  textAlign: TextAlign.center),
+              Text(('${e.id}_explanation').tr(), style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant), textAlign: TextAlign.center),
               SizedBox(
                 height: 10,
               ),
-              Text('price'.tr() + e.price,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                  textAlign: TextAlign.center),
+              Text('price'.tr() + e.price, style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant), textAlign: TextAlign.center),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

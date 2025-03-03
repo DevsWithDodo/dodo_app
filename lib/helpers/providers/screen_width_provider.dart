@@ -23,7 +23,7 @@ class ScreenSizeProvider extends StatelessWidget {
 
         return ChangeNotifierProvider.value(
           value: _screenSize,
-          builder: (context, _) => this.builder(context),
+          builder: (context, _) => builder(context),
         );
       },
     );

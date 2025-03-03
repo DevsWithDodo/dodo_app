@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class NecessaryPaymentsPage extends StatefulWidget {
-  NecessaryPaymentsPage({
+  const NecessaryPaymentsPage({
     required this.necessaryPayments,
     required this.members,
     super.key,
@@ -114,17 +114,17 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
                           icon: Icon(Icons.copy, size: 20),
                           onPressed: () {
                             Currency currency = context.read<UserState>().currentGroup!.currency;
-                            int longestPayerNick = this.widget.necessaryPayments.map((e) => e.payerNickname.length).reduce(
+                            int longestPayerNick = widget.necessaryPayments.map((e) => e.payerNickname.length).reduce(
                                   (value, element) => value > element ? value : element,
                                 );
-                            int longestTakerNick = this.widget.necessaryPayments.map((e) => e.takerNickname.length).reduce(
+                            int longestTakerNick = widget.necessaryPayments.map((e) => e.takerNickname.length).reduce(
                                   (value, element) => value > element ? value : element,
                                 );
-                            String paymentsPart = this.widget.necessaryPayments.map(
+                            String paymentsPart = widget.necessaryPayments.map(
                               (payment) {
                                 String firstSpaces = ' ' * (longestPayerNick - payment.payerNickname.length);
                                 String secondSpaces = ' ' * (longestTakerNick - payment.takerNickname.length);
-                                return "${payment.payerNickname}${firstSpaces}\t➡️\t${payment.takerNickname}:${secondSpaces}\t${payment.amount.toMoneyString(
+                                return "${payment.payerNickname}$firstSpaces\t➡️\t${payment.takerNickname}:$secondSpaces\t${payment.amount.toMoneyString(
                                   currency,
                                   withSymbol: true,
                                 )}";
@@ -136,23 +136,20 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
                                   (element) => element.paymentMethods != null && element.paymentMethods!.isNotEmpty && widget.necessaryPayments.any((payment) => payment.takerId == element.id),
                                 )
                                 .toList();
-                            if (this.widget.members.any((element) => element.paymentMethods != null && element.paymentMethods!.isNotEmpty)) {
-                              paymentMethodsPart = "\n\n${'payment-methods.title'.tr()}\n" +
-                                  membersToCopy
-                                      .map(
-                                        (member) {
-                                          return member.paymentMethods!.isEmpty
-                                              ? null
-                                              : "${member.nickname}: \n" +
-                                                  member.paymentMethods!
-                                                      .map(
-                                                        (method) => "  ${method.name}: ${method.value} ${method.priority ? "(⭐)" : ""}",
-                                                      )
-                                                      .join('\n');
-                                        },
-                                      )
-                                      .where((e) => e != null)
-                                      .join('\n');
+                            if (widget.members.any((element) => element.paymentMethods != null && element.paymentMethods!.isNotEmpty)) {
+                              paymentMethodsPart = "\n\n${'payment-methods.title'.tr()}\n${membersToCopy.map(
+                                    (member) {
+                                      return member.paymentMethods!.isEmpty
+                                          ? null
+                                          // ignore: prefer_interpolation_to_compose_strings
+                                          : "${member.nickname}: \n" +
+                                              member.paymentMethods!
+                                                  .map(
+                                                    (method) => "  ${method.name}: ${method.value} ${method.priority ? "(⭐)" : ""}",
+                                                  )
+                                                  .join('\n');
+                                    },
+                                  ).where((e) => e != null).join('\n')}";
                             }
                             Clipboard.setData(
                               ClipboardData(
@@ -191,7 +188,7 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
 
   List<Widget> _generatePaymentEntries() {
     Map<int, List<Payment>> paymentsByPayer = {};
-    for (Payment payment in this.widget.necessaryPayments.where((payment) => payment.amount > payment.originalCurrency.threshold())) {
+    for (Payment payment in widget.necessaryPayments.where((payment) => payment.amount > payment.originalCurrency.threshold())) {
       if (paymentsByPayer.containsKey(payment.payerId)) {
         paymentsByPayer[payment.payerId]!.add(payment);
       } else {

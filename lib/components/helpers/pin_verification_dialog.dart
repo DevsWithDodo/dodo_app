@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/components/auth/pin_pad.dart';
+import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
+import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
-import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
-import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,13 +22,15 @@ class _PinVerificationDialogState extends State<PinVerificationDialog> {
 
   Future<BoolFutureOutput> checkPin() async {
     var response = await Http.post(
-      uri: "/user/verify_password", 
+      uri: "/user/verify_password",
       body: {
         'password': pin,
       },
     );
-    UserState provider = context.read<UserState>();
-    provider.setUserStatus(UserStatus.fromJson(jsonDecode(response.body)));
+    if (mounted) {
+      UserState provider = context.read<UserState>();
+      provider.setUserStatus(UserStatus.fromJson(jsonDecode(response.body)));
+    }
     return BoolFutureOutput.True;
   }
 
@@ -57,21 +59,21 @@ class _PinVerificationDialogState extends State<PinVerificationDialog> {
               SizedBox(
                 height: 20,
               ),
-              PinPad(pin: pin, onPinChanged: (text) => setState(() => pin = text), maxWidth: 260,),
+              PinPad(
+                pin: pin,
+                onPinChanged: (text) => setState(() => pin = text),
+                maxWidth: 260,
+              ),
               GradientButton.icon(
-                icon: Icon(Icons.check), 
-                label: Text('pin-verification.check'.tr()), 
+                icon: Icon(Icons.check),
+                label: Text('pin-verification.check'.tr()),
                 onPressed: () {
-                  showFutureOutputDialog(
-                    context: context,
-                    future: checkPin(),
-                    outputCallbacks: {
-                      BoolFutureOutput.True: () {
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-                      },
-                    }
-                  );
+                  showFutureOutputDialog(context: context, future: checkPin(), outputCallbacks: {
+                    BoolFutureOutput.True: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    },
+                  });
                 },
               ),
               // SizedBox(height: 5),

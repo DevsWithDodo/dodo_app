@@ -20,31 +20,30 @@ class HistoryPage extends StatefulWidget {
   final int? startingIndex;
   final int? selectedMemberId;
 
-  HistoryPage({
+  const HistoryPage({
+    super.key,
     this.startingIndex,
     this.selectedMemberId,
   });
 
   @override
-  _HistoryPageState createState() => _HistoryPageState();
+  State<HistoryPage> createState() => _HistoryPageState();
 }
 
-class _HistoryPageState extends State<HistoryPage>
-    with TickerProviderStateMixin {
+class _HistoryPageState extends State<HistoryPage> with TickerProviderStateMixin {
   DateTime _startDate = DateTime.now().subtract(Duration(days: 30));
   DateTime _endDate = DateTime.now();
   Category? _category;
   Future<Map<DateTime, List<Purchase>>>? _purchases;
   Future<Map<DateTime, List<Payment>>>? _payments;
 
-  ScrollController _purchaseScrollController = ScrollController();
-  ScrollController _paymentScrollController = ScrollController();
+  final ScrollController _purchaseScrollController = ScrollController();
+  final ScrollController _paymentScrollController = ScrollController();
   TabController? _tabController;
   late int _selectedIndex;
   late int _selectedMemberId;
 
-  Future<Map<DateTime, List<Purchase>>> _getPurchases(
-      {bool overwriteCache = false}) async {
+  Future<Map<DateTime, List<Purchase>>> _getPurchases({bool overwriteCache = false}) async {
     try {
       Response response = await Http.get(
         uri: generateUri(
@@ -61,16 +60,14 @@ class _HistoryPageState extends State<HistoryPage>
         overwriteCache: overwriteCache,
       );
       List<dynamic> decoded = jsonDecode(response.body)['data'];
-      List<Purchase> purchaseData =
-          decoded.map((data) => Purchase.fromJson(data)).toList();
+      List<Purchase> purchaseData = decoded.map((data) => Purchase.fromJson(data)).toList();
       // Group by week starting from now
       Map<DateTime, List<Purchase>> grouped = {};
       DateTime now = DateTime.now();
       DateTime date = DateTime(now.year, now.month, now.day);
       for (Purchase purchase in purchaseData) {
         if (date.difference(purchase.updatedAt).inDays > 7) {
-          int toSubtract =
-              (date.difference(purchase.updatedAt).inDays / 7).floor();
+          int toSubtract = (date.difference(purchase.updatedAt).inDays / 7).floor();
           date = date.subtract(Duration(days: toSubtract * 7));
           grouped[date] = [];
           grouped[date]!.add(purchase);
@@ -84,12 +81,11 @@ class _HistoryPageState extends State<HistoryPage>
       }
       return grouped;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
-  Future<Map<DateTime, List<Payment>>> _getPayments(
-      {bool overwriteCache = false}) async {
+  Future<Map<DateTime, List<Payment>>> _getPayments({bool overwriteCache = false}) async {
     try {
       Response response = await Http.get(
         uri: generateUri(
@@ -107,8 +103,7 @@ class _HistoryPageState extends State<HistoryPage>
       );
 
       List<dynamic> decoded = jsonDecode(response.body)['data'];
-      List<Payment> paymentData =
-          decoded.map((data) => Payment.fromJson(data)).toList();
+      List<Payment> paymentData = decoded.map((data) => Payment.fromJson(data)).toList();
 
       // Group by week starting from now
       Map<DateTime, List<Payment>> grouped = {};
@@ -116,8 +111,7 @@ class _HistoryPageState extends State<HistoryPage>
       DateTime date = DateTime(now.year, now.month, now.day);
       for (Payment payment in paymentData) {
         if (date.difference(payment.updatedAt).inDays > 7) {
-          int toSubtract =
-              (date.difference(payment.updatedAt).inDays / 7).floor();
+          int toSubtract = (date.difference(payment.updatedAt).inDays / 7).floor();
           date = date.subtract(Duration(days: toSubtract * 7));
           grouped[date] = [];
           grouped[date]!.add(payment);
@@ -131,7 +125,7 @@ class _HistoryPageState extends State<HistoryPage>
       }
       return grouped;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -155,10 +149,8 @@ class _HistoryPageState extends State<HistoryPage>
   @override
   void initState() {
     super.initState();
-    _selectedMemberId =
-        widget.selectedMemberId ?? context.read<UserState>().user!.id;
-    _tabController = TabController(
-        length: 2, vsync: this, initialIndex: widget.startingIndex ?? 0);
+    _selectedMemberId = widget.selectedMemberId ?? context.read<UserState>().user!.id;
+    _tabController = TabController(length: 2, vsync: this, initialIndex: widget.startingIndex ?? 0);
     _selectedIndex = widget.startingIndex ?? 0;
 
     _purchases = null;
@@ -173,8 +165,7 @@ class _HistoryPageState extends State<HistoryPage>
 
     controller = ScrollController();
     controller.addListener(() {
-      if ((!_isScrolled && controller.offset > 0) ||
-          (_isScrolled && controller.offset <= 0)) {
+      if ((!_isScrolled && controller.offset > 0) || (_isScrolled && controller.offset <= 0)) {
         setState(() => _isScrolled = !_isScrolled);
       }
     });
@@ -211,19 +202,12 @@ class _HistoryPageState extends State<HistoryPage>
                   endDate: _endDate,
                   startDate: _startDate,
                   selectedMemberId: _selectedMemberId,
-                  onValuesChanged: (
-                      {category,
-                      startDate,
-                      endDate,
-                      selectedMemberId,
-                      removeCategory}) {
+                  onValuesChanged: ({category, startDate, endDate, selectedMemberId, removeCategory}) {
                     setState(() {
                       _selectedMemberId = selectedMemberId ?? _selectedMemberId;
                       _startDate = startDate ?? _startDate;
                       _endDate = endDate ?? _endDate;
-                      _category = (removeCategory ?? false)
-                          ? null
-                          : category ?? _category;
+                      _category = (removeCategory ?? false) ? null : category ?? _category;
                     });
                     _purchases = null;
                     _purchases = _getPurchases(overwriteCache: true);
@@ -240,10 +224,10 @@ class _HistoryPageState extends State<HistoryPage>
           ? null
           : NavigationBar(
               backgroundColor: Theme.of(context).cardTheme.color,
-              onDestinationSelected: (_index) {
+              onDestinationSelected: (index) {
                 setState(() {
-                  _selectedIndex = _index;
-                  _tabController!.animateTo(_index);
+                  _selectedIndex = index;
+                  _tabController!.animateTo(index);
                 });
               },
               selectedIndex: _selectedIndex,
@@ -252,8 +236,7 @@ class _HistoryPageState extends State<HistoryPage>
                   icon: Icon(Icons.shopping_cart),
                   label: 'purchases'.tr(),
                 ),
-                NavigationDestination(
-                    icon: Icon(Icons.attach_money), label: 'payments'.tr())
+                NavigationDestination(icon: Icon(Icons.attach_money), label: 'payments'.tr())
               ],
             ),
       body: Column(
@@ -263,8 +246,7 @@ class _HistoryPageState extends State<HistoryPage>
                 ? Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surfaceContainerLow,
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(20)),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                     ),
                     clipBehavior: Clip.antiAlias,
                     child: TabBarView(
@@ -283,24 +265,19 @@ class _HistoryPageState extends State<HistoryPage>
                         child: Container(
                             margin: EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerLow,
+                              color: Theme.of(context).colorScheme.surfaceContainerLow,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: _buildPurchases()),
                       ),
                       Expanded(
                         child: Container(
-                          margin: EdgeInsets.all(10),
+                            margin: EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerLow,
+                              color: Theme.of(context).colorScheme.surfaceContainerLow,
                               borderRadius: BorderRadius.circular(20),
                             ),
-                          child: _buildPayments()
-                        ),
+                            child: _buildPayments()),
                       ),
                     ],
                   ),
@@ -318,8 +295,7 @@ class _HistoryPageState extends State<HistoryPage>
     return FutureBuilder(
       key: ValueKey('purchases'),
       future: _purchases,
-      builder:
-          (context, AsyncSnapshot<Map<DateTime, List<Purchase>>> snapshot) {
+      builder: (context, AsyncSnapshot<Map<DateTime, List<Purchase>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
             return SingleChildScrollView(
@@ -341,8 +317,8 @@ class _HistoryPageState extends State<HistoryPage>
           }
         }
         return Center(
-          child: CircularProgressIndicator(),
           heightFactor: 2,
+          child: CircularProgressIndicator(),
         );
       },
     );
@@ -374,28 +350,22 @@ class _HistoryPageState extends State<HistoryPage>
           }
         }
         return Center(
-          child: CircularProgressIndicator(),
           heightFactor: 2,
+          child: CircularProgressIndicator(),
         );
       },
     );
   }
 
-  Widget _generatePaymentWeekWidget(
-      DateTime startDate, List<Payment> payments) {
+  Widget _generatePaymentWeekWidget(DateTime startDate, List<Payment> payments) {
     return Column(
       children: [
         Center(
           child: Container(
             padding: EdgeInsets.all(8),
             child: Text(
-              DateFormat.yMMMd(context.locale.countryCode)
-                      .format(startDate.subtract(Duration(days: 7))) +
-                  ' - ' +
-                  DateFormat.yMMMd(context.locale.countryCode)
-                      .format(startDate.subtract(Duration(days: 1))),
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+              '${DateFormat.yMMMd(context.locale.countryCode).format(startDate.subtract(Duration(days: 7)))} - ${DateFormat.yMMMd(context.locale.countryCode).format(startDate.subtract(Duration(days: 1)))}',
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ),
         ),
@@ -414,7 +384,7 @@ class _HistoryPageState extends State<HistoryPage>
   }
 
   List<Widget> _generatePayments(Map<DateTime, List<Payment>> data) {
-    if (data.length == 0) {
+    if (data.isEmpty) {
       return [
         Padding(
           padding: EdgeInsets.all(25),
@@ -426,26 +396,18 @@ class _HistoryPageState extends State<HistoryPage>
         )
       ];
     }
-    return data.entries
-        .map((e) => _generatePaymentWeekWidget(e.key, e.value))
-        .toList();
+    return data.entries.map((e) => _generatePaymentWeekWidget(e.key, e.value)).toList();
   }
 
-  Widget _generatePurchaseWeekWidget(
-      DateTime startDate, List<Purchase> purchases) {
+  Widget _generatePurchaseWeekWidget(DateTime startDate, List<Purchase> purchases) {
     return Column(
       children: [
         Center(
           child: Container(
             padding: EdgeInsets.all(8),
             child: Text(
-              DateFormat.yMMMd(context.locale.languageCode)
-                      .format(startDate.subtract(Duration(days: 7))) +
-                  ' - ' +
-                  DateFormat.yMMMd(context.locale.languageCode)
-                      .format(startDate.subtract(Duration(days: 1))),
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant),
+              '${DateFormat.yMMMd(context.locale.languageCode).format(startDate.subtract(Duration(days: 7)))} - ${DateFormat.yMMMd(context.locale.languageCode).format(startDate.subtract(Duration(days: 1)))}',
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ),
         ),
@@ -464,22 +426,19 @@ class _HistoryPageState extends State<HistoryPage>
   }
 
   List<Widget> _generatePurchases(Map<DateTime, List<Purchase>> data) {
-    if (data.length == 0) {
+    if (data.isEmpty) {
       return [
         Padding(
           padding: EdgeInsets.all(25),
           child: Text(
             'statistics.no-data-for-period'.tr(),
-            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant),
+            style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             textAlign: TextAlign.center,
           ),
         )
       ];
     }
 
-    return data.entries
-        .map((e) => _generatePurchaseWeekWidget(e.key, e.value))
-        .toList();
+    return data.entries.map((e) => _generatePurchaseWeekWidget(e.key, e.value)).toList();
   }
 }

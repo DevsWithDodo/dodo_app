@@ -14,14 +14,14 @@ import '../../../components/helpers/gradient_button.dart';
 class LoginPinPage extends StatefulWidget {
   final String? inviteUrl;
   final String? username;
-  LoginPinPage({this.inviteUrl, this.username});
+  const LoginPinPage({super.key, this.inviteUrl, this.username});
   @override
   State<LoginPinPage> createState() => _LoginPinPageState();
 }
 
 class _LoginPinPageState extends State<LoginPinPage> {
   String _pin = '';
-  String? _validationText = null;
+  String? _validationText;
   @override
   Widget build(BuildContext context) {
     return Scaffold(

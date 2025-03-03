@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:app_links/app_links.dart';
 import 'package:csocsort_szamla/helpers/navigator_service.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
@@ -8,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class InviteUrlProvider extends StatelessWidget {
-  InviteUrlProvider({required this.builder}) {
+  InviteUrlProvider({super.key, required this.builder}) {
     _inviteUrl = InviteUrlState(null);
 
     _appLinks.getInitialAppLinkString().then((link) {
@@ -24,8 +26,7 @@ class InviteUrlProvider extends StatelessWidget {
       if (context.read<UserState>().user != null) {
         getIt.get<NavigationService>().push(
               MaterialPageRoute(
-                builder: (context) =>
-                    JoinGroupPage(fromAuth: (context.read<UserState>().user?.group == null) ? true : false),
+                builder: (context) => JoinGroupPage(fromAuth: (context.read<UserState>().user?.group == null) ? true : false),
               ),
             );
       } else {
@@ -42,13 +43,13 @@ class InviteUrlProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _inviteUrl,
-      builder: (context, child) => this.builder(context),
+      builder: (context, child) => builder(context),
     );
   }
 }
 
 class InviteUrlState extends ChangeNotifier {
-  String? _inviteUrl = null;
+  String? _inviteUrl;
 
   InviteUrlState(this._inviteUrl);
 
@@ -56,7 +57,6 @@ class InviteUrlState extends ChangeNotifier {
 
   set inviteUrl(String? value) {
     _inviteUrl = value;
-    print('Invite URL: $_inviteUrl');
     notifyListeners();
   }
 }

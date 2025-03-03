@@ -6,9 +6,9 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class MainPageSpeedDial extends StatefulWidget {
   final Function? onReturn;
-  MainPageSpeedDial({this.onReturn});
+  const MainPageSpeedDial({super.key, this.onReturn});
   @override
-  _MainPageSpeedDialState createState() => _MainPageSpeedDialState();
+  State<MainPageSpeedDial> createState() => _MainPageSpeedDialState();
 }
 
 class _MainPageSpeedDialState extends State<MainPageSpeedDial> {

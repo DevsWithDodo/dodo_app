@@ -19,6 +19,7 @@ class ShoppingListEntry extends StatefulWidget {
   final Function(ShoppingRequest) onEditRequest;
 
   const ShoppingListEntry({
+    super.key,
     required this.shoppingRequest,
     required this.onDeleteRequest,
     required this.onEditRequest,
@@ -101,9 +102,9 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
               BoolFutureOutput.True: () => Navigator.of(context).pop(true),
             },
           ).then((value) {
-            this.widget.onDeleteRequest(widget.shoppingRequest.id);
+            widget.onDeleteRequest(widget.shoppingRequest.id);
             // But if the direction is startToEnd, the AddPurchase site has to be called
-            if (direction == DismissDirection.startToEnd && value == true) {
+            if (direction == DismissDirection.startToEnd && (value == true)) {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -125,7 +126,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                 BoolFutureOutput.True: () => Navigator.of(context).pop(true),
               },
             ).then((value) {
-              if (value ?? false) this.widget.onDeleteRequest(widget.shoppingRequest.id);
+              if (value ?? false) widget.onDeleteRequest(widget.shoppingRequest.id);
             });
           } else if (direction == DismissDirection.startToEnd) {
             showDialog<ShoppingRequest>(
@@ -135,7 +136,6 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
               ),
               context: context,
             ).then((value) {
-              print(value);
               if (value != null) {
                 widget.onEditRequest(value);
               }
@@ -147,7 +147,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
         children: [
           Container(
             decoration: boxDecoration,
-            margin: EdgeInsets.only(top: widget.shoppingRequest.reactions!.length == 0 ? 2 : 8, bottom: 5, left: 12, right: 12),
+            margin: EdgeInsets.only(top: widget.shoppingRequest.reactions!.isEmpty ? 2 : 8, bottom: 5, left: 12, right: 12),
             child: Material(
               type: MaterialType.transparency,
               child: InkWell(
@@ -164,9 +164,9 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                   );
                   if (value != null) {
                     if (value['type'] == 'deleted') {
-                      this.widget.onDeleteRequest(widget.shoppingRequest.id);
+                      widget.onDeleteRequest(widget.shoppingRequest.id);
                     } else {
-                      this.widget.onEditRequest(value['request']);
+                      widget.onEditRequest(value['request']);
                     }
                   }
                 },
@@ -214,7 +214,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
             reactedToId: widget.shoppingRequest.id,
             isSecondaryColor: widget.shoppingRequest.requesterId == user.id,
             type: ReactionType.request,
-            onSendReaction: this.handleSendReaction,
+            onSendReaction: handleSendReaction,
           ),
         ],
       ),
@@ -223,10 +223,10 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
 
   Future<BoolFutureOutput> _deleteFulfillShoppingRequest(int id) async {
     try {
-      await Http.delete(uri: '/requests/' + id.toString());
+      await Http.delete(uri: '/requests/$id');
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 }

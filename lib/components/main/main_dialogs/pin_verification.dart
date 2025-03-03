@@ -6,7 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class PinVerificationMainDialog extends MainDialog {
-  const PinVerificationMainDialog({
+  const PinVerificationMainDialog({super.key, 
     required super.canShow,
     required super.showTime,
     required super.type,

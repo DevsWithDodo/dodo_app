@@ -125,7 +125,7 @@ class AmountDivision {
 
   void setMembers(List<Member> members) {
     List<PurchaseReceiver> toRemove = amounts.where((element) => !members.map((e) => e.id).contains(element.memberId)).toList();
-    List<Member> toAdd = members.where((element) => !this.memberIds.contains(element.id)).toList();
+    List<Member> toAdd = members.where((element) => !memberIds.contains(element.id)).toList();
     assert(
       !(toRemove.isNotEmpty && toAdd.isNotEmpty),
       "Only one operation is allowed at a time",
@@ -283,7 +283,7 @@ class AmountDivision {
 }
 
 extension on Iterable<PurchaseReceiver> {
-  double total() => this.fold(
+  double total() => fold(
         0,
         (previousValue, element) => previousValue + (double.tryParse(element.customAmountController.text) ?? 0),
       );

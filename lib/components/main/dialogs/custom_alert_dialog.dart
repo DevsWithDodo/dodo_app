@@ -6,10 +6,10 @@ class CustomAlertDialog extends StatelessWidget {
   final Widget? actions;
   final bool centerBody;
   CustomAlertDialog(
-      {required this.content, this.actions, this.centerBody = false}) {
+      {super.key, required this.content, this.actions, this.centerBody = false}) {
     assert(content.containsKey('title'));
     assert(content.containsKey('body'));
-    assert((content['body'] as List).length == 0 ||
+    assert((content['body'] as List).isEmpty ||
         content['body'] is List<String>);
   }
 

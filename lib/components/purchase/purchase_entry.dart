@@ -16,12 +16,13 @@ class PurchaseEntry extends StatefulWidget {
   final Purchase purchase;
   final int selectedMemberId;
   const PurchaseEntry({
+    super.key,
     required this.purchase,
     required this.selectedMemberId,
   });
 
   @override
-  _PurchaseEntryState createState() => _PurchaseEntryState();
+  State<PurchaseEntry> createState() => _PurchaseEntryState();
 }
 
 class _PurchaseEntryState extends State<PurchaseEntry> {
@@ -61,7 +62,6 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
   @override
   Widget build(BuildContext context) {
     ThemeName themeName = context.watch<AppThemeState>().themeName;
-    ;
     int? selectedMemberId = widget.selectedMemberId;
     String note = (widget.purchase.name == '') ? 'no_note'.tr() : widget.purchase.name[0].toUpperCase() + widget.purchase.name.substring(1);
     bool bought = widget.purchase.buyerId == selectedMemberId;
@@ -124,7 +124,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
               Container(
                 decoration: decoration,
                 margin: EdgeInsets.only(
-                  top: widget.purchase.reactions!.length == 0 ? 0 : 14,
+                  top: widget.purchase.reactions!.isEmpty ? 0 : 14,
                   bottom: 4,
                   left: 4,
                   right: 4,
@@ -221,7 +221,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                   reactedToId: widget.purchase.id,
                   isSecondaryColor: bought,
                   type: ReactionType.purchase,
-                  onSendReaction: this.handleSendReaction,
+                  onSendReaction: handleSendReaction,
                 ),
               ),
             ],

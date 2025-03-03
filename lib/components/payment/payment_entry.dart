@@ -16,13 +16,14 @@ class PaymentEntry extends StatefulWidget {
   final Payment payment;
   final int? selectedMemberId;
 
-  PaymentEntry({
+  const PaymentEntry({
+    super.key,
     required this.payment,
     this.selectedMemberId,
   });
 
   @override
-  _PaymentEntryState createState() => _PaymentEntryState();
+  State<PaymentEntry> createState() => _PaymentEntryState();
 }
 
 class _PaymentEntryState extends State<PaymentEntry> {
@@ -111,7 +112,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
               Container(
                 decoration: boxDecoration,
                 margin: EdgeInsets.only(
-                  top: widget.payment.reactions!.length == 0 ? 0 : 14,
+                  top: widget.payment.reactions!.isEmpty ? 0 : 14,
                   bottom: 4,
                   left: 4,
                   right: 4,
@@ -127,7 +128,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
                                       type: ReactionType.payment,
                                       reactions: widget.payment.reactions!,
                                       reactToId: widget.payment.id,
-                                      onSend: this.handleSendReaction,
+                                      onSend: handleSendReaction,
                                     ),
                                 context: context);
                           },
@@ -192,7 +193,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
                 child: PastReactionContainer(
                   reactedToId: widget.payment.id,
                   reactions: widget.payment.reactions!,
-                  onSendReaction: this.handleSendReaction,
+                  onSendReaction: handleSendReaction,
                   isSecondaryColor: widget.payment.payerId == user.id,
                   type: ReactionType.payment,
                 ),

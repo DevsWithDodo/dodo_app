@@ -17,15 +17,17 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class CreateGroupPage extends StatefulWidget {
+  const CreateGroupPage({super.key});
+
   @override
-  _CreateGroupPageState createState() => _CreateGroupPageState();
+  State<CreateGroupPage> createState() => _CreateGroupPageState();
 }
 
 class _CreateGroupPageState extends State<CreateGroupPage> {
-  TextEditingController _groupName = TextEditingController();
+  final TextEditingController _groupName = TextEditingController();
   late TextEditingController _nicknameController;
 
-  var _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   late Currency _selectedCurrency;
 
   @override
@@ -46,7 +48,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
       userProvider.setGroup(userProvider.user!.groups.last);
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 

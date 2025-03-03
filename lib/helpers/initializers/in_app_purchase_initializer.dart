@@ -9,7 +9,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:provider/provider.dart';
 
 class IAPInitializer extends StatefulWidget {
-  IAPInitializer({
+  const IAPInitializer({
     required BuildContext context,
     required this.builder,
     super.key,
@@ -42,10 +42,10 @@ class _IAPInitializerState extends State<IAPInitializer> {
         UserState userState = context.read<UserState>();
         for (PurchaseDetails details in purchases) {
           if (details.status == PurchaseStatus.purchased) {
-            String url = context.read<AppConfig>().appUrl + '/user';
+            String url = '${context.read<AppConfig>().appUrl}/user';
             Map<String, String> header = {
               "Content-Type": "application/json",
-              "Authorization": "Bearer " + userState.user!.apiToken,
+              "Authorization": "Bearer ${userState.user!.apiToken}",
             };
             Map<String, dynamic> body = {};
             switch (details.productID) {
@@ -77,7 +77,7 @@ class _IAPInitializerState extends State<IAPInitializer> {
             try {
               http.put(Uri.parse(url), headers: header, body: jsonEncode(body));
             } catch (_) {
-              throw _;
+              rethrow;
             }
             InAppPurchase.instance.completePurchase(details);
           }
@@ -87,5 +87,5 @@ class _IAPInitializerState extends State<IAPInitializer> {
   }
 
   @override
-  Widget build(BuildContext context) => this.widget.builder(context);
+  Widget build(BuildContext context) => widget.builder(context);
 }

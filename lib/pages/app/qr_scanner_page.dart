@@ -1,18 +1,19 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../components/helpers/future_output_dialog.dart';
 
 class QRScannerPage extends StatefulWidget {
-  const QRScannerPage();
+  const QRScannerPage({super.key});
   @override
   State<QRScannerPage> createState() => _QRScannerPageState();
 }
 
 class _QRScannerPageState extends State<QRScannerPage> {
   bool _torchEnabled = false;
-  String? code = null;
-  MobileScannerController _controller = MobileScannerController(
+  String? code;
+  final MobileScannerController _controller = MobileScannerController(
     torchEnabled: false,
     facing: CameraFacing.back,
     detectionSpeed: DetectionSpeed.noDuplicates,
@@ -42,19 +43,14 @@ class _QRScannerPageState extends State<QRScannerPage> {
                     if (code != null) {
                       return;
                     }
-                    if (barcodeCapture.barcodes.isEmpty ||
-                        barcodeCapture.barcodes
-                            .every((element) => element.rawValue == null)) {
+                    if (barcodeCapture.barcodes.isEmpty || barcodeCapture.barcodes.every((element) => element.rawValue == null)) {
                       debugPrint('Failed to scan Barcode');
                     } else {
                       code = barcodeCapture.barcodes
-                          .firstWhere(
-                              (element) =>
-                                  element.rawValue!.startsWith('dodo://') ||
-                                  element.rawValue!
-                                      .startsWith('https://dodoapp.net/join/'),
-                              orElse: null)
-                          .rawValue
+                          .firstWhereOrNull(
+                            (element) => element.rawValue!.startsWith('dodo://') || element.rawValue!.startsWith('https://dodoapp.net/join/'),
+                          )
+                          ?.rawValue
                           ?.replaceAll('http://', '')
                           .replaceAll('htttp://', '')
                           .replaceAll('https://dodoapp.net/join/', '')

@@ -24,10 +24,10 @@ class MemberAllInfo extends StatefulWidget {
   final Member member;
   final bool isCurrentUserAdmin;
 
-  MemberAllInfo({required this.member, required this.isCurrentUserAdmin});
+  const MemberAllInfo({super.key, required this.member, required this.isCurrentUserAdmin});
 
   @override
-  _MemberAllInfoState createState() => _MemberAllInfoState();
+  State<MemberAllInfo> createState() => _MemberAllInfoState();
 }
 
 class _MemberAllInfoState extends State<MemberAllInfo> {
@@ -36,13 +36,13 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
       Map<String, dynamic> body = {"member_id": memberId, "admin": isAdmin};
 
       await Http.put(
-        uri: '/groups/' + context.read<UserState>().currentGroup!.id.toString() + '/admins',
+        uri: '/groups/${context.read<UserState>().currentGroup!.id}/admins',
         body: body,
       );
 
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -152,7 +152,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                 memberId: widget.member.id,
                               ),
                             ).then((value) {
-                              if (value ?? false) {
+                              if ((value ?? false)) {
                                 Navigator.of(context).pop();
                               }
                             });
@@ -177,12 +177,12 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                 choice: 'really_kick',
                               ),
                             ).then((value) {
-                              if (value ?? false) {
+                              if ((value ?? false)) {
                                 showFutureOutputDialog(
                                   context: context,
                                   future: _removeMember(widget.member.id),
                                   outputCallbacks: {
-                                    LeftOrRemovedFromGroupFutureOutput.RemovedFromGroup: () {
+                                    LeftOrRemovedFromGroupFutureOutput.removedFromGroup: () {
                                       EventBus.instance.fire(EventBus.refreshBalances);
                                       EventBus.instance.fire(EventBus.refreshPurchases);
                                       EventBus.instance.fire(EventBus.refreshPayments);
@@ -245,12 +245,12 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                 ),
                               ).then(
                                 (value) {
-                                  if (value ?? false) {
+                                  if ((value ?? false)) {
                                     showFutureOutputDialog(
                                       context: context,
                                       future: _removeMember(null),
                                       outputCallbacks: {
-                                        LeftOrRemovedFromGroupFutureOutput.LeftHasOtherGroup: () async {
+                                        LeftOrRemovedFromGroupFutureOutput.leftHasOtherGroup: () async {
                                           await Navigator.of(context).pushAndRemoveUntil(
                                             MaterialPageRoute(builder: (context) => MainPage()),
                                             (r) => false,
@@ -263,7 +263,7 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                                           EventBus.instance.fire(EventBus.refreshShopping);
                                           EventBus.instance.fire(EventBus.refreshGroupInfo);
                                         },
-                                        LeftOrRemovedFromGroupFutureOutput.LeftNoOtherGroup: () async {
+                                        LeftOrRemovedFromGroupFutureOutput.leftNoOtherGroup: () async {
                                           Navigator.of(context).pushAndRemoveUntil(
                                             MaterialPageRoute(
                                               builder: (context) => JoinGroupPage(
@@ -304,29 +304,31 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
     };
 
     Response response = await Http.post(
-      uri: '/groups/' + context.read<UserState>().currentGroup!.id.toString() + '/members/delete',
+      uri: '/groups/${context.read<UserState>().currentGroup!.id}/members/delete',
       body: body,
     );
     // The member removed another member
     if (memberId != null) {
-      return LeftOrRemovedFromGroupFutureOutput.RemovedFromGroup;
+      return LeftOrRemovedFromGroupFutureOutput.removedFromGroup;
     }
     if (response.body != "") {
       // The API returns the group if the user has other groups
       Map<String, dynamic> decoded = jsonDecode(response.body);
-      UserState provider = context.read<UserState>();
-      provider.setGroups(provider.user!.groups.where((group) => group.id != provider.user!.group!.id).toList());
-      provider.setGroup(Group.fromJson(decoded['data']));
-      return LeftOrRemovedFromGroupFutureOutput.LeftHasOtherGroup;
+      if (mounted) {
+        UserState provider = context.read<UserState>();
+        provider.setGroups(provider.user!.groups.where((group) => group.id != provider.user!.group!.id).toList());
+        provider.setGroup(Group.fromJson(decoded['data']));
+        return LeftOrRemovedFromGroupFutureOutput.leftHasOtherGroup;
+      }
     }
-    return LeftOrRemovedFromGroupFutureOutput.LeftNoOtherGroup;
+    return LeftOrRemovedFromGroupFutureOutput.leftNoOtherGroup;
   }
 }
 
 class LeftOrRemovedFromGroupFutureOutput extends FutureOutput {
   const LeftOrRemovedFromGroupFutureOutput(super.value, super.name);
 
-  static const LeftHasOtherGroup = LeftOrRemovedFromGroupFutureOutput(true, 'hasOutherGroup');
-  static const LeftNoOtherGroup = LeftOrRemovedFromGroupFutureOutput(true, 'noOutherGroup');
-  static const RemovedFromGroup = LeftOrRemovedFromGroupFutureOutput(true, 'removedFromGroup');
+  static const leftHasOtherGroup = LeftOrRemovedFromGroupFutureOutput(true, 'hasOutherGroup');
+  static const leftNoOtherGroup = LeftOrRemovedFromGroupFutureOutput(true, 'noOutherGroup');
+  static const removedFromGroup = LeftOrRemovedFromGroupFutureOutput(true, 'removedFromGroup');
 }

@@ -40,7 +40,7 @@ class _GroupInfoState extends State<GroupInfo> {
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data']['is_admin'] == 1;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -57,35 +57,37 @@ class _GroupInfoState extends State<GroupInfo> {
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data'];
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
   Future<BoolFutureOutput> _postBoost() async {
     try {
       await Http.post(
-        uri: '/groups/' + context.read<UserState>().user!.group!.id.toString() + '/boost',
+        uri: '/groups/${context.read<UserState>().user!.group!.id}/boost',
       );
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
   Future<LeftOrRemovedFromGroupFutureOutput> _deleteGroup() async {
     try {
       await Http.delete(
-        uri: '/groups/' + context.read<UserState>().user!.group!.id.toString(),
+        uri: '/groups/${context.read<UserState>().user!.group!.id}',
       );
-      UserState provider = context.read<UserState>();
-      if (provider.user!.groups.length > 1) {
-        provider.setGroups(provider.user!.groups.where((group) => group.id != provider.user!.group!.id).toList());
-        provider.setGroup(provider.user!.groups.first);
-        return LeftOrRemovedFromGroupFutureOutput.LeftHasOtherGroup;
+      if (mounted) {
+        UserState provider = context.read<UserState>();
+        if (provider.user!.groups.length > 1) {
+          provider.setGroups(provider.user!.groups.where((group) => group.id != provider.user!.group!.id).toList());
+          provider.setGroup(provider.user!.groups.first);
+          return LeftOrRemovedFromGroupFutureOutput.leftHasOtherGroup;
+        }
       }
-      return LeftOrRemovedFromGroupFutureOutput.LeftNoOtherGroup;
+      return LeftOrRemovedFromGroupFutureOutput.leftNoOtherGroup;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -174,7 +176,7 @@ class _GroupInfoState extends State<GroupInfo> {
                                 text: TextSpan(
                                   style: Theme.of(context).textTheme.labelLarge,
                                   children: [
-                                    TextSpan(text: 'group-info.name'.tr() + ': '),
+                                    TextSpan(text: '${'group-info.name'.tr()}: '),
                                     TextSpan(
                                       text: group.name,
                                       style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.bold),
@@ -203,9 +205,9 @@ class _GroupInfoState extends State<GroupInfo> {
                                 text: TextSpan(
                                   style: Theme.of(context).textTheme.labelLarge,
                                   children: [
-                                    TextSpan(text: 'group-info.currency'.tr() + ': '),
+                                    TextSpan(text: '${'group-info.currency'.tr()}: '),
                                     TextSpan(
-                                      text: group.currency.code + "(${group.currency.symbol})",
+                                      text: "${group.currency.code}(${group.currency.symbol})",
                                       style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.bold),
                                     ),
                                   ],
@@ -225,7 +227,7 @@ class _GroupInfoState extends State<GroupInfo> {
                                     text: TextSpan(
                                       style: Theme.of(context).textTheme.labelLarge,
                                       children: [
-                                        TextSpan(text: 'group-info.boosted'.tr() + ': '),
+                                        TextSpan(text: '${'group-info.boosted'.tr()}: '),
                                         TextSpan(
                                           text: isBoosted ? 'yes'.tr() : 'no'.tr(),
                                           style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.bold),
@@ -256,7 +258,7 @@ class _GroupInfoState extends State<GroupInfo> {
                                                         ),
                                                     context: context)
                                                 .then((value) {
-                                              if (value ?? false) {
+                                              if ((value ?? false)) {
                                                 showFutureOutputDialog(future: _postBoost(), context: context, outputCallbacks: {
                                                   BoolFutureOutput.True: () async {
                                                     await clearGroupCache(context);
@@ -292,7 +294,7 @@ class _GroupInfoState extends State<GroupInfo> {
                                             style: Theme.of(context).textTheme.bodySmall,
                                             children: [
                                               TextSpan(
-                                                text: 'group-info.boosted.no-boosts'.tr() + ' ',
+                                                text: '${'group-info.boosted.no-boosts'.tr()} ',
                                               ),
                                               TextSpan(
                                                 text: 'group-info.boosted.no-boosts.store'.tr(),
@@ -322,12 +324,12 @@ class _GroupInfoState extends State<GroupInfo> {
                                 ),
                               );
 
-                              if (value ?? false) {
+                              if ((value ?? false)) {
                                 showFutureOutputDialog(
                                   future: _deleteGroup(),
                                   context: context,
                                   outputCallbacks: {
-                                    LeftOrRemovedFromGroupFutureOutput.LeftHasOtherGroup: () async {
+                                    LeftOrRemovedFromGroupFutureOutput.leftHasOtherGroup: () async {
                                       Navigator.pop(context);
                                       final bus = EventBus.instance;
                                       bus.fire(EventBus.refreshBalances);
@@ -337,7 +339,7 @@ class _GroupInfoState extends State<GroupInfo> {
                                       bus.fire(EventBus.refreshShopping);
                                       bus.fire(EventBus.refreshGroupInfo);
                                     },
-                                    LeftOrRemovedFromGroupFutureOutput.LeftNoOtherGroup: () async {
+                                    LeftOrRemovedFromGroupFutureOutput.leftNoOtherGroup: () async {
                                       Navigator.of(context).pushAndRemoveUntil(
                                         MaterialPageRoute(
                                           builder: (context) => JoinGroupPage(

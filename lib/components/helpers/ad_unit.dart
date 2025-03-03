@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 class AdUnit extends StatefulWidget {
   final String site;
-  AdUnit({required this.site});
+  const AdUnit({super.key, required this.site});
 
   @override
   State<AdUnit> createState() => _AdUnitState();
@@ -39,7 +39,7 @@ class _AdUnitState extends State<AdUnit> {
     if (adsEnabled) {
       return Visibility(
         visible: showAds,
-        child: Container(
+        child: SizedBox(
           width: ad.size.width.toDouble(),
           height: ad.size.height.toDouble(),
           child: AdWidget(ad: ad),

@@ -21,7 +21,7 @@ class ExchangeRateInitializer extends StatelessWidget {
         "Content-Type": "application/json",
       };
       http.Response response =
-          await http.get(Uri.parse(context.read<AppConfig>().appUrl + '/currencies'), headers: header);
+          await http.get(Uri.parse('${context.read<AppConfig>().appUrl}/currencies'), headers: header);
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<String> notFound = [];
       for (String currency in (decoded["rates"] as LinkedHashMap<String, dynamic>).keys) {
@@ -47,5 +47,5 @@ class ExchangeRateInitializer extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => this.builder(context);
+  Widget build(BuildContext context) => builder(context);
 }

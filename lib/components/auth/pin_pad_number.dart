@@ -14,6 +14,7 @@ class PinPadNumber extends StatefulWidget {
   final Color backgroundColor;
   final Color textColor;
   const PinPadNumber({
+    super.key,
     this.number,
     required this.isPinInput,
     this.pin,
@@ -29,8 +30,7 @@ class PinPadNumber extends StatefulWidget {
   State<PinPadNumber> createState() => _PinPadNumberState();
 }
 
-class _PinPadNumberState extends State<PinPadNumber>
-    with SingleTickerProviderStateMixin {
+class _PinPadNumberState extends State<PinPadNumber> with SingleTickerProviderStateMixin {
   bool isTapped = false;
   late AnimationController _controller;
   late Animation<Color?> _animation;
@@ -44,8 +44,7 @@ class _PinPadNumberState extends State<PinPadNumber>
     );
     _animation = ColorTween(
       end: widget.backgroundColor,
-    ).animate(
-        new CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic))
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOutCubic))
       ..addListener(() {
         setState(() {});
       });
@@ -64,8 +63,7 @@ class _PinPadNumberState extends State<PinPadNumber>
       child: Ink(
         decoration: BoxDecoration(
           color: _animation.value,
-          borderRadius:
-              BorderRadius.circular(20 + (1 - _controller.value) * 50),
+          borderRadius: BorderRadius.circular(20 + (1 - _controller.value) * 50),
         ),
         child: AspectRatio(
           aspectRatio: 1,
@@ -83,14 +81,8 @@ class _PinPadNumberState extends State<PinPadNumber>
               _controller.reverse(from: 1);
             },
             // hoverColor: Colors.transparent,
-            overlayColor: MaterialStateProperty.all(Colors.transparent),
-            onTap: widget.number == '' ||
-                    (widget.isPinInput &&
-                        widget.number == 'C' &&
-                        widget.pin == '') ||
-                    (!widget.isPinInput &&
-                        widget.number == 'C' &&
-                        widget.pinConfirm == '')
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
+            onTap: widget.number == '' || (widget.isPinInput && widget.number == 'C' && widget.pin == '') || (!widget.isPinInput && widget.number == 'C' && widget.pinConfirm == '')
                 ? null
                 : () {
                     if (!kIsWeb && Platform.isAndroid) {
@@ -109,12 +101,10 @@ class _PinPadNumberState extends State<PinPadNumber>
                           }
                         } else {
                           if (widget.pinConfirm?.length == 3) {
-                            widget.onPinConfirmChanged!(
-                                widget.pinConfirm! + widget.number!);
+                            widget.onPinConfirmChanged!(widget.pinConfirm! + widget.number!);
                             widget.onValidationTextChanged?.call(null);
                           } else if ((widget.pinConfirm?.length ?? 4) < 4) {
-                            widget.onPinConfirmChanged!(
-                                widget.pinConfirm! + widget.number!);
+                            widget.onPinConfirmChanged!(widget.pinConfirm! + widget.number!);
                           }
                         }
                       });
@@ -131,8 +121,7 @@ class _PinPadNumberState extends State<PinPadNumber>
             child: Center(
               child: Builder(builder: (context) {
                 if (widget.number == 'C') {
-                  if ((widget.isPinInput && widget.pin != '') ||
-                      (!widget.isPinInput && widget.pinConfirm != '')) {
+                  if ((widget.isPinInput && widget.pin != '') || (!widget.isPinInput && widget.pinConfirm != '')) {
                     return Icon(
                       Icons.arrow_back,
                       color: Theme.of(context).colorScheme.tertiary,
@@ -145,10 +134,7 @@ class _PinPadNumberState extends State<PinPadNumber>
                 }
                 return Text(
                   widget.number!,
-                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      color: _controller.value > 0.5
-                          ? widget.textColor
-                          : Theme.of(context).colorScheme.primary),
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(color: _controller.value > 0.5 ? widget.textColor : Theme.of(context).colorScheme.primary),
                 );
               }),
             ),

@@ -15,7 +15,7 @@ class StackWidgetState {
 
   Widget? widget;
   Function(Widget? widget) setWidget;
-  StreamController<bool> _controller = StreamController.broadcast();
+  final StreamController<bool> _controller = StreamController.broadcast();
   late Stream<bool> hide;
 
   void hideWidget() {

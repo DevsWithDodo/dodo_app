@@ -18,10 +18,10 @@ class PurchaseAllInfo extends StatefulWidget {
   final int? selectedMemberId;
   final Function(String reaction) onSendReaction;
 
-  PurchaseAllInfo(this.purchase, this.selectedMemberId, this.onSendReaction);
+  const PurchaseAllInfo(this.purchase, this.selectedMemberId, this.onSendReaction, {super.key});
 
   @override
-  _PurchaseAllInfoState createState() => _PurchaseAllInfoState();
+  State<PurchaseAllInfo> createState() => _PurchaseAllInfoState();
 }
 
 class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
@@ -35,10 +35,10 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
 
   Future<BoolFutureOutput> _deleteElement(int id) async {
     try {
-      await Http.delete(uri: '/purchases/' + id.toString());
+      await Http.delete(uri: '/purchases/$id');
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -186,12 +186,12 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
             SizedBox(height: 15),
             Builder(builder: (context) {
               Map<double, List<Member>> groupedReceivers = {};
-              widget.purchase.receivers.forEach((receiver) {
+              for (var receiver in widget.purchase.receivers) {
                 if (!groupedReceivers.containsKey(receiver.balanceOriginalCurrency)) {
                   groupedReceivers[receiver.balanceOriginalCurrency] = [];
                 }
                 groupedReceivers[receiver.balanceOriginalCurrency]!.add(receiver);
-              });
+              }
               return TransactionReceivers(
                 type: TransactionType.purchase,
                 groupedReceivers: groupedReceivers,
@@ -211,7 +211,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                       context,
                       MaterialPageRoute(builder: (context) => PurchasePage(purchase: widget.purchase)),
                     );
-                    if (edited ?? false) {
+                    if ((edited ?? false)) {
                       Navigator.pop(context);
                     }
                   },
@@ -226,7 +226,7 @@ class _PurchaseAllInfoState extends State<PurchaseAllInfo> {
                       ),
                       context: context,
                     ).then((value) {
-                      if (value != null && value) {
+                      if ((value ?? false)) {
                         showFutureOutputDialog(context: context, future: _deleteElement(widget.purchase.id), outputCallbacks: {
                           BoolFutureOutput.True: () {
                             Navigator.pop(context);

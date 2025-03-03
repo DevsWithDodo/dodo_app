@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppThemeProvider extends StatelessWidget {
-  AppThemeProvider({required BuildContext context, required this.builder}) {
+  AppThemeProvider({super.key, required BuildContext context, required this.builder}) {
     SharedPreferences preferences = context.read<SharedPreferences>();
     String themeName = '';
 
@@ -37,7 +37,7 @@ class AppThemeProvider extends StatelessWidget {
           if (lightDynamic != null && !AppTheme.themes.containsKey(ThemeName.lightDynamic)) {
             AppTheme.addDynamicThemes(lightDynamic, darkDynamic!);
           }
-          return this.builder(context);
+          return builder(context);
         },
       ),
     );

@@ -121,17 +121,17 @@ class User {
   User mergeWith(User otherUser) {
     return User(
       apiToken: otherUser.apiToken,
-      username: otherUser.username ?? this.username,
+      username: otherUser.username ?? username,
       id: otherUser.id,
       currency: otherUser.currency,
-      group: otherUser.group ?? this.group,
-      groups: otherUser.groups.isNotEmpty ? otherUser.groups : this.groups,
+      group: otherUser.group ?? group,
+      groups: otherUser.groups.isNotEmpty ? otherUser.groups : groups,
       ratedApp: otherUser.ratedApp,
       showAds: otherUser.showAds,
       useGradients: otherUser.useGradients,
       personalisedAds: otherUser.personalisedAds,
       trialVersion: otherUser.trialVersion,
-      paymentMethods: otherUser.paymentMethods.isNotEmpty ? otherUser.paymentMethods : this.paymentMethods,
+      paymentMethods: otherUser.paymentMethods.isNotEmpty ? otherUser.paymentMethods : paymentMethods,
       userStatus: otherUser.userStatus,
       googleConnected: otherUser.googleConnected,
       appleConnected: otherUser.appleConnected,
@@ -234,9 +234,9 @@ class PaymentMethod {
 
   PaymentMethod clone() {
     return PaymentMethod(
-      name: this.name,
-      value: this.value,
-      priority: this.priority,
+      name: name,
+      value: value,
+      priority: priority,
     );
   }
 
@@ -427,7 +427,7 @@ class Payment {
     required this.updatedAt,
     this.reactions,
   }) {
-    this.amountOriginalCurrency = amountOriginalCurrency ?? this.amount;
+    this.amountOriginalCurrency = amountOriginalCurrency ?? amount;
     this.note = note ?? '';
   }
 
@@ -506,6 +506,9 @@ class Category {
 
   @override
   bool operator ==(Object other) => identical(this, other) || other is Category && runtimeType == other.runtimeType && type == other.type && icon == other.icon && text == other.text;
+
+  @override
+  int get hashCode => type.hashCode ^ icon.hashCode ^ text.hashCode;
 }
 
 class ShoppingRequest {
@@ -538,17 +541,17 @@ class ShoppingRequest {
 
   ShoppingRequest clone() {
     return ShoppingRequest(
-      id: this.id,
-      name: this.name,
-      requesterId: this.requesterId,
-      requesterNickname: this.requesterNickname,
-      updatedAt: this.updatedAt,
+      id: id,
+      name: name,
+      requesterId: requesterId,
+      requesterNickname: requesterNickname,
+      updatedAt: updatedAt,
     );
   }
 
   @override
   String toString() {
-    return name + '; ' + updatedAt.toString() + '; ' + reactions!.join(', ');
+    return '$name; $updatedAt; ${reactions!.join(', ')}';
   }
 }
 
@@ -565,7 +568,7 @@ class ReceiptInformation {
     required this.items,
   });
 
-  double get totalCost => this.items.fold(0, (prev, current) => prev + current.cost);
+  double get totalCost => items.fold(0, (prev, current) => prev + current.cost);
 
   factory ReceiptInformation.fromJson(Map<String, dynamic> json, File imageFile) {
     json['items'] = (json['items'] as List<dynamic>).map((item) => item as Map<String, dynamic>).toList();

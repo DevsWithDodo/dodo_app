@@ -11,9 +11,9 @@ extension Money on double {
     } else {
       return currency.symbolBeforeAmount
           ? this < 0
-              ? "-" + currency.symbol + "" + this.abs().toMoneyString(currency)
-              : currency.symbol + "" + this.toMoneyString(currency)
-          : this.toMoneyString(currency) + " " + currency.symbol;
+              ? "-${currency.symbol}${abs().toMoneyString(currency)}"
+              : "${currency.symbol}${toMoneyString(currency)}"
+          : "${toMoneyString(currency)} ${currency.symbol}";
     }
   }
 
@@ -74,22 +74,25 @@ class Currency {
   }
 
   void setRate(dynamic rate) {
-    _currencies[this.code]!['rate'] = rate;
+    _currencies[code]!['rate'] = rate;
   }
 
-  double get smallestUnit => this.hasSubunit ? 0.01 : 1;
+  double get smallestUnit => hasSubunit ? 0.01 : 1;
 
   double threshold() => smallestUnit / 2;
 
   @override
   String toString() {
-    return this.code;
+    return code;
   }
 
   @override
   bool operator ==(Object other) {
-    return other is Currency && other.code == this.code;
+    return other is Currency && other.code == code;
   }
+
+  @override
+  int get hashCode => code.hashCode;
 }
 
 Map<String, Map<String, dynamic>> _currencies = SplayTreeMap.from(_unorderedCurrencies, (a, b) => a.compareTo(b));

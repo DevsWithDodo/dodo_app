@@ -7,15 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ChangePasswordDialog extends StatefulWidget {
+  const ChangePasswordDialog({super.key});
+
   @override
-  _ChangePasswordDialogState createState() => _ChangePasswordDialogState();
+  State<ChangePasswordDialog> createState() => _ChangePasswordDialogState();
 }
 
 class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
-  TextEditingController _oldPinController = TextEditingController();
-  TextEditingController _newPinController = TextEditingController();
-  TextEditingController _confirmPasswordController = TextEditingController();
-  var _formKey = GlobalKey<FormState>();
+  final TextEditingController _oldPinController = TextEditingController();
+  final TextEditingController _newPinController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   int _index = 0;
   List<TextFormField> textFields = <TextFormField>[];
 
@@ -31,7 +33,7 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       await Http.put(uri: '/user', body: body);
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 

@@ -71,14 +71,14 @@ class NotificationInitializer extends StatelessWidget {
   }
 
   void _createNotificationChannels(String groupId, List<String> channels, FlutterLocalNotificationsPlugin plugin) async {
-    AndroidNotificationChannelGroup androidNotificationChannelGroup = AndroidNotificationChannelGroup(groupId, (groupId + '_notification').tr());
+    AndroidNotificationChannelGroup androidNotificationChannelGroup = AndroidNotificationChannelGroup(groupId, ('${groupId}_notification').tr());
     plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.createNotificationChannelGroup(androidNotificationChannelGroup);
 
     for (String channel in channels) {
       plugin.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.createNotificationChannel(AndroidNotificationChannel(
             channel,
-            (channel + '_notification').tr(),
-            description: (channel + '_notification_explanation').tr(),
+            ('${channel}_notification').tr(),
+            description: ('${channel}_notification_explanation').tr(),
             groupId: groupId,
           ));
     }
@@ -113,7 +113,10 @@ class NotificationInitializer extends StatelessWidget {
       FirebaseMessaging.instance.getInitialMessage().then((message) {
         if (message != null) {
           onSelectNotification(
-            NotificationResponse(notificationResponseType: NotificationResponseType.selectedNotification, payload: message.data['payload']),
+            NotificationResponse(
+              notificationResponseType: NotificationResponseType.selectedNotification,
+              payload: message.data['payload'],
+            ),
             context,
           );
         }
@@ -145,6 +148,7 @@ class NotificationInitializer extends StatelessWidget {
             notificationResponseType: NotificationResponseType.selectedNotification,
             payload: message.data['payload'],
           ),
+          // ignore: use_build_context_synchronously
           context,
         ),
       );
@@ -152,5 +156,5 @@ class NotificationInitializer extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => this.builder(context);
+  Widget build(BuildContext context) => builder(context);
 }

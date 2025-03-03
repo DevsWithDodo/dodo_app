@@ -12,8 +12,10 @@ import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginOptions extends StatefulWidget {
+  const LoginOptions({super.key});
+
   @override
-  _LoginOptionsState createState() => _LoginOptionsState();
+  State<LoginOptions> createState() => _LoginOptionsState();
 }
 
 class _LoginOptionsState extends State<LoginOptions> {
@@ -144,13 +146,13 @@ class _LoginOptionsState extends State<LoginOptions> {
                       TextButton(
                         onPressed: () async {
                           final credential = await SignInWithApple.getAppleIDCredential(
-                        scopes: [],
-                        webAuthenticationOptions: WebAuthenticationOptions(
-                          clientId: 'net.dodoapp.dodo',
-                          redirectUri: Uri.parse(context.read<AppConfig>().appUrl + '/callbacks/sign-in-with-apple'),
-                        ),
-                      );
-                      _registerWithToken(IdTokenType.apple, credential.authorizationCode);
+                            scopes: [],
+                            webAuthenticationOptions: WebAuthenticationOptions(
+                              clientId: 'net.dodoapp.dodo',
+                              redirectUri: Uri.parse('${context.read<AppConfig>().appUrl}/callbacks/sign-in-with-apple'),
+                            ),
+                          );
+                          _registerWithToken(IdTokenType.apple, credential.authorizationCode);
                         },
                         child: Text('user-settings.login-options.social.link'.tr()),
                       ),
@@ -163,7 +165,7 @@ class _LoginOptionsState extends State<LoginOptions> {
       ),
     );
   }
-  
+
   void _registerWithToken(IdTokenType idTokenType, String code) {
     showFutureOutputDialog(
       context: context,

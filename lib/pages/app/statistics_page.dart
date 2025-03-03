@@ -17,15 +17,16 @@ import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/main.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 class StatisticsPage extends StatefulWidget {
   final DateTime? groupCreation;
-  StatisticsPage({this.groupCreation});
+  const StatisticsPage({super.key, this.groupCreation});
   @override
-  _StatisticsPageState createState() => _StatisticsPageState();
+  State<StatisticsPage> createState() => _StatisticsPageState();
 }
 
 class _StatisticsPageState extends State<StatisticsPage> {
@@ -83,7 +84,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         return GroupStatisticsData.fromJson(decoded['data']) as T;
       }
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -120,8 +121,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
       };
 
   BarChartData _generateChartData(StatisticsData data) {
-    print('generate chart data');
-    print(data.groupedEntries.length);
+    if (kDebugMode) {
+      debugPrint('generate chart data');
+      debugPrint(data.groupedEntries.length.toString());
+    }
     int minX = data.startDate.millisecondsSinceEpoch;
     int maxX = data.endDate.millisecondsSinceEpoch;
     double minY = data.minY;
@@ -181,13 +184,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
         leftTitles: AxisTitles(
           axisNameSize: 22,
           axisNameWidget: Text(
-            'amount'.tr() + ' (${context.watch<UserState>().currentGroup!.currency.symbol})',
+            '${'amount'.tr()} (${context.watch<UserState>().currentGroup!.currency.symbol})',
           ),
           sideTitles: SideTitles(
             reservedSize: 50,
             interval: sideInterval,
             showTitles: true,
             getTitlesWidget: (value, meta) => SideTitleWidget(
+              axisSide: AxisSide.left,
               child: value == maxY || value == minY
                   ? Container()
                   : Text(
@@ -196,7 +200,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
                           ),
                       style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
-              axisSide: AxisSide.left,
             ),
           ),
         ),
@@ -208,11 +211,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
               final date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
               final entry = data.groupedEntries.firstWhere((element) => element.dateRange.start == date);
               return SideTitleWidget(
+                axisSide: AxisSide.bottom,
                 child: Text(
                   data.groupingInterval.formattedDate(entry.start, entry.end),
                   style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
-                axisSide: AxisSide.bottom,
               );
             },
           ),
@@ -274,7 +277,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       children: [
                         Expanded(
                           child: Text(
-                            DateFormat.yMd(context.locale.languageCode).format(_startDate!) + ' - ' + DateFormat.yMd(context.locale.languageCode).format(_endDate),
+                            '${DateFormat.yMd(context.locale.languageCode).format(_startDate!)} - ${DateFormat.yMd(context.locale.languageCode).format(_endDate)}',
                             style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         ),
@@ -404,11 +407,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
           height: 10,
         ),
         FutureBuilder(
-          future: type == StatisticsType.payments
+          future: (type == StatisticsType.payments
               ? _paymentStats
               : type == StatisticsType.purchases
                   ? _purchaseStats
-                  : _groupStats,
+                  : _groupStats) as Future<StatisticsData>,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
               return CircularProgressIndicator();
@@ -449,7 +452,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: physics,
-                  child: Container(
+                  child: SizedBox(
                     height: 250,
                     width: max(calculatedWidth, availableWidth),
                     child: BarChart(
@@ -559,7 +562,7 @@ enum GroupingInterval {
       case daily:
         return DateFormat.d(context.locale.languageCode).format(start);
       case weekly:
-        return DateFormat.d(context.locale.languageCode).format(start) + '-' + DateFormat.d(context.locale.languageCode).format(end);
+        return '${DateFormat.d(context.locale.languageCode).format(start)}-${DateFormat.d(context.locale.languageCode).format(end)}';
       case monthly:
         return DateFormat.MMM(context.locale.languageCode).format(start);
       case yearly:
@@ -623,7 +626,9 @@ class GroupedGroupStatisticsDataEntry extends GroupedStatisticsDataEntry {
     this.payments,
   );
 
+  @override
   DateTime get start => dateRange.start;
+  @override
   DateTime get end => dateRange.end;
 
   GroupedGroupStatisticsDataEntry add(
@@ -644,58 +649,56 @@ class GroupStatisticsDataEntry extends StatisticsDataEntry {
   const GroupStatisticsDataEntry(super.date, this.purchases, this.payments);
 }
 
-abstract class StatisticsData {
+abstract class StatisticsData<T extends StatisticsDataEntry, U extends GroupedStatisticsDataEntry> {
   GroupingInterval groupingInterval;
   final DateTime startDate;
   final DateTime endDate;
-  final List<StatisticsDataEntry> _entries;
+  final List<T> entries;
   final StatisticsType type;
   StatisticsData({
     required this.groupingInterval,
     required this.startDate,
     required this.endDate,
-    required List<StatisticsDataEntry> entries,
+    required this.entries,
     required this.type,
-  }) : _entries = entries;
+  });
 
-  List<GroupedStatisticsDataEntry> get groupedEntries;
+  List<U> get groupedEntries;
   double get maxY;
   double get minY;
   bool get isEmpty;
 }
 
-abstract class PurchasePaymentStatisticsData extends StatisticsData {
-  @override
-  final List<PurchasePaymentStatisticsDataEntry> _entries;
-
+abstract class PurchasePaymentStatisticsData extends StatisticsData<PurchasePaymentStatisticsDataEntry, GroupedPurchasePaymentStatisticsDataEntry> {
   PurchasePaymentStatisticsData({
     required super.groupingInterval,
     required super.startDate,
     required super.endDate,
-    required List<PurchasePaymentStatisticsDataEntry> super.entries,
+    required super.entries,
     required super.type,
-  }) : _entries = entries;
+  });
 
   double get sumGiven {
-    return _entries.fold<double>(0, (previousValue, element) {
+    return entries.fold<double>(0, (previousValue, element) {
       return previousValue + element.given;
     });
   }
 
   double get sumReceived {
-    return _entries.fold<double>(0, (previousValue, element) {
+    return entries.fold<double>(0, (previousValue, element) {
       return previousValue + element.received;
     });
   }
 
-  List<GroupedPurchasePaymentStatisticsDataEntry> get groupedEntries => _entries.fold<List<GroupedPurchasePaymentStatisticsDataEntry>>([], (previousValue, element) {
+  @override
+  get groupedEntries => entries.fold<List<GroupedPurchasePaymentStatisticsDataEntry>>([], (previousValue, element) {
         if (previousValue.isEmpty || previousValue.last.end.isBefore(element.date)) {
           return [
             ...previousValue,
             GroupedPurchasePaymentStatisticsDataEntry(
               DateTimeRange(
-                start: common.maxDateTime(groupingInterval.periodStart(element.date), this.startDate),
-                end: common.minDateTime(groupingInterval.periodEnd(element.date), this.endDate),
+                start: common.maxDateTime(groupingInterval.periodStart(element.date), startDate),
+                end: common.minDateTime(groupingInterval.periodEnd(element.date), endDate),
               ),
               element.given,
               element.received,
@@ -705,9 +708,12 @@ abstract class PurchasePaymentStatisticsData extends StatisticsData {
         return [...previousValue.sublist(0, previousValue.length - 1), previousValue.last.add(element.given, element.received)];
       }).toList();
 
+  @override
   double get maxY => groupedEntries.fold<double>(0, (value, element) => max(value, element.given));
 
+  @override
   double get minY => -groupedEntries.fold<double>(0, (value, element) => max(value, element.received));
+  @override
   bool get isEmpty => sumGiven == 0 && sumReceived == 0;
 }
 
@@ -775,41 +781,40 @@ class PurchaseStatisticsData extends PurchasePaymentStatisticsData {
   }
 }
 
-class GroupStatisticsData extends StatisticsData {
-  @override
-  final List<GroupStatisticsDataEntry> _entries;
-
+class GroupStatisticsData extends StatisticsData<GroupStatisticsDataEntry, GroupedGroupStatisticsDataEntry> {
   GroupStatisticsData._internal({
     required super.groupingInterval,
     required super.startDate,
     required super.endDate,
-    required List<GroupStatisticsDataEntry> super.entries,
+    required super.entries,
     required super.type,
-  }) : _entries = entries;
+  });
 
   double get sumPurchases {
-    return _entries.fold<double>(0, (previousValue, element) {
+    return entries.fold<double>(0, (previousValue, element) {
       return previousValue + element.purchases;
     });
   }
 
   double get sumPayments {
-    return _entries.fold<double>(0, (previousValue, element) {
+    return entries.fold<double>(0, (previousValue, element) {
       return previousValue + element.payments;
     });
   }
 
+  @override
   bool get isEmpty => sumPurchases == 0 && sumPayments == 0;
 
-  List<GroupedGroupStatisticsDataEntry> get groupedEntries {
-    return _entries.fold<List<GroupedGroupStatisticsDataEntry>>([], (previousValue, element) {
+  @override
+  get groupedEntries {
+    return entries.fold<List<GroupedGroupStatisticsDataEntry>>([], (previousValue, element) {
       if (previousValue.isEmpty || previousValue.last.end.isBefore(element.date)) {
         return [
           ...previousValue,
           GroupedGroupStatisticsDataEntry(
             DateTimeRange(
-              start: common.maxDateTime(groupingInterval.periodStart(element.date), this.startDate),
-              end: common.minDateTime(groupingInterval.periodEnd(element.date), this.endDate),
+              start: common.maxDateTime(groupingInterval.periodStart(element.date), startDate),
+              end: common.minDateTime(groupingInterval.periodEnd(element.date), endDate),
             ),
             element.purchases,
             element.payments,
@@ -820,10 +825,12 @@ class GroupStatisticsData extends StatisticsData {
     }).toList();
   }
 
+  @override
   double get maxY => groupedEntries.fold<double>(0, (value, element) {
         return max(value, max(element.purchases, element.payments));
       });
 
+  @override
   double get minY => 0;
 
   factory GroupStatisticsData(List<GroupStatisticsDataEntry> entries) {

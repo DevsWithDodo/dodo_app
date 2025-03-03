@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 
 class ChangeUserCurrency extends StatelessWidget {
-  const ChangeUserCurrency();
+  const ChangeUserCurrency({super.key});
 
   @override
   Widget build(BuildContext context) {

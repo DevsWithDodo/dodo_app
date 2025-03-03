@@ -12,26 +12,26 @@ import '../../helpers/gradient_button.dart';
 
 class ChangeNicknameDialog extends StatefulWidget {
   final int memberId;
-  ChangeNicknameDialog({required this.memberId});
+  const ChangeNicknameDialog({super.key, required this.memberId});
 
   @override
-  _ChangeNicknameDialogState createState() => _ChangeNicknameDialogState();
+  State<ChangeNicknameDialog> createState() => _ChangeNicknameDialogState();
 }
 
 class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
-  TextEditingController _nicknameController = TextEditingController();
-  var _nicknameFormKey = GlobalKey<FormState>();
+  final TextEditingController _nicknameController = TextEditingController();
+  final _nicknameFormKey = GlobalKey<FormState>();
 
   Future<BoolFutureOutput> _updateNickname(String nickname, int? memberId) async {
     try {
       Map<String, dynamic> body = {"member_id": memberId, "nickname": nickname};
       await Http.put(
-        uri: '/groups/' + context.read<UserState>().currentGroup!.id.toString() + '/members',
+        uri: '/groups/${context.read<UserState>().currentGroup!.id}/members',
         body: body,
       );
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 

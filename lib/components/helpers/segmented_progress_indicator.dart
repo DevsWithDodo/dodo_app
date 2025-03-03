@@ -6,7 +6,7 @@ class SegmentedCircularProgressIndicator extends StatelessWidget {
   final int activeSegments;
   final Color inactiveColor;
 
-  SegmentedCircularProgressIndicator({
+  const SegmentedCircularProgressIndicator({super.key, 
     required this.color,
     required this.numSegments,
     required this.activeSegments,

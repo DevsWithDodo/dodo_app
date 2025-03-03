@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 class LikeTheAppMainDialog extends MainDialog {
 
-  const LikeTheAppMainDialog({
+  const LikeTheAppMainDialog({super.key, 
     required super.canShow,
     required super.showTime,
     required super.type,

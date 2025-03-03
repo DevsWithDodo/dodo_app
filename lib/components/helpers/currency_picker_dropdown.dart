@@ -10,7 +10,7 @@ class CurrencyPickerDropdown extends StatelessWidget {
   final Color? textColor;
   final Color? backgroundColor;
   final bool isDense;
-  CurrencyPickerDropdown({
+  const CurrencyPickerDropdown({super.key, 
     required this.currency,
     required this.currencyChanged,
     this.showSymbol = true,
@@ -52,10 +52,10 @@ class CurrencyPickerDropdown extends StatelessWidget {
         items: Currency.all()
             .map((currency) => DropdownMenuItem(
                   alignment: Alignment.center,
+                  value: currency.code,
                   child: Text(
                     currency.code + (showSymbol ? (" (${currency.symbol})") : ""),
                   ),
-                  value: currency.code,
                 ))
             .toList(),
       ),

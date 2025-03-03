@@ -11,7 +11,7 @@ class CurrencyPickerIconButton extends StatefulWidget {
   final Function(Currency?) onCurrencyChanged;
 
   const CurrencyPickerIconButton(
-      {required this.selectedCurrency, required this.onCurrencyChanged});
+      {super.key, required this.selectedCurrency, required this.onCurrencyChanged});
 
   @override
   State<CurrencyPickerIconButton> createState() =>

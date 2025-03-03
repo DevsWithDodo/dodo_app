@@ -9,6 +9,7 @@ class SelectBalanceCurrency extends StatelessWidget {
   final Currency selectedCurrency;
   final ValueChanged<Currency> onCurrencyChanged;
   const SelectBalanceCurrency({
+    super.key,
     required this.selectedCurrency,
     required this.onCurrencyChanged,
   });
@@ -23,12 +24,9 @@ class SelectBalanceCurrency extends StatelessWidget {
             currencyChanged: onCurrencyChanged,
             currency: selectedCurrency,
             showSymbol: false,
-            textColor:
-                selectedCurrency != currentGroup.currency ? Theme.of(context).colorScheme.onTertiaryContainer : null,
-            dropdownColor:
-                selectedCurrency != currentGroup.currency ? Theme.of(context).colorScheme.tertiaryContainer : null,
-            backgroundColor:
-                selectedCurrency != currentGroup.currency ? Theme.of(context).colorScheme.tertiaryContainer : null,
+            textColor: selectedCurrency != currentGroup.currency ? Theme.of(context).colorScheme.onTertiaryContainer : null,
+            dropdownColor: selectedCurrency != currentGroup.currency ? Theme.of(context).colorScheme.tertiaryContainer : null,
+            backgroundColor: selectedCurrency != currentGroup.currency ? Theme.of(context).colorScheme.tertiaryContainer : null,
           );
         });
   }

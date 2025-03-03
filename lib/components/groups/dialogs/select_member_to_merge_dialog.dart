@@ -18,9 +18,9 @@ import 'package:provider/provider.dart';
 
 class MergeGuestDialog extends StatefulWidget {
   final int guestId;
-  MergeGuestDialog({required this.guestId});
+  const MergeGuestDialog({super.key, required this.guestId});
   @override
-  _MergeGuestDialogState createState() => _MergeGuestDialogState();
+  State<MergeGuestDialog> createState() => _MergeGuestDialogState();
 }
 
 class _MergeGuestDialogState extends State<MergeGuestDialog> {
@@ -29,7 +29,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
 
   Future<BoolFutureOutput> _mergeGuest() async {
     Map<String, dynamic> body = {'member_id': _selectedMember!.id, 'guest_id': widget.guestId};
-    await Http.post(uri: '/groups/' + context.read<UserState>().currentGroup!.id.toString() + '/merge_guest', body: body);
+    await Http.post(uri: '/groups/${context.read<UserState>().currentGroup!.id}/merge_guest', body: body);
     return BoolFutureOutput.True;
   }
 
@@ -43,7 +43,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
       }
       return members;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -136,7 +136,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
                         context: context,
                       ).then(
                         (value) {
-                          if (value ?? false == true) {
+                          if ((value ?? false)) {
                             showFutureOutputDialog(
                               context: context,
                               future: _mergeGuest(),

@@ -1,7 +1,7 @@
-import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
+import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,19 +26,13 @@ class _PersonalisedAdsDialogState extends State<PersonalisedAdsDialog> {
           children: [
             Text(
               'personalised-ads.dialog.title'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
             Text(
               'personalised-ads.dialog.subtitle'.tr(),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 15),
@@ -47,10 +41,7 @@ class _PersonalisedAdsDialogState extends State<PersonalisedAdsDialog> {
               children: [
                 Text(
                   'personalised-ads.dialog.question'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleSmall!
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
                 Switch(
                   value: _personalisedAds,
@@ -85,11 +76,11 @@ class _PersonalisedAdsDialogState extends State<PersonalisedAdsDialog> {
       if (context.read<UserState>().user!.personalisedAds != _personalisedAds) {
         Map<String, dynamic> body = {"personalised_ads": _personalisedAds ? "on" : "off"};
         await Http.put(uri: '/user', body: body);
-        context.read<UserState>().setPersonalisedAds(_personalisedAds);
+        if (mounted) context.read<UserState>().setPersonalisedAds(_personalisedAds);
       }
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 }

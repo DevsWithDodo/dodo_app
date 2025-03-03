@@ -147,7 +147,7 @@ class TransactionReceivers extends StatelessWidget {
                 ];
               })
               .flattened
-              .toList(),
+              ,
         ],
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 enum ThemeType {
@@ -43,10 +44,8 @@ enum ThemeName {
   yellowGradientDark(Brightness.dark, ThemeType.gradient, 'yellowGradientDarkTheme'),
   orangeGradientLight(Brightness.light, ThemeType.gradient, 'orangeGradientLightTheme'),
   orangeGradientDark(Brightness.dark, ThemeType.gradient, 'orangeGradientDarkTheme'),
-  blackGradientLight(Brightness.light, ThemeType.gradient, 'blackGradientLightTheme',
-      counterPart: 'whiteGradientDarkTheme'),
-  whiteGradientDark(Brightness.dark, ThemeType.gradient, 'whiteGradientDarkTheme',
-      counterPart: 'blackGradientLightTheme'),
+  blackGradientLight(Brightness.light, ThemeType.gradient, 'blackGradientLightTheme', counterPart: 'whiteGradientDarkTheme'),
+  whiteGradientDark(Brightness.dark, ThemeType.gradient, 'whiteGradientDarkTheme', counterPart: 'blackGradientLightTheme'),
   rainbowGradientLight(Brightness.light, ThemeType.gradient, 'rainbowGradientLightTheme'),
   rainbowGradientDark(Brightness.dark, ThemeType.gradient, 'rainbowGradientDarkTheme'),
   lightDynamic(Brightness.light, ThemeType.dynamic, 'lightDynamic', counterPart: 'darkDynamic'),
@@ -81,12 +80,12 @@ enum ThemeName {
   }
 
   ThemeName getCounterPart() {
-    if (this._counterPart != null) {
-      return ThemeName.values.firstWhere((element) => element.storageName == this._counterPart);
+    if (_counterPart != null) {
+      return ThemeName.values.firstWhere((element) => element.storageName == _counterPart);
     } else {
-      String toReplace = this.brightness == Brightness.light ? 'Light' : 'Dark';
-      String replaceWith = this.brightness == Brightness.light ? 'Dark' : 'Light';
-      return ThemeName.fromString(this.storageName.replaceFirst(toReplace, replaceWith));
+      String toReplace = brightness == Brightness.light ? 'Light' : 'Dark';
+      String replaceWith = brightness == Brightness.light ? 'Dark' : 'Light';
+      return ThemeName.fromString(storageName.replaceFirst(toReplace, replaceWith));
     }
   }
 
@@ -281,29 +280,14 @@ class AppTheme {
               ])
             : LinearGradient(colors: [AppTheme.gradientColors[themeName]![0], AppTheme.gradientColors[themeName]![1]])
         : useSecondary
-            ? LinearGradient(colors: [
-                AppTheme.themes[themeName]!.colorScheme.secondary,
-                AppTheme.themes[themeName]!.colorScheme.secondary
-              ])
+            ? LinearGradient(colors: [AppTheme.themes[themeName]!.colorScheme.secondary, AppTheme.themes[themeName]!.colorScheme.secondary])
             : usePrimaryContainer
-                ? LinearGradient(colors: [
-                    AppTheme.themes[themeName]!.colorScheme.primaryContainer,
-                    AppTheme.themes[themeName]!.colorScheme.primaryContainer
-                  ])
+                ? LinearGradient(colors: [AppTheme.themes[themeName]!.colorScheme.primaryContainer, AppTheme.themes[themeName]!.colorScheme.primaryContainer])
                 : useSecondaryContainer
-                    ? LinearGradient(colors: [
-                        AppTheme.themes[themeName]!.colorScheme.secondaryContainer,
-                        AppTheme.themes[themeName]!.colorScheme.secondaryContainer
-                      ])
+                    ? LinearGradient(colors: [AppTheme.themes[themeName]!.colorScheme.secondaryContainer, AppTheme.themes[themeName]!.colorScheme.secondaryContainer])
                     : useTertiaryContainer
-                        ? LinearGradient(colors: [
-                            AppTheme.themes[themeName]!.colorScheme.tertiaryContainer,
-                            AppTheme.themes[themeName]!.colorScheme.tertiaryContainer
-                          ])
-                        : LinearGradient(colors: [
-                            AppTheme.themes[themeName]!.colorScheme.primary,
-                            AppTheme.themes[themeName]!.colorScheme.primary
-                          ]);
+                        ? LinearGradient(colors: [AppTheme.themes[themeName]!.colorScheme.tertiaryContainer, AppTheme.themes[themeName]!.colorScheme.tertiaryContainer])
+                        : LinearGradient(colors: [AppTheme.themes[themeName]!.colorScheme.primary, AppTheme.themes[themeName]!.colorScheme.primary]);
   }
 
   static MapEntry<ThemeName, ThemeData> generateThemeData(ThemeName themeName, Color seedColor) {
@@ -486,7 +470,7 @@ class AppTheme {
     }
     if (themeName.isRainbow()) {
       newColorScheme = colorScheme.copyWith(onPrimary: Colors.white);
-    }    
+    }
 
     ThemeData data = ThemeData.from(colorScheme: colorScheme, useMaterial3: true).copyWith(
       cardTheme: CardTheme(
@@ -505,19 +489,17 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        border: UnderlineInputBorder(
-        ),
+        border: UnderlineInputBorder(),
       ),
-      pageTransitionsTheme: const PageTransitionsTheme(
-        builders: {
-          TargetPlatform.android: PredictiveBackPageTransitionsBuilder()
-        }
-      ),
+      pageTransitionsTheme: const PageTransitionsTheme(builders: {TargetPlatform.android: PredictiveBackPageTransitionsBuilder()}),
     );
     if (newColorScheme != null) {
-      data = data.copyWith(colorScheme: newColorScheme, scaffoldBackgroundColor: newColorScheme.surface, dialogTheme: DialogTheme(
-        backgroundColor: newColorScheme.surfaceContainerHigh, // Temporary fix
-      ));
+      data = data.copyWith(
+          colorScheme: newColorScheme,
+          scaffoldBackgroundColor: newColorScheme.surface,
+          dialogTheme: DialogTheme(
+            backgroundColor: newColorScheme.surfaceContainerHigh, // Temporary fix
+          ));
     }
     return MapEntry(themeName, data);
   }
@@ -529,7 +511,6 @@ class AppTheme {
 
   static void addDynamicThemes(ColorScheme lightScheme, ColorScheme darkScheme) {
     try {
-      
       ColorScheme otherlightScheme = ColorScheme.fromSeed(seedColor: lightScheme.primary, brightness: Brightness.light);
       ColorScheme otherDarkScheme = ColorScheme.fromSeed(seedColor: darkScheme.primary, brightness: Brightness.dark);
 
@@ -584,9 +565,7 @@ class AppTheme {
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
           isCollapsed: false,
-          border: UnderlineInputBorder(
-
-          ),
+          border: UnderlineInputBorder(),
         ),
       );
       AppTheme.themes[ThemeName.darkDynamic] = ThemeData.from(
@@ -607,12 +586,13 @@ class AppTheme {
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          border: UnderlineInputBorder(
-          ),
+          border: UnderlineInputBorder(),
         ),
       );
     } catch (exception) {
-      print(exception);
+      if (kDebugMode) {
+        print(exception);
+      }
     }
   }
 }

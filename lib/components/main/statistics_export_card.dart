@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class StatisticsDataExport extends StatefulWidget {
-  const StatisticsDataExport();
+  const StatisticsDataExport({super.key});
 
   @override
   State<StatisticsDataExport> createState() => _StatisticsDataExportState();
@@ -27,7 +27,7 @@ class _StatisticsDataExportState extends State<StatisticsDataExport> {
       Map<String, dynamic> decoded = jsonDecode(response.body);
       return decoded['data'];
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 

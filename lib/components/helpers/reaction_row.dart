@@ -22,11 +22,11 @@ class ReactionRow extends StatelessWidget {
 
   Future<bool> _sendReaction(String reaction) async {
     try {
-      Map<String, dynamic> body = {type.reactsTo + "_id": reactToId, "reaction": reaction};
+      Map<String, dynamic> body = {"${type.reactsTo}_id": reactToId, "reaction": reaction};
       await Http.post(uri: '/${type.path}/reaction', body: body);
       return true;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 

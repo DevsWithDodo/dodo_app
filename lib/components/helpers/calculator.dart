@@ -33,6 +33,10 @@ enum ButtonText {
   add("+", Operator.add);
 
   const ButtonText(this.text, [this.operator = Operator.none]);
+
+  factory ButtonText.fromString(String text) {
+    return ButtonText.values.firstWhere((element) => element.text == text, orElse: () => ButtonText.empty);
+  }
   final String text;
   final Operator operator;
 
@@ -48,21 +52,21 @@ class StringOrOperator {
   String? value;
   Operator? operator;
 
-  double? get asDouble => this.value != null ? double.tryParse(this.value!) : null;
+  double? get asDouble => value != null ? double.tryParse(value!) : null;
 }
 
 class Calculator extends StatefulWidget {
   final void Function(String fromCalculation) onCalculationReady;
   final String? initialNumber;
   final Currency selectedCurrency;
-  Calculator({required this.onCalculationReady, this.initialNumber, required this.selectedCurrency});
+  const Calculator({super.key, required this.onCalculationReady, this.initialNumber, required this.selectedCurrency});
   @override
-  _CalculatorState createState() => _CalculatorState();
+  State<Calculator> createState() => _CalculatorState();
 }
 
 class _CalculatorState extends State<Calculator> {
   String _intermediateResult = '';
-  Queue<StringOrOperator> _RPNInput = Queue<StringOrOperator>();
+  final Queue<StringOrOperator> _inputAsRPN = Queue<StringOrOperator>();
   DataStack<Operator> _operators = DataStack<Operator>();
   bool _isStillNum = false;
   String _storeNum = '';
@@ -105,25 +109,24 @@ class _CalculatorState extends State<Calculator> {
             _intermediateResult = _storeNum;
           });
         }
-        _RPNInput.add(StringOrOperator.string(_storeNum));
+        _inputAsRPN.add(StringOrOperator.string(_storeNum));
         _storeNum = '';
       }
       _isStillNum = false;
       if (_operators.length > 0) {
-        _RPNInput.add(StringOrOperator.operator(_operators.pop()));
+        _inputAsRPN.add(StringOrOperator.operator(_operators.pop()));
         String calculated = calculate();
         setState(() {
           _intermediateResult = calculated;
         });
-        _RPNInput.clear();
-        _RPNInput.add(StringOrOperator.string(calculated));
+        _inputAsRPN.clear();
+        _inputAsRPN.add(StringOrOperator.string(calculated));
       }
       _operators.push(input.operator);
       setState(() {
         _lastOperator = input.operator;
       });
     }
-    print(_RPNInput);
   }
 
   void equals() {
@@ -131,26 +134,24 @@ class _CalculatorState extends State<Calculator> {
       _lastOperator = Operator.none;
     });
     if (_storeNum != '') {
-      _RPNInput.add(StringOrOperator.string(_storeNum));
+      _inputAsRPN.add(StringOrOperator.string(_storeNum));
     }
     while (_operators.length != 0) {
-      _RPNInput.add(StringOrOperator.operator(_operators.pop()));
+      _inputAsRPN.add(StringOrOperator.operator(_operators.pop()));
     }
     // print(_RPNintput);
     setState(() {
       _intermediateResult = calculate();
     });
     _storeNum = _intermediateResult;
-    _RPNInput.clear();
+    _inputAsRPN.clear();
   }
 
   void changeOperator(ButtonText input) {
-    print('changeOperator');
-    print(_intermediateResult);
     _operators.pop();
     _operators.push(input.operator);
     setState(() {
-      if (_intermediateResult.length != 0 && _operatorsAndEquals.contains(_intermediateResult[_intermediateResult.length - 1])) {
+      if (_intermediateResult.isNotEmpty && _operatorsAndEquals.contains(ButtonText.fromString(_intermediateResult[_intermediateResult.length - 1]))) {
         _intermediateResult = _intermediateResult.substring(0, _intermediateResult.length - 1) + input.text;
       }
       _lastOperator = input.operator;
@@ -159,8 +160,8 @@ class _CalculatorState extends State<Calculator> {
 
   String calculate() {
     DataStack<double> numbers = DataStack<double>();
-    while (_RPNInput.length != 0) {
-      StringOrOperator stringOrOperator = _RPNInput.removeFirst();
+    while (_inputAsRPN.isNotEmpty) {
+      StringOrOperator stringOrOperator = _inputAsRPN.removeFirst();
       double? parsed = stringOrOperator.asDouble;
       if (parsed != null) {
         numbers.push(parsed);
@@ -208,7 +209,7 @@ class _CalculatorState extends State<Calculator> {
     _storeNum = '';
     _lastOperator = Operator.none;
     _operators = DataStack<Operator>();
-    _RPNInput.clear();
+    _inputAsRPN.clear();
     _isStillNum = false;
     setState(() {
       _intermediateResult = '0';
@@ -301,9 +302,9 @@ class _CalculatorState extends State<Calculator> {
     );
   }
 
-  List<ButtonText> _operatorsAndEquals = [ButtonText.add, ButtonText.subtract, ButtonText.divide, ButtonText.multiply, ButtonText.equals];
+  final List<ButtonText> _operatorsAndEquals = [ButtonText.add, ButtonText.subtract, ButtonText.divide, ButtonText.multiply, ButtonText.equals];
 
-  List<List<ButtonText>> _rows = [
+  final List<List<ButtonText>> _rows = [
     [ButtonText.divide, ButtonText.one, ButtonText.two, ButtonText.three, ButtonText.clear],
     [ButtonText.multiply, ButtonText.four, ButtonText.five, ButtonText.six, ButtonText.empty],
     [ButtonText.subtract, ButtonText.seven, ButtonText.eight, ButtonText.nine, ButtonText.empty],
@@ -430,7 +431,7 @@ class _CalculatorButtonState extends State<CalculatorButton> with SingleTickerPr
           onTapDown: (details) => _controller.forward(from: 0),
           onTapUp: (details) => _controller.reverse(from: 1),
           onTapCancel: () => _controller.reverse(from: 1),
-          overlayColor: MaterialStateProperty.all(Colors.transparent),
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
           onTap: () {
             HapticFeedback.lightImpact();
             widget.onPressed?.call();

@@ -16,8 +16,9 @@ class PinPad extends StatefulWidget {
   final String? pinLabel;
   final String? pinConfirmLabel;
 
-  PinPad({
-    required String this.pin,
+  const PinPad({
+    super.key,
+    required this.pin,
     this.pinConfirm,
     this.isPinInput = true,
     required this.onPinChanged,
@@ -35,8 +36,7 @@ class PinPad extends StatefulWidget {
 
 class _PinPadState extends State<PinPad> {
   bool isPinFieldEmpty() {
-    return !((widget.isPinInput && widget.pin != '') ||
-        (!widget.isPinInput && widget.pinConfirm != ''));
+    return !((widget.isPinInput && widget.pin != '') || (!widget.isPinInput && widget.pinConfirm != ''));
   }
 
   @override
@@ -50,9 +50,7 @@ class _PinPadState extends State<PinPad> {
               borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
               border: Border(
                 bottom: BorderSide(
-                  color: isPinFieldEmpty()
-                      ? Theme.of(context).colorScheme.outline
-                      : Theme.of(context).colorScheme.primary,
+                  color: isPinFieldEmpty() ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.primary,
                 ),
               ),
             ),
@@ -64,9 +62,7 @@ class _PinPadState extends State<PinPad> {
                     String? textToShow = '•' * (widget.isPinInput ? widget.pin.length : widget.pinConfirm!.length);
                     return Text(
                       textToShow,
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontSize: isPinFieldEmpty() ? null : 30),
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: isPinFieldEmpty() ? null : 30),
                     );
                   }),
                 ),
@@ -75,26 +71,18 @@ class _PinPadState extends State<PinPad> {
                   final theme = Theme.of(context);
                   return AnimatedAlign(
                     duration: duration,
-                    alignment: isPinFieldEmpty()
-                        ? Alignment.center
-                        : Alignment.topLeft,
+                    alignment: isPinFieldEmpty() ? Alignment.center : Alignment.topLeft,
                     child: AnimatedDefaultTextStyle(
                       duration: duration,
                       style: theme.textTheme.bodySmall!.copyWith(
-                        color: isPinFieldEmpty()
-                            ? theme.colorScheme.onSurfaceVariant
-                            : theme.colorScheme.primary,
+                        color: isPinFieldEmpty() ? theme.colorScheme.onSurfaceVariant : theme.colorScheme.primary,
                         fontSize: isPinFieldEmpty() ? 18 : 12,
                       ),
                       child: AnimatedPadding(
                         duration: duration,
-                        padding: EdgeInsets.only(
-                            left: isPinFieldEmpty() ? 0 : 10,
-                            top: isPinFieldEmpty() ? 0 : 5),
+                        padding: EdgeInsets.only(left: isPinFieldEmpty() ? 0 : 10, top: isPinFieldEmpty() ? 0 : 5),
                         child: Text(
-                          widget.isPinInput
-                              ? widget.pinLabel ?? 'pin'.tr()
-                              : widget.pinConfirmLabel ?? 'confirm_pin'.tr(),
+                          widget.isPinInput ? widget.pinLabel ?? 'pin'.tr() : widget.pinConfirmLabel ?? 'confirm_pin'.tr(),
                         ),
                       ),
                     ),
@@ -120,8 +108,7 @@ class _PinPadState extends State<PinPad> {
         Center(
           child: Container(
             constraints: BoxConstraints(
-              maxWidth: widget.maxWidth ??
-                  min(300, MediaQuery.of(context).size.height / 7 * 3),
+              maxWidth: widget.maxWidth ?? min(300, MediaQuery.of(context).size.height / 7 * 3),
             ),
             child: Table(
               columnWidths: {
@@ -138,25 +125,18 @@ class _PinPadState extends State<PinPad> {
                   .map((row) => TableRow(
                         children: row
                             .map(
-                              (number) => (number == 'C' && isPinFieldEmpty() ||
-                                      number == '')
+                              (number) => (number == 'C' && isPinFieldEmpty() || number == '')
                                   ? Container()
                                   : PinPadNumber(
                                       number: number,
                                       pin: widget.pin,
                                       pinConfirm: widget.pinConfirm,
-                                      onValidationTextChanged:
-                                          widget.onValidationTextChanged,
+                                      onValidationTextChanged: widget.onValidationTextChanged,
                                       onPinChanged: widget.onPinChanged,
-                                      onPinConfirmChanged:
-                                          widget.onPinConfirmChanged,
+                                      onPinConfirmChanged: widget.onPinConfirmChanged,
                                       isPinInput: widget.isPinInput,
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondaryContainer,
-                                      textColor: Theme.of(context)
-                                          .colorScheme
-                                          .onSecondaryContainer,
+                                      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                                      textColor: Theme.of(context).colorScheme.onSecondaryContainer,
                                     ),
                             )
                             .toList(),

@@ -9,6 +9,8 @@ import 'custom_alert_dialog.dart';
 import 'package:flutter/material.dart';
 
 class RateAppDialog extends StatelessWidget {
+  const RateAppDialog({super.key});
+
 
   @override
   Widget build(BuildContext context) {

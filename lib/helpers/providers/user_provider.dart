@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:io';
 
@@ -37,7 +39,7 @@ class UserProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _userState,
-      builder: (context, _) => this.builder(context),
+      builder: (context, _) => builder(context),
     );
   }
 }
@@ -55,7 +57,7 @@ class UserState extends ChangeNotifier {
   }
 
   Future _fetchUser(BuildContext context) async {
-    http.Response response = await http.get(Uri.parse(context.read<AppConfig>().appUrl + '/user'), headers: {
+    http.Response response = await http.get(Uri.parse('${context.read<AppConfig>().appUrl}/user'), headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer ${user!.apiToken}",
     });
@@ -95,8 +97,8 @@ class UserState extends ChangeNotifier {
     try {
       String? fcmToken;
       if (context.read<AppConfig>().isFirebasePlatformEnabled) {
-        FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-        fcmToken = await _firebaseMessaging.getToken();
+        FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+        fcmToken = await firebaseMessaging.getToken();
       }
       Map<String, String?> body = {
         ...(tokenType == IdTokenType.google ? {"id_token": idToken!} : {"auth_code": authCode!}),
@@ -108,7 +110,7 @@ class UserState extends ChangeNotifier {
       Map<String, String> header = {"Content-Type": "application/json"};
       String bodyEncoded = jsonEncode(body);
       http.Response response = await http.post(
-        Uri.parse(context.read<AppConfig>().appUrl + '/register-with-token'),
+        Uri.parse('${context.read<AppConfig>().appUrl}/register-with-token'),
         headers: header,
         body: bodyEncoded,
       );
@@ -119,7 +121,6 @@ class UserState extends ChangeNotifier {
         setUser(user, notify: false);
 
         http.Response groupResponse = await Http.get(uri: generateUri(GetUriKeys.groups, context));
-        print(groupResponse.body);
         List<Group> groups = Group.fromJsonList(jsonDecode(groupResponse.body)['data'], true);
         setGroups(groups);
         if (groups.isEmpty) {
@@ -136,11 +137,11 @@ class UserState extends ChangeNotifier {
         throw error['error'];
       }
     } on FormatException {
-      throw 'format_exception'.tr() + ' F01';
+      throw '${'format_exception'.tr()} F01';
     } on SocketException {
-      throw 'cannot_connect'.tr() + ' F02';
+      throw '${'cannot_connect'.tr()} F02';
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -148,8 +149,8 @@ class UserState extends ChangeNotifier {
     try {
       String? token;
       if (context.read<AppConfig>().isFirebasePlatformEnabled) {
-        FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-        token = await _firebaseMessaging.getToken();
+        FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+        token = await firebaseMessaging.getToken();
       }
       Map<String, String?> body = {
         "username": username,
@@ -158,7 +159,7 @@ class UserState extends ChangeNotifier {
       };
       Map<String, String> header = {"Content-Type": "application/json"};
       String bodyEncoded = jsonEncode(body);
-      http.Response response = await http.post(Uri.parse(context.read<AppConfig>().appUrl + '/login'), headers: header, body: bodyEncoded);
+      http.Response response = await http.post(Uri.parse('${context.read<AppConfig>().appUrl}/login'), headers: header, body: bodyEncoded);
       if (response.statusCode.httpStatusCodeRange == HttpStatusCodeRange.success) {
         final preferences = context.read<SharedPreferences>();
 
@@ -184,11 +185,11 @@ class UserState extends ChangeNotifier {
         throw error['error'];
       }
     } on FormatException {
-      throw 'format_exception'.tr() + ' F01';
+      throw '${'format_exception'.tr()} F01';
     } on SocketException {
-      throw 'cannot_connect'.tr() + ' F02';
+      throw '${'cannot_connect'.tr()} F02';
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -196,8 +197,8 @@ class UserState extends ChangeNotifier {
     try {
       String? token;
       if (context.read<AppConfig>().isFirebasePlatformEnabled) {
-        FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-        token = await _firebaseMessaging.getToken();
+        FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+        token = await firebaseMessaging.getToken();
       }
       Map<String, dynamic> body = {
         "username": username,
@@ -213,7 +214,7 @@ class UserState extends ChangeNotifier {
 
       String bodyEncoded = json.encode(body, toEncodable: (e) => e.toString());
       http.Response response = await http.post(
-        Uri.parse(context.read<AppConfig>().appUrl + '/register'),
+        Uri.parse('${context.read<AppConfig>().appUrl}/register'),
         headers: header,
         body: bodyEncoded,
       );
@@ -226,12 +227,11 @@ class UserState extends ChangeNotifier {
         throw error['error'];
       }
     } on FormatException {
-      throw 'format_exception'.tr() + ' F01';
+      throw '${'format_exception'.tr()} F01';
     } on SocketException {
-      throw 'cannot_connect'.tr() + ' F02';
+      throw '${'cannot_connect'.tr()} F02';
     } catch (_, __) {
-      print(__);
-      throw _;
+      rethrow;
     }
   }
 
@@ -243,7 +243,7 @@ class UserState extends ChangeNotifier {
       setGroups([], notify: false);
       setUser(null, notify: false);
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 

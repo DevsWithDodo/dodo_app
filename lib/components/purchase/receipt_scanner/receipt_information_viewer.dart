@@ -139,10 +139,8 @@ class ReceiptInformationViewer extends StatelessWidget {
                           ),
                         ),
                       if (receiptInformation!.items.isEmpty)
-                        Container(
-                          child: Center(
-                            child: Text('receipt-scanner.no-items'.tr()),
-                          ),
+                        Center(
+                          child: Text('receipt-scanner.no-items'.tr()),
                         )
                       else
                         Column(

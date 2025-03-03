@@ -73,7 +73,7 @@ String generateUri(
         uri += '?';
       }
       for (String name in queryParams.keys) {
-        uri += name + '=' + (queryParams[name] ?? '') + '&';
+        uri += '$name=${queryParams[name] ?? ''}&';
       }
     }
     return uri;
@@ -133,7 +133,6 @@ class Http {
       } else {
         Map<String, dynamic> error = jsonDecode(response.body);
         if (error['error'] == 'Unauthenticated.') {
-          //TODO: lehet itt dobja a random hibat
           clearAllCache();
           UserState appStateProvider = context.read<UserState>();
           appStateProvider.logout(withoutRequest: true);
@@ -156,7 +155,7 @@ class Http {
       }
       throw 'cannot_connect';
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -166,7 +165,7 @@ class Http {
   }) async {
     try {
       BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
-      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer " + (context.read<UserState>().user?.apiToken ?? '')};
+      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer ${context.read<UserState>().user?.apiToken ?? ''}"};
       http.Response response;
       if (body != null) {
         String bodyEncoded = jsonEncode(body, toEncodable: (e) => e.toString());
@@ -196,7 +195,7 @@ class Http {
     } on SocketException {
       throw 'cannot_connect';
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -206,7 +205,7 @@ class Http {
   }) async {
     try {
       BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
-      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer " + (context.read<UserState>().user?.apiToken ?? '')};
+      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer ${context.read<UserState>().user?.apiToken ?? ''}"};
       http.Response response;
       if (body != null) {
         String bodyEncoded = json.encode(body, toEncodable: (e) => e.toString());
@@ -240,14 +239,14 @@ class Http {
     } on SocketException {
       throw 'cannot_connect';
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
   static Future<http.Response> delete({required String uri}) async {
     try {
       BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
-      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer " + (context.read<UserState>().user?.apiToken ?? '')};
+      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer ${context.read<UserState>().user?.apiToken ?? ''}"};
       http.Response response = await http.delete(Uri.parse(context.read<AppConfig>().appUrl + uri), headers: header);
 
       if (response.statusCode < 300 && response.statusCode >= 200) {
@@ -270,7 +269,7 @@ class Http {
     } on SocketException {
       throw 'cannot_connect';
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -322,7 +321,7 @@ Widget errorToast(String msg, BuildContext context) {
 
 Future<Directory> _getCacheDir() async {
   String delimiter = Platform.isWindows ? '\\' : '/';
-  return Directory((await getTemporaryDirectory()).path + delimiter + 'lender');
+  return Directory('${(await getTemporaryDirectory()).path}${delimiter}lender');
 }
 
 Future<http.Response?> fromCache({required String uri, required bool overwriteCache, bool alwaysReturnCache = false}) async {
@@ -341,7 +340,9 @@ Future<http.Response?> fromCache({required String uri, required bool overwriteCa
     return null;
   } catch (e) {
     //TODO: this is wrong, shouldn't be this way
-    print(e.toString());
+    if (kDebugMode) {
+      print(e.toString());
+    }
     return null;
   }
 }
@@ -401,7 +402,7 @@ Future clearGroupCache(BuildContext context) async {
             continue;
           }
           String fileName = file.path.split(s).last;
-          if (fileName.contains('groups-' + currentGroupId.toString()) || fileName.contains('group=' + currentGroupId.toString())) {
+          if (fileName.contains('groups-$currentGroupId') || fileName.contains('group=$currentGroupId')) {
             file.deleteSync();
           }
         }

@@ -74,7 +74,7 @@ class _ThemePreviewState extends State<ThemePreview> with SingleTickerProviderSt
   late StreamSubscription _shouldHide;
 
   double _paddingHorizontal = 16;
-  double _paddingVertical = 10;
+  final double _paddingVertical = 10;
 
   late final double _maxHeight;
   late final double _maxWidth;

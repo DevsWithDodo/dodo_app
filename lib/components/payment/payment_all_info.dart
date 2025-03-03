@@ -18,10 +18,10 @@ class PaymentAllInfo extends StatefulWidget {
   final Payment payment;
   final Function(String reaction) onSendReaction;
 
-  PaymentAllInfo(this.payment, this.onSendReaction);
+  const PaymentAllInfo(this.payment, this.onSendReaction, {super.key});
 
   @override
-  _PaymentAllInfoState createState() => _PaymentAllInfoState();
+  State<PaymentAllInfo> createState() => _PaymentAllInfoState();
 }
 
 class _PaymentAllInfoState extends State<PaymentAllInfo> {
@@ -29,10 +29,10 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
 
   Future<BoolFutureOutput> _deletePayment(int id) async {
     try {
-      await Http.delete(uri: '/payments/' + id.toString());
+      await Http.delete(uri: '/payments/$id');
       return BoolFutureOutput.True;
     } catch (_) {
-      throw _;
+      rethrow;
     }
   }
 
@@ -166,7 +166,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                       context,
                       MaterialPageRoute(builder: (context) => PaymentPage(payment: widget.payment)),
                     );
-                    if (modified ?? false) {
+                    if ((modified ?? false)) {
                       Navigator.pop(context);
                     }
                   },
@@ -181,7 +181,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
                       ),
                       context: context,
                     ).then((value) {
-                      if (value ?? false) {
+                      if ((value ?? false)) {
                         showFutureOutputDialog(
                           context: context,
                           future: _deletePayment(widget.payment.id),

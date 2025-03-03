@@ -9,7 +9,7 @@ class PastReactionContainer extends StatelessWidget {
   final Function(String reaction) onSendReaction;
   final bool isSecondaryColor;
   final ReactionType type;
-  PastReactionContainer({
+  const PastReactionContainer({super.key, 
     required this.reactions,
     required this.reactedToId,
     required this.onSendReaction,
@@ -18,7 +18,7 @@ class PastReactionContainer extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    if (reactions.length == 0) {
+    if (reactions.isEmpty) {
       return Container();
     }
     Map<String, int> reactionMap = {};
@@ -84,7 +84,7 @@ class PastReactionContainer extends StatelessWidget {
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       )
-                      .toList()
+                      
                 ],
               ),
             ),

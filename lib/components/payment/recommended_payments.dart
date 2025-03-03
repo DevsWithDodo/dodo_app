@@ -26,7 +26,7 @@ class RecommendedPayments extends StatefulWidget {
 }
 
 class _RecommendedPaymentsState extends State<RecommendedPayments> {
-  int? _selectedPayment = null;
+  int? _selectedPayment;
   late List<Payment> _necessaryPayments;
   late List<Payment> _necessaryPaymentsToShow;
 
@@ -67,7 +67,7 @@ class _RecommendedPaymentsState extends State<RecommendedPayments> {
     necessaryPayments(widget.members, context);
     return Visibility(
       visible: _necessaryPaymentsToShow.isNotEmpty,
-      child: Container(
+      child: SizedBox(
         height: 50,
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -120,7 +120,7 @@ class _RecommendedPaymentsState extends State<RecommendedPayments> {
                     ),
                   );
                 },
-              ).toList()
+              )
             ],
           ),
         ),
