@@ -1,15 +1,11 @@
+import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/user_settings/cards/change_password_dialog.dart';
 import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
-import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
-import 'package:csocsort_szamla/pages/app/join_group_page.dart';
-import 'package:csocsort_szamla/pages/app/main_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginOptions extends StatefulWidget {
   const LoginOptions({super.key});
@@ -50,18 +46,19 @@ class _LoginOptionsState extends State<LoginOptions> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 5),
-                      child: Text(
-                        'user-settings.login-options.pin'.tr(),
-                        style: Theme.of(context).textTheme.titleSmall,
+                if (user.hasPassword) // Only temporary, later on you should be able to set a pin
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 10),
+                    child: LoginOption(
+                      connected: user.hasPassword,
+                      loginTypeWidget: Padding(
+                        padding: EdgeInsets.only(left: 5),
+                        child: Text(
+                          'user-settings.login-options.pin'.tr(),
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
                       ),
-                    ),
-                    if (user.hasPassword)
-                      Row(
+                      connectedWidget: Row(
                         children: [
                           Icon(
                             Icons.check_circle_outline_rounded,
@@ -80,83 +77,37 @@ class _LoginOptionsState extends State<LoginOptions> {
                             icon: Icon(Icons.edit),
                           ),
                         ],
-                      )
-                    else
-                      TextButton(
+                      ),
+                      notConnectedWidget: TextButton(
                         onPressed: () {},
-                        child: Text('TODO user-settings.login-options.set-pin'.tr()),
-                      ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox.fromSize(
-                      size: Size(35, 35),
-                      child: Padding(
-                        padding: EdgeInsets.all(5),
-                        child: Image.asset(
-                          'assets/google.png',
-                        ),
+                        child: Text('user-settings.login-options.set-pin'.tr()),
                       ),
                     ),
-                    if (user.googleConnected)
-                      Icon(
-                        Icons.check_circle_outline_rounded,
-                        color: Colors.green,
-                        size: 30,
-                      )
-                    else
-                      TextButton(
-                        onPressed: () async {
-                          final GoogleSignInAccount? googleUser = await GoogleSignIn(
-                            serverClientId: context.read<AppConfig>().googleOAuthServerClientId,
-                            scopes: [
-                              'openid',
-                            ],
-                          ).signIn();
-                          final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-                          if (googleAuth?.idToken == null) return;
-                          _registerWithToken(IdTokenType.google, googleAuth!.idToken!);
-                        },
-                        child: Text('user-settings.login-options.social.link'.tr()),
-                      ),
-                  ],
+                  ),
+                LoginOption.social(
+                  type: SocialLoginType.google,
+                  connected: user.googleConnected,
+                  onPressed: () async {
+                    final appConfig = context.read<AppConfig>();
+                    final credential = await getGoogleAuth(appConfig.googleOAuthServerClientId);
+                    if (credential?.idToken == null) {
+                      return;
+                    }
+                    _linkSocialLogin(IdTokenType.google, credential!.idToken!);
+                  },
                 ),
                 SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(50),
-                      child: Image.asset(
-                        'assets/apple.png',
-                        height: 35,
-                        width: 35,
-                      ),
-                    ),
-                    if (user.appleConnected)
-                      Icon(
-                        Icons.check_circle_outline_rounded,
-                        color: Colors.green,
-                        size: 30,
-                      )
-                    else
-                      TextButton(
-                        onPressed: () async {
-                          final credential = await SignInWithApple.getAppleIDCredential(
-                            scopes: [],
-                            webAuthenticationOptions: WebAuthenticationOptions(
-                              clientId: 'net.dodoapp.dodo',
-                              redirectUri: Uri.parse('${context.read<AppConfig>().appUrl}/callbacks/sign-in-with-apple'),
-                            ),
-                          );
-                          _registerWithToken(IdTokenType.apple, credential.authorizationCode);
-                        },
-                        child: Text('user-settings.login-options.social.link'.tr()),
-                      ),
-                  ],
+                LoginOption.social(
+                  type: SocialLoginType.apple,
+                  connected: user.appleConnected,
+                  onPressed: () async {
+                    final appConfig = context.read<AppConfig>();
+                    final credential = await getAppleAuth(
+                      appConfig.appleOAuthClientId,
+                      appConfig.appUrl,
+                    );
+                    _linkSocialLogin(IdTokenType.apple, credential.authorizationCode);
+                  },
                 ),
               ],
             ),
@@ -166,37 +117,84 @@ class _LoginOptionsState extends State<LoginOptions> {
     );
   }
 
-  void _registerWithToken(IdTokenType idTokenType, String code) {
+  void _linkSocialLogin(IdTokenType idTokenType, String code) {
     showFutureOutputDialog(
       context: context,
-      future: context.read<UserState>().loginOrRegisterWithToken(
-            idTokenType == IdTokenType.google ? code : null,
-            idTokenType == IdTokenType.apple ? code : null,
-            idTokenType,
-            context,
+      future: context.read<UserState>().linkSocialLogin(idTokenType, code),
+    );
+  }
+}
+
+enum SocialLoginType {
+  google,
+  apple,
+}
+
+class LoginOption extends StatelessWidget {
+  final bool connected;
+  final Widget loginTypeWidget;
+  final Widget connectedWidget;
+  final Widget notConnectedWidget;
+  const LoginOption({
+    super.key,
+    required this.connected,
+    required this.loginTypeWidget,
+    required this.connectedWidget,
+    required this.notConnectedWidget,
+  });
+
+  factory LoginOption.social({
+    required SocialLoginType type,
+    required bool connected,
+    required VoidCallback onPressed,
+  }) {
+    Widget loginTypeWidget;
+    switch (type) {
+      case SocialLoginType.google:
+        loginTypeWidget = SizedBox.fromSize(
+          size: Size(35, 35),
+          child: Padding(
+            padding: EdgeInsets.all(5),
+            child: Image.asset(
+              'assets/google.png',
+            ),
           ),
-      outputCallbacks: {
-        LoginFutureOutputs.main: () => Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (context) => MainPage(),
-            ),
-            (r) => false),
-        LoginFutureOutputs.joinGroup: () => Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                  builder: (context) => JoinGroupPage(
-                        inviteURL: context.read<InviteUrlState>().inviteUrl,
-                      )),
-              (route) => false,
-            ),
-        LoginFutureOutputs.joinGroupFromAuth: () => Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                  builder: (context) => JoinGroupPage(
-                        inviteURL: context.read<InviteUrlState>().inviteUrl,
-                        fromAuth: true,
-                      )),
-              (route) => false,
-            ),
-      },
+        );
+        break;
+      case SocialLoginType.apple:
+        loginTypeWidget = ClipRRect(
+          borderRadius: BorderRadius.circular(50),
+          child: Image.asset(
+            'assets/apple.png',
+            height: 35,
+            width: 35,
+          ),
+        );
+        break;
+    }
+    return LoginOption(
+      loginTypeWidget: loginTypeWidget,
+      connected: connected,
+      connectedWidget: Icon(
+        Icons.check_circle_outline_rounded,
+        color: Colors.green,
+        size: 30,
+      ),
+      notConnectedWidget: TextButton(
+        onPressed: onPressed,
+        child: Text('user-settings.login-options.social.link'.tr()),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        loginTypeWidget,
+        if (connected) connectedWidget else notConnectedWidget,
+      ],
     );
   }
 }

@@ -60,22 +60,22 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (widget.member.username != null)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'member-info.username'.tr(),
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        Flexible(
-                          child: Text(widget.member.username!),
-                        ),
-                      ],
+                  if (widget.member.username != "" || (widget.member.isGuest ?? false))
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'member-info.username'.tr(),
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          Flexible(
+                            child: Text(widget.member.username! == "" ? 'member-info.guest'.tr() : widget.member.username!),
+                          ),
+                        ],
+                      ),
                     ),
-                  SizedBox(
-                    height: 10,
-                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

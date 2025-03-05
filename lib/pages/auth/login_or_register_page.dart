@@ -1,3 +1,4 @@
+import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
@@ -12,9 +13,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginOrRegisterPage extends StatefulWidget {
   const LoginOrRegisterPage({super.key});
@@ -53,7 +52,10 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
           duration: Duration(hours: 10),
           content: Text(
             'Test Mode',
-            style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Theme.of(context).colorScheme.onSecondary),
+            style: Theme.of(context)
+                .textTheme
+                .labelLarge!
+                .copyWith(color: Theme.of(context).colorScheme.onSecondary),
           ),
           action: SnackBarAction(
             label: 'Back to Normal Mode',
@@ -113,7 +115,10 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                             duration: Duration(hours: 10),
                             content: Text(
                               'Test Mode',
-                              style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Theme.of(context).colorScheme.onSecondary),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge!
+                                  .copyWith(color: Theme.of(context).colorScheme.onSecondary),
                             ),
                             action: SnackBarAction(
                               label: 'Back to Normal Mode',
@@ -138,7 +143,11 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                     }
                   },
                   child: ColorFiltered(
-                    colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.primary, context.watch<AppThemeState>().themeName.isDodo() && !kIsWeb ? BlendMode.dst : BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.primary,
+                        context.watch<AppThemeState>().themeName.isDodo() && !kIsWeb
+                            ? BlendMode.dst
+                            : BlendMode.srcIn),
                     child: Image(
                       image: AssetImage('assets/dodo.png'),
                       height: MediaQuery.of(context).size.width / 3,
@@ -149,7 +158,10 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
               Center(
                 child: Text(
                   'title'.tr().toUpperCase(),
-                  style: TextStyle(fontSize: 50, fontWeight: FontWeight.w300, color: Theme.of(context).colorScheme.onSurface),
+                  style: TextStyle(
+                      fontSize: 50,
+                      fontWeight: FontWeight.w300,
+                      color: Theme.of(context).colorScheme.onSurface),
                 ),
               ),
               Flexible(
@@ -221,13 +233,9 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                       ),
                     ),
                     onTap: () async {
-                      final GoogleSignInAccount? googleUser = await GoogleSignIn(
-                        serverClientId: context.read<AppConfig>().googleOAuthServerClientId,
-                        scopes: [
-                          'openid',
-                        ],
-                      ).signIn();
-                      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+                      final googleAuth = await getGoogleAuth(
+                        context.read<AppConfig>().googleOAuthServerClientId,
+                      );
                       if (googleAuth?.idToken == null) return;
                       _registerWithToken(IdTokenType.google, googleAuth!.idToken!);
                     },
@@ -236,12 +244,10 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                   InkWell(
                     borderRadius: BorderRadius.circular(50),
                     onTap: () async {
-                      final credential = await SignInWithApple.getAppleIDCredential(
-                        scopes: [],
-                        webAuthenticationOptions: WebAuthenticationOptions(
-                          clientId: 'net.dodoapp.dodo',
-                          redirectUri: Uri.parse('${context.read<AppConfig>().appUrl}/callbacks/sign-in-with-apple'),
-                        ),
+                      final appConfig = context.read<AppConfig>();
+                      final credential = await getAppleAuth(
+                        appConfig.appleOAuthClientId,
+                        appConfig.appUrl,
                       );
                       _registerWithToken(IdTokenType.apple, credential.authorizationCode);
                     },

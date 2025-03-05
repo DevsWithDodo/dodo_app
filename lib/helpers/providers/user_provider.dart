@@ -145,6 +145,24 @@ class UserState extends ChangeNotifier {
     }
   }
 
+  Future<BoolFutureOutput> linkSocialLogin(IdTokenType idTokenType, String code) async {
+    final response = await Http.post(uri: "/user/link_social_login", body: {
+      "token_type": idTokenType.name,
+      ...(idTokenType == IdTokenType.google ? {"id_token": code} : {"auth_code": code}),
+      'device_type': kIsWeb ? 'web' : Platform.operatingSystem,
+    });
+
+    if (response.statusCode.httpStatusCodeRange != HttpStatusCodeRange.success) {
+      Map<String, dynamic> error = jsonDecode(response.body);
+      throw error['error'];
+    }
+
+    final decoded = jsonDecode(response.body);
+    setUser(user!.mergeWith(User.fromJson(decoded['data'], user!.ratedApp)));
+
+    return BoolFutureOutput.True;
+  }
+
   Future<LoginFutureOutputs> login(String username, String password, BuildContext context) async {
     try {
       String? token;

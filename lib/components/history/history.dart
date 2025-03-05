@@ -138,7 +138,15 @@ class _HistoryState extends State<History> {
             SegmentedButton<int>(
               emptySelectionAllowed: false,
               multiSelectionEnabled: false,
-              selectedIcon: _selectedIndex == 0 ? Icon(Icons.shopping_cart) : Icon(Icons.payment),
+              selectedIcon: _selectedIndex == 0
+                  ? Icon(
+                      Icons.shopping_cart,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    )
+                  : Icon(
+                      Icons.payment,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    ),
               segments: [
                 ButtonSegment(
                   value: 0,

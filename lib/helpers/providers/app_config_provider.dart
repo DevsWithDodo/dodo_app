@@ -14,6 +14,7 @@ class AppConfigProvider extends StatelessWidget {
       isAdPlatformEnabled: !kIsWeb && (Platform.isAndroid || Platform.isIOS),
       isFirebasePlatformEnabled: !kIsWeb && (Platform.isAndroid || Platform.isIOS),
       googleOAuthServerClientId: googleOAuthServerClientId,
+      appleOAuthClientId: appleOAuthClientId,
     );
 
     if (_appConfig.isAdPlatformEnabled) {
@@ -42,13 +43,15 @@ class AppConfig extends ChangeNotifier {
     required this.isAdPlatformEnabled,
     required this.isFirebasePlatformEnabled,
     required this.googleOAuthServerClientId,
+    required this.appleOAuthClientId,
   }) : _useTest = useTest;
 
   bool _useTest;
   final bool isIAPPlatformEnabled;
   final bool isAdPlatformEnabled;
   final bool isFirebasePlatformEnabled;
-  final String googleOAuthServerClientId; 
+  final String googleOAuthServerClientId;
+  final String appleOAuthClientId;
 
   bool get useTest => _useTest;
 

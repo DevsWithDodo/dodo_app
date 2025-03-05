@@ -10,9 +10,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 double adHeight(BuildContext context) => (context.read<AppConfig>().isAdPlatformEnabled && (context.read<UserState>().user?.showAds ?? false)) ? 50 : 0;
 
@@ -128,4 +130,25 @@ Future<String> getAssetPath(String asset) async {
 
 Future<String> getLocalPath(String path) async {
   return '${(await getApplicationSupportDirectory()).path}/$path';
+}
+
+Future<GoogleSignInAuthentication?> getGoogleAuth(
+  String serverClientId, [
+  List<String>? scopes,
+]) async {
+  final GoogleSignInAccount? googleUser = await GoogleSignIn(
+    serverClientId: serverClientId,
+    scopes: scopes ?? ['openid'],
+  ).signIn();
+  return await googleUser?.authentication;
+}
+
+Future<AuthorizationCredentialAppleID> getAppleAuth(String clientId, String appUrl) async {
+  return await SignInWithApple.getAppleIDCredential(
+    scopes: [],
+    webAuthenticationOptions: WebAuthenticationOptions(
+      clientId: clientId,
+      redirectUri: Uri.parse('$appUrl/callbacks/sign-in-with-apple'),
+    ),
+  );
 }

@@ -411,7 +411,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                           'title'.tr().toUpperCase(),
                           style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
-                        if (appStateProvider.user!.username != null)
+                        if (appStateProvider.user!.username != null && appStateProvider.user!.username != '')
                           Text(
                             'hi'.tr(args: [appStateProvider.user!.username!]),
                             style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary),

@@ -545,6 +545,8 @@
     "user-settings.login-options.set-pin": "Erstellen",
     "user-settings.login-options.social.link": "Verknüpfen",
 
-    "validation.passwords.no-match": "Die Passwörter stimmen nicht überein"
+    "validation.passwords.no-match": "Die Passwörter stimmen nicht überein",
+
+    "member-info.guest": "Gast"
     
 }

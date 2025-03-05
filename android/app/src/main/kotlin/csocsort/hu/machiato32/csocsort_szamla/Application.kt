@@ -1,9 +1,8 @@
 package csocsort.hu.machiato32.csocsort_szamla
 
 
-import io.flutter.app.FlutterApplication
-import io.flutter.plugin.common.PluginRegistry
+import android.app.Application as AndroidApplication
 
 
-class Application() : FlutterApplication() {
+class Application : AndroidApplication() {
 }

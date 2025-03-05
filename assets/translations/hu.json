@@ -525,5 +525,16 @@
 
     "you": "Te",
 
-    "payment-methods.no-payment-methods": "Még nem adtál meg fizetési módot"
+    "payment-methods.no-payment-methods": "Még nem adtál meg fizetési módot",
+
+    "user-settings.login-options": "Bejelentkezési lehetőségek",
+    "user-settings.login-options.description": "Add meg, hogy hogyan szeretnél bejelentkezni az alkalmazásba",
+    "user-settings.login-options.pin": "Pin",
+
+    "user-settings.login-options.set-pin": "Létrehozás",
+    "user-settings.login-options.social.link": "Hozzáadás",
+
+    "validation.passwords.no-match": "A két jelszó nem egyezik",
+
+    "member-info.guest": "Vendég"
 }

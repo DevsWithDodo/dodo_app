@@ -189,7 +189,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                   SizedBox(
                                     height: 5,
                                   ),
-                                  if (user.username != null)
+                                  if (user.username != null && user.username != '')
                                     Text(
                                       'hi'.tr(args: [user.username!]),
                                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary),
