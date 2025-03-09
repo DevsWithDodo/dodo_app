@@ -48,7 +48,7 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
-              'change_group_currency'.tr(),
+              'change_user_currency'.tr(),
               style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),

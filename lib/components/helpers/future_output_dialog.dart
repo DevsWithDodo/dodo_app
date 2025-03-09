@@ -95,6 +95,7 @@ class _FutureOutputDialogState<T extends FutureOutput> extends State<FutureOutpu
 
     rootBundle.load('assets/pipa.riv').then(
       (data) async {
+        await RiveFile.initialize();
         final file = RiveFile.import(data);
 
         // The artboard is the root of the animation and gets drawn in the

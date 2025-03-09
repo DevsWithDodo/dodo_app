@@ -1,3 +1,4 @@
+import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/purchase/receipt_scanner/receipt_information_viewer.dart';
 import 'package:csocsort_szamla/components/purchase/receipt_scanner/receipt_reader.dart';
@@ -95,66 +96,76 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> with SingleTick
               child: Icon(Icons.check),
             )
           : null,
-      body: LayoutBuilder(builder: (context, constraints) {
-        return Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: constraints.maxHeight * _flexAnimation!.value / largeFlex,
-              ),
-              child: GestureDetector(
-                onTap: largeView != LargeView.pictureSelection ? () => setLargeView(LargeView.pictureSelection) : null,
-                child: ReceiptReader(
-                  initialInformation: receiptInformation,
-                  maxPictureSize: constraints.maxHeight * 0.65,
-                  onInformation: (information) => setState(() {
-                    receiptInformation = information;
-                    if (information != null) setLargeView(LargeView.receiptInformation);
-                  }),
-                ),
-              ),
-            ),
-            Expanded(
-              child: GestureDetector(
-                onTap: largeView != LargeView.receiptInformation ? () => setLargeView(LargeView.receiptInformation) : null,
-                child: Column(
-                  children: [
-                    if (receiptInformation != null)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        child: Column(
-                          children: [
-                            Text(
-                              'receipt-scanner.warning'.tr(),
-                              style: Theme.of(context).textTheme.labelMedium!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 10),
-                            GradientButton.icon(
-                              onPressed: () => setState(() => editInformation = !editInformation),
-                              label: Text(editInformation ? 'save' : 'edit').tr(),
-                              icon: Icon(editInformation ? Icons.save : Icons.edit),
-                            ),
-                          ],
-                        ),
-                      ),
-                    Expanded(
-                      child: ReceiptInformationViewer(
-                        receiptInformation: receiptInformation,
-                        editInformation: editInformation,
-                        onInformationChanged: (callback) => setState(callback),
-                        members: widget.members,
-                        memberColors: memberColors,
+      body: Column(
+        children: [
+          Expanded(
+            child: LayoutBuilder(builder: (context, constraints) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: constraints.maxHeight * _flexAnimation!.value / largeFlex,
+                    ),
+                    child: GestureDetector(
+                      onTap: largeView != LargeView.pictureSelection ? () => setLargeView(LargeView.pictureSelection) : null,
+                      child: ReceiptReader(
+                        initialInformation: receiptInformation,
+                        maxPictureSize: constraints.maxHeight * 0.65,
+                        onInformation: (information) => setState(() {
+                          receiptInformation = information;
+                          if (information != null) setLargeView(LargeView.receiptInformation);
+                        }),
                       ),
                     ),
-                  ],
-                ),
-              ),
-            )
-          ],
-        );
-      }),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: largeView != LargeView.receiptInformation ? () => setLargeView(LargeView.receiptInformation) : null,
+                      child: Column(
+                        children: [
+                          if (receiptInformation != null)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'receipt-scanner.warning'.tr(),
+                                    style: Theme.of(context).textTheme.labelMedium!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(height: 10),
+                                  GradientButton.icon(
+                                    onPressed: () => setState(() => editInformation = !editInformation),
+                                    label: Text(editInformation ? 'save' : 'edit').tr(),
+                                    icon: Icon(editInformation ? Icons.save : Icons.edit),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          Expanded(
+                            child: ReceiptInformationViewer(
+                              receiptInformation: receiptInformation,
+                              editInformation: editInformation,
+                              onInformationChanged: (callback) => setState(callback),
+                              members: widget.members,
+                              memberColors: memberColors,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              );
+            }),
+          ),
+         Visibility(
+            visible: MediaQuery.of(context).viewInsets.bottom == 0,
+            child: AdUnit(site: 'receipt_scanner'),
+          ),
+        ],
+      ),
     );
   }
 }

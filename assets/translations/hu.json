@@ -525,6 +525,10 @@
 
     "you": "Te",
 
+    "create-group.currency": "A csoport pénzneme",
+    "create-group.currency.hint": "A pénznem minden vásárlásnál külön is megadható.",
+
+
     "payment-methods.no-payment-methods": "Még nem adtál meg fizetési módot",
 
     "user-settings.login-options": "Bejelentkezési lehetőségek",

@@ -338,6 +338,9 @@
     "payment-methods.dialog.modify.title": "Set payment methods",
     "payment-methods.dialog.modify.subtitle": "Every member will be able to see these methods",
 
+    "create-group.currency": "The group's main currency",
+    "create-group.currency.hint": "The currency can be selected for each expense separately",
+
     "clipboard.copy-successful": "Copied successfully",
 
     "main-dialog.themes.title": "There is more to explore!",
