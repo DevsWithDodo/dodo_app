@@ -1,17 +1,15 @@
+import 'dart:io' show Platform;
+
 import 'package:csocsort_szamla/pages/app/payment_page.dart';
 import 'package:csocsort_szamla/pages/app/purchase_page.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
-class MainPageSpeedDial extends StatefulWidget {
+class MainPageSpeedDial extends StatelessWidget {
   final Function? onReturn;
   const MainPageSpeedDial({super.key, this.onReturn});
-  @override
-  State<MainPageSpeedDial> createState() => _MainPageSpeedDialState();
-}
-
-class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
   @override
   Widget build(BuildContext context) {
     return SpeedDial(
@@ -24,6 +22,7 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
       label: Text('new-expense'.tr()),
       icon: Icons.add,
       curve: Curves.bounceIn,
+      renderOverlay: kIsWeb || !Platform.isIOS,
       children: [
         MainSpeedDialChild(
           context,
@@ -32,7 +31,7 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
               context,
               MaterialPageRoute(builder: (context) => PaymentPage()),
             );
-            widget.onReturn?.call();
+            onReturn?.call();
           },
           label: 'speed-dial.payment',
           icon: Icons.payments,
@@ -46,7 +45,7 @@ class _MainPageSpeedDialState extends State<MainPageSpeedDial> {
                 builder: (context) => PurchasePage(),
               ),
             );
-            widget.onReturn?.call();
+            onReturn?.call();
           },
           label: 'speed-dial.purchase',
           icon: Icons.shopping_cart,
