@@ -72,13 +72,30 @@ class MainSpeedDialChild extends SpeedDialChild {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  label.tr(),
-                  style: Theme.of(context).textTheme.titleSmall,
+                Container(
+                  decoration: (kIsWeb || Platform.isIOS) ? BoxDecoration(
+                    color: Theme.of(context).colorScheme.tertiaryContainer,
+                    borderRadius: BorderRadius.circular(10),
+                  ) : null,
+                  padding: const EdgeInsets.only(right: 5, left: 5),
+                  child: Text(
+                    label.tr(),
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
                 ),
-                Text(
-                  '$label.description'.tr(),
-                  style: Theme.of(context).textTheme.bodySmall,
+                Container(
+                  height: 3,
+                ),
+                Container(
+                  decoration: (kIsWeb || Platform.isIOS) ? BoxDecoration(
+                    color: Theme.of(context).colorScheme.tertiaryContainer,
+                    borderRadius: BorderRadius.circular(10),
+                  ): null,
+                  padding: const EdgeInsets.only(right: 5, left: 5),
+                  child: Text(
+                    '$label.description'.tr(),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 )
               ],
             ),
