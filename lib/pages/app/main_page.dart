@@ -34,7 +34,6 @@ import '../../components/balance/balances.dart';
 import '../../components/helpers/ad_unit.dart';
 import '../../components/helpers/error_message.dart';
 import '../../components/main/dialogs/iapp_not_supported_dialog.dart';
-import '../../components/main/dialogs/trial_version_dialog.dart';
 import '../../helpers/currencies.dart';
 import '../../helpers/http.dart';
 import '../../helpers/models.dart';
@@ -499,9 +498,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                 ),
                 dense: true,
                 onTap: () {
-                  if (appStateProvider.user!.trialVersion) {
-                    showDialog(builder: (context) => TrialVersionDialog(), context: context);
-                  } else if (!context.read<AppConfig>().isIAPPlatformEnabled) {
+                  if (!context.read<AppConfig>().isIAPPlatformEnabled) {
                     showDialog(builder: (context) => IAPNotSupportedDialog(), context: context);
                   } else {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => StorePage()));

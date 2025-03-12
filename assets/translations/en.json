@@ -135,21 +135,24 @@
     "if_not_working": "If this doesn't help",
     "report_this_error": "Report the bug",
 
-    "remove_ads": "Ad-free Experience",
-    "remove_ads_explanation": "Experience Dodo without interruptions.\nRemove advertisements.",
-    "group_boost": "Group Boosting Dodos",
-    "group_boost_explanation": "Access group statistics.\nThe bundle includes enough Dodos for 2 groups.",
-    "ad_gradient_bundle": "Basic Dodo Bundle",
-    "ad_gradient_bundle_2": "Basic Dodo Bundle",
-    "ad_gradient_bundle_explanation": "Enjoy a seamless Dodo experience.\nRemove ads and unlock gradient and adaptive themes.",
-    "ad_gradient_bundle_2_explanation": "Enjoy a seamless Dodo experience.\nRemove ads and unlock gradient and adaptive themes.",
-    "gradients": "Gradient and Dual-Tone Themes",
-    "gradients_explanation": "Experience the full color palette of Dodo.\nUnlock gradient and dual-tone themes. (Our favorite is the orange theme 😉)",
-    "big_lender_bundle": "Extended Dodo Bundle",
-    "big_lender_bundle_explanation": "This bundle includes the basic Dodo bundle plus group-boosting Dodos for 1 group.",
+    "store-page": "Dodo Store",
+    "store-page.general-information": "As we like to build apps that we would happily use ourselves, almost all features are available for free and there are no fullscreen or video ads.\nHowever, if you want to show your support, you can buy some goodies here. Of course, every one of these is a one-time purchase, and we promise that this will not change in the future. Happy Dodoing 🦤",
 
-    "price": "Price: ",
-    "buy": "Buy",
+    "store-page.removeAds": "Ad-free Experience",
+    "store-page.removeAds.details": "Experience Dodo without interruptions.\nRemove advertisements.",
+    "store-page.groupBoost": "Group-boosting Dodos",
+    "store-page.groupBoost.details": "Group-boosting Dodos allow you access to a chosen group's statistics. The bundle includes enough Dodos for 2 groups.\nCaution: the boost has to be activated in the group info card.",
+    "store-page.adGradientBundle": "Basic Dodo Bundle",
+    "store-page.adGradientBundle.details": "Enjoy a seamless Dodo experience.\nRemove ads and unlock gradient and dual-tone themes.",
+    "store-page.gradients": "Gradient and Dual-Tone Themes",
+    "store-page.gradients.details.1": "Experience the full color palette of Dodo.\nUnlock gradient and dual-tone themes.\nTry the themes out on the ",
+    "store-page.gradients.details.2": "customization page",
+    "store-page.gradients.details.3": " by long-pressing on any theme.",
+    "store-page.bigLenderBundle": "Extended Dodo Bundle",
+    "store-page.bigLenderBundle.details": "This bundle includes the basic Dodo bundle plus group-boosting Dodos for 1 group.",
+
+    "store-page.price": "One time purchase: {}",
+    "store-page.buy": "Buy",
 
     "delete_all_data": "Delete all user data",
     "delete_all_data_explanation": "Using this there won't be any remaining data on our servers, which could be bond to you",
@@ -165,8 +168,8 @@
     "use_personalised_ads": "Personalised ads",
     "use_personalised_ads_explanation": "If you want to see personalised ads",
 
-    "trial_version": "Trial time",
-    "trial_version_explanation": "You registered in the past two weeks, so you are using the app with certain bonuses. These include the ad-free experience, the usage of two-tone, gradient and adaptive themes and the access to group statistics. After two weeks you can buy these in the Dodo Store if you want.",
+    "store-page.trial-dialog": "Trial time",
+    "store-page.trial-dialog.text": "You've signed up in the past two weeks, so you are using the app without ads and with access to all customization options and group statistics.\n\nAfter two weeks you will be able to buy these here in the Dodo Store if you want to.",
 
     "calculator": "Calculator",
     "calculator_explanation": "A simple calculator if you need it 😉",
@@ -236,7 +239,7 @@
 
     "in_app_purchase_description": "Ads and color themes",
     "iapp_not_supported": "The store is not enabled on your platform",
-    "iapp_not_supported_explanation": "In app items (ex. no ads, color themes) can as of right now only be purchased in the Android or the iOS app.\nIf you don't own an Android device but still want to buy something please write an email to developer@dodoapp.net.",
+    "iapp_not_supported_explanation": "In app items (for example no ads and color themes) can as of right now only be purchased in the Android or the iOS app.\nIf you don't own an Android or iOS device but still want to buy something, please write an email to developer@dodoapp.net.",
     "no_camera_access": "The app has no prmission to access the camera.",
 
     "purchase.page.custom-amount-hint": "Long press on a member below to customize the amount they paid.",
@@ -446,7 +449,7 @@
     "add-member.invite.with_link": "Or through a message",
     "add-member.invite.with_qr": "Invite your friends by scanning a QR code",
     "add-member.create.description": "Add members to the group without them needing to use the app",
-    "add-member.create.note": "They can join always the group by invitation if they decide to use the app",
+    "add-member.create.note": "They can always join the group by invitation if they decide to use the app",
 
     "history.show-all": "Show all",
 
