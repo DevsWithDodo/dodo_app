@@ -170,7 +170,9 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
                           onPressed: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PaymentPage(),
+                              builder: (context) => PaymentPage(
+                                fromNecessaryPayments: true,
+                              ),
                             ),
                           ),
                         )

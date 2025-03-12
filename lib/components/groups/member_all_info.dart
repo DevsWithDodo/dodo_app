@@ -10,6 +10,7 @@ import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/pages/app/history_page.dart';
 import 'package:csocsort_szamla/pages/app/join_group_page.dart';
+import 'package:csocsort_szamla/pages/app/user_settings_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -89,11 +90,27 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                     ],
                   ),
                   SizedBox(height: 10),
-                  Center(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: 400),
-                      child: MemberPaymentMethods(member: widget.member),
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: 400),
+                        child: MemberPaymentMethods(member: widget.member),
+                      ),
+                      if (widget.member.id == user.id)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: TextButton(
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => UserSettingsPage()),
+                            ),
+                            child: Text(
+                              'member-info.add-payment-methods'.tr(),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                   Visibility(
                     visible: widget.member.isAdmin! && !widget.isCurrentUserAdmin,

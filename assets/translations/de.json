@@ -28,7 +28,7 @@
 
     "no_group_yet":"Noch keine Gruppe?",
     
-    "group_name":"Name der Gruppe",
+    "group_name":"Gruppenname",
     "create":"Erstellen",
 
     "change_theme":"Farbe ändern",
@@ -59,7 +59,7 @@
     "field_empty": "Dieses Feld darf nicht leer sein!",
     "not_valid_num": "Du hast keine Zahl angegeben!",
     "minimal_length": "Mindestens {} Charaktere nötig!",
-    "edit_nickname": "Neuer Spitzname",
+    "edit_nickname": "Spitzname ändern",
     "payment_explanation": "Du hast an jemanden Geld gezahlt",
     "purchase_explanation": "Du hast etwas gekauft",
 
@@ -482,7 +482,7 @@
 
     "invitation-field.who-are-you": "Wer bist du?",
     "invitation-field.none": "Keiner von ihnen",
-    "nickname-in-group": "Name in der Gruppe",
+    "nickname-in-group": "Spitzname in der Gruppe",
 
     "join-group.qr-scan": "Scanne den QR code",
 
@@ -550,6 +550,8 @@
 
     "validation.passwords.no-match": "Die Passwörter stimmen nicht überein",
 
-    "member-info.guest": "Gast"
+    "member-info.guest": "Gast",
+
+    "member-info.add-payment-methods": "Zahlungsmethoden hinzufügen"
     
 }

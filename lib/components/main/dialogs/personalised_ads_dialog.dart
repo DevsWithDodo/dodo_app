@@ -39,9 +39,11 @@ class _PersonalisedAdsDialogState extends State<PersonalisedAdsDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'personalised-ads.dialog.question'.tr(),
-                  style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                Flexible(
+                  child: Text(
+                    'personalised-ads.dialog.question'.tr(),
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
                 ),
                 Switch(
                   value: _personalisedAds,

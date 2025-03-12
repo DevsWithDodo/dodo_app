@@ -539,5 +539,7 @@
 
     "validation.passwords.no-match": "The passwords don't match",
 
-    "member-info.guest": "Guest"
+    "member-info.guest": "Guest",
+
+    "member-info.add-payment-methods": "Add payment method"
 }

@@ -19,16 +19,16 @@ enum AddMemberPageTabs {
   invite,
   create;
 
-  static AddMemberPageTabs fromIndex(int index) {
-    switch (index) {
-      case 0:
-        return AddMemberPageTabs.invite;
-      case 1:
-        return AddMemberPageTabs.create;
-      default:
-        throw Exception('Invalid index');
-    }
-  }
+  // static AddMemberPageTabs fromIndex(int index) {
+  //   switch (index) {
+  //     case 0:
+  //       return AddMemberPageTabs.invite;
+  //     case 1:
+  //       return AddMemberPageTabs.create;
+  //     default:
+  //       throw Exception('Invalid index');
+  //   }
+  // }
 }
 
 class AddMemberPage extends StatefulWidget {
@@ -99,7 +99,10 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
                 child: Column(
                   children: [
                     SegmentedButton<AddMemberPageTabs>(
-                      selectedIcon: Icon(_tabController.index == 0 ? Icons.qr_code : Icons.person_add),
+                      selectedIcon: Icon(
+                        _tabController.index == 0 ? Icons.qr_code : Icons.person_add,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
                       segments: [
                         ButtonSegment(
                           value: AddMemberPageTabs.invite,
@@ -112,12 +115,10 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
                           icon: Icon(Icons.person_add),
                         ),
                       ],
-                      selected: {AddMemberPageTabs.fromIndex(_tabController.index)},
-                      onSelectionChanged: (selected) {
-                        setState(() {
-                          _tabController.animateTo(selected.first.index);
-                        });
-                      },
+                      selected: {AddMemberPageTabs.values[_tabController.index]},
+                      onSelectionChanged: (selected) => setState(() {
+                        _tabController.animateTo(selected.first.index);
+                      }),
                     ),
                     SizedBox(height: 22),
                   ],

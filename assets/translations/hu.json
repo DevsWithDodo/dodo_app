@@ -543,5 +543,7 @@
 
     "validation.passwords.no-match": "A két jelszó nem egyezik",
 
-    "member-info.guest": "Vendég"
+    "member-info.guest": "Vendég",
+
+    "member-info.add-payment-methods": "Fizetési mód hozzáadása"
 }

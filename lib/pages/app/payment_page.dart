@@ -23,8 +23,9 @@ import 'package:provider/provider.dart';
 
 class PaymentPage extends StatefulWidget {
   final Payment? payment;
+  final bool fromNecessaryPayments;
 
-  const PaymentPage({super.key, this.payment});
+  const PaymentPage({super.key, this.payment, this.fromNecessaryPayments = false});
   @override
   State<PaymentPage> createState() => _PaymentPageState();
 }
@@ -89,6 +90,8 @@ class _PaymentPageState extends State<PaymentPage> {
       amountController.text = widget.payment!.amount.toMoneyString(selectedCurrency);
       noteController.text = widget.payment!.note;
       selectedMemberId = widget.payment!.takerId;
+      payerId = widget.payment!.payerId;
+      selectedCurrency = widget.payment!.originalCurrency;
     }
   }
 
@@ -126,6 +129,7 @@ class _PaymentPageState extends State<PaymentPage> {
                           return RecommendedPayments(
                             payerId: payerId,
                             members: snapshot.data!,
+                            autoSelectFirst: widget.fromNecessaryPayments,
                             onChange: (payment, selected) => setState(() {
                               if (selected) {
                                 amountController.text = payment.amount.toString();
