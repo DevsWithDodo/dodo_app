@@ -1,7 +1,6 @@
 const String APP_URL =  'https://www.examp.le/api';
 const String TEST_URL = 'https://test.examp.le/api';
 int currentVersion=YOUR_CURRENT_VERSION;
-bool useTest = false;
 const String googleOAuthServerClientId = "1234-5678.apps.googleusercontent.com";
 const String appleOAuthClientId = "net.domain.reverse";
 
