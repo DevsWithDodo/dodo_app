@@ -62,7 +62,7 @@ class _DeleteAllDataState extends State<DeleteAllData> {
                   onPressed: () {
                     showDialog(
                       builder: (context) => ConfirmChoiceDialog(
-                        choice: 'sure_user_delete',
+                        choice: 'settings.delete-all-data.confirm',
                       ),
                       context: context,
                     ).then(

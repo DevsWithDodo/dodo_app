@@ -136,7 +136,7 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
                                   (element) => element.paymentMethods != null && element.paymentMethods!.isNotEmpty && widget.necessaryPayments.any((payment) => payment.takerId == element.id),
                                 )
                                 .toList();
-                            if (widget.members.any((element) => element.paymentMethods != null && element.paymentMethods!.isNotEmpty)) {
+                            if (membersToCopy.any((element) => element.paymentMethods != null && element.paymentMethods!.isNotEmpty)) {
                               paymentMethodsPart = "\n\n${'payment-methods.title'.tr()}\n${membersToCopy.map(
                                     (member) {
                                       return member.paymentMethods!.isEmpty

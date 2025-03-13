@@ -164,6 +164,8 @@
     "undo": "Visszavonás",
     "request_deleted": "Törölve!",
 
+    "settings.delete-all-data.confirm": "Később nem fogod tudni visszaállítani az adatokat. Biztosan törölni szeretnéd a fiókod?",
+
     "statistics": "Statisztikák",
 
     "statistics_not_available": "A statisztiszták nem elérhetőek",
@@ -336,6 +338,8 @@
 
     "payment-methods.title": "Fizetési módok",
     "payment-methods.subtitle": "Add meg a módokat, amelyeken keresztül a többiek fizethetnek neked",
+    "payment-method.name": "Név",
+    "payment-method.value": "Érték",
     "payment-method.value.hint": "pl. 1234567-891011",
     "payment-method.name.hint": "pl. Számlaszám",
     "payment-methods.dialog.title": "Fizetési módok",
@@ -545,5 +549,7 @@
 
     "member-info.guest": "Vendég",
 
-    "member-info.add-payment-methods": "Fizetési mód hozzáadása"
+    "member-info.add-payment-methods": "Fizetési mód hozzáadása",
+
+    "invitation-field.select-guest.error": "Válaszd ki, hogy ki vagy!"
 }

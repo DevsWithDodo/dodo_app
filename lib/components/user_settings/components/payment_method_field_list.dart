@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/user_settings/components/payment_method_field.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
@@ -26,23 +25,7 @@ class _PaymentMethodFieldListState extends State<PaymentMethodFieldList> {
   @override
   void initState() {
     super.initState();
-    paymentMethods = context.read<UserState>().user!.paymentMethods.map((paymentMethod) => PaymentMethodFieldModel.fromPaymentMethod(paymentMethod)).sorted(compare).toList();
-  }
-
-  int compare(PaymentMethodFieldModel a, PaymentMethodFieldModel b) {
-    if (a.saved && b.saved) {
-      return a.priority
-          ? -1
-          : b.priority
-              ? 1
-              : 0;
-    } else if (a.saved) {
-      return -1;
-    } else if (b.saved) {
-      return 1;
-    } else {
-      return 0;
-    }
+    paymentMethods = context.read<UserState>().user!.paymentMethods.map((paymentMethod) => PaymentMethodFieldModel.fromPaymentMethod(paymentMethod)).toList()..sort();
   }
 
   void onTimerEnd() {
@@ -62,28 +45,28 @@ class _PaymentMethodFieldListState extends State<PaymentMethodFieldList> {
       for (var paymentMethod in validPaymentMethods) {
         paymentMethod.saved = true;
       }
-      paymentMethods.sort(compare);
+      paymentMethods.sort();
     });
     timer = null;
   }
 
-  void addPaymentMethod() => setState(() {
-        paymentMethods.add(PaymentMethodFieldModel.empty());
-      });
+  void addPaymentMethod() {
+    setState(() => paymentMethods.add(PaymentMethodFieldModel.empty()));
+  }
 
-  void Function() removePaymentMethod(PaymentMethodFieldModel paymentMethod) => () {
-        setTimer(true);
-        setState(() {
-          paymentMethods.remove(paymentMethod);
-        });
-      };
+  VoidCallback removePaymentMethod(PaymentMethodFieldModel paymentMethod) {
+    return () {
+      setTimer(true);
+      setState(() => paymentMethods.remove(paymentMethod));
+    };
+  }
 
-  void Function() setPriority(PaymentMethodFieldModel paymentMethod) => () {
-        setTimer();
-        setState(() {
-          paymentMethod.priority = !paymentMethod.priority;
-        });
-      };
+  VoidCallback setPriority(PaymentMethodFieldModel paymentMethod) {
+    return () {
+      setTimer();
+      setState(() => paymentMethod.priority = !paymentMethod.priority);
+    };
+  }
 
   void setTimer([bool fast = false]) {
     timer?.cancel();
@@ -109,17 +92,19 @@ class _PaymentMethodFieldListState extends State<PaymentMethodFieldList> {
               ),
             ),
           Column(
-            children: paymentMethods
-                .map((paymentMethod) => Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: PaymentMethodField(
-                        paymentMethod: paymentMethod,
-                        onRemove: removePaymentMethod(paymentMethod),
-                        onPriorityChange: setPriority(paymentMethod),
-                        onTextChange: setTimer,
-                      ),
-                    ))
-                .toList(),
+            children: [
+              for (var (index, paymentMethod) in paymentMethods.indexed)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: PaymentMethodField(
+                    paymentMethod: paymentMethod,
+                    onRemove: removePaymentMethod(paymentMethod),
+                    onPriorityChange: setPriority(paymentMethod),
+                    onTextChange: setTimer,
+                    showLabels: index == 0,
+                  ),
+                ),
+            ],
           ),
           Center(
             child: Padding(
@@ -137,7 +122,7 @@ class _PaymentMethodFieldListState extends State<PaymentMethodFieldList> {
   }
 }
 
-class PaymentMethodFieldModel {
+class PaymentMethodFieldModel implements Comparable<PaymentMethodFieldModel> {
   TextEditingController nameController = TextEditingController();
   TextEditingController valueController = TextEditingController();
   bool hasError;
@@ -165,4 +150,21 @@ class PaymentMethodFieldModel {
         priority: paymentMethod.priority,
         saved: true,
       );
+
+  @override
+  int compareTo(PaymentMethodFieldModel other) {
+    if (saved && other.saved) {
+      return priority
+          ? -1
+          : other.priority
+              ? 1
+              : 0;
+    } else if (saved) {
+      return -1;
+    } else if (other.saved) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
 }

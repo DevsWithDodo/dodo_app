@@ -140,7 +140,7 @@
     "report_this_error": "Melde den Fehler",
 
     "store-page": "Dodo Store",
-    "store-page.general-information": "Da wir Apps entwickeln, die auch wir gerne benutzen, sind fast alle Funktionen kostenlos und es gibt keine Vollbild- oder Videoanzeigen.\nWenn du uns unterstützen möchtest, kannst du hier einige Goodies kaufen. Natürlich sind alle diese Käufe einmalig und wir versprechen, dass sich daran in Zukunft nichts ändern wird. Viel Spaß beim Dodoing 🦤",
+    "store-page.general-information": "Da wir Apps entwickeln möchten, die auch wir gerne benutzen, sind fast alle Funktionen kostenlos und es gibt keine Vollbild- oder Videoanzeigen.\nWenn du uns unterstützen möchtest, kannst du hier ein Paar Goodies kaufen. Natürlich sind alle diese Käufe einmalig und wir versprechen, dass sich daran in Zukunft nichts ändern wird. Viel Spaß beim Dodoing 🦤",
 
     "store-page.removeAds": "Werbefreies Erlebnis",
     "store-page.removeAds.details": "Erlebe Dodo ohne Unterbrechungen.\nEntferne die Anzeigen.",
@@ -164,7 +164,7 @@
     "undo": "Rückgängig",
     "request_deleted": "Gelöscht!",
 
-    "sure_user_delete": "Später wirst du dein Account nicht mehr wiederherstellen können! Möchtest du fortfahren?",
+    "settings.delete-all-data.confirm": "Später wirst du dein Account nicht mehr wiederherstellen können! Möchtest du fortfahren?",
 
     "statistics": "Statistiken",
 
@@ -346,6 +346,8 @@
 
     "payment-methods.title": "Zahlungsmethoden",
     "payment-methods.subtitle": "Füge die Methoden hinzu, mit denen andere dir Geld schicken können",
+    "payment-method.name": "Name",
+    "payment-method.value": "Wert",
     "payment-method.value.hint": "zB. 1234567-891011",
     "payment-method.name.hint": "zB. IBAN",    
     "payment-methods.dialog.title": "Zahlungsmethoden",
@@ -552,6 +554,8 @@
 
     "member-info.guest": "Gast",
 
-    "member-info.add-payment-methods": "Zahlungsmethoden hinzufügen"
+    "member-info.add-payment-methods": "Zahlungsmethoden hinzufügen",
+
+    "invitation-field.select-guest.error": "Wähle aus, wer du bist!"
     
 }

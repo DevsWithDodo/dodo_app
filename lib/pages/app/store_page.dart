@@ -23,12 +23,24 @@ class _StorePageState extends State<StorePage> {
   @override
   void initState() {
     super.initState();
+    isAvailable = _isAvailable();
+    productDetailsResponse = getProductDetails();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // This hopefully isn't needed, but just in case
       if (!context.read<AppConfig>().isIAPPlatformEnabled) {
         Navigator.of(context).pop();
       }
     });
+  }
+
+  late Future<bool> isAvailable;
+  late Future<ProductDetailsResponse> productDetailsResponse;
+  Future<bool> _isAvailable() async {
+    return await InAppPurchase.instance.isAvailable();
+  }
+
+  Future<ProductDetailsResponse> getProductDetails() async {
+    return await InAppPurchase.instance.queryProductDetails(ProductOption.ids);
   }
 
   @override
@@ -48,7 +60,7 @@ class _StorePageState extends State<StorePage> {
             ),
           ),
           FutureBuilder(
-            future: InAppPurchase.instance.isAvailable(),
+            future: isAvailable,
             builder: (context, AsyncSnapshot<bool> isAvailableSnapshot) {
               if (isAvailableSnapshot.connectionState != ConnectionState.done) {
                 return LinearProgressIndicator(
@@ -58,19 +70,19 @@ class _StorePageState extends State<StorePage> {
               if (!isAvailableSnapshot.hasData) {
                 return ErrorMessage(
                   error: isAvailableSnapshot.error as String?,
-                  onTap: () => setState(() {}),
+                  onTap: () => setState(() => isAvailable = _isAvailable()),
                   errorLocation: 'in_app_purchase',
                 );
               }
               if (!isAvailableSnapshot.data!) {
                 return ErrorMessage(
                   error: 'error',
-                  onTap: () => setState(() {}),
+                  onTap: () => setState(() => isAvailable = _isAvailable()),
                   errorLocation: 'in_app_purchase',
                 );
               }
               return FutureBuilder(
-                future: InAppPurchase.instance.queryProductDetails(ProductOption.ids),
+                future: productDetailsResponse,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState != ConnectionState.done) {
                     return LinearProgressIndicator();
@@ -78,14 +90,16 @@ class _StorePageState extends State<StorePage> {
                   if (!snapshot.hasData) {
                     return ErrorMessage(
                       error: snapshot.error as String?,
-                      onTap: () => setState(() {}),
+                      onTap: () => setState(() => productDetailsResponse = getProductDetails()),
                       errorLocation: 'in_app_purchase',
                     );
                   }
                   final user = context.read<UserState>().user!;
                   final wrappedDetails = snapshot.data!.productDetails
-                      .map((e) => ProductDetailsWrapper.fromProductDetails(e, user))
-                      // .where((e) => e.isAvailableForPurchase)
+                      .map(
+                        (e) => ProductDetailsWrapper.fromProductDetails(e, user),
+                      )
+                      .where((e) => e.isAvailableForPurchase)
                       .toList()
                     ..sort();
                   return Column(

@@ -160,6 +160,8 @@
     "undo": "Undo",
     "request_deleted": "Deleted!",
 
+    "settings.delete-all-data.confirm": "You will not be able to restore your data after this. Are you sure you want to delete all your data?",
+
     "statistics": "Statistics",
 
     "statistics_not_available": "Statistics not available",
@@ -333,6 +335,8 @@
 
     "payment-methods.title": "Payment methods",
     "payment-methods.subtitle": "List the methods other members can pay you with",
+    "payment-method.name": "Name",
+    "payment-method.value": "Value",
     "payment-method.value.hint": "eg. 1234567-891011",
     "payment-method.name.hint": "eg. IBAN",
     "payment-methods.dialog.title": "Payment methods",
@@ -541,5 +545,7 @@
 
     "member-info.guest": "Guest",
 
-    "member-info.add-payment-methods": "Add payment method"
+    "member-info.add-payment-methods": "Add payment method",
+
+    "invitation-field.select-guest.error": "Select who you are!"
 }

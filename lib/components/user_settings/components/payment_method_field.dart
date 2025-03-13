@@ -7,6 +7,7 @@ class PaymentMethodField extends StatelessWidget {
   final VoidCallback onRemove;
   final VoidCallback onPriorityChange;
   final VoidCallback onTextChange;
+  final bool showLabels;
 
   const PaymentMethodField({
     super.key,
@@ -14,6 +15,7 @@ class PaymentMethodField extends StatelessWidget {
     required this.onRemove,
     required this.onPriorityChange,
     required this.onTextChange,
+    required this.showLabels,
   });
 
   @override
@@ -24,57 +26,144 @@ class PaymentMethodField extends StatelessWidget {
               isDense: true,
             ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Table(
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        columnWidths: const {
+          0: FixedColumnWidth(50),
+          1: FlexColumnWidth(2),
+          2: FlexColumnWidth(3),
+          3: FixedColumnWidth(50),
+        },
         children: [
-          IconButton(
-            visualDensity: VisualDensity.compact,
-            onPressed: onPriorityChange,
-            icon: AnimatedCrossFade(
-              duration: Duration(milliseconds: 100),
-              crossFadeState: paymentMethod.priority ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-              firstChild: Icon(Icons.star),
-              secondChild: Icon(Icons.star_border),
-            ),
-          ),
-          Expanded(
-            child: Row(
+          if (showLabels)
+            TableRow(
               children: [
-                Flexible(
-                  flex: 2,
-                  child: TextField(
-                    controller: paymentMethod.nameController,
-                    decoration: InputDecoration(
-                      hintText: 'payment-method.name.hint'.tr(),
-                      isDense: false,
-                    ),
-                    onChanged: (_) => onTextChange(),
-                    onTapOutside: (_) => onTextChange(),
-                  ),
+                SizedBox(),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2),
+                  child: Text('payment-method.name'.tr()),
                 ),
-                SizedBox(width: 5),
-                Flexible(
-                  flex: 3,
-                  child: TextField(
-                    controller: paymentMethod.valueController,
-                    decoration: InputDecoration(
-                      hintText: 'payment-method.value.hint'.tr(),
-                      isDense: false,
-                    ),
-                    onChanged: (_) => onTextChange(),
-                    onEditingComplete: onTextChange,
-                  ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2),
+                  child: Text('payment-method.value'.tr()),
                 ),
+                SizedBox(),
               ],
             ),
-          ),
-          IconButton(
-            visualDensity: VisualDensity.compact,
-            icon: Icon(Icons.delete),
-            onPressed: onRemove,
+          TableRow(
+            children: [
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                onPressed: onPriorityChange,
+                icon: AnimatedCrossFade(
+                  duration: Duration(milliseconds: 100),
+                  crossFadeState: paymentMethod.priority ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                  firstChild: Icon(Icons.star),
+                  secondChild: Icon(Icons.star_border),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 5),
+                child: TextField(
+                  controller: paymentMethod.nameController,
+                  decoration: InputDecoration(
+                    hintText: 'payment-method.name.hint'.tr(),
+                    isDense: false,
+                  ),
+                  onChanged: (_) => onTextChange(),
+                  onTapOutside: (_) => onTextChange(),
+                ),
+              ),
+              TextField(
+                controller: paymentMethod.valueController,
+                decoration: InputDecoration(
+                  hintText: 'payment-method.value.hint'.tr(),
+                  isDense: false,
+                ),
+                onChanged: (_) => onTextChange(),
+                onEditingComplete: onTextChange,
+              ),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                icon: Icon(Icons.delete),
+                onPressed: onRemove,
+              )
+            ],
           )
         ],
       ),
+
+      // Row(
+      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //   children: [
+      //     IconButton(
+      //       visualDensity: VisualDensity.compact,
+      //       onPressed: onPriorityChange,
+      //       icon: AnimatedCrossFade(
+      //         duration: Duration(milliseconds: 100),
+      //         crossFadeState: paymentMethod.priority ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      //         firstChild: Icon(Icons.star),
+      //         secondChild: Icon(Icons.star_border),
+      //       ),
+      //     ),
+      //     Expanded(
+      //       child: Row(
+      //         children: [
+      //           Flexible(
+      //             flex: 2,
+      //             child: Column(
+      //               crossAxisAlignment: CrossAxisAlignment.start,
+      //               children: [
+      //                 if (showLabels)
+      //                   Padding(
+      //                     padding: const EdgeInsets.only(bottom: 2),
+      //                     child: Text('payment-method.name'.tr()),
+      //                   ),
+      //                 TextField(
+      //                   controller: paymentMethod.nameController,
+      //                   decoration: InputDecoration(
+      //                     hintText: 'payment-method.name.hint'.tr(),
+      //                     isDense: false,
+      //                   ),
+      //                   onChanged: (_) => onTextChange(),
+      //                   onTapOutside: (_) => onTextChange(),
+      //                 ),
+      //               ],
+      //             ),
+      //           ),
+      //           SizedBox(width: 5),
+      //           Flexible(
+      //             flex: 3,
+      //             child: Column(
+      //               crossAxisAlignment: CrossAxisAlignment.start,
+      //               children: [
+      //                 if (showLabels)
+      //                   Padding(
+      //                     padding: const EdgeInsets.only(bottom: 2),
+      //                     child: Text('payment-method.value'.tr()),
+      //                   ),
+      //                 TextField(
+      //                   controller: paymentMethod.valueController,
+      //                   decoration: InputDecoration(
+      //                     hintText: 'payment-method.value.hint'.tr(),
+      //                     isDense: false,
+      //                   ),
+      //                   onChanged: (_) => onTextChange(),
+      //                   onEditingComplete: onTextChange,
+      //                 ),
+      //               ],
+      //             ),
+      //           ),
+      //         ],
+      //       ),
+      //     ),
+      //     IconButton(
+      //       visualDensity: VisualDensity.compact,
+      //       icon: Icon(Icons.delete),
+      //       onPressed: onRemove,
+      //     )
+      //   ],
+      // ),
     );
   }
 }
