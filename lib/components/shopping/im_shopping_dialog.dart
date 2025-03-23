@@ -26,7 +26,7 @@ class _ImShoppingDialogState extends State<ImShoppingDialog> {
       Map<String, dynamic> body = {'store': store};
       await Http.post(
         body: body,
-        uri: '/groups/${context.read<UserState>().currentGroup!.id}/send_shopping_notification',
+        uri: '/groups/${context.read<UserNotifier>().currentGroup!.id}/send_shopping_notification',
       );
       return BoolFutureOutput.True;
     } catch (_) {

@@ -77,7 +77,7 @@ class _DeleteAllDataState extends State<DeleteAllData> {
                                   MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
                                   (r) => false,
                                 );
-                                UserState userProvider = context.read<UserState>();
+                                UserNotifier userProvider = context.read<UserNotifier>();
                                 userProvider.setGroup(null);
                                 userProvider.setGroups([]);
                                 userProvider.setUser(null);

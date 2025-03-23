@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'models.dart';
 
 List<Payment> necessaryPayments(List<Member> members, BuildContext context) {
-  Group currentGroup = context.read<UserState>().currentGroup!;
+  Group currentGroup = context.read<UserNotifier>().currentGroup!;
   List<Payment> payments = <Payment>[];
   List<Member> memberCopy = <Member>[];
   if (members.where((member) => member.balance != 0).isNotEmpty) {

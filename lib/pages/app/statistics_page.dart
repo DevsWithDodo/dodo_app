@@ -97,7 +97,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         }
         return BarTooltipItem(
           value.toMoneyString(
-            context.read<UserState>().currentGroup!.currency,
+            context.read<UserNotifier>().currentGroup!.currency,
             withSymbol: true,
           ),
           Theme.of(context).textTheme.bodySmall!.copyWith(color: color),
@@ -113,7 +113,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         }
         return BarTooltipItem(
           value.toMoneyString(
-            context.read<UserState>().currentGroup!.currency,
+            context.read<UserNotifier>().currentGroup!.currency,
             withSymbol: true,
           ),
           Theme.of(context).textTheme.bodySmall!.copyWith(color: color),
@@ -184,7 +184,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
         leftTitles: AxisTitles(
           axisNameSize: 22,
           axisNameWidget: Text(
-            '${'amount'.tr()} (${context.watch<UserState>().currentGroup!.currency.symbol})',
+            '${'amount'.tr()} (${context.watch<UserNotifier>().currentGroup!.currency.symbol})',
           ),
           sideTitles: SideTitles(
             reservedSize: 50,
@@ -196,7 +196,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   ? Container()
                   : Text(
                       value.abs().toMoneyString(
-                            context.watch<UserState>().currentGroup!.currency,
+                            context.watch<UserNotifier>().currentGroup!.currency,
                           ),
                       style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),

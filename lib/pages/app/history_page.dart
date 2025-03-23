@@ -50,7 +50,7 @@ class _HistoryPageState extends State<HistoryPage> with TickerProviderStateMixin
           GetUriKeys.purchases,
           context,
           queryParams: {
-            'group': context.read<UserState>().currentGroup!.id.toString(),
+            'group': context.read<UserNotifier>().currentGroup!.id.toString(),
             'from_date': DateFormat('yyyy-MM-dd').format(_startDate),
             'until_date': DateFormat('yyyy-MM-dd').format(_endDate),
             'user_id': _selectedMemberId.toString(),
@@ -92,7 +92,7 @@ class _HistoryPageState extends State<HistoryPage> with TickerProviderStateMixin
           GetUriKeys.payments,
           context,
           queryParams: {
-            'group': context.read<UserState>().currentGroup!.id.toString(),
+            'group': context.read<UserNotifier>().currentGroup!.id.toString(),
             'from_date': DateFormat('yyyy-MM-dd').format(_startDate),
             'until_date': DateFormat('yyyy-MM-dd').format(_endDate),
             'user_id': _selectedMemberId.toString(),
@@ -149,7 +149,7 @@ class _HistoryPageState extends State<HistoryPage> with TickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    _selectedMemberId = widget.selectedMemberId ?? context.read<UserState>().user!.id;
+    _selectedMemberId = widget.selectedMemberId ?? context.read<UserNotifier>().user!.id;
     _tabController = TabController(length: 2, vsync: this, initialIndex: widget.startingIndex ?? 0);
     _selectedIndex = widget.startingIndex ?? 0;
 

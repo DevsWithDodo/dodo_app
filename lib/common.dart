@@ -16,7 +16,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-double adHeight(BuildContext context) => (context.read<AppConfig>().isAdPlatformEnabled && (context.read<UserState>().user?.showAds ?? false)) ? 50 : 0;
+double adHeight(BuildContext context) => (context.read<AppConfig>().isAdPlatformEnabled && (context.read<UserNotifier>().user?.showAds ?? false)) ? 50 : 0;
 
 /// The delay time in ms for the success dialog to pop.
 int delayTime = 700;

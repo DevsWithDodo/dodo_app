@@ -2,10 +2,10 @@ import 'dart:math';
 
 import 'package:csocsort_szamla/components/main/dialogs/iapp_not_supported_dialog.dart';
 import 'package:csocsort_szamla/components/main/dialogs/personalised_ads_dialog.dart';
-import 'package:csocsort_szamla/components/main/main_dialogs/like_app.dart';
 import 'package:csocsort_szamla/components/main/main_dialogs/main_dialog.dart';
 import 'package:csocsort_szamla/components/main/main_dialogs/payment_method.dart';
 import 'package:csocsort_szamla/components/main/main_dialogs/pin_verification.dart';
+import 'package:csocsort_szamla/components/main/main_dialogs/rate_app.dart';
 import 'package:csocsort_szamla/components/main/main_dialogs/themes.dart';
 import 'package:csocsort_szamla/components/main/main_dialogs/trial_ended_dialog.dart';
 import 'package:csocsort_szamla/helpers/app_theme.dart';
@@ -17,6 +17,7 @@ import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_usage_provider.dart';
 import 'package:csocsort_szamla/main.dart';
 import 'package:csocsort_szamla/pages/app/store_page.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,7 @@ class MainDialogBuilder extends StatefulWidget {
   MainDialogBuilder({required this.context, super.key}) {
     dialogs = [
       TrialEndedDialog(
-        canShow: (context) => context.read<UserState>().user!.userStatus.trialStatus == TrialStatus.expired,
+        canShow: (context) => context.read<UserNotifier>().user!.userStatus.trialStatus == TrialStatus.expired,
         type: DialogType.modal,
         showTime: DialogShowTime.both,
         onDismiss: (context, {payload}) async {
@@ -40,7 +41,7 @@ class MainDialogBuilder extends StatefulWidget {
               'trial_status': "seen",
             },
           );
-          UserState provider = context.read<UserState>();
+          UserNotifier provider = context.read<UserNotifier>();
           AppThemeState appTheme = context.read<AppThemeState>();
           provider.setUserStatus(provider.user!.userStatus.copyWith(
             trialStatus: TrialStatus.seen,
@@ -72,7 +73,7 @@ class MainDialogBuilder extends StatefulWidget {
         showTime: DialogShowTime.both,
         type: DialogType.bottom,
         canShow: (context) {
-          User user = context.read<UserState>().user!;
+          User user = context.read<UserNotifier>().user!;
           if (user.username == null) return false; // No username means social login, no need for pin verification
           UserStatus status = user.userStatus;
           int verificationCount = status.pinVerificationCount;
@@ -92,28 +93,62 @@ class MainDialogBuilder extends StatefulWidget {
           return false;
         },
         onDismiss: (context, {payload}) {
-          UserState provider = context.read<UserState>();
+          UserNotifier provider = context.read<UserNotifier>();
           UserStatus status = provider.user!.userStatus;
           provider.setUserStatus(status.copyWith(
             pinVerifiedAt: DateTime.now(), // Only show once per session
           ));
         },
       ),
-      LikeTheAppMainDialog(
+      RateAppMainDialog(
         canShow: (context) {
-          User? user = context.read<UserState>().user;
-          return user != null && user.userStatus.trialStatus != TrialStatus.trial && !user.ratedApp && Random().nextDouble() <= 0.15;
+          final usage = context.read<UserUsageNotifier>();
+
+          // Check if the user has rated the app or if they are a new user
+          if (usage.ratedApp || usage.appOpenCount < 5) return false;
+
+          const int minDaysSinceLastPrompt = 30; // Cooldown period
+          // Prevent spamming: Check last prompt or dismissal cooldown
+          if (DateTime.now().difference(usage.lastRateAppDialogDate).inDays < minDaysSinceLastPrompt) {
+            return false;
+          }
+
+          // If any major milestone flag is true, show the prompt
+          if (usage.anyFlagTrue()) {
+            usage.setFlagsFalse(); // Reset flags after showing the dialog
+            usage.setLastRateAppDialogDate(DateTime.now()); // Update the last prompt date
+            return true;
+          }
+
+          const int minExpenseCount = 5;
+          const int minReceiptScans = 2;
+          const int minAppOpens = 10;
+          const int minGroupsCreated = 2;
+          // Calculate engagement probability based on usage metrics
+          double engagementProbability = min(0.8, 0.2 + (usage.appOpenCount / 50) * 0.6);
+          // **PROBABILITY-BASED TRIGGER**: If engagement conditions are met, show with some probability
+          bool meetsEngagementCriteria = usage.expenseCount >= minExpenseCount || usage.receiptScannerCount >= minReceiptScans || usage.appOpenCount >= minAppOpens || usage.groupsUsedCount >= minGroupsCreated;
+
+          if (meetsEngagementCriteria) {
+            bool show = Random().nextDouble() < engagementProbability;
+            if (show) {
+              usage.setLastRateAppDialogDate(DateTime.now());
+              return true;
+            }
+          }
+
+          return false;
         },
         type: DialogType.modal,
         showTime: DialogShowTime.onBuild,
         onDismiss: (context, {payload}) {
-          context.read<UserState>().user!.ratedApp = true;
+          context.read<UserNotifier>().user!.ratedApp = true;
           EventBus.instance.fire(EventBus.hideMainDialog);
         },
       ),
       PaymentMethodMainDialog(
         canShow: (context) {
-          User? user = context.read<UserState>().user;
+          User? user = context.read<UserNotifier>().user;
           return user != null && user.paymentMethods.isEmpty && Random().nextDouble() <= 0.15;
         },
         type: DialogType.bottom,
@@ -121,7 +156,7 @@ class MainDialogBuilder extends StatefulWidget {
       ),
       ThemesMainDialog(
         canShow: (context) {
-          UserState provider = context.read<UserState>();
+          UserNotifier provider = context.read<UserNotifier>();
           User? user = provider.user;
           ThemeName currentTheme = context.read<AppThemeState>().themeName;
           if (user == null) return false;

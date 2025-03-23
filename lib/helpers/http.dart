@@ -53,7 +53,7 @@ String generateUri(
   Map<String, String?>? queryParams,
 }) {
   if (type == HttpType.get) {
-    Group? currentGroup = context.read<UserState?>()?.currentGroup;
+    Group? currentGroup = context.read<UserNotifier?>()?.currentGroup;
     if (params == null && currentGroup != null) {
       params = [currentGroup.id.toString()];
     }
@@ -118,7 +118,7 @@ class Http {
           return responseFromCache;
         }
       }
-      String? apiToken = context.read<UserState?>()?.user?.apiToken;
+      String? apiToken = context.read<UserNotifier?>()?.user?.apiToken;
       Map<String, String> header = {
         "Content-Type": "application/json",
         ...(apiToken == null ? {} : {"Authorization": "Bearer $apiToken"}),
@@ -134,7 +134,7 @@ class Http {
         Map<String, dynamic> error = jsonDecode(response.body);
         if (error['error'] == 'Unauthenticated.') {
           clearAllCache();
-          UserState appStateProvider = context.read<UserState>();
+          UserNotifier appStateProvider = context.read<UserNotifier>();
           appStateProvider.logout(withoutRequest: true);
           FToast ft = FToast();
           ft.init(context);
@@ -165,7 +165,7 @@ class Http {
   }) async {
     try {
       BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
-      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer ${context.read<UserState>().user?.apiToken ?? ''}"};
+      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer ${context.read<UserNotifier>().user?.apiToken ?? ''}"};
       http.Response response;
       if (body != null) {
         String bodyEncoded = jsonEncode(body, toEncodable: (e) => e.toString());
@@ -205,7 +205,7 @@ class Http {
   }) async {
     try {
       BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
-      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer ${context.read<UserState>().user?.apiToken ?? ''}"};
+      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer ${context.read<UserNotifier>().user?.apiToken ?? ''}"};
       http.Response response;
       if (body != null) {
         String bodyEncoded = json.encode(body, toEncodable: (e) => e.toString());
@@ -246,7 +246,7 @@ class Http {
   static Future<http.Response> delete({required String uri}) async {
     try {
       BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
-      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer ${context.read<UserState>().user?.apiToken ?? ''}"};
+      Map<String, String> header = {"Content-Type": "application/json", "Authorization": "Bearer ${context.read<UserNotifier>().user?.apiToken ?? ''}"};
       http.Response response = await http.delete(Uri.parse(context.read<AppConfig>().appUrl + uri), headers: header);
 
       if (response.statusCode < 300 && response.statusCode >= 200) {
@@ -274,7 +274,7 @@ class Http {
   }
 
   static void memberNotInGroup(BuildContext context) {
-    UserState userProvider = context.read<UserState>();
+    UserNotifier userProvider = context.read<UserNotifier>();
     userProvider.setGroup(null, notify: false);
     clearAllCache();
     FToast ft = FToast();
@@ -391,7 +391,7 @@ Future deleteCache({required String uri, bool multipleArgs = false}) async {
 
 Future clearGroupCache(BuildContext context) async {
   if (!kIsWeb) {
-    int currentGroupId = context.read<UserState>().currentGroup!.id;
+    int currentGroupId = context.read<UserNotifier>().currentGroup!.id;
     var cacheDir = await _getCacheDir();
     String s = Platform.isWindows ? '\\' : '/';
     if (cacheDir.existsSync()) {

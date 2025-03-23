@@ -26,7 +26,7 @@ class _ChangeNicknameDialogState extends State<ChangeNicknameDialog> {
     try {
       Map<String, dynamic> body = {"member_id": memberId, "nickname": nickname};
       await Http.put(
-        uri: '/groups/${context.read<UserState>().currentGroup!.id}/members',
+        uri: '/groups/${context.read<UserNotifier>().currentGroup!.id}/members',
         body: body,
       );
       return BoolFutureOutput.True;

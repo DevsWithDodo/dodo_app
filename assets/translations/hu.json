@@ -551,5 +551,17 @@
 
     "member-info.add-payment-methods": "Fizetési mód hozzáadása",
 
-    "invitation-field.select-guest.error": "Válaszd ki, hogy ki vagy!"
+    "invitation-field.select-guest.error": "Válaszd ki, hogy ki vagy!",
+
+    "receipt-scanner.privacy-notice.title": "Adatvédelmi tipp",
+    "receipt-scanner.privacy-notice.content": "A blokk beolvasásához a Google Gemini szolgáltatását használjuk. A kép sosem kerül a szervereinkre, az a telefonodról közvetlenül a Google szervereire kerül. Hogyha nem bízol a Goole adatkezelésében, akkor ne használd ezt a funkciót.",
+    
+    "social-login.privacy-notice.title": "Adatvédelmi tipp",
+    "social-login.privacy-notice.content": "A social login használatakor a szolgáltató (Google, Apple) megosztja velünk az e-mailedet és egy ID-t. Nem tároljuk el az e-mailedet, az ID-t pedig titkosított formátumban tároljuk. A szolgáltató sosem látja az alkalmazáson belüli tevékenységeidet, csupán a bejelentkezés igazolását végzi.",
+
+    "rate-app-dialog.title": "Tetszik a Dodo? 🦤",
+    "rate-app-dialog.content": "Hogyha tetszik az alkalmazásunk, légyszi értékeld az áruházban. ⭐⭐⭐⭐⭐.",
+    "rate-app-dialog.later": "Emlékeztesd később",
+    "rate-app-dialog.rate-now": "⭐ Értékelem"
+
 }

@@ -49,17 +49,14 @@ class Legend extends StatelessWidget {
               Container(
                 width: 20,
                 height: 20,
-                decoration: BoxDecoration(
-                    color: index == 0 ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.tertiary,
-                    borderRadius: BorderRadius.circular(50)),
+                decoration: BoxDecoration(color: index == 0 ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.tertiary, borderRadius: BorderRadius.circular(50)),
               ),
               SizedBox(
                 width: 10,
               ),
               Text(
                 "${type.translationKey}.$entry".tr(),
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               )
             ],
           ),
@@ -74,28 +71,19 @@ class Legend extends StatelessWidget {
                   children: [
                     Text(
                       '${'statistics.legend.sum-of'.tr()} ',
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          color:
-                              Theme.of(context).colorScheme.onSurfaceVariant),
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     Container(
                       width: 15,
                       height: 15,
-                      decoration: BoxDecoration(
-                          color: index == 0
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.tertiary,
-                          borderRadius: BorderRadius.circular(15)),
+                      decoration: BoxDecoration(color: index == 0 ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.tertiary, borderRadius: BorderRadius.circular(15)),
                     ),
                   ],
                 ),
                 Flexible(
                   child: Text(
-                    sums[index].toMoneyString(
-                        context.watch<UserState>().currentGroup!.currency,
-                        withSymbol: true),
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    sums[index].toMoneyString(context.watch<UserNotifier>().currentGroup!.currency, withSymbol: true),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 )
               ],

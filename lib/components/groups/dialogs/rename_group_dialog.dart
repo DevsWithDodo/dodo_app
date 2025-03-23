@@ -29,13 +29,13 @@ class _RenameGroupDialogState extends State<RenameGroupDialog> {
       Map<String, dynamic> body = {"name": groupName};
 
       http.Response response = await Http.put(
-        uri: '/groups/${context.read<UserState>().currentGroup!.id}',
+        uri: '/groups/${context.read<UserNotifier>().currentGroup!.id}',
         body: body,
       );
 
       Map<String, dynamic> decoded = jsonDecode(response.body);
       if (mounted) {
-        context.read<UserState>().setGroupName(decoded['group_name']);
+        context.read<UserNotifier>().setGroupName(decoded['group_name']);
       }
       return BoolFutureOutput.True;
     } catch (_) {

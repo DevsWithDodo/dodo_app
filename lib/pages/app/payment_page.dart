@@ -13,6 +13,7 @@ import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_usage_provider.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,8 @@ class _PaymentPageState extends State<PaymentPage> {
   int? payerId;
   CrossFadeState purchaserSelector = CrossFadeState.showFirst;
 
+  bool usesAutomaticSettleUp = false;
+
   Future<List<Member>> getMembers({bool overwriteCache = false}) async {
     try {
       Response response = await Http.get(
@@ -61,7 +64,7 @@ class _PaymentPageState extends State<PaymentPage> {
   Future<BoolFutureOutput> _postPayment(double amount, String note) async {
     try {
       Map<String, dynamic> body = {
-        'group': context.read<UserState>().currentGroup!.id,
+        'group': context.read<UserNotifier>().currentGroup!.id,
         'currency': selectedCurrency,
         'amount': amount,
         'note': note,
@@ -73,6 +76,8 @@ class _PaymentPageState extends State<PaymentPage> {
       } else {
         await Http.post(uri: '/payments', body: body);
       }
+      context.read<UserUsageNotifier>().incrementExpenseCount();
+      context.read<UserUsageNotifier>().setUsedAutomaticSettleUpFlag(usesAutomaticSettleUp);
       return BoolFutureOutput.True;
     } catch (_) {
       rethrow;
@@ -84,8 +89,8 @@ class _PaymentPageState extends State<PaymentPage> {
     super.initState();
 
     members = getMembers();
-    selectedCurrency = context.read<UserState>().currentGroup!.currency;
-    payerId = context.read<UserState>().user!.id;
+    selectedCurrency = context.read<UserNotifier>().currentGroup!.currency;
+    payerId = context.read<UserNotifier>().user!.id;
     if (widget.payment != null) {
       amountController.text = widget.payment!.amount.toMoneyString(selectedCurrency);
       noteController.text = widget.payment!.note;
@@ -131,6 +136,7 @@ class _PaymentPageState extends State<PaymentPage> {
                             members: snapshot.data!,
                             autoSelectFirst: widget.fromNecessaryPayments,
                             onChange: (payment, selected) => setState(() {
+                              usesAutomaticSettleUp = selected;
                               if (selected) {
                                 amountController.text = payment.amount.toString();
                                 selectedMemberId = snapshot.data!.firstWhere((member) => member.id == payment.takerId).id;

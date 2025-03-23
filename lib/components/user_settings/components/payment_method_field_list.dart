@@ -4,6 +4,7 @@ import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/user_settings/components/payment_method_field.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_usage_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +26,7 @@ class _PaymentMethodFieldListState extends State<PaymentMethodFieldList> {
   @override
   void initState() {
     super.initState();
-    paymentMethods = context.read<UserState>().user!.paymentMethods.map((paymentMethod) => PaymentMethodFieldModel.fromPaymentMethod(paymentMethod)).toList()..sort();
+    paymentMethods = context.read<UserNotifier>().user!.paymentMethods.map((paymentMethod) => PaymentMethodFieldModel.fromPaymentMethod(paymentMethod)).toList()..sort();
   }
 
   void onTimerEnd() {
@@ -47,6 +48,7 @@ class _PaymentMethodFieldListState extends State<PaymentMethodFieldList> {
       }
       paymentMethods.sort();
     });
+    context.read<UserUsageNotifier>().setAddedPaymentMethodFlag(true);
     timer = null;
   }
 

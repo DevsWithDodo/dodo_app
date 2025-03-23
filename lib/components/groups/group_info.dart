@@ -50,7 +50,7 @@ class _GroupInfoState extends State<GroupInfo> {
         uri: generateUri(
           GetUriKeys.groupBoost,
           context,
-          params: [context.read<UserState>().user!.group!.id.toString()],
+          params: [context.read<UserNotifier>().user!.group!.id.toString()],
         ),
         useCache: false,
       );
@@ -64,7 +64,7 @@ class _GroupInfoState extends State<GroupInfo> {
   Future<BoolFutureOutput> _postBoost() async {
     try {
       await Http.post(
-        uri: '/groups/${context.read<UserState>().user!.group!.id}/boost',
+        uri: '/groups/${context.read<UserNotifier>().user!.group!.id}/boost',
       );
       return BoolFutureOutput.True;
     } catch (_) {
@@ -75,10 +75,10 @@ class _GroupInfoState extends State<GroupInfo> {
   Future<LeftOrRemovedFromGroupFutureOutput> _deleteGroup() async {
     try {
       await Http.delete(
-        uri: '/groups/${context.read<UserState>().user!.group!.id}',
+        uri: '/groups/${context.read<UserNotifier>().user!.group!.id}',
       );
       if (mounted) {
-        UserState provider = context.read<UserState>();
+        UserNotifier provider = context.read<UserNotifier>();
         if (provider.user!.groups.length > 1) {
           provider.setGroups(provider.user!.groups.where((group) => group.id != provider.user!.group!.id).toList());
           provider.setGroup(provider.user!.groups.first);
@@ -129,7 +129,7 @@ class _GroupInfoState extends State<GroupInfo> {
 
   @override
   Widget build(BuildContext context) {
-    final group = context.watch<UserState>().user!.group!;
+    final group = context.watch<UserNotifier>().user!.group!;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(15),
@@ -348,7 +348,7 @@ class _GroupInfoState extends State<GroupInfo> {
                                         ),
                                         (r) => false,
                                       );
-                                      UserState provider = context.read<UserState>();
+                                      UserNotifier provider = context.read<UserNotifier>();
                                       provider.setGroups([]);
                                       provider.setGroup(null);
                                       clearAllCache();

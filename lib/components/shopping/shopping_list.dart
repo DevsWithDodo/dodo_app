@@ -41,7 +41,7 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
         uri: generateUri(
           GetUriKeys.requests,
           context,
-          queryParams: {'group': context.read<UserState>().user!.group!.id.toString()},
+          queryParams: {'group': context.read<UserNotifier>().user!.group!.id.toString()},
         ),
         overwriteCache: overwriteCache,
       );
@@ -60,7 +60,7 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
 
   Future<BoolFutureOutput> _postShoppingRequest(String name) async {
     try {
-      Map<String, dynamic> body = {'group': context.read<UserState>().currentGroup!.id, 'name': name};
+      Map<String, dynamic> body = {'group': context.read<UserNotifier>().currentGroup!.id, 'name': name};
       Response response = await Http.post(uri: '/requests', body: body);
       await (_shoppingList!.then<List<ShoppingRequest>>((value) {
         value.add(ShoppingRequest.fromJson(jsonDecode(response.body)['data']));

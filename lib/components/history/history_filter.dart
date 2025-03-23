@@ -60,12 +60,11 @@ class _HistoryFilterState extends State<HistoryFilter> {
   @override
   void didUpdateWidget(covariant HistoryFilter oldWidget) {
     super.didUpdateWidget(oldWidget);
-
   }
 
   @override
   Widget build(BuildContext context) {
-    return Selector<UserState, User>(
+    return Selector<UserNotifier, User>(
         selector: (context, provider) => provider.user!,
         builder: (context, user, _) {
           return SizedBox(
@@ -143,8 +142,7 @@ class _HistoryFilterState extends State<HistoryFilter> {
                           scrollDirection: Axis.horizontal,
                           child: MemberChips(
                             allMembers: snapshot.data!,
-                            chosenMemberIds:
-                                snapshot.data!.where((element) => element.id == _selectedMemberId).map((e) => e.id).toList(),
+                            chosenMemberIds: snapshot.data!.where((element) => element.id == _selectedMemberId).map((e) => e.id).toList(),
                             setChosenMemberIds: (newMembersChosen) {
                               if (newMembersChosen.isNotEmpty) {
                                 widget.onValuesChanged(selectedMemberId: newMembersChosen.first);

@@ -94,7 +94,7 @@ class _StorePageState extends State<StorePage> {
                       errorLocation: 'in_app_purchase',
                     );
                   }
-                  final user = context.read<UserState>().user!;
+                  final user = context.read<UserNotifier>().user!;
                   final wrappedDetails = snapshot.data!.productDetails
                       .map(
                         (e) => ProductDetailsWrapper.fromProductDetails(e, user),
@@ -250,6 +250,9 @@ enum ProductOption {
   }
 
   bool isAvailableForPurchase(User user) {
+    if (user.trialVersion) {
+      return true;
+    }
     switch (this) {
       case ProductOption.removeAds:
         return user.showAds;

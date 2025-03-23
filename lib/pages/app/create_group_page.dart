@@ -8,6 +8,7 @@ import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_usage_provider.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -33,7 +34,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   @override
   void initState() {
     super.initState();
-    User user = context.read<UserState>().user!;
+    User user = context.read<UserNotifier>().user!;
     _nicknameController = TextEditingController(); // TODO: initial value from cache
     _selectedCurrency = user.currency;
   }
@@ -43,9 +44,10 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
       Map<String, dynamic> body = {'group_name': groupName, 'currency': currency, 'member_nickname': nickname};
       http.Response response = await Http.post(uri: '/groups', body: body);
       Map<String, dynamic> decoded = jsonDecode(response.body);
-      UserState userProvider = context.read<UserState>();
+      UserNotifier userProvider = context.read<UserNotifier>();
       userProvider.setGroups(userProvider.user!.groups + [Group.fromJson(decoded)], notify: false);
       userProvider.setGroup(userProvider.user!.groups.last);
+      context.read<UserUsageNotifier>().incrementGroupsUsedCount();
       return BoolFutureOutput.True;
     } catch (_) {
       rethrow;

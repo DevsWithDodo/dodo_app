@@ -17,7 +17,7 @@ class LoginOptions extends StatefulWidget {
 class _LoginOptionsState extends State<LoginOptions> {
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<UserState>().user!;
+    final user = context.watch<UserNotifier>().user!;
     return Card(
       child: Padding(
         padding: EdgeInsets.all(15),
@@ -120,7 +120,7 @@ class _LoginOptionsState extends State<LoginOptions> {
   void _linkSocialLogin(IdTokenType idTokenType, String code) {
     showFutureOutputDialog(
       context: context,
-      future: context.read<UserState>().linkSocialLogin(idTokenType, code),
+      future: context.read<UserNotifier>().linkSocialLogin(idTokenType, code),
     );
   }
 }

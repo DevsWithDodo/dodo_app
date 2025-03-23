@@ -35,7 +35,7 @@ class AddReactionDialog extends StatelessWidget {
 
   List<Widget> _generateReactions(BuildContext context) {
     ThemeName themeName = context.watch<AppThemeState>().themeName;
-    User user = context.read<UserState>().user!;
+    User user = context.read<UserNotifier>().user!;
     return reactions.map((e) {
       return Container(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -63,7 +63,7 @@ class AddReactionDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<UserState, int>(
+    return Selector<UserNotifier, int>(
       selector: (_, userProvider) => userProvider.user!.id,
       builder: (context, userId, _) {
         return Dialog(

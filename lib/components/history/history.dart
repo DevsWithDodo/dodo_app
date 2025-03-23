@@ -35,7 +35,7 @@ class _HistoryState extends State<History> {
           context,
           queryParams: {
             'limit': '6',
-            'group': context.read<UserState>().currentGroup!.id.toString(),
+            'group': context.read<UserNotifier>().currentGroup!.id.toString(),
           },
         ),
         overwriteCache: overwriteCache,
@@ -61,7 +61,7 @@ class _HistoryState extends State<History> {
           context,
           queryParams: {
             'limit': '6',
-            'group': context.read<UserState>().currentGroup!.id.toString(),
+            'group': context.read<UserNotifier>().currentGroup!.id.toString(),
           },
         ),
         overwriteCache: overwriteCache,
@@ -298,7 +298,7 @@ class _HistoryState extends State<History> {
     return data.map((element) {
       return PaymentEntry(
         payment: element,
-        selectedMemberId: context.read<UserState>().user!.id,
+        selectedMemberId: context.read<UserNotifier>().user!.id,
       );
     }).toList();
   }
@@ -310,7 +310,7 @@ class _HistoryState extends State<History> {
     return data.map((element) {
       return PurchaseEntry(
         purchase: element,
-        selectedMemberId: context.read<UserState>().user!.id,
+        selectedMemberId: context.read<UserNotifier>().user!.id,
       );
     }).toList();
   }

@@ -28,7 +28,7 @@ class _PinVerificationDialogState extends State<PinVerificationDialog> {
       },
     );
     if (mounted) {
-      UserState provider = context.read<UserState>();
+      UserNotifier provider = context.read<UserNotifier>();
       provider.setUserStatus(UserStatus.fromJson(jsonDecode(response.body)));
     }
     return BoolFutureOutput.True;

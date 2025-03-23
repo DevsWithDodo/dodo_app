@@ -29,7 +29,7 @@ class _MergeGuestDialogState extends State<MergeGuestDialog> {
 
   Future<BoolFutureOutput> _mergeGuest() async {
     Map<String, dynamic> body = {'member_id': _selectedMember!.id, 'guest_id': widget.guestId};
-    await Http.post(uri: '/groups/${context.read<UserState>().currentGroup!.id}/merge_guest', body: body);
+    await Http.post(uri: '/groups/${context.read<UserNotifier>().currentGroup!.id}/merge_guest', body: body);
     return BoolFutureOutput.True;
   }
 

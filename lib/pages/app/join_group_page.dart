@@ -54,7 +54,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
   @override
   void initState() {
     super.initState();
-    user = context.read<UserState>().user!;
+    user = context.read<UserNotifier>().user!;
     final inviteUrl = context.read<InviteUrlState>().inviteUrl;
     _nicknameController = TextEditingController(); // TODO: initial value from cache
     token = inviteUrl?.split('/').lastOrNull ?? "";
@@ -76,7 +76,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
         return BoolFutureOutput.False;
       }
       Map<String, dynamic> decoded = jsonDecode(response.body);
-      UserState userProvider = context.read<UserState>();
+      UserNotifier userProvider = context.read<UserNotifier>();
       userProvider.setGroups(
           userProvider.user!.groups +
               [
@@ -139,10 +139,10 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    User user = context.select<UserState, User>(
+    User user = context.select<UserNotifier, User>(
       (provider) => provider.user!,
     );
-    List<Group> groups = context.select<UserState, List<Group>>(
+    List<Group> groups = context.select<UserNotifier, List<Group>>(
       (provider) => provider.user!.groups,
     );
 
@@ -217,7 +217,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                         icon: Icons.exit_to_app,
                         label: 'logout'.tr(),
                         onTap: () {
-                          context.read<UserState>().logout();
+                          context.read<UserNotifier>().logout();
                           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
                         },
                       ),

@@ -24,7 +24,7 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
   @override
   void initState() {
     super.initState();
-    _currency = context.read<UserState>().user!.currency;
+    _currency = context.read<UserNotifier>().user!.currency;
   }
 
   Future<BoolFutureOutput> _updateUserCurrency(String currency) async {
@@ -32,7 +32,7 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
       Map<String, dynamic> body = {"default_currency": currency};
 
       await Http.put(uri: '/user', body: body);
-      if (mounted) context.read<UserState>().setUserCurrency(currency);
+      if (mounted) context.read<UserNotifier>().setUserCurrency(currency);
       return BoolFutureOutput.True;
     } catch (_) {
       rethrow;

@@ -1,8 +1,10 @@
+import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/components/balance/necessary_payment_entry.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_usage_provider.dart';
 import 'package:csocsort_szamla/pages/app/payment_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -113,7 +115,7 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
                         IconButton.filled(
                           icon: Icon(Icons.copy, size: 20),
                           onPressed: () {
-                            Currency currency = context.read<UserState>().currentGroup!.currency;
+                            Currency currency = context.read<UserNotifier>().currentGroup!.currency;
                             int longestPayerNick = widget.necessaryPayments.map((e) => e.payerNickname.length).reduce(
                                   (value, element) => value > element ? value : element,
                                 );
@@ -156,6 +158,8 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
                                 text: paymentsPart + paymentMethodsPart,
                               ),
                             );
+                            showToast('clipboard.copy-successful'.tr());
+                            context.read<UserUsageNotifier>().setCopiedSettleUpFlag(true);
                           },
                         ),
                       ],

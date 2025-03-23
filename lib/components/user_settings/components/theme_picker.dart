@@ -6,6 +6,7 @@ import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_usage_provider.dart';
 import 'package:csocsort_szamla/pages/app/customize_page.dart';
 import 'package:csocsort_szamla/pages/app/store_page.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -63,7 +64,7 @@ class _ThemePickerState extends State<ThemePicker> {
     // This line is important so that textTheme is updated, don't know why
     // ignore: avoid_print, deprecated_member_use
     print(Theme.of(context).colorScheme.onSurfaceVariant.alpha);
-    return Selector<UserState, bool>(
+    return Selector<UserNotifier, bool>(
         selector: (context, provider) => provider.user!.useGradients,
         builder: (context, useGradients, _) {
           return Card(
@@ -239,6 +240,7 @@ class ColorElement extends StatelessWidget {
                 onTap: () {
                   if (enabled) {
                     context.read<AppThemeState>().themeName = themeName;
+                    context.read<UserUsageNotifier>().setThemeChangedFlag(true);
                     _updateColor(themeName.storageName);
                   } else if (context.read<AppConfig>().isIAPPlatformEnabled) {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => StorePage()));

@@ -23,7 +23,7 @@ class _AdUnitState extends State<AdUnit> {
       request: AdRequest(),
       listener: BannerAdListener(),
     );
-    if (context.read<UserState>().user!.showAds && context.read<AppConfig>().isAdPlatformEnabled) {
+    if (context.read<UserNotifier>().user!.showAds && context.read<AppConfig>().isAdPlatformEnabled) {
       ad.load();
     }
     super.initState();
@@ -31,8 +31,8 @@ class _AdUnitState extends State<AdUnit> {
 
   @override
   Widget build(BuildContext context) {
-    bool showAds = context.select<UserState,  bool>((UserState appState) => appState.user!.showAds);
-    bool adsEnabled = context.select<AppConfig,  bool>((AppConfig appState) => appState.isAdPlatformEnabled);
+    bool showAds = context.select<UserNotifier, bool>((UserNotifier appState) => appState.user!.showAds);
+    bool adsEnabled = context.select<AppConfig, bool>((AppConfig appState) => appState.isAdPlatformEnabled);
     if (ad.responseInfo == null && showAds && adsEnabled) {
       ad.load();
     }

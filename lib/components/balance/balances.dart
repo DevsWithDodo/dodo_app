@@ -39,7 +39,7 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
         GetUriKeys.groupCurrent,
         context,
         params: [
-          context.read<UserState>().user!.group!.id.toString(),
+          context.read<UserNotifier>().user!.group!.id.toString(),
         ],
       ),
     );
@@ -56,7 +56,7 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
     setState(() {
       _members = null;
       _members = _getMembers();
-      _selectedCurrency = context.read<UserState>().user!.group!.currency;
+      _selectedCurrency = context.read<UserNotifier>().user!.group!.currency;
     });
   }
 
@@ -69,7 +69,7 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
     );
     _members = null;
     _members = _getMembers();
-    _selectedCurrency = context.read<UserState>().user!.group!.currency;
+    _selectedCurrency = context.read<UserNotifier>().user!.group!.currency;
   }
 
   @override
@@ -104,7 +104,7 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
                   builder: (context, AsyncSnapshot<List<Member>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
-                        final isCurrentUserAdmin = snapshot.data!.firstWhere((member) => member.id == context.read<UserState>().user!.id).isAdmin ?? false;
+                        final isCurrentUserAdmin = snapshot.data!.firstWhere((member) => member.id == context.read<UserNotifier>().user!.id).isAdmin ?? false;
                         return Column(
                           children: [
                             NecessaryPaymentsButton(members: snapshot.data!),
@@ -199,7 +199,7 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
   }
 
   List<Widget> _generateBalances(List<Member> members) {
-    int currentMemberIndex = members.indexWhere((member) => member.id == context.read<UserState>().user!.id);
+    int currentMemberIndex = members.indexWhere((member) => member.id == context.read<UserNotifier>().user!.id);
     final isCurrentUserAdmin = members[currentMemberIndex].isAdmin ?? false;
     if (members.length > 7 && !showAll) {
       List<Member> membersToShow = [];
@@ -245,7 +245,7 @@ class BalanceMemberEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeName = context.watch<AppThemeState>().themeName;
     TextStyle textStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
-        color: member.id == context.read<UserState>().user!.id
+        color: member.id == context.read<UserNotifier>().user!.id
             ? themeName.type == ThemeType.gradient
                 ? Theme.of(context).colorScheme.onPrimary
                 : Theme.of(context).colorScheme.onSecondary
@@ -270,7 +270,7 @@ class BalanceMemberEntry extends StatelessWidget {
         child: Ink(
           padding: EdgeInsets.symmetric(horizontal: 12),
           height: 48,
-          decoration: member.id == context.read<UserState>().user!.id
+          decoration: member.id == context.read<UserNotifier>().user!.id
               ? BoxDecoration(
                   gradient: AppTheme.gradientFromTheme(themeName, useSecondary: true),
                   borderRadius: BorderRadius.circular(12),
@@ -290,7 +290,7 @@ class BalanceMemberEntry extends StatelessWidget {
                 duration: Duration(milliseconds: 300),
                 firstChild: Container(),
                 secondChild: Text(
-                  member.balance.exchange(context.watch<UserState>().currentGroup!.currency, selectedCurrency).toMoneyString(selectedCurrency),
+                  member.balance.exchange(context.watch<UserNotifier>().currentGroup!.currency, selectedCurrency).toMoneyString(selectedCurrency),
                   style: textStyle,
                 ),
                 crossFadeState: CrossFadeState.showSecond,

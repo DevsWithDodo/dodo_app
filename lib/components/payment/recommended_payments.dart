@@ -39,7 +39,7 @@ class _RecommendedPaymentsState extends State<RecommendedPayments> {
     if (widget.onlyShowOwn) {
       _necessaryPaymentsToShow = _necessaryPayments
           .where(
-            (payment) => payment.payerId == (widget.payerId ?? context.read<UserState>().user!.id),
+            (payment) => payment.payerId == (widget.payerId ?? context.read<UserNotifier>().user!.id),
           )
           .toList();
     } else {
@@ -68,7 +68,7 @@ class _RecommendedPaymentsState extends State<RecommendedPayments> {
     }
     super.didUpdateWidget(oldWidget);
     if (widget.onlyShowOwn) {
-      _necessaryPaymentsToShow = _necessaryPayments.where((payment) => payment.payerId == (widget.payerId ?? context.read<UserState>().user!.id)).toList();
+      _necessaryPaymentsToShow = _necessaryPayments.where((payment) => payment.payerId == (widget.payerId ?? context.read<UserNotifier>().user!.id)).toList();
     } else {
       _necessaryPaymentsToShow = _necessaryPayments;
     }

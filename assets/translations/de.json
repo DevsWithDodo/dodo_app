@@ -245,7 +245,7 @@
     "change-theme.adaptive-theme" : "Adaptive Thema",
     "change-theme.adaptive-theme.subtitle" : "Dieses Thema richtet sich an die Farben die du für dein System eingestellt hast.",
 
-    "in_app_purchase_description": "Anzeigen und Themen",
+    "in_app_purchase_description": "Themen und Werbefrei",
     "iapp_not_supported": "Der Laden ist auf dieser Platform nicht unterstützt.",
     "iapp_not_supported_explanation": "Du kannst die Gegendstände (z.B. keine Anzeigen, Farbthemen) zur Zeit nur über der Android oder iOS App kaufen.\nFalls dies für dich nicht Lösbar ist, schreib eine E-Mail an developer@dodoapp.net.",
     "no_camera_access": "Die App hat keine Berechtigung zur Kamera.",
@@ -556,6 +556,16 @@
 
     "member-info.add-payment-methods": "Zahlungsmethoden hinzufügen",
 
-    "invitation-field.select-guest.error": "Wähle aus, wer du bist!"
+    "invitation-field.select-guest.error": "Wähle aus, wer du bist!",
+
+    "receipt-scanner.privacy-notice.title": "Datenschutz Hinweis",
+    "receipt-scanner.privacy-notice.content": "Die Belege werden mit Hilfe von Google Gemini verarbeitet. Die Bilder werden von deinem Gerät direkt an Google gesendet, ohne dass sie zu uns gelangen. Falls du Google nicht vertraust, solltest du diese Funktion nicht verwenden.",
     
+    "social-login.privacy-notice.title": "Datenschutz Hinweis",
+    "social-login.privacy-notice.content": "Bei der Verwendung von Social Login sendet der Anbieter (Google, Apple) uns deine E-Mail-Adresse und eine ID. Wir speichern die E-Mail-Adresse nie, sondern nur die ID in einem sicheren Format. Der Anbieter erhält keine Informationen über deine Aktivitäten in der App, sondern dient lediglich als Nachweiser deiner Identität.",
+
+    "rate-app-dialog.title": "Gefällt dir Dodo? 🦤",
+    "rate-app-dialog.content": "Falls dir unsere App gefällt, bewerte sie bitte im Store. ⭐⭐⭐⭐⭐. Jede Bewertung hilft uns!",
+    "rate-app-dialog.later": "Später erinnern",
+    "rate-app-dialog.rate-now": "⭐ Jetzt bewerten"  
 }

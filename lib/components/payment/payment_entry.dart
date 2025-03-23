@@ -37,7 +37,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
 
   void handleSendReaction(String reaction) {
     setState(() {
-      User user = context.read<UserState>().user!;
+      User user = context.read<UserNotifier>().user!;
       Reaction? oldReaction = reactions.firstWhereOrNull((element) => element.userId == user.id);
       bool alreadyReacted = oldReaction != null;
       bool sameReaction = alreadyReacted ? oldReaction.reaction == reaction : false;
@@ -65,7 +65,7 @@ class _PaymentEntryState extends State<PaymentEntry> {
   @override
   Widget build(BuildContext context) {
     ThemeName themeName = context.watch<AppThemeState>().themeName;
-    return Selector<UserState, User>(
+    return Selector<UserNotifier, User>(
         selector: (context, userProvider) => userProvider.user!,
         builder: (context, user, _) {
           int selectedMemberId = widget.selectedMemberId ?? user.id;

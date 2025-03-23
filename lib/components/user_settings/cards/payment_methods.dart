@@ -27,7 +27,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
   LoadingState loading = LoadingState.done;
 
   Future _updatePaymentMethods(List<PaymentMethod> paymentMethods) async {
-    if (paymentMethods.hasSameElementsInOrder(context.read<UserState>().user!.paymentMethods)) {
+    if (paymentMethods.hasSameElementsInOrder(context.read<UserNotifier>().user!.paymentMethods)) {
       return;
     }
     try {
@@ -36,7 +36,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
 
       await Http.put(uri: '/user', body: body);
       if (mounted) {
-        context.read<UserState>().setPaymentMethods(paymentMethods);
+        context.read<UserNotifier>().setPaymentMethods(paymentMethods);
         EventBus.instance.fire(EventBus.refreshBalances);
         EventBus.instance.fire(EventBus.refreshGroupMembers);
         await Future.delayed(Duration(milliseconds: 500));

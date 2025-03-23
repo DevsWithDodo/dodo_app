@@ -16,7 +16,7 @@ class SelectBalanceCurrency extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<UserState, Group>(
+    return Selector<UserNotifier, Group>(
         selector: (context, userProvider) => userProvider.currentGroup!,
         builder: (context, currentGroup, _) {
           return CurrencyPickerDropdown(

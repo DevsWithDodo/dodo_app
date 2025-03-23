@@ -30,7 +30,7 @@ class TransactionReceivers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Currency groupCurrency = context.select<UserState, Currency>((provider) => provider.currentGroup!.currency);
+    Currency groupCurrency = context.select<UserNotifier, Currency>((provider) => provider.currentGroup!.currency);
     TextStyle titleStyle = Theme.of(context).textTheme.titleMedium!.copyWith(
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         );
@@ -87,67 +87,62 @@ class TransactionReceivers extends StatelessWidget {
             ],
           ),
           gapRow(10),
-          ...groupedReceivers.keys
-              .mapIndexed((index, amount) {
-                Member receiver = groupedReceivers[amount]!.first;
-                String amountString =
-                    (displayCurrency == groupCurrency ? receiver.balance : receiver.balanceOriginalCurrency)
-                        .toMoneyString(
-                  displayCurrency,
-                  withSymbol: true,
-                );
-                double gap = index == groupedReceivers.length - 1 ? 0 : 7;
-                return [
-                  TableRow(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondaryContainer,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 2),
-                        child: Center(child: Text(buyerNickname)),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 5),
-                        child: Icon(Icons.arrow_right_alt_rounded),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 5, horizontal: 2),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Flexible(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: groupedReceivers[amount]!
-                                    .map(
-                                      (receiver) => Flexible(
-                                        child: Text(
-                                          receiver.nickname,
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 2),
-                          child: Text(amountString),
-                        ),
-                      ),
-                    ],
+          ...groupedReceivers.keys.mapIndexed((index, amount) {
+            Member receiver = groupedReceivers[amount]!.first;
+            String amountString = (displayCurrency == groupCurrency ? receiver.balance : receiver.balanceOriginalCurrency).toMoneyString(
+              displayCurrency,
+              withSymbol: true,
+            );
+            double gap = index == groupedReceivers.length - 1 ? 0 : 7;
+            return [
+              TableRow(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 2),
+                    child: Center(child: Text(buyerNickname)),
                   ),
-                  gapRow(gap),
-                ];
-              })
-              .flattened
-              ,
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 5),
+                    child: Icon(Icons.arrow_right_alt_rounded),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 2),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: groupedReceivers[amount]!
+                                .map(
+                                  (receiver) => Flexible(
+                                    child: Text(
+                                      receiver.nickname,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 2),
+                      child: Text(amountString),
+                    ),
+                  ),
+                ],
+              ),
+              gapRow(gap),
+            ];
+          }).flattened,
         ],
       ),
     );

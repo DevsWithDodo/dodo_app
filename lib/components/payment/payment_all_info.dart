@@ -55,7 +55,7 @@ class _PaymentAllInfoState extends State<PaymentAllInfo> {
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         );
 
-    Currency groupCurrency = context.select<UserState, Currency>((provider) => provider.currentGroup!.currency);
+    Currency groupCurrency = context.select<UserNotifier, Currency>((provider) => provider.currentGroup!.currency);
 
     return DefaultTextStyle(
       style: Theme.of(context).textTheme.bodyLarge!.copyWith(

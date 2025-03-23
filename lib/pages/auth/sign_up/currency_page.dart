@@ -1,12 +1,13 @@
-import 'package:csocsort_szamla/helpers/currencies.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
-import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/components/helpers/currency_picker_dropdown.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
+import 'package:csocsort_szamla/helpers/currencies.dart';
+import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/pages/app/join_group_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../components/helpers/gradient_button.dart';
 
 class CurrencyPage extends StatefulWidget {
@@ -72,7 +73,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
                         onPressed: () {
                           showFutureOutputDialog(
                             context: context,
-                            future: context.read<UserState>().register(
+                            future: context.read<UserNotifier>().register(
                                   widget.username,
                                   widget.pin,
                                   _defaultCurrency,

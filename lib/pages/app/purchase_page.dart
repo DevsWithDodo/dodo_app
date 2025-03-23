@@ -18,6 +18,7 @@ import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_usage_provider.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
 import 'package:csocsort_szamla/pages/app/receipt_scanner_page.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -67,7 +68,7 @@ class _PurchasePageState extends State<PurchasePage> {
     try {
       Map<String, dynamic> body = {
         "name": noteController.text,
-        "group": context.read<UserState>().currentGroup!.id,
+        "group": context.read<UserNotifier>().currentGroup!.id,
         "amount": amountDivision.totalAmount,
         "currency": selectedCurrency,
         "category": selectedCategory?.text,
@@ -78,6 +79,12 @@ class _PurchasePageState extends State<PurchasePage> {
         await Http.put(uri: '/purchases/${widget.purchase!.id}', body: body);
       } else {
         await Http.post(uri: '/purchases', body: body);
+      }
+      context.read<UserUsageNotifier>().incrementExpenseCount();
+      if (receiptInformation != null) {
+        print('Receipt scanned');
+        context.read<UserUsageNotifier>().incrementReceiptScannerCount();
+        context.read<UserUsageNotifier>().setReceiptScannedFlag(true);
       }
       return BoolFutureOutput.True;
     } catch (_) {
@@ -106,7 +113,7 @@ class _PurchasePageState extends State<PurchasePage> {
   @override
   void initState() {
     super.initState();
-    final user = context.read<UserState>().user!;
+    final user = context.read<UserNotifier>().user!;
     selectedCurrency = user.group!.currency;
     amountDivision = AmountDivision(
       amounts: [],
@@ -227,7 +234,7 @@ class _PurchasePageState extends State<PurchasePage> {
                                           );
                                           noteController.text = "";
                                           amountController.text = "";
-                                          selectedCurrency = context.read<UserState>().user!.group!.currency;
+                                          selectedCurrency = context.read<UserNotifier>().user!.group!.currency;
                                           useCustomAmounts = false;
                                         }),
                                         icon: Icon(Icons.delete),

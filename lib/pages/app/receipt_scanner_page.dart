@@ -88,6 +88,24 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> with SingleTick
             )
           ],
         ),
+        actions: [
+          IconButton(
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text('receipt-scanner.privacy-notice.title').tr(),
+                content: Text('receipt-scanner.privacy-notice.content').tr(),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Icon(Icons.check),
+                  ),
+                ],
+              ),
+            ),
+            icon: Icon(Icons.privacy_tip),
+          ),
+        ],
         forceMaterialTransparency: true,
       ),
       floatingActionButton: (receiptInformation?.items.where((item) => item.assignedAmounts.isNotEmpty).isNotEmpty ?? false)
@@ -160,7 +178,7 @@ class _ReceiptScannerPageState extends State<ReceiptScannerPage> with SingleTick
               );
             }),
           ),
-         Visibility(
+          Visibility(
             visible: MediaQuery.of(context).viewInsets.bottom == 0,
             child: AdUnit(site: 'receipt_scanner'),
           ),

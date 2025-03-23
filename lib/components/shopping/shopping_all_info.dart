@@ -47,7 +47,7 @@ class _ShoppingAllInfoState extends State<ShoppingAllInfo> {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<UserState, User>(
+    return Selector<UserNotifier, User>(
         selector: (context, provider) => provider.user!,
         builder: (context, user, _) {
           return Padding(

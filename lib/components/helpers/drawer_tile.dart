@@ -8,6 +8,7 @@ class DrawerTile extends StatelessWidget {
     this.builder,
     this.onTap,
     this.dense = false,
+    this.onReturn,
   });
 
   final IconData icon;
@@ -15,6 +16,7 @@ class DrawerTile extends StatelessWidget {
   final bool dense;
   final Widget Function(BuildContext)? builder;
   final Function()? onTap;
+  final Function()? onReturn;
 
   @override
   Widget build(BuildContext context) {
@@ -31,19 +33,17 @@ class DrawerTile extends StatelessWidget {
         ),
         title: Text(
           label,
-          style: Theme.of(context)
-              .textTheme
-              .labelLarge!
-              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
         onTap: onTap ??
             (builder != null
-                ? () {
-                    Navigator.of(context).push(
+                ? () async {
+                    await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: builder!,
                       ),
                     );
+                    onReturn?.call();
                   }
                 : null),
       ),

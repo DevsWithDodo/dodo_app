@@ -29,7 +29,7 @@ class NotificationInitializer extends StatelessWidget {
     if (payload == null) {
       return;
     }
-    var userState = context.read<UserState>();
+    var userState = context.read<UserNotifier>();
     try {
       Map<String, dynamic> decoded = jsonDecode(payload);
       int? groupId = decoded['group_id'];

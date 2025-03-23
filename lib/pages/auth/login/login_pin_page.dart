@@ -1,13 +1,13 @@
-import 'package:csocsort_szamla/pages/app/join_group_page.dart';
-import 'package:csocsort_szamla/pages/auth/login/password_page.dart';
-
 import 'package:csocsort_szamla/components/auth/pin_pad.dart';
-import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
+import 'package:csocsort_szamla/pages/app/join_group_page.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
+import 'package:csocsort_szamla/pages/auth/login/password_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../../components/helpers/future_output_dialog.dart';
 import '../../../components/helpers/gradient_button.dart';
 
@@ -47,11 +47,9 @@ class _LoginPinPageState extends State<LoginPinPage> {
                       children: [
                         PinPad(
                           pin: _pin,
-                          onPinChanged: (newPin) =>
-                              setState(() => _pin = newPin),
+                          onPinChanged: (newPin) => setState(() => _pin = newPin),
                           validationText: _validationText,
-                          onValidationTextChanged: (newText) =>
-                              setState(() => _validationText = newText),
+                          onValidationTextChanged: (newText) => setState(() => _validationText = newText),
                         ),
                       ],
                     ),
@@ -113,28 +111,23 @@ class _LoginPinPageState extends State<LoginPinPage> {
   void _pushedButton() {
     String? username = widget.username;
     String pin = _pin;
-    showFutureOutputDialog(
-      context: context,
-      future: context.read<UserState>().login(username!, pin, context),
-      outputCallbacks: {
-        LoginFutureOutputs.main: () => Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => MainPage()),
-          (r) => false  
-        ),
-        LoginFutureOutputs.joinGroup: () => Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => JoinGroupPage(
-            inviteURL: context.read<InviteUrlState>().inviteUrl,
-          )),
-          (route) => false,
-        ),
-        LoginFutureOutputs.joinGroupFromAuth:() => Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => JoinGroupPage(
-            inviteURL: context.read<InviteUrlState>().inviteUrl,
-            fromAuth: true,
-          )),
-          (route) => false,
-        ),
-      }
-    );
+    showFutureOutputDialog(context: context, future: context.read<UserNotifier>().login(username!, pin, context), outputCallbacks: {
+      LoginFutureOutputs.main: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainPage()), (r) => false),
+      LoginFutureOutputs.joinGroup: () => Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) => JoinGroupPage(
+                      inviteURL: context.read<InviteUrlState>().inviteUrl,
+                    )),
+            (route) => false,
+          ),
+      LoginFutureOutputs.joinGroupFromAuth: () => Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) => JoinGroupPage(
+                      inviteURL: context.read<InviteUrlState>().inviteUrl,
+                      fromAuth: true,
+                    )),
+            (route) => false,
+          ),
+    });
   }
 }

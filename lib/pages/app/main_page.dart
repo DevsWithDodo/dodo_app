@@ -86,7 +86,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
     }
     Response response = await Http.get(uri: generateUri(GetUriKeys.groups, context), overwriteCache: true);
     Map<String, dynamic> decoded = jsonDecode(response.body);
-    UserState userProvider = context.read<UserState>();
+    UserNotifier userProvider = context.read<UserNotifier>();
     List<Group> groups = [];
     for (var group in decoded['data']) {
       groups.add(Group(
@@ -130,7 +130,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
   }
 
   List<Widget> _generateListTiles(List<Group> groups) {
-    int currentGroupId = context.watch<UserState>().user!.group!.id;
+    int currentGroupId = context.watch<UserNotifier>().user!.group!.id;
     final theme = Theme.of(context);
     return groups
         .map<Widget>((group) => Padding(
@@ -147,7 +147,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   ),
                 ),
                 onTap: () async {
-                  context.read<UserState>().setGroup(group);
+                  context.read<UserNotifier>().setGroup(group);
                   setState(() {
                     _selectedIndex = 0;
                     _tabController!.animateTo(_selectedIndex);
@@ -261,7 +261,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
             actions: [if (!isMobile) _invitationButton()],
             centerTitle: true,
             title: Text(
-              context.watch<UserState>().user!.group?.name ?? '',
+              context.watch<UserNotifier>().user!.group?.name ?? '',
               style: TextStyle(letterSpacing: 0.25, fontSize: 24),
             ),
           ),
@@ -382,7 +382,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   Widget _drawer() {
     ThemeName themeName = context.watch<AppThemeState>().themeName;
-    return Consumer<UserState>(builder: (context, appStateProvider, _) {
+    return Consumer<UserNotifier>(builder: (context, appStateProvider, _) {
       return Ink(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainerLow,
@@ -464,11 +464,13 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     icon: Icons.group_add,
                     label: 'join_group'.tr(),
                     builder: (context) => JoinGroupPage(),
+                    onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
                   ),
                   DrawerTile(
                     icon: Icons.library_add,
                     label: 'create_group'.tr(),
                     builder: (context) => CreateGroupPage(),
+                    onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
                   ),
                 ],
               ),
@@ -497,11 +499,12 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                   borderRadius: BorderRadius.all(Radius.circular(28)),
                 ),
                 dense: true,
-                onTap: () {
+                onTap: () async {
                   if (!context.read<AppConfig>().isIAPPlatformEnabled) {
                     showDialog(builder: (context) => IAPNotSupportedDialog(), context: context);
                   } else {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => StorePage()));
+                    await Navigator.push(context, MaterialPageRoute(builder: (context) => StorePage()));
+                    EventBus.instance.fire(EventBus.refreshMainDialog);
                   }
                 },
                 leading: ColorFiltered(
@@ -511,62 +514,28 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
                     width: 25,
                   ),
                 ),
-                subtitle: appStateProvider.user!.trialVersion
-                    ? Text(
-                        'trial_version'.tr().toUpperCase(),
-                        style: Theme.of(context).textTheme.labelSmall!.copyWith(color: Theme.of(context).colorScheme.secondary),
-                      )
-                    : Text(
-                        'in_app_purchase_description'.tr(),
-                        style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                      ),
+                subtitle: Text(
+                  'in_app_purchase_description'.tr(),
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                ),
                 title: Text(
                   'in_app_purchase'.tr(),
                   style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ),
             ),
-            // Visibility(
-            //   visible: !kIsWeb,
-            //   child: DrawerTile(
-            //     dense: true,
-            //     icon: Icons.rate_review,
-            //     label: 'rate_app'.tr(),
-            //     onTap: () {
-            //       String url = "";
-            //       String platform = kIsWeb ? "web" : Platform.operatingSystem;
-            //       switch (platform) {
-            //         case "android":
-            //           url =
-            //               "market://details?id=csocsort.hu.machiato32.csocsort_szamla";
-            //           break;
-            //         case "windows":
-            //           url = "ms-windows-store://pdp/?productid=9NVB4CZJDSQ7";
-            //           break;
-            //         case "ios":
-            //           url =
-            //               "itms-apps://itunes.apple.com/app/id1558223634?action=write-review";
-            //           break;
-            //         default:
-            //           url =
-            //               "https://play.google.com/store/apps/details?id=csocsort.hu.machiato32.csocsort_szamla";
-            //           break;
-            //       }
-            //       launchUrlString(url);
-            //       context.read<UserState>().setRatedApp(true);
-            //     },
-            //   ),
-            // ),
             DrawerTile(
               icon: Icons.palette,
               label: 'customization'.tr(),
               builder: (context) => CustomizePage(),
+              onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
             ),
             DrawerTile(
               dense: true,
               icon: Icons.account_circle,
               label: 'profile'.tr(),
               builder: (context) => UserSettingsPage(),
+              onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
             ),
             Divider(),
             DrawerTile(
@@ -574,8 +543,12 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               label: 'logout'.tr(),
               icon: Icons.exit_to_app,
               onTap: () async {
-                context.read<UserState>().logout();
-                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
+                context.read<UserNotifier>().logout();
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
+                  (r) => false,
+                );
               },
             ),
           ],

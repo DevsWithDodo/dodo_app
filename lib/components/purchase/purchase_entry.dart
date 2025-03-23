@@ -36,7 +36,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
 
   void handleSendReaction(String reaction) {
     setState(() {
-      User user = context.read<UserState>().user!;
+      User user = context.read<UserNotifier>().user!;
       Reaction? oldReaction = reactions.firstWhereOrNull((element) => element.userId == user.id);
       bool alreadyReacted = oldReaction != null;
       bool sameReaction = alreadyReacted ? oldReaction.reaction == reaction : false;
@@ -116,7 +116,7 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
             color: Theme.of(context).colorScheme.surfaceContainerHigh,
             borderRadius: BorderRadius.circular(15),
           );
-    return Selector<UserState, User>(
+    return Selector<UserNotifier, User>(
         selector: (context, userProvider) => userProvider.user!,
         builder: (context, user, _) {
           return Stack(

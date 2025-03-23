@@ -202,8 +202,15 @@ class _ReceiptReaderState extends State<ReceiptReader> with SingleTickerProvider
         _processingState = ProcessingState.processing;
       });
       final model = FirebaseVertexAI.instance.generativeModel(
-        model: 'gemini-1.5-flash',
-        systemInstruction: Content.system("Your task is to look at photos of receipts and respond with parsed useful information from them. Your output is a JSON string. If there are any discounts, match them to the corresponding item. Provide the currency as the ISO 4217 alphabetic code (eg. 'USD', 'EUR', 'AUD'). Make this absolutely sure! This is vital!"),
+        model: 'gemini-2.0-flash-lite',
+        systemInstruction: Content.system("""Your task is to extract structured information from photos of receipts and return it in JSON format. Ensure that the extracted data is accurate and complete. Receipts may be in any language. Accurately extract information regardless of the language used. Ensure that all extracted text (store names, item names) remains in its original language, but standardize the currency code using ISO 4217. Follow these rules strictly:
+        Identify the store name exactly as printed on the receipt.
+        Extract the total cost and ensure it is in the correct currency (ISO 4217 format).
+        List all items with their exact names, prices, and any applicable discounts.
+        If an item has a discount, match it precisely to the correct item. Discounts may not be explicitly labeled as such, so use context to determine if a price is a discount. Usually, the discount is listed below the item name.
+        Ensure that numeric values are always properly formatted (e.g., no currency symbols in the number field, decimals as needed).
+        Do not hallucinate missing data—if something cannot be read, return null instead of guessing.
+        Check for common OCR errors such as misinterpreted characters (e.g., '0' vs. 'O', '1' vs. 'I')."""),
         generationConfig: GenerationConfig(
           responseMimeType: 'application/json',
           responseSchema: Schema(

@@ -67,7 +67,7 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
     try {
       Map<String, dynamic> body = {"language": context.locale.languageCode, "username": username};
       await Http.post(
-        uri: '/groups/${context.read<UserState>().currentGroup!.id}/add_guest',
+        uri: '/groups/${context.read<UserNotifier>().currentGroup!.id}/add_guest',
         body: body,
       );
       return BoolFutureOutput.True;

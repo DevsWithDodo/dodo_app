@@ -40,7 +40,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
 
   void handleSendReaction(String reaction) {
     setState(() {
-      User user = context.read<UserState>().user!;
+      User user = context.read<UserNotifier>().user!;
       Reaction? oldReaction = reactions.firstWhereOrNull((element) => element.userId == user.id);
       bool alreadyReacted = oldReaction != null;
       bool sameReaction = alreadyReacted ? oldReaction.reaction == reaction : false;
@@ -66,7 +66,7 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
   @override
   Widget build(BuildContext context) {
     String name = widget.shoppingRequest.name;
-    User user = context.watch<UserState>().user!;
+    User user = context.watch<UserNotifier>().user!;
     TextStyle mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface);
     TextStyle subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurface);
     BoxDecoration boxDecoration = BoxDecoration(

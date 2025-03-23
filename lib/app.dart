@@ -16,7 +16,7 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var userState = context.watch<UserState>();
+    var userState = context.watch<UserNotifier>();
     var link = context.watch<InviteUrlState>().inviteUrl;
     return MaterialApp(
       debugShowCheckedModeBanner: false,

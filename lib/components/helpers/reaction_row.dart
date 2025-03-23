@@ -53,7 +53,7 @@ class ReactionRow extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           color: reactions.firstWhereOrNull(
-                                    (el) => el.userId == context.read<UserState>().user!.id && el.reaction == reaction,
+                                    (el) => el.userId == context.read<UserNotifier>().user!.id && el.reaction == reaction,
                                   ) !=
                                   null
                               ? Theme.of(context).colorScheme.secondaryContainer

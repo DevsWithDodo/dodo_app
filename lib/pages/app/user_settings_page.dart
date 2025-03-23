@@ -73,7 +73,7 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
       PaymentMethods(),
       LoginOptions(),
       ChangeUserCurrency(),
-      Selector<UserState, bool>(
+      Selector<UserNotifier, bool>(
         selector: (context, provider) => provider.user!.showAds,
         builder: (context, showAds, child) => Visibility(
           visible: showAds,

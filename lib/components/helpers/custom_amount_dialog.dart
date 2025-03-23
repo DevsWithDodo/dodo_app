@@ -13,8 +13,7 @@ class CustomAmountDialog extends StatefulWidget {
   final bool? alreadyCustom;
   final Currency? currency;
 
-  const CustomAmountDialog(
-      {super.key, required this.initialValue, this.maxValue, this.maxMoney, this.alreadyCustom, this.currency, this.minValue = 0});
+  const CustomAmountDialog({super.key, required this.initialValue, this.maxValue, this.maxMoney, this.alreadyCustom, this.currency, this.minValue = 0});
 
   @override
   State<CustomAmountDialog> createState() => _CustomAmountDialogState();
@@ -29,7 +28,7 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
   void initState() {
     super.initState();
     sliderValue = widget.initialValue;
-    currency = widget.currency ?? context.read<UserState>().currentGroup!.currency;
+    currency = widget.currency ?? context.read<UserNotifier>().currentGroup!.currency;
     customAmountController.text = sliderValue.toMoneyString(currency);
   }
 
@@ -53,18 +52,12 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
             Text(
               'custom_amount'.tr(),
               textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             Text(
               'custom-amount.dialog.subtitle'.tr(),
               textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleSmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             SizedBox(
               height: 10,
@@ -72,10 +65,7 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
             Text(
               'custom-amount.dialog.hint'.tr(),
               textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             SizedBox(height: 5),
             TextFormField(
@@ -84,10 +74,7 @@ class _CustomAmountDialogState extends State<CustomAmountDialog> {
                 labelText: '${'custom_amount'.tr()} (${currency.symbol}) ',
                 suffixText: '${(sliderValue / widget.maxMoney! * 100).roundToDouble().toStringAsFixed(0)}%',
               ),
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge!
-                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               onChanged: (value) {
                 double? newValue = double.tryParse(value);
                 if (newValue != null) {

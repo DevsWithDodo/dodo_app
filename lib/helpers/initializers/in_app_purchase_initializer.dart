@@ -39,7 +39,7 @@ class _IAPInitializerState extends State<IAPInitializer> {
   void init(BuildContext context) {
     if (context.read<AppConfig>().isIAPPlatformEnabled) {
       _subscription = InAppPurchase.instance.purchaseStream.listen((purchases) {
-        UserState userState = context.read<UserState>();
+        UserNotifier userState = context.read<UserNotifier>();
         for (PurchaseDetails details in purchases) {
           if (details.status == PurchaseStatus.purchased) {
             String url = '${context.read<AppConfig>().appUrl}/user';

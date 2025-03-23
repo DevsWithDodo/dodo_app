@@ -12,6 +12,7 @@ import 'package:csocsort_szamla/helpers/navigator_service.dart';
 import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
+import 'package:csocsort_szamla/helpers/providers/user_usage_provider.dart';
 import 'package:csocsort_szamla/main.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
 import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
@@ -30,9 +31,9 @@ class UserProvider extends StatelessWidget {
     required BuildContext context,
     required this.builder,
     super.key,
-  }) : _userState = UserState(context);
+  }) : _userState = UserNotifier(context);
 
-  late final UserState _userState;
+  late final UserNotifier _userState;
   final Widget Function(BuildContext context) builder;
 
   @override
@@ -44,12 +45,14 @@ class UserProvider extends StatelessWidget {
   }
 }
 
-class UserState extends ChangeNotifier {
+class UserNotifier extends ChangeNotifier {
   User? user;
   Group? get currentGroup => user?.group;
+  late UserUsageNotifier usage;
 
-  UserState(BuildContext context) {
+  UserNotifier(BuildContext context) {
     final preferences = context.read<SharedPreferences>();
+    usage = context.read<UserUsageNotifier>();
     if (preferences.containsKey('api_token')) {
       user = User.fromPreferences(preferences);
       _fetchUser(context);
@@ -260,6 +263,7 @@ class UserState extends ChangeNotifier {
       setGroup(null, notify: false);
       setGroups([], notify: false);
       setUser(null, notify: false);
+      usage.reset();
     } catch (_) {
       rethrow;
     }

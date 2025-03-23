@@ -23,10 +23,10 @@ class InviteUrlProvider extends StatelessWidget {
       _inviteUrl.inviteUrl = link;
 
       BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
-      if (context.read<UserState>().user != null) {
+      if (context.read<UserNotifier>().user != null) {
         getIt.get<NavigationService>().push(
               MaterialPageRoute(
-                builder: (context) => JoinGroupPage(fromAuth: (context.read<UserState>().user?.group == null) ? true : false),
+                builder: (context) => JoinGroupPage(fromAuth: (context.read<UserNotifier>().user?.group == null) ? true : false),
               ),
             );
       } else {

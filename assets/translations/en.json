@@ -287,7 +287,6 @@
     "thank_you": "Thank you",
     "even_one_rating_helps": "We're really glad you like the app. Please review it in store\uD83D\uDE0A. Every review helps to get more people to find it!",
     "to_store": "Rate it😎",
-    "like_the_app": "Do you like the app?",
     "rate_app": "Rate the app",
 
     "dual_tone_themes": "Dual tone themes",
@@ -547,5 +546,17 @@
 
     "member-info.add-payment-methods": "Add payment method",
 
-    "invitation-field.select-guest.error": "Select who you are!"
+    "invitation-field.select-guest.error": "Select who you are!",
+
+    "receipt-scanner.privacy-notice.title": "Privacy notice",
+    "receipt-scanner.privacy-notice.content": "Your receipts are processed by Google Gemini AI. The image is directly sent from your device to Google, without being sent to our server.. If you don't trust Google with your data, please don't use this feature.",
+
+    "social-login.privacy-notice.title": "Privacy notice",
+    "social-login.privacy-notice.content": "When using social login, the provider (Google, Apple) will send us your email address and a unique identifier. We do NOT store the e-mail and only store the identifier in a secure format. The provider does not get any information about anything you do in the app, it merely serves as a proof of your identity.",
+
+    "rate-app-dialog.title": "Enjoying Dodo? 🦤",
+    "rate-app-dialog.content": "If you're enjoying our app, would you mind giving us a quick rating? ⭐⭐⭐⭐⭐ It really helps us out!",
+    "rate-app-dialog.later": "Remind me later",
+    "rate-app-dialog.rate-now": "⭐ Rate now"
+
 }

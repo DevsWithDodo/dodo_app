@@ -18,15 +18,15 @@ class _PersonalisedAdsState extends State<PersonalisedAds> {
   @override
   void initState() {
     super.initState();
-    _personalisedAds = context.read<UserState>().user!.personalisedAds;
+    _personalisedAds = context.read<UserNotifier>().user!.personalisedAds;
   }
 
   Future<BoolFutureOutput> _updatePersonalisedAds() async {
     try {
-      if (context.read<UserState>().user!.personalisedAds != _personalisedAds) {
+      if (context.read<UserNotifier>().user!.personalisedAds != _personalisedAds) {
         Map<String, dynamic> body = {"personalised_ads": _personalisedAds ? "on" : "off"};
         await Http.put(uri: '/user', body: body);
-        if (mounted) context.read<UserState>().setPersonalisedAds(_personalisedAds);
+        if (mounted) context.read<UserNotifier>().setPersonalisedAds(_personalisedAds);
       }
       return BoolFutureOutput.True;
     } catch (_) {

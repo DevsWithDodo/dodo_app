@@ -180,7 +180,7 @@ class ThemePreviewContent extends StatelessWidget {
                         ...ThemePreview._members.map(
                           (member) => BalanceMemberEntry(
                             member: member,
-                            selectedCurrency: context.watch<UserState>().currentGroup!.currency,
+                            selectedCurrency: context.watch<UserNotifier>().currentGroup!.currency,
                           ),
                         )
                       ],

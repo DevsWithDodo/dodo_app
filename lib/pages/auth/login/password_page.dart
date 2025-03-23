@@ -40,10 +40,7 @@ class _PasswordPageState extends State<PasswordPage> {
                 Center(
                   child: Text(
                     'password_login_deprecated'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(color: Theme.of(context).colorScheme.error),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(color: Theme.of(context).colorScheme.error),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -66,17 +63,14 @@ class _PasswordPageState extends State<PasswordPage> {
                           controller: _passwordController,
                           decoration: InputDecoration(
                             labelText: 'password'.tr(),
-                            helperText: _passwordController.text != ''
-                                ? 'password'.tr()
-                                : null,
+                            helperText: _passwordController.text != '' ? 'password'.tr() : null,
                             prefixIcon: Icon(
                               Icons.password,
                             ),
                           ),
                           obscureText: true,
                           inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp('[A-Za-z0-9]')),
+                            FilteringTextInputFormatter.allow(RegExp('[A-Za-z0-9]')),
                           ],
                           onChanged: (value) => setState(() {}),
                           onFieldSubmitted: (value) => _pushButton(),
@@ -134,11 +128,11 @@ class _PasswordPageState extends State<PasswordPage> {
     showDialog(
       context: context,
       builder: (context) => FutureOutputDialog(
-        future: context.read<UserState>().login(
-          widget.username!,
-          _passwordController.text,
-          context,
-        ),
+        future: context.read<UserNotifier>().login(
+              widget.username!,
+              _passwordController.text,
+              context,
+            ),
         context: context,
       ),
     );

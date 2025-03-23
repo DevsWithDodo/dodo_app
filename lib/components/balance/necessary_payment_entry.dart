@@ -13,7 +13,7 @@ class NecessaryPaymentEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<UserState, User>(
+    return Selector<UserNotifier, User>(
         selector: (_, provider) => provider.user!,
         builder: (context, user, _) {
           return Padding(
@@ -22,9 +22,7 @@ class NecessaryPaymentEntry extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 6),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: payments[0].payerId == user.id
-                    ? Theme.of(context).colorScheme.primaryContainer
-                    : Theme.of(context).colorScheme.surfaceContainerHighest,
+                color: payments[0].payerId == user.id ? Theme.of(context).colorScheme.primaryContainer : Theme.of(context).colorScheme.surfaceContainerHighest,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -76,7 +74,7 @@ class NecessaryPaymentEntry extends StatelessWidget {
                                   child: Center(
                                     child: Text(
                                       payment.amount.toMoneyString(
-                                        context.read<UserState>().currentGroup!.currency,
+                                        context.read<UserNotifier>().currentGroup!.currency,
                                         withSymbol: true,
                                       ),
                                       style: Theme.of(context).textTheme.bodyLarge,
@@ -84,19 +82,18 @@ class NecessaryPaymentEntry extends StatelessWidget {
                                   ),
                                 ),
                                 IconButton.filled(
-                                  visualDensity: VisualDensity.compact,
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return PaymentMethodsDialog(
-                                          member: takers.firstWhere((element) => element.id == payment.takerId),
-                                        );
-                                      },
-                                    );
-                                  },
-                                  icon: Icon(Icons.wallet)
-                                ),
+                                    visualDensity: VisualDensity.compact,
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return PaymentMethodsDialog(
+                                            member: takers.firstWhere((element) => element.id == payment.takerId),
+                                          );
+                                        },
+                                      );
+                                    },
+                                    icon: Icon(Icons.wallet)),
                               ],
                             ),
                           )
