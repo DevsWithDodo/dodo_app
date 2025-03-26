@@ -174,7 +174,7 @@
     "use_personalised_ads": "Personalisierte Anzeigen",
     "use_personalised_ads_explanation": "Falls du Personalisierte Anzeigen sehen möchtest",
 
-    "store-page.trial-dialog": "Probezeit",
+    "store-page.trial-dialog": "Welcome Bonus",
     "store-page.trial-dialog.text": "Du hast dich in den letzten zwei Wochen registriert, deshalb benutzt du die App ohne Anzeigen, mit Farbübergängigen Themen und mit Zugriff auf die Statistiken der Gruppen.\n\nFalls du diese Features nach den zwei Wochen haben möchtest, kannst du dir sie hier im Dodo Laden kaufen.",
 
 
@@ -309,7 +309,7 @@
     "new_pin_confirm": "Neue Pin bestätigen",
     "change_pin_scf": "Pin erfolgreich geändert.",
 
-    "trial-ended.dialog.title": "Probezeit zuende",
+    "trial-ended.dialog.title": "Welcome Bonus ausgelaufen",
     "trial-ended.dialog.subtitle": "Von nun an wirst du in der App Werbung sehen und kannst nur noch die einfachen Farbthemen verwenden.",
     "trial-ended.dialog.shop": "Wenn du diese Funktionen weiter nutzen (oder uns unterstützen) möchtest, kannst du sie im Dodo-Shop kaufen.",
 

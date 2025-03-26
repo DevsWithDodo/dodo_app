@@ -74,7 +74,7 @@ class MainDialogBuilder extends StatefulWidget {
         type: DialogType.bottom,
         canShow: (context) {
           User user = context.read<UserNotifier>().user!;
-          if (user.username == null) return false; // No username means social login, no need for pin verification
+          if (user.googleConnected || user.appleConnected) return false; // No username means social login, no need for pin verification
           UserStatus status = user.userStatus;
           int verificationCount = status.pinVerificationCount;
           Duration difference = DateTime.now().difference(status.pinVerifiedAt);

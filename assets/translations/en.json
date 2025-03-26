@@ -170,7 +170,7 @@
     "use_personalised_ads": "Personalised ads",
     "use_personalised_ads_explanation": "If you want to see personalised ads",
 
-    "store-page.trial-dialog": "Trial time",
+    "store-page.trial-dialog": "Welcome bonus active",
     "store-page.trial-dialog.text": "You've signed up in the past two weeks, so you are using the app without ads and with access to all customization options and group statistics.\n\nAfter two weeks you will be able to buy these here in the Dodo Store if you want to.",
 
     "calculator": "Calculator",
@@ -297,7 +297,7 @@
     "new_pin": "New pin",
     "new_pin_confirm": "Confirm new pin",
 
-    "trial-ended.dialog.title": "Trial has ended",
+    "trial-ended.dialog.title": "Welcome bonus expired",
     "trial-ended.dialog.subtitle": "Starting now, you'll see ads and have access only to simple color themes.",
     "trial-ended.dialog.shop": "If you'd like to keep using these features (or simply show some love for what we do), you can grab them from the Dodo shop.",
 
