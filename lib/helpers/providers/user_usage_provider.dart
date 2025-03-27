@@ -22,7 +22,7 @@ class UserUsageNotifier extends ChangeNotifier {
         copiedSettleUpFlag = _prefs.getBool('user-usage.copied-settle-up-flag') ?? false,
         usedAutomaticSettleUpFlag = _prefs.getBool('user-usage.used-automatic-settle-up-flag') ?? false,
         addedPaymentMethodFlag = _prefs.getBool('user-usage.added-payment-method-flag') ?? false,
-        lastRateAppDialogDate = DateTime.parse(_prefs.getString('user-usage.last-rate-app-dialog-date') ?? DateTime.now().toString()),
+        lastRateAppDialogDate = DateTime.parse(_prefs.getString('user-usage.last-rate-app-dialog-date') ?? DateTime(2021, 1, 17).toString()),
         appOpenCount = _prefs.getInt('user-usage.app-open-count') ?? 0,
         themeChangedFlag = _prefs.getBool('user-usage.theme-changed-flag') ?? false,
         groupsUsedCount = _prefs.getInt('user-usage.groups-used-count') ?? 0,

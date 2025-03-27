@@ -33,54 +33,53 @@ class _BootstrapState extends State<Bootstrap> {
 
   @override
   Widget build(BuildContext context) {
-    return AppConfigProvider(
-      builder: (context) => FutureBuilder(
-        future: _prefs,
-        builder: (context, AsyncSnapshot<SharedPreferences> snapshot) {
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          }
-          final appOpenCount = snapshot.data!.getInt('user-usage.app-open-count') ?? 0;
-          snapshot.data!.setInt('user-usage.app-open-count', appOpenCount + 1);
-          return Provider(
-            create: (context) => snapshot.data!,
-            builder: (context, child) => AppThemeProvider(
-              context: context,
-              builder: (context) => InviteUrlProvider(
-                builder: (context) => ExchangeRateInitializer(
-                  context: context,
-                  builder: (context) => ChangeNotifierProvider(
-                      create: (context) => UserUsageNotifier(snapshot.data!),
-                      builder: (context, child) => UserProvider(
-                            context: context,
-                            builder: (context) => NotificationInitializer(
-                              context: context,
-                              builder: (context) => IAPInitializer(
-                                context: context,
-                                builder: (context) => ScreenSizeProvider(
-                                  builder: (context) => EasyLocalization(
-                                    supportedLocales: [Locale('en'), Locale('de'), Locale('hu')],
-                                    path: 'assets/translations',
-                                    fallbackLocale: Locale('en'),
-                                    useOnlyLangCode: true,
-                                    saveLocale: true,
-                                    useFallbackTranslations: true,
-                                    child: ShowCaseWidget(
-                                      builder: (context) => SupportedVersionInitializer(
-                                        builder: (context) => App(),
+    return FutureBuilder(
+      future: _prefs,
+      builder: (context, AsyncSnapshot<SharedPreferences> snapshot) {
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
+        final appOpenCount = snapshot.data!.getInt('user-usage.app-open-count') ?? 0;
+        snapshot.data!.setInt('user-usage.app-open-count', appOpenCount + 1);
+        return Provider(
+          create: (context) => snapshot.data!,
+          builder: (context, child) => AppConfigProvider(
+              builder: (context) => AppThemeProvider(
+                    context: context,
+                    builder: (context) => InviteUrlProvider(
+                      builder: (context) => ExchangeRateInitializer(
+                        context: context,
+                        builder: (context) => ChangeNotifierProvider(
+                            create: (context) => UserUsageNotifier(snapshot.data!),
+                            builder: (context, child) => UserProvider(
+                                  context: context,
+                                  builder: (context) => NotificationInitializer(
+                                    context: context,
+                                    builder: (context) => IAPInitializer(
+                                      context: context,
+                                      builder: (context) => ScreenSizeProvider(
+                                        builder: (context) => EasyLocalization(
+                                          supportedLocales: [Locale('en'), Locale('de'), Locale('hu')],
+                                          path: 'assets/translations',
+                                          fallbackLocale: Locale('en'),
+                                          useOnlyLangCode: true,
+                                          saveLocale: true,
+                                          useFallbackTranslations: true,
+                                          child: ShowCaseWidget(
+                                            builder: (context) => SupportedVersionInitializer(
+                                              builder: (context) => App(),
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            ),
-                          )),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+                                )),
+                      ),
+                    ),
+                  )),
+        );
+      },
     );
   }
 }
