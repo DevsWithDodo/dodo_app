@@ -52,6 +52,7 @@ dependencies:
   sign_in_with_apple: ^6.1.4
   path: ^1.9.1
   in_app_review: ^2.0.10
+  libsignal_protocol_dart: ^0.7.2 
 
   flutter:
     sdk: flutter

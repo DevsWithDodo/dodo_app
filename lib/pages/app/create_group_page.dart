@@ -15,6 +15,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:libsignal_protocol_dart/libsignal_protocol_dart.dart';
 import 'package:provider/provider.dart';
 
 class CreateGroupPage extends StatefulWidget {
@@ -48,6 +49,16 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
       userProvider.setGroups(userProvider.user!.groups + [Group.fromJson(decoded)], notify: false);
       userProvider.setGroup(userProvider.user!.groups.last);
       context.read<UserUsageNotifier>().incrementGroupsUsedCount();
+      final alice = SignalProtocolAddress(nickname, 1);
+      final groupSender = SenderKeyName(
+        "$groupName.${userProvider.user!.groups.last.id}",
+        alice,
+      );
+      final aliceStore = InMemorySenderKeyStore();
+      final aliceGroupCipher = GroupCipher(aliceStore, groupSender);
+      final aliceSessionBuilder = GroupSessionBuilder(aliceStore);
+      final sentAliceDistributionMessage = await aliceSessionBuilder.create(groupSender);
+      print(sentAliceDistributionMessage.serialize());
       return BoolFutureOutput.True;
     } catch (_) {
       rethrow;
