@@ -199,6 +199,14 @@ class AmountDivision {
 
   void setTotal(double total) {
     totalAmount = total;
+    if (total == 0) {
+      for (PurchaseReceiver memberAmount in amounts) {
+        memberAmount.customAmountController.text = "0";
+        memberAmount.percentageController.text = "0";
+      }
+      setState();
+      return;
+    }
     for (PurchaseReceiver memberAmount in customAmounts) {
       if (memberAmount.customizedThroughAmount) {
         memberAmount.percentageController.text = ((memberAmount.parsedAmount ?? 0) / total * 100).toInt().toString();

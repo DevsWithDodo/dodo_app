@@ -101,18 +101,18 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
                     SegmentedButton<AddMemberPageTabs>(
                       selectedIcon: Icon(
                         _tabController.index == 0 ? Icons.qr_code : Icons.person_add,
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        color: Theme.of(context).colorScheme.onSecondaryContainer,
                       ),
                       segments: [
                         ButtonSegment(
                           value: AddMemberPageTabs.invite,
                           label: Text('add-member.invite'.tr()),
-                          icon: Icon(Icons.qr_code),
+                          icon: Icon(Icons.qr_code, color: Theme.of(context).colorScheme.onSurface),
                         ),
                         ButtonSegment(
                           value: AddMemberPageTabs.create,
                           label: Text('add-member.create'.tr()),
-                          icon: Icon(Icons.person_add),
+                          icon: Icon(Icons.person_add, color: Theme.of(context).colorScheme.onSurface),
                         ),
                       ],
                       selected: {AddMemberPageTabs.values[_tabController.index]},

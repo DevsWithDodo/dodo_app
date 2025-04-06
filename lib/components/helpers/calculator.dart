@@ -1,13 +1,9 @@
-import 'dart:collection';
-
-import 'package:csocsort_szamla/helpers/app_theme.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
-import 'package:csocsort_szamla/helpers/data_stack.dart';
-import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
+import 'package:csocsort_szamla/helpers/validation_rules.dart';
+import 'package:customized_keyboard/customized_keyboard.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 
 enum Operator { add, subtract, multiply, divide, none }
 
@@ -26,7 +22,8 @@ enum ButtonText {
   dot("."),
   equals("="),
   backspace("b"),
-  clear("C"),
+  clear("AC"),
+  parentheses("( )"), // New button for parentheses
   divide("÷", Operator.divide),
   multiply("×", Operator.multiply),
   subtract("-", Operator.subtract),
@@ -45,279 +42,258 @@ enum ButtonText {
   bool get isNumber => !isOperator && this != ButtonText.empty && this != ButtonText.dot && this != ButtonText.backspace && this != ButtonText.clear && this != ButtonText.equals;
 }
 
-class StringOrOperator {
-  StringOrOperator.string(this.value);
-  StringOrOperator.operator(this.operator);
-
-  String? value;
-  Operator? operator;
-
-  double? get asDouble => value != null ? double.tryParse(value!) : null;
-}
-
-class Calculator extends StatefulWidget {
-  final void Function(String fromCalculation) onCalculationReady;
-  final String? initialNumber;
+class CalculatorTextField extends StatelessWidget {
+  final TextEditingController controller;
   final Currency selectedCurrency;
-  const Calculator({super.key, required this.onCalculationReady, this.initialNumber, required this.selectedCurrency});
-  @override
-  State<Calculator> createState() => _CalculatorState();
-}
+  final CustomKeyboard calculatorKeyboard = CalculatorKeyboard();
+  final void Function(double value) onChanged;
+  final FocusNode? focusNode;
 
-class _CalculatorState extends State<Calculator> {
-  String _intermediateResult = '';
-  final Queue<StringOrOperator> _inputAsRPN = Queue<StringOrOperator>();
-  DataStack<Operator> _operators = DataStack<Operator>();
-  bool _isStillNum = false;
-  String _storeNum = '';
-  Operator _lastOperator = Operator.none;
+  CalculatorTextField({
+    super.key,
+    required this.controller,
+    required this.selectedCurrency,
+    required this.onChanged,
+    this.focusNode,
+  });
 
-  @override
-  void initState() {
-    super.initState();
-    if (widget.initialNumber != null) {
-      _isStillNum = true;
-      _intermediateResult = widget.initialNumber!;
-      _storeNum = widget.initialNumber!;
+  void _calculateCurrentExpression() {
+    final value = controller.text;
+    if (value.isEmpty) return;
+
+    if (value.contains('=')) {
+      // Already has an equals sign, just remove it
+      String expression = value.replaceAll('=', '');
+      controller.text = expression;
     }
-  }
 
-  void parse(ButtonText input) {
-    assert(input.isNumber || input.isOperator || input == ButtonText.dot);
-    if (input == ButtonText.dot) {
-      if (_isStillNum && !_storeNum.contains('.')) {
-        _storeNum += input.text;
-        setState(() {
-          _lastOperator = Operator.none;
-          _intermediateResult = _storeNum;
-        });
-      }
-    } else if (input.isNumber) {
-      if (_isStillNum || _storeNum == '') {
-        _storeNum += input.text;
-      }
-      _isStillNum = true;
-      setState(() {
-        _lastOperator = Operator.none;
-        _intermediateResult = _storeNum;
-      });
+    double result = _evaluateExpression(value);
+
+    if (result > 0) {
+      controller.text = result.toMoneyString(selectedCurrency);
+      onChanged(result);
     } else {
-      if (_isStillNum) {
-        if (_storeNum[_storeNum.length - 1] == '.') {
-          _storeNum = _storeNum.substring(0, _storeNum.length - 1);
-          setState(() {
-            _intermediateResult = _storeNum;
-          });
-        }
-        _inputAsRPN.add(StringOrOperator.string(_storeNum));
-        _storeNum = '';
-      }
-      _isStillNum = false;
-      if (_operators.length > 0) {
-        _inputAsRPN.add(StringOrOperator.operator(_operators.pop()));
-        String calculated = calculate();
-        setState(() {
-          _intermediateResult = calculated;
-        });
-        _inputAsRPN.clear();
-        _inputAsRPN.add(StringOrOperator.string(calculated));
-      }
-      _operators.push(input.operator);
-      setState(() {
-        _lastOperator = input.operator;
-      });
+      controller.text = '0';
+      onChanged(0);
     }
   }
 
-  void equals() {
-    setState(() {
-      _lastOperator = Operator.none;
-    });
-    if (_storeNum != '') {
-      _inputAsRPN.add(StringOrOperator.string(_storeNum));
-    }
-    while (_operators.length != 0) {
-      _inputAsRPN.add(StringOrOperator.operator(_operators.pop()));
-    }
-    // print(_RPNintput);
-    setState(() {
-      _intermediateResult = calculate();
-    });
-    _storeNum = _intermediateResult;
-    _inputAsRPN.clear();
-  }
-
-  void changeOperator(ButtonText input) {
-    _operators.pop();
-    _operators.push(input.operator);
-    setState(() {
-      if (_intermediateResult.isNotEmpty && _operatorsAndEquals.contains(ButtonText.fromString(_intermediateResult[_intermediateResult.length - 1]))) {
-        _intermediateResult = _intermediateResult.substring(0, _intermediateResult.length - 1) + input.text;
-      }
-      _lastOperator = input.operator;
-    });
-  }
-
-  String calculate() {
-    DataStack<double> numbers = DataStack<double>();
-    while (_inputAsRPN.isNotEmpty) {
-      StringOrOperator stringOrOperator = _inputAsRPN.removeFirst();
-      double? parsed = stringOrOperator.asDouble;
-      if (parsed != null) {
-        numbers.push(parsed);
-      } else {
-        assert(stringOrOperator.operator != null && stringOrOperator.operator != Operator.none);
-        double a = numbers.pop();
-        double b = numbers.pop();
-        late double c;
-        switch (stringOrOperator.operator!) {
-          case Operator.add:
-            c = a + b;
-            break;
-          case Operator.subtract:
-            c = -a + b;
-            break;
-          case Operator.multiply:
-            c = a * b;
-            break;
-          case Operator.divide:
-            c = b / a;
-            break;
-          case Operator.none:
-            break;
-        }
-        numbers.push(c);
-      }
-    }
-    double result = numbers.pop();
-    if (result.roundToDouble() == result) {
-      return result.toString().split('.')[0];
-    }
-    return result.toString();
-  }
-
-  void backspace() {
-    if (_storeNum != '') {
-      _storeNum = _storeNum.substring(0, _storeNum.length - 1);
-      setState(() {
-        _intermediateResult = _storeNum;
-      });
-    }
-  }
-
-  void clearAll() {
-    _storeNum = '';
-    _lastOperator = Operator.none;
-    _operators = DataStack<Operator>();
-    _inputAsRPN.clear();
-    _isStillNum = false;
-    setState(() {
-      _intermediateResult = '0';
-    });
+  bool _endsWithOperator(String expression) {
+    return expression.endsWith('+') || expression.endsWith('-') || expression.endsWith('*') || expression.endsWith('/') || expression.endsWith('(') || expression.endsWith(')');
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(15),
-      child: Column(
-        children: [
-          Text(
-            'calculator'.tr(),
-            style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Text(
-            'calculator_explanation'.tr(),
-            style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurface),
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Column(
-            children: [
-              Visibility(
-                visible: _intermediateResult == '',
-                child: Text(
-                  '0',
-                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Theme.of(context).colorScheme.tertiary),
-                ),
-              ),
-              Visibility(
-                visible: _intermediateResult != '',
-                child: Text(
-                  _intermediateResult,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Theme.of(context).colorScheme.tertiary),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Center(
-            child: Container(
-              constraints: BoxConstraints(maxWidth: 400),
-              child: Table(
-                children: [0, 1, 2, 3].map((index) {
-                  return TableRow(
-                    children: _generateRow(index),
-                  );
-                }).toList(),
-                // defaultColumnWidth: FractionColumnWidth(0.2),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Ink(
-            height: 60,
-            width: 60,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: _operators.length != 0 && _isStillNum ? LinearGradient(colors: [Colors.grey, Colors.grey]) : AppTheme.gradientFromTheme(context.watch<AppThemeState>().themeName),
-            ),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(100),
-              onTap: _operators.length != 0 && _isStillNum
-                  ? null
-                  : () {
-                      Navigator.pop(context);
-                      if (double.tryParse(_intermediateResult) != null) {
-                        widget.onCalculationReady(double.parse(_intermediateResult).toMoneyString(widget.selectedCurrency));
-                      }
-                    },
-              child: Icon(
-                Icons.copy,
-                color: _operators.length != 0 && _isStillNum ? Colors.black : Theme.of(context).colorScheme.onPrimary,
-              ),
-            ),
-          )
-        ],
+    return CustomTextFormField(
+      focusNode: focusNode,
+      validator: (value) => validateTextField([
+        isEmpty(value),
+        notValidNumber(value!.replaceAll(',', '.')),
+      ]),
+      selectionControls: EmptyTextSelectionControls(),
+      decoration: InputDecoration(
+        labelText: 'full_amount'.tr(),
+        prefixIcon: Icon(Icons.payments),
+      ),
+      controller: controller,
+      keyboardType: calculatorKeyboard.inputType,
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,\\+\\-\\*\\/\\÷\\×\\=\\(\\)]'))],
+      onTapOutside: (event) {
+        _calculateCurrentExpression();
+        // focusNode?.unfocus();
+      },
+      onChanged: (value) {
+        final parenthesesIndex = value.indexOf('()');
+        if (parenthesesIndex != -1) {
+          // Handle smart parentheses insertion
+          List<String> splitted = value.split('()');
+          String interestingPart = splitted[0];
+          // Max 1 () in value
+          String rest = splitted.length > 1 ? splitted[1] : '';
+          int openCount = interestingPart.split('(').length - 1;
+          int closeCount = interestingPart.split(')').length - 1;
+
+          if (openCount > closeCount) {
+            controller.text = "$interestingPart)$rest";
+          } else {
+            controller.text = "$interestingPart($rest";
+          }
+          controller.selection = TextSelection.fromPosition(TextPosition(offset: parenthesesIndex + 1));
+          if (controller.text.contains('()')) {
+            // If the text still contains '()', remove it
+            controller.text = controller.text.replaceAll('()', '');
+          }
+        } else if (value.contains('=')) {
+          // Calculate result when = is entered
+          String expression = value.replaceAll('=', '');
+          double result = _evaluateExpression(expression);
+          if (result == result.toInt()) {
+            controller.text = result.toInt().toString();
+          } else {
+            controller.text = result.toString();
+          }
+          if (result > 0) {
+            onChanged(result);
+          }
+        } else if (_endsWithOperator(value) && _endsWithOperator(value.substring(0, value.length - 1))) {
+          // If the last character is an operator and the second last is also an operator, change the last operator
+          controller.text = value.substring(0, value.length - 2) + value[value.length - 1];
+        } else {
+          // Try to parse as a number for the onChanged callback
+          double? parsedTotal = double.tryParse(value.replaceAll(',', '.'));
+          if (parsedTotal != null && parsedTotal > 0) {
+            onChanged(parsedTotal);
+          }
+        }
+      },
+    );
+  }
+
+  double _evaluateExpression(String expression) {
+    // Convert special characters
+    expression = expression.replaceAll('×', '*').replaceAll('÷', '/');
+
+    if (_endsWithOperator(expression)) {
+      // Remove trailing operator
+      expression = expression.substring(0, expression.length - 1);
+    }
+
+    int openCount = expression.split('(').length - 1;
+    int closeCount = expression.split(')').length - 1;
+
+    while (openCount > closeCount) {
+      expression += ')';
+      closeCount++;
+    }
+
+    expression = _addImplicitMultiplication(expression);
+
+    // Simple expression evaluator for basic operations
+    try {
+      // First handle parentheses
+      while (expression.contains('(') && expression.contains(')')) {
+        // Find the innermost parentheses
+        int closeIndex = expression.indexOf(')');
+        int openIndex = expression.lastIndexOf('(', closeIndex);
+
+        if (openIndex == -1 || closeIndex == -1) break;
+
+        // Extract and evaluate the expression inside the parentheses
+        String subExpr = expression.substring(openIndex + 1, closeIndex);
+        double result = _evaluateExpression(subExpr);
+
+        // Replace the parenthesized expression with its result
+        expression = expression.substring(0, openIndex) + result.toString() + expression.substring(closeIndex + 1);
+      }
+
+      // Then handle multiplication and division
+      while (expression.contains('*') || expression.contains('/')) {
+        RegExp regex = RegExp(r'(\d+\.?\d*)[*/](\d+\.?\d*)');
+        Match? match = regex.firstMatch(expression);
+
+        if (match != null) {
+          String fullMatch = match.group(0)!;
+          double a = double.parse(match.group(1)!);
+          double b = double.parse(match.group(2)!);
+          double result;
+
+          if (fullMatch.contains('*')) {
+            result = a * b;
+          } else {
+            result = a / b;
+          }
+
+          expression = expression.replaceFirst(fullMatch, result.toString());
+        } else {
+          break;
+        }
+      }
+
+      // Then handle addition and subtraction
+      while (expression.contains('+') || (expression.contains('-') && !expression.startsWith('-'))) {
+        RegExp regex = RegExp(r'(\d+\.?\d*)[+\-](\d+\.?\d*)');
+        Match? match = regex.firstMatch(expression);
+
+        if (match != null) {
+          String fullMatch = match.group(0)!;
+          double a = double.parse(match.group(1)!);
+          double b = double.parse(match.group(2)!);
+          double result;
+
+          if (fullMatch.contains('+')) {
+            result = a + b;
+          } else {
+            result = a - b;
+          }
+
+          expression = expression.replaceFirst(fullMatch, result.toString());
+        } else {
+          break;
+        }
+      }
+
+      return (double.parse(expression) * 10000).round() / 10000;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  String _addImplicitMultiplication(String expression) {
+    // Use regex to find number followed by opening parenthesis or closing parenthesis followed by a number
+    RegExp regex = RegExp(r'(\d)(\()|(\))(\d)');
+    return expression.replaceAllMapped(regex, (match) {
+      if (match.group(1) != null) {
+        return '${match.group(1)}*${match.group(2)}';
+      } else {
+        return '${match.group(3)}*${match.group(4)}';
+      }
+    });
+  }
+}
+
+class Calculator extends StatelessWidget {
+  Calculator({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(
+        maxHeight: 380,
+      ),
+      padding: const EdgeInsets.only(
+        left: 10,
+        right: 10,
+        top: 15,
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Material(
+        type: MaterialType.transparency,
+        child: Table(
+          children: [0, 1, 2, 3].map((index) {
+            return TableRow(
+              children: _generateRow(context, index),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
 
-  final List<ButtonText> _operatorsAndEquals = [ButtonText.add, ButtonText.subtract, ButtonText.divide, ButtonText.multiply, ButtonText.equals];
-
   final List<List<ButtonText>> _rows = [
     [ButtonText.divide, ButtonText.one, ButtonText.two, ButtonText.three, ButtonText.clear],
-    [ButtonText.multiply, ButtonText.four, ButtonText.five, ButtonText.six, ButtonText.empty],
+    [ButtonText.multiply, ButtonText.four, ButtonText.five, ButtonText.six, ButtonText.parentheses],
     [ButtonText.subtract, ButtonText.seven, ButtonText.eight, ButtonText.nine, ButtonText.empty],
     [ButtonText.add, ButtonText.dot, ButtonText.zero, ButtonText.backspace, ButtonText.equals],
   ];
 
-  List<Widget> _generateRow(int index) {
+  List<Widget> _generateRow(BuildContext context, int index) {
     return _rows[index].map((buttonText) {
       Color color, textColor;
-      if (_lastOperator == buttonText.operator && buttonText.isOperator) {
-        color = Theme.of(context).colorScheme.secondary;
-        textColor = Theme.of(context).colorScheme.onSecondary;
-      } else if (buttonText.isOperator || buttonText == ButtonText.backspace || buttonText == ButtonText.dot) {
+
+      if (buttonText.isOperator || buttonText == ButtonText.backspace || buttonText == ButtonText.dot || buttonText == ButtonText.parentheses) {
         color = Theme.of(context).colorScheme.secondaryContainer;
         textColor = Theme.of(context).colorScheme.onSecondaryContainer;
       } else if (buttonText == ButtonText.clear) {
@@ -330,52 +306,31 @@ class _CalculatorState extends State<Calculator> {
         color = Colors.transparent;
         textColor = Theme.of(context).colorScheme.onSurface;
       } else {
-        color = Theme.of(context).colorScheme.surfaceContainer;
+        color = Theme.of(context).colorScheme.surfaceContainerHighest;
         textColor = Theme.of(context).colorScheme.onSurfaceVariant;
       }
 
-      return AspectRatio(
-        aspectRatio: 1,
-        child: Padding(
-          padding: const EdgeInsets.all(3),
-          child: CalculatorButton(
-            backgroundColor: color,
-            textColor: textColor,
-            onPressed: buttonText == ButtonText.empty
-                ? null
-                : () {
-                    if (buttonText == ButtonText.clear) {
-                      clearAll();
-                      return;
-                    }
-                    if (buttonText == ButtonText.backspace) {
-                      backspace();
-                      return;
-                    }
-                    if (buttonText.isOperator || buttonText == ButtonText.equals) {
-                      if (_isStillNum) {
-                        if (buttonText == ButtonText.equals) {
-                          equals();
-                        } else {
-                          parse(buttonText);
-                        }
-                      } else if (buttonText != ButtonText.equals && _operators.length != 0) {
-                        changeOperator(buttonText);
-                      }
-                    } else {
-                      parse(buttonText);
-                    }
-                  },
-            child: Center(
-              child: buttonText != ButtonText.backspace
-                  ? Text(
-                      buttonText.text,
-                      style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: textColor),
-                    )
-                  : Icon(Icons.backspace, color: textColor),
-            ),
-          ),
-        ),
+      return Padding(
+        padding: const EdgeInsets.all(3),
+        child: buttonText == ButtonText.empty
+            ? Container()
+            : CalculatorButton(
+                backgroundColor: color,
+                textColor: textColor,
+                keyEvent: buttonText == ButtonText.clear
+                    ? CustomKeyboardEvent.clear()
+                    : buttonText == ButtonText.backspace
+                        ? CustomKeyboardEvent.deleteOne()
+                        : CustomKeyboardEvent.character(buttonText.text),
+                child: Center(
+                  child: buttonText != ButtonText.backspace
+                      ? Text(
+                          buttonText.text,
+                          style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: textColor),
+                        )
+                      : Icon(Icons.backspace, color: textColor),
+                ),
+              ),
       );
     }).toList();
   }
@@ -383,14 +338,14 @@ class _CalculatorState extends State<Calculator> {
 
 class CalculatorButton extends StatefulWidget {
   const CalculatorButton({
-    required this.onPressed,
+    required this.keyEvent,
     required this.backgroundColor,
     required this.textColor,
     required this.child,
     super.key,
   });
 
-  final VoidCallback? onPressed;
+  final CustomKeyboardEvent keyEvent;
   final Color backgroundColor;
   final Color textColor;
   final Widget child;
@@ -420,25 +375,45 @@ class _CalculatorButtonState extends State<CalculatorButton> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
-    return Ink(
-      decoration: BoxDecoration(
-        color: widget.backgroundColor,
-        borderRadius: BorderRadius.circular(20 + (1 - _controller.value) * 50),
-      ),
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: InkWell(
-          onTapDown: (details) => _controller.forward(from: 0),
-          onTapUp: (details) => _controller.reverse(from: 1),
-          onTapCancel: () => _controller.reverse(from: 1),
-          overlayColor: WidgetStateProperty.all(Colors.transparent),
-          onTap: () {
-            HapticFeedback.lightImpact();
-            widget.onPressed?.call();
-          },
-          child: widget.child,
+    return AspectRatio(
+      aspectRatio: 1,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: widget.backgroundColor,
+          borderRadius: BorderRadius.circular(20 + (1 - _controller.value) * 50),
+        ),
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: InkWell(
+            onTapDown: (details) => _controller.forward(from: 0),
+            onTapUp: (details) => _controller.reverse(from: 1),
+            onTapCancel: () => _controller.reverse(from: 1),
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
+            onTap: () {
+              HapticFeedback.lightImpact();
+              final keyboardWrapper = KeyboardWrapper.of(context);
+              if (keyboardWrapper == null) {
+                throw KeyboardWrapperNotFound();
+              }
+              keyboardWrapper.onKey(widget.keyEvent);
+            },
+            child: Center(child: widget.child),
+          ),
         ),
       ),
     );
   }
+}
+
+class CalculatorKeyboard extends CustomKeyboard {
+  @override
+  Widget build(BuildContext context) {
+    return TextFieldTapRegion(child: Calculator());
+  }
+
+  @override
+  double get height => 380;
+
+  @override
+  String get name => 'CALCULATOR_KEYBOARD';
 }

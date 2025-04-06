@@ -8,7 +8,6 @@ import 'package:csocsort_szamla/components/groups/group_info.dart';
 import 'package:csocsort_szamla/components/helpers/drawer_tile.dart';
 import 'package:csocsort_szamla/components/history/history.dart';
 import 'package:csocsort_szamla/components/main/main_dialog_builder.dart';
-import 'package:csocsort_szamla/components/main/main_speed_dial.dart';
 import 'package:csocsort_szamla/components/main/statistics_export_card.dart';
 import 'package:csocsort_szamla/components/shopping/shopping_list.dart';
 import 'package:csocsort_szamla/helpers/app_theme.dart';
@@ -20,6 +19,7 @@ import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/pages/app/create_group_page.dart';
 import 'package:csocsort_szamla/pages/app/customize_page.dart';
 import 'package:csocsort_szamla/pages/app/join_group_page.dart';
+import 'package:csocsort_szamla/pages/app/purchase_page.dart';
 import 'package:csocsort_szamla/pages/app/store_page.dart';
 import 'package:csocsort_szamla/pages/app/user_settings_page.dart';
 import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
@@ -294,8 +294,16 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
               : null,
           floatingActionButton: Visibility(
             visible: _selectedIndex == 0,
-            child: MainPageSpeedDial(
-              onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
+            child: FloatingActionButton.extended(
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PurchasePage()),
+                );
+                EventBus.instance.fire(EventBus.refreshMainDialog);
+              },
+              label: Text('new-expense'.tr()),
+              icon: Icon(Icons.add),
             ),
           ),
           body: kIsWeb

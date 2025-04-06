@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
-import 'package:csocsort_szamla/components/helpers/calculator.dart';
 import 'package:csocsort_szamla/components/helpers/currency_picker_icon_button.dart';
 import 'package:csocsort_szamla/components/helpers/custom_choice_chip.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
@@ -203,32 +202,6 @@ class _PaymentPageState extends State<PaymentPage> {
                                       keyboardType: TextInputType.numberWithOptions(decimal: true),
                                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))],
                                       onFieldSubmitted: (value) => submit(context),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 5),
-                                    child: IconButton.filledTonal(
-                                      isSelected: false,
-                                      icon: Icon(
-                                        Icons.calculate,
-                                      ),
-                                      onPressed: () {
-                                        showModalBottomSheet(
-                                          isScrollControlled: true,
-                                          context: context,
-                                          builder: (context) {
-                                            return SingleChildScrollView(
-                                              child: Calculator(
-                                                selectedCurrency: selectedCurrency,
-                                                initialNumber: amountController.text,
-                                                onCalculationReady: (String fromCalc) => setState(() {
-                                                  amountController.text = fromCalc;
-                                                }),
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
                                     ),
                                   ),
                                 ],
