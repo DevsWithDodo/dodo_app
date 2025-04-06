@@ -1,9 +1,11 @@
 import 'package:csocsort_szamla/helpers/currencies.dart';
+import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/helpers/validation_rules.dart';
 import 'package:customized_keyboard/customized_keyboard.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 enum Operator { add, subtract, multiply, divide, none }
 
@@ -251,32 +253,108 @@ class CalculatorTextField extends StatelessWidget {
   }
 }
 
-class Calculator extends StatelessWidget {
-  Calculator({super.key});
+class CalculatorButton extends StatefulWidget {
+  const CalculatorButton({
+    required this.keyEvent,
+    required this.backgroundColor,
+    required this.textColor,
+    required this.child,
+    super.key,
+  });
+
+  final CustomKeyboardEvent keyEvent;
+  final Color backgroundColor;
+  final Color textColor;
+  final Widget child;
+
+  @override
+  State<CalculatorButton> createState() => _CalculatorButtonState();
+}
+
+class _CalculatorButtonState extends State<CalculatorButton> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 70),
+      reverseDuration: const Duration(milliseconds: 300),
+    )..addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(
-        maxHeight: 380,
-      ),
-      padding: const EdgeInsets.only(
-        left: 10,
-        right: 10,
-        top: 15,
-      ),
+    return Ink(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(20),
+        color: widget.backgroundColor,
+        borderRadius: BorderRadius.circular(20 + (1 - _controller.value) * 50),
       ),
-      child: Material(
-        type: MaterialType.transparency,
-        child: Table(
-          children: [0, 1, 2, 3].map((index) {
-            return TableRow(
-              children: _generateRow(context, index),
-            );
-          }).toList(),
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: InkWell(
+          onTapDown: (details) => _controller.forward(from: 0),
+          onTapUp: (details) => _controller.reverse(from: 1),
+          onTapCancel: () => _controller.reverse(from: 1),
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+          onTap: () {
+            HapticFeedback.lightImpact();
+            final keyboardWrapper = KeyboardWrapper.of(context);
+            if (keyboardWrapper == null) {
+              throw KeyboardWrapperNotFound();
+            }
+            keyboardWrapper.onKey(widget.keyEvent);
+          },
+          child: Center(child: widget.child),
+        ),
+      ),
+    );
+  }
+}
+
+class CalculatorKeyboard extends CustomKeyboard {
+  @override
+  Widget build(BuildContext context) {
+    return TextFieldTapRegion(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: OverflowBox(
+            minWidth: 0,
+            minHeight: 0,
+            maxWidth: context.read<ScreenSize>().width,
+            maxHeight: 380,
+            child: Center(
+              child: Container(
+                constraints: const BoxConstraints(
+                  maxHeight: 380,
+                  maxWidth: (370 / 4 * 5),
+                ),
+                padding: const EdgeInsets.only(
+                  left: 10,
+                  right: 10,
+                ),
+                child: Table(
+                  children: [0, 1, 2, 3].map((index) {
+                    return TableRow(
+                      children: _generateRow(context, index),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -333,82 +411,6 @@ class Calculator extends StatelessWidget {
               ),
       );
     }).toList();
-  }
-}
-
-class CalculatorButton extends StatefulWidget {
-  const CalculatorButton({
-    required this.keyEvent,
-    required this.backgroundColor,
-    required this.textColor,
-    required this.child,
-    super.key,
-  });
-
-  final CustomKeyboardEvent keyEvent;
-  final Color backgroundColor;
-  final Color textColor;
-  final Widget child;
-
-  @override
-  State<CalculatorButton> createState() => _CalculatorButtonState();
-}
-
-class _CalculatorButtonState extends State<CalculatorButton> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 70),
-      reverseDuration: const Duration(milliseconds: 300),
-    )..addListener(() => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1,
-      child: Ink(
-        decoration: BoxDecoration(
-          color: widget.backgroundColor,
-          borderRadius: BorderRadius.circular(20 + (1 - _controller.value) * 50),
-        ),
-        child: AspectRatio(
-          aspectRatio: 1,
-          child: InkWell(
-            onTapDown: (details) => _controller.forward(from: 0),
-            onTapUp: (details) => _controller.reverse(from: 1),
-            onTapCancel: () => _controller.reverse(from: 1),
-            overlayColor: WidgetStateProperty.all(Colors.transparent),
-            onTap: () {
-              HapticFeedback.lightImpact();
-              final keyboardWrapper = KeyboardWrapper.of(context);
-              if (keyboardWrapper == null) {
-                throw KeyboardWrapperNotFound();
-              }
-              keyboardWrapper.onKey(widget.keyEvent);
-            },
-            child: Center(child: widget.child),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class CalculatorKeyboard extends CustomKeyboard {
-  @override
-  Widget build(BuildContext context) {
-    return TextFieldTapRegion(child: Calculator());
   }
 
   @override

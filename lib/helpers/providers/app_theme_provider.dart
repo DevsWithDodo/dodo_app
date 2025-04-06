@@ -32,10 +32,11 @@ class AppThemeProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
       value: _appTheme,
-      builder: (context, _) => DynamicColorBuilder(
-        builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-          if (lightDynamic != null && !AppTheme.themes.containsKey(ThemeName.lightDynamic)) {
-            AppTheme.addDynamicThemes(lightDynamic, darkDynamic!);
+      builder: (context, _) => FutureBuilder(
+        future: DynamicColorPlugin.getCorePalette(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            AppTheme.addDynamicThemes(snapshot.data!);
           }
           return builder(context);
         },

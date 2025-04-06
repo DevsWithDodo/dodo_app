@@ -1,5 +1,7 @@
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:material_color_utilities/material_color_utilities.dart';
 
 enum ThemeType {
   simpleColor(false),
@@ -419,10 +421,11 @@ class AppTheme {
           onErrorContainer: Color(0xff410002),
           surface: Color(0xfff6fff6),
           onSurface: Color(0xff151d18),
-          surfaceContainer: Color(0xffeef0e7),
-          surfaceContainerLow: Color(0xfff1f5ec),
-          surfaceContainerHigh: Color(0xffd4e3d9),
-          surfaceContainerHighest: Color(0xffebeae1),
+          surfaceContainer: Color(0xFFF4F1F0),
+          surfaceContainerLow: Color(0xfff6f3f1),
+          surfaceContainerLowest: Color(0xffffffff),
+          surfaceContainerHigh: Color(0xFFEEECEA),
+          surfaceContainerHighest: Color(0xffe5e2e0),
           onSurfaceVariant: Color(0xff3c4a41),
           outline: Color(0xff6a7a6f),
           outlineVariant: Color(0xffbacbbe),
@@ -451,12 +454,14 @@ class AppTheme {
           onError: Color(0xff690005),
           errorContainer: Color(0xff93000a),
           onErrorContainer: Color(0xffffb4ab),
-          surface: Color(0xff151d18),
-          onSurface: Color(0xffdce5dc),
-          surfaceContainerHighest: Color(0xff3c4a41),
-          surfaceContainerLow: Color(0xff20241f),
-          surfaceContainer: Color(0xff272823),
-          onSurfaceVariant: Color(0xffbacbbe),
+          surface: Color(0xff131313),
+          onSurface: Color(0xffe5e2e0),
+          surfaceContainerHighest: Color(0xff353534),
+          surfaceContainerLow: Color(0xff1b1c1b),
+          surfaceContainerLowest: Color(0xff0e0e0e),
+          surfaceContainerHigh: Color(0xff2a2a29),
+          surfaceContainer: Color(0xff1f201f),
+          onSurfaceVariant: Color(0xffdac1bd),
           outline: Color(0xff859589),
           outlineVariant: Color(0xff3c4a41),
           inverseSurface: Color(0xffdce5dc),
@@ -509,41 +514,34 @@ class AppTheme {
     AppTheme.themes.remove(ThemeName.darkDynamic);
   }
 
-  static void addDynamicThemes(ColorScheme lightScheme, ColorScheme darkScheme) {
+  static void addDynamicThemes(CorePalette palette) async {
+    ColorScheme lightScheme = palette.toColorScheme();
+    ColorScheme darkScheme = palette.toColorScheme(brightness: Brightness.dark);
+    if (AppTheme.themes.containsKey(ThemeName.lightDynamic) && AppTheme.themes[ThemeName.lightDynamic]!.colorScheme.primary == lightScheme.primary) {
+      print('Dynamic themes already added');
+      return;
+    }
     try {
-      ColorScheme otherlightScheme = ColorScheme.fromSeed(seedColor: lightScheme.primary, brightness: Brightness.light);
-      ColorScheme otherDarkScheme = ColorScheme.fromSeed(seedColor: darkScheme.primary, brightness: Brightness.dark);
-
       lightScheme = lightScheme.copyWith(
-        surface: otherlightScheme.surface,
-        onSurface: otherlightScheme.onSurface,
-        surfaceBright: otherlightScheme.surfaceBright,
-        surfaceDim: otherlightScheme.surfaceDim,
-        surfaceContainer: otherlightScheme.surfaceContainer,
-        surfaceContainerHigh: otherlightScheme.surfaceContainerHigh,
-        surfaceContainerLow: otherlightScheme.surfaceContainerLow,
-        surfaceContainerHighest: otherlightScheme.surfaceContainerHighest,
-        surfaceContainerLowest: otherlightScheme.surfaceContainerLowest,
+        surface: Color(palette.neutral.get(98)),
+        surfaceBright: Color(palette.neutral.get(98)),
+        surfaceDim: Color(palette.neutral.get(87)),
+        surfaceContainerLowest: Color(palette.neutral.get(100)),
+        surfaceContainerLow: Color(palette.neutral.get(96)),
+        surfaceContainer: Color(palette.neutral.get(94)),
+        surfaceContainerHigh: Color(palette.neutral.get(92)),
+        surfaceContainerHighest: Color(palette.neutral.get(90)),
       );
 
       darkScheme = darkScheme.copyWith(
-        surface: otherDarkScheme.surface,
-        onSurface: otherDarkScheme.onSurface,
-        surfaceBright: otherDarkScheme.surfaceBright,
-        surfaceDim: otherDarkScheme.surfaceDim,
-        surfaceContainer: otherDarkScheme.surfaceContainer,
-        surfaceContainerHigh: otherDarkScheme.surfaceContainerHigh,
-        surfaceContainerLow: otherDarkScheme.surfaceContainerLow,
-        surfaceContainerHighest: otherDarkScheme.surfaceContainerHighest,
-        surfaceContainerLowest: otherDarkScheme.surfaceContainerLowest,
-      );
-
-      lightScheme = lightScheme.copyWith(
-        surfaceContainerLow: ElevationOverlay.applySurfaceTint(lightScheme.surface, lightScheme.primary, 3),
-      );
-
-      darkScheme = darkScheme.copyWith(
-        surfaceContainerLow: ElevationOverlay.applySurfaceTint(darkScheme.surface, darkScheme.primary, 3),
+        surface: Color(palette.neutral.get(6)),
+        surfaceBright: Color(palette.neutral.get(24)),
+        surfaceDim: Color(palette.neutral.get(6)),
+        surfaceContainerLowest: Color(palette.neutral.get(4)),
+        surfaceContainerLow: Color(palette.neutral.get(10)),
+        surfaceContainer: Color(palette.neutral.get(12)),
+        surfaceContainerHigh: Color(palette.neutral.get(17)),
+        surfaceContainerHighest: Color(palette.neutral.get(22)),
       );
 
       AppTheme.themes[ThemeName.lightDynamic] = ThemeData.from(
@@ -551,7 +549,6 @@ class AppTheme {
         useMaterial3: true,
       ).copyWith(
         cardTheme: CardTheme(
-          color: lightScheme.surfaceContainerLow,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -573,7 +570,6 @@ class AppTheme {
         useMaterial3: true,
       ).copyWith(
         cardTheme: CardTheme(
-          color: darkScheme.surfaceContainerLow,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
