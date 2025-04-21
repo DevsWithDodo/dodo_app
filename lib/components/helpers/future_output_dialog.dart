@@ -1,10 +1,9 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:csocsort_szamla/common.dart';
+import 'package:csocsort_szamla/components/helpers/circle_check_animation.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:rive/rive.dart';
 
 /// A function that uses the [showDialog] function to show a [FutureOutputDialog].
 Future<R?> showFutureOutputDialog<R, T extends FutureOutput>({
@@ -57,7 +56,7 @@ class BoolFutureOutput extends FutureOutput {
   const BoolFutureOutput(super.value, super.name);
 }
 
-class FutureOutputDialog<T extends FutureOutput> extends StatefulWidget {
+class FutureOutputDialog<T extends FutureOutput> extends StatelessWidget {
   final Future<T> future;
   final BuildContext context;
 
@@ -82,44 +81,12 @@ class FutureOutputDialog<T extends FutureOutput> extends StatefulWidget {
     this.outputTexts,
   });
 
-  @override
-  State<FutureOutputDialog> createState() => _FutureOutputDialogState<T>();
-}
-
-class _FutureOutputDialogState<T extends FutureOutput> extends State<FutureOutputDialog> {
-  Artboard? _riveArtboard;
-
-  @override
-  void initState() {
-    super.initState();
-
-    rootBundle.load('assets/pipa.riv').then(
-      (data) async {
-        await RiveFile.initialize();
-        final file = RiveFile.import(data);
-
-        // The artboard is the root of the animation and gets drawn in the
-        // Rive widget.
-        final artboard = file.mainArtboard;
-        // Add a controller to play back a known animation on the main/default
-        // artboard.We store a reference to it so we can toggle playback.
-        artboard.addController(SimpleAnimation('go'));
-        _riveArtboard = artboard;
-      },
-    );
-  }
-
   Widget _buildDataTrue() {
-    return _riveArtboard == null
-        ? Icon(
-            Icons.check_circle_outline,
-            color: Theme.of(context).colorScheme.secondary,
-            size: 50,
-          )
-        : ColorFiltered(
-            colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.primary, BlendMode.srcIn),
-            child: SizedBox(height: 60, width: 60, child: Rive(artboard: _riveArtboard!)),
-          );
+    return CircleCheckAnimation(
+      color: Theme.of(context).colorScheme.primary,
+      size: 60,
+      duration: Duration(milliseconds: 500),
+    );
   }
 
   Widget _buildDataFalse(VoidCallback callback, String text) {
@@ -131,7 +98,10 @@ class _FutureOutputDialogState<T extends FutureOutput> extends State<FutureOutpu
           Flexible(
             child: Text(
               text.tr(),
-              style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Colors.white),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge!
+                  .copyWith(color: Colors.white),
               textAlign: TextAlign.center,
             ),
           ),
@@ -148,9 +118,14 @@ class _FutureOutputDialogState<T extends FutureOutput> extends State<FutureOutpu
             },
             label: Text(
               'back'.tr(),
-              style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Theme.of(context).colorScheme.onError),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge!
+                  .copyWith(color: Theme.of(context).colorScheme.onError),
             ),
-            style: ButtonStyle(backgroundColor: WidgetStateProperty.all<Color>(Theme.of(context).colorScheme.error)),
+            style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all<Color>(
+                    Theme.of(context).colorScheme.error)),
           )
         ],
       ),
@@ -163,33 +138,35 @@ class _FutureOutputDialogState<T extends FutureOutput> extends State<FutureOutpu
       backgroundColor: Colors.transparent,
       elevation: 0,
       child: FutureBuilder(
-        future: (widget.future as Future<T>),
+        future: (future as Future<T>),
         builder: (context, AsyncSnapshot<T> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               if (snapshot.data!.value) {
-                if (widget.outputChildren?[snapshot.data!] != null) {
-                  return (widget.outputChildren?[snapshot.data!])!;
+                if (outputChildren?[snapshot.data!] != null) {
+                  return (outputChildren?[snapshot.data!])!;
                 }
                 Future.delayed(Duration(milliseconds: delayTime)).then((value) {
-                  widget.outputCallbacks?[snapshot.data!]?.call();
-                  if (widget.outputCallbacks?[snapshot.data!] == null) {
-                    Navigator.pop(widget.context);
+                  outputCallbacks?[snapshot.data!]?.call();
+                  if (outputCallbacks?[snapshot.data!] == null) {
+                    Navigator.pop(context);
                   }
                 });
                 return _buildDataTrue();
               } else {
-                if (widget.outputChildren?[snapshot.data!] != null) {
-                  return (widget.outputChildren?[snapshot.data!])!;
+                if (outputChildren?[snapshot.data!] != null) {
+                  return (outputChildren?[snapshot.data!])!;
                 }
                 return _buildDataFalse(
-                  widget.outputCallbacks?[snapshot.data!] ?? () => Navigator.pop(widget.context),
-                  widget.outputTexts?[snapshot.data!] ?? 'error',
+                  outputCallbacks?[snapshot.data!] ??
+                      () => Navigator.pop(context),
+                  outputTexts?[snapshot.data!] ?? 'error',
                 );
               }
             } else {
               return _buildDataFalse(
-                widget.outputCallbacks?[FutureOutput.Error] ?? () => Navigator.pop(widget.context),
+                outputCallbacks?[FutureOutput.Error] ??
+                    () => Navigator.pop(context),
                 snapshot.error!.toString(),
               );
             }

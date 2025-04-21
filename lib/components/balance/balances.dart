@@ -25,7 +25,8 @@ class Balances extends StatefulWidget {
   State<Balances> createState() => _BalancesState();
 }
 
-class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin {
+class _BalancesState extends State<Balances>
+    with AutomaticKeepAliveClientMixin {
   @override
   get wantKeepAlive => true;
 
@@ -48,7 +49,8 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
     for (var member in decoded['data']['members']) {
       members.add(Member.fromJson(member));
     }
-    members.sort((member1, member2) => member2.balance.compareTo(member1.balance));
+    members
+        .sort((member1, member2) => member2.balance.compareTo(member1.balance));
     return members;
   }
 
@@ -90,12 +92,13 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
           Padding(
             padding: const EdgeInsets.all(15),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 Center(
                   child: Text(
                     'balances'.tr(),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
                 SizedBox(height: 15),
@@ -104,63 +107,104 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
                   builder: (context, AsyncSnapshot<List<Member>> snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
-                        final isCurrentUserAdmin = snapshot.data!.firstWhere((member) => member.id == context.read<UserNotifier>().user!.id).isAdmin ?? false;
+                        final isCurrentUserAdmin = snapshot.data!
+                                .firstWhere((member) =>
+                                    member.id ==
+                                    context.read<UserNotifier>().user!.id)
+                                .isAdmin ??
+                            false;
                         return Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             NecessaryPaymentsButton(members: snapshot.data!),
-                            ..._generateBalances(snapshot.data!),
+                            Text('balances.tap-info'.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant)),
+                            SizedBox(height: 4),
+                            Wrap(
+                              alignment: WrapAlignment.center,
+                              runSpacing: 8,
+                              spacing: 8,
+                              children: _generateBalances(snapshot.data!),
+                            ),
                             if (isCurrentUserAdmin)
-                              InkWell(
-                                borderRadius: BorderRadius.circular(12),
-                                onTap: () async {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AddMemberPage(),
-                                    ),
-                                  );
-                                  setState(() {
-                                    showAll = true;
-                                  });
-                                },
-                                child: Ink(
-                                  height: 48,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Icon(Icons.add, color: Theme.of(context).colorScheme.onSurface),
-                                        SizedBox(width: 5),
-                                        Text(
-                                          'balances.add-member'.tr(),
-                                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            if (snapshot.data!.length > 7)
                               Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: Center(
-                                  child: ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                                      foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-                                    ),
-                                    onPressed: () => setState(() => showAll = !showAll),
-                                    label: Text(showAll ? 'balances.collapse' : 'balances.expand').tr(),
-                                    icon: Icon(showAll ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
-                                  ),
-                                ),
+                                padding: const EdgeInsets.only(top: 12),
+                                child: TextButton.icon(
+                                    // usePrimaryContaine r: true,
+                                    icon: Icon(Icons.add),
+                                    label: Text('balances.add-member'.tr()),
+                                    onPressed: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => AddMemberPage(),
+                                        ),
+                                      );
+                                      setState(() {
+                                        showAll = true;
+                                      });
+                                    }),
                               ),
+                            // Padding(
+                            //   padding: const EdgeInsets.only(top: 8.0),
+                            //   child: InkWell(
+                            //     borderRadius: BorderRadius.circular(12),
+                            //     onTap: () async {
+                            //       await Navigator.push(
+                            //         context,
+                            //         MaterialPageRoute(
+                            //           builder: (context) => AddMemberPage(),
+                            //         ),
+                            //       );
+                            //       setState(() {
+                            //         showAll = true;
+                            //       });
+                            //     },
+                            //     child: Ink(
+                            //       height: 48,
+                            //       decoration: BoxDecoration(
+                            //         color: Theme.of(context)
+                            //             .colorScheme
+                            //             .surfaceContainerHigh,
+                            //         borderRadius: BorderRadius.circular(12),
+                            //       ),
+                            //       child: Padding(
+                            //         padding: const EdgeInsets.symmetric(
+                            //             horizontal: 12),
+                            //         child: Row(
+                            //           mainAxisAlignment:
+                            //               MainAxisAlignment.center,
+                            //           crossAxisAlignment:
+                            //               CrossAxisAlignment.center,
+                            //           mainAxisSize: MainAxisSize.min,
+                            //           children: [
+                            //             Icon(Icons.add,
+                            //                 color: Theme.of(context)
+                            //                     .colorScheme
+                            //                     .onSurface),
+                            //             SizedBox(width: 5),
+                            //             Text(
+                            //               'balances.add-member'.tr(),
+                            //               style: Theme.of(context)
+                            //                   .textTheme
+                            //                   .bodyLarge!
+                            //                   .copyWith(
+                            //                       color: Theme.of(context)
+                            //                           .colorScheme
+                            //                           .onSurface),
+                            //             ),
+                            //           ],
+                            //         ),
+                            //       ),
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         );
                       } else {
@@ -189,7 +233,8 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
               width: 70,
               child: SelectBalanceCurrency(
                 selectedCurrency: _selectedCurrency,
-                onCurrencyChanged: (currency) => setState(() => _selectedCurrency = currency),
+                onCurrencyChanged: (currency) =>
+                    setState(() => _selectedCurrency = currency),
               ),
             ),
           )
@@ -199,26 +244,9 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
   }
 
   List<Widget> _generateBalances(List<Member> members) {
-    int currentMemberIndex = members.indexWhere((member) => member.id == context.read<UserNotifier>().user!.id);
+    int currentMemberIndex = members.indexWhere(
+        (member) => member.id == context.read<UserNotifier>().user!.id);
     final isCurrentUserAdmin = members[currentMemberIndex].isAdmin ?? false;
-    if (members.length > 7 && !showAll) {
-      List<Member> membersToShow = [];
-      if (currentMemberIndex < 3 || currentMemberIndex > members.length - 3) {
-        membersToShow.addAll(members.sublist(0, 3));
-        membersToShow.addAll(members.sublist(members.length - 2));
-      } else {
-        membersToShow.addAll(members.sublist(0, 2));
-        membersToShow.add(members[currentMemberIndex]);
-        membersToShow.addAll(members.sublist(members.length - 2));
-      }
-      return membersToShow
-          .map<Widget>((Member member) => BalanceMemberEntry(
-                member: member,
-                selectedCurrency: _selectedCurrency,
-                isCurrentUserAdmin: isCurrentUserAdmin,
-              ))
-          .toList();
-    }
     return members
         .map<Widget>((Member member) => BalanceMemberEntry(
               member: member,
@@ -250,53 +278,71 @@ class BalanceMemberEntry extends StatelessWidget {
                 ? Theme.of(context).colorScheme.onPrimary
                 : Theme.of(context).colorScheme.onSecondary
             : Theme.of(context).colorScheme.onSurface);
-    return Container(
-      margin: EdgeInsets.only(bottom: 7),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              builder: (context) => SingleChildScrollView(
-                    child: MemberAllInfo(
-                      member: member,
-                      isCurrentUserAdmin: isCurrentUserAdmin,
-                    ),
-                  )).then((val) {
-            // if (val == 'madeAdmin') onChangedMember();
-          });
-        },
-        child: Ink(
-          padding: EdgeInsets.symmetric(horizontal: 12),
-          height: 48,
-          decoration: member.id == context.read<UserNotifier>().user!.id
-              ? BoxDecoration(
-                  gradient: AppTheme.gradientFromTheme(themeName, useSecondary: true),
-                  borderRadius: BorderRadius.circular(12),
-                )
-              : BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                  borderRadius: BorderRadius.circular(12),
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () {
+        showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            builder: (context) => SingleChildScrollView(
+                  child: MemberAllInfo(
+                    member: member,
+                    isCurrentUserAdmin: isCurrentUserAdmin,
+                  ),
+                )).then((val) {
+          // if (val == 'madeAdmin') onChangedMember();
+        });
+      },
+      child: Ink(
+        padding: EdgeInsets.symmetric(horizontal: 12),
+        height: 48,
+        decoration: member.id == context.read<UserNotifier>().user!.id
+            ? BoxDecoration(
+                gradient:
+                    AppTheme.gradientFromTheme(themeName, useSecondary: true),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                  width: 1,
                 ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                member.nickname,
+              )
+            : BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                  width: 1,
+                ),
+              ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  member.nickname,
+                  style: textStyle,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+            SizedBox(width: 10),
+            AnimatedCrossFade(
+              duration: Duration(milliseconds: 300),
+              firstChild: Container(),
+              secondChild: Text(
+                member.balance
+                    .exchange(
+                        context.watch<UserNotifier>().currentGroup!.currency,
+                        selectedCurrency)
+                    .toMoneyString(selectedCurrency),
                 style: textStyle,
               ),
-              AnimatedCrossFade(
-                duration: Duration(milliseconds: 300),
-                firstChild: Container(),
-                secondChild: Text(
-                  member.balance.exchange(context.watch<UserNotifier>().currentGroup!.currency, selectedCurrency).toMoneyString(selectedCurrency),
-                  style: textStyle,
-                ),
-                crossFadeState: CrossFadeState.showSecond,
-              ),
-            ],
-          ),
+              crossFadeState: CrossFadeState.showSecond,
+            ),
+          ],
         ),
       ),
     );

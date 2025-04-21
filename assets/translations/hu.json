@@ -64,7 +64,7 @@
     "purchase_explanation": "Vettél valamit",
 
     "modify": "Módosítás",
-    "history_explanation": "Nyomd meg a bejegyzést a szerkesztéshez és a részletek megjelenítéséhez. Tartsd nyomva a reagáláshoz.",
+    "history_explanation": "Nyomd meg a bejegyzést a szerkesztéshez és a részletek megjelenítéséhez.",
 
     "payments_needed": "Szükséges fizetések",
 
@@ -562,6 +562,8 @@
     "rate-app-dialog.title": "Tetszik a Dodo? 🦤",
     "rate-app-dialog.content": "Hogyha tetszik az alkalmazásunk, légyszi értékeld az áruházban. ⭐⭐⭐⭐⭐.",
     "rate-app-dialog.later": "Emlékeztess később",
-    "rate-app-dialog.rate-now": "⭐ Értékelem"
+    "rate-app-dialog.rate-now": "⭐ Értékelem",
+
+    "balances.tap-info": "Kattints egy tagra az adatai megtekintéséhez."
 
 }

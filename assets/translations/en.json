@@ -60,7 +60,7 @@
     "edit_nickname": "New nickname",
 
     "modify": "Modify",
-    "history_explanation": "Tap an entry to modify it and see more details. Hold it to react.",
+    "history_explanation": "Tap an entry to modify it and see more details.",
 
     "payments_needed": "Settle up",
 
@@ -557,6 +557,8 @@
     "rate-app-dialog.title": "Enjoying Dodo? 🦤",
     "rate-app-dialog.content": "If you're enjoying our app, would you mind giving us a quick rating? ⭐⭐⭐⭐⭐ It really helps us out!",
     "rate-app-dialog.later": "Remind me later",
-    "rate-app-dialog.rate-now": "⭐ Rate now"
+    "rate-app-dialog.rate-now": "⭐ Rate now",
+
+    "balances.tap-info": "Tap on any member for more details."
 
 }

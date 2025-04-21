@@ -6,7 +6,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   dynamic_color
   file_selector_linux
   gtk
-  rive_common
   url_launcher_linux
 )
 

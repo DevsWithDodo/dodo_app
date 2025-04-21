@@ -64,7 +64,7 @@
     "purchase_explanation": "Du hast etwas gekauft",
 
     "modify": "Ändern",
-    "history_explanation": "Tippe Eintrag an, um ihn zu bearbeiten und weitere Details anzuzeigen. Halte ihn gedrückt, um zu reagieren",
+    "history_explanation": "Tippe Eintrag an, um ihn zu bearbeiten und weitere Details anzuzeigen.",
 
     "payments_needed": "Nötige Zahlungen",
 
@@ -567,5 +567,7 @@
     "rate-app-dialog.title": "Gefällt dir Dodo? 🦤",
     "rate-app-dialog.content": "Falls dir unsere App gefällt, bewerte sie bitte im Store. ⭐⭐⭐⭐⭐. Jede Bewertung hilft uns!",
     "rate-app-dialog.later": "Später erinnern",
-    "rate-app-dialog.rate-now": "⭐ Jetzt bewerten"  
+    "rate-app-dialog.rate-now": "⭐ Jetzt bewerten",
+
+    "balances.tap-info": "Tippe auf einen Mitglied um mehr Infos zu sehen."
 }
