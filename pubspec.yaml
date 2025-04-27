@@ -41,7 +41,6 @@ dependencies:
   google_mobile_ads: ^5.2.0
   dynamic_color: ^1.7.0
   mobile_scanner: ^6.0.2
-  showcaseview: ^3.0.0
   material_color_utilities: ^0.11.1
   image_picker: ^1.1.2
   firebase_vertexai: ^1.0.4

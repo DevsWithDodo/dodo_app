@@ -29,8 +29,6 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:showcaseview/showcaseview.dart';
 
 class PurchasePage extends StatefulWidget {
   final ShoppingRequest? shoppingData;
@@ -105,7 +103,11 @@ class _PurchasePageState extends State<PurchasePage> {
       Map<String, dynamic> decoded = jsonDecode(response.body);
       List<Member> members = [];
       for (var member in decoded['data']['members']) {
-        members.add(Member(nickname: member['nickname'], balance: (member['balance'] * 1.0), username: member['username'], id: member['user_id']));
+        members.add(Member(
+            nickname: member['nickname'],
+            balance: (member['balance'] * 1.0),
+            username: member['username'],
+            id: member['user_id']));
       }
       return members;
     } catch (_) {
@@ -128,12 +130,15 @@ class _PurchasePageState extends State<PurchasePage> {
 
     if (widget.purchase != null) {
       noteController.text = widget.purchase!.name;
-      amountController.text = widget.purchase!.totalAmountOriginalCurrency.toMoneyString(widget.purchase!.originalCurrency);
+      amountController.text = widget.purchase!.totalAmountOriginalCurrency
+          .toMoneyString(widget.purchase!.originalCurrency);
       selectedCurrency = widget.purchase!.originalCurrency;
       selectedCategory = widget.purchase!.category;
       purchaserId = widget.purchase!.buyerId;
-      amountDivision = AmountDivision.fromPurchase(widget.purchase!, () => setState(() {}));
-      if (widget.purchase!.receivers.every((element) => element.balance == widget.purchase!.receivers.first.balance)) {
+      amountDivision =
+          AmountDivision.fromPurchase(widget.purchase!, () => setState(() {}));
+      if (widget.purchase!.receivers.every((element) =>
+          element.balance == widget.purchase!.receivers.first.balance)) {
         useCustomAmounts = false;
       } else {
         useCustomAmounts = true;
@@ -149,20 +154,10 @@ class _PurchasePageState extends State<PurchasePage> {
 
     // This is necessary because the focus is not a state in itself, so PopScope will not update based on it
     calculatorFocusNode.addListener(() => setState(() {}));
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      var prefs = await SharedPreferences.getInstance();
-      if (prefs.containsKey('showcase_add_purchase') && prefs.getBool('showcase_add_purchase')!) {
-        return;
-      }
-      ShowCaseWidget.of(context).startShowCase([_noteKey, _currencyKey, _calculatorKey]);
-      prefs.setBool('showcase_add_purchase', true);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    print(calculatorFocusNode.hasFocus);
     return PopScope(
       canPop: !calculatorFocusNode.hasFocus,
       onPopInvokedWithResult: (didPop, result) {
@@ -178,7 +173,8 @@ class _PurchasePageState extends State<PurchasePage> {
             appBar: AppBar(
               title: Text(
                 widget.purchase != null ? 'purchase.modify' : 'purchase',
-                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.onSurface),
               ).tr(),
             ),
             body: GestureDetector(
@@ -205,31 +201,49 @@ class _PurchasePageState extends State<PurchasePage> {
                                     children: [
                                       GradientButton.icon(
                                         icon: Icon(Icons.receipt),
-                                        label: Text('purchase.scan-receipt.${receiptInformation == null ? 'new' : 'modify'}'.tr()),
+                                        label: Text(
+                                            'purchase.scan-receipt.${receiptInformation == null ? 'new' : 'modify'}'
+                                                .tr()),
                                         onPressed: () => Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => ReceiptScannerPage(
-                                              initialInformation: receiptInformation,
+                                            builder: (context) =>
+                                                ReceiptScannerPage(
+                                              initialInformation:
+                                                  receiptInformation,
                                               members: snapshot.data!,
-                                              onReceiptInformationReady: (information) {
+                                              onReceiptInformationReady:
+                                                  (information) {
                                                 setState(() {
-                                                  selectedCurrency = information.currency;
-                                                  noteController.text = information.storeName;
-                                                  amountController.text = information.items
-                                                      .where(
-                                                        (element) => element.assignedAmounts.isNotEmpty,
-                                                      )
-                                                      .map((e) => e.cost)
-                                                      .fold(0.0, (previousValue, element) => previousValue + element)
-                                                      .toMoneyString(selectedCurrency);
-                                                  amountDivision = AmountDivision.fromReceiptInformation(
+                                                  selectedCurrency =
+                                                      information.currency;
+                                                  noteController.text =
+                                                      information.storeName;
+                                                  amountController.text =
+                                                      information.items
+                                                          .where(
+                                                            (element) => element
+                                                                .assignedAmounts
+                                                                .isNotEmpty,
+                                                          )
+                                                          .map((e) => e.cost)
+                                                          .fold(
+                                                              0.0,
+                                                              (previousValue,
+                                                                      element) =>
+                                                                  previousValue +
+                                                                  element)
+                                                          .toMoneyString(
+                                                              selectedCurrency);
+                                                  amountDivision = AmountDivision
+                                                      .fromReceiptInformation(
                                                     information,
                                                     snapshot.data!,
                                                     () => setState(() {}),
                                                   );
                                                   useCustomAmounts = true;
-                                                  receiptInformation = information;
+                                                  receiptInformation =
+                                                      information;
                                                 });
                                                 Navigator.pop(context);
                                               },
@@ -250,7 +264,11 @@ class _PurchasePageState extends State<PurchasePage> {
                                               );
                                               noteController.text = "";
                                               amountController.text = "";
-                                              selectedCurrency = context.read<UserNotifier>().user!.group!.currency;
+                                              selectedCurrency = context
+                                                  .read<UserNotifier>()
+                                                  .user!
+                                                  .group!
+                                                  .currency;
                                               useCustomAmounts = false;
                                             }),
                                             icon: Icon(Icons.delete),
@@ -272,35 +290,33 @@ class _PurchasePageState extends State<PurchasePage> {
                                         labelText: 'note'.tr(),
                                         prefixIcon: Icon(
                                           Icons.note,
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant,
                                         ),
                                       ),
-                                      inputFormatters: [LengthLimitingTextInputFormatter(50)],
+                                      inputFormatters: [
+                                        LengthLimitingTextInputFormatter(50)
+                                      ],
                                       controller: noteController,
-                                      onFieldSubmitted: (value) => submit(context),
+                                      onFieldSubmitted: (value) =>
+                                          submit(context),
                                     ),
                                   ),
-                                  Showcase(
-                                    key: _noteKey,
-                                    showArrow: false,
-                                    targetBorderRadius: BorderRadius.circular(10),
-                                    targetPadding: EdgeInsets.all(0),
-                                    description: "pick_category".tr(),
-                                    scaleAnimationDuration: Duration(milliseconds: 200),
-                                    child: Padding(
-                                      padding: EdgeInsets.only(left: 5),
-                                      child: CategoryPickerIconButton(
-                                        selectedCategory: selectedCategory,
-                                        onCategoryChanged: (newCategory) {
-                                          setState(() {
-                                            if (selectedCategory?.type == newCategory?.type) {
-                                              selectedCategory = null;
-                                            } else {
-                                              selectedCategory = newCategory;
-                                            }
-                                          });
-                                        },
-                                      ),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 5),
+                                    child: CategoryPickerIconButton(
+                                      selectedCategory: selectedCategory,
+                                      onCategoryChanged: (newCategory) {
+                                        setState(() {
+                                          if (selectedCategory?.type ==
+                                              newCategory?.type) {
+                                            selectedCategory = null;
+                                          } else {
+                                            selectedCategory = newCategory;
+                                          }
+                                        });
+                                      },
                                     ),
                                   ),
                                 ],
@@ -313,25 +329,21 @@ class _PurchasePageState extends State<PurchasePage> {
                                       focusNode: calculatorFocusNode,
                                       controller: amountController,
                                       selectedCurrency: selectedCurrency,
-                                      onChanged: (value) => setState(() => amountDivision.setTotal(value)),
+                                      onChanged: (value) => setState(
+                                          () => amountDivision.setTotal(value)),
                                     ),
                                   ),
-                                  Showcase(
-                                    key: _currencyKey,
-                                    showArrow: false,
-                                    targetBorderRadius: BorderRadius.circular(10),
-                                    targetPadding: EdgeInsets.all(0),
-                                    description: "pick_currency".tr(),
-                                    scaleAnimationDuration: Duration(milliseconds: 200),
-                                    child: Padding(
-                                      padding: EdgeInsets.only(right: 5),
-                                      child: CurrencyPickerIconButton(
-                                        selectedCurrency: selectedCurrency,
-                                        onCurrencyChanged: (newCurrency) => setState(() {
-                                          selectedCurrency = newCurrency ?? selectedCurrency;
-                                          amountDivision.setCurrency(selectedCurrency);
-                                        }),
-                                      ),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 5),
+                                    child: CurrencyPickerIconButton(
+                                      selectedCurrency: selectedCurrency,
+                                      onCurrencyChanged: (newCurrency) =>
+                                          setState(() {
+                                        selectedCurrency =
+                                            newCurrency ?? selectedCurrency;
+                                        amountDivision
+                                            .setCurrency(selectedCurrency);
+                                      }),
                                     ),
                                   ),
                                 ],
@@ -340,12 +352,16 @@ class _PurchasePageState extends State<PurchasePage> {
                               Center(
                                 child: FutureBuilder(
                                   future: members,
-                                  builder: (context, AsyncSnapshot<List<Member>> snapshot) {
-                                    if (snapshot.connectionState == ConnectionState.done) {
+                                  builder: (context,
+                                      AsyncSnapshot<List<Member>> snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.done) {
                                       if (snapshot.hasData) {
                                         return Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Column(
                                               children: [
@@ -354,29 +370,53 @@ class _PurchasePageState extends State<PurchasePage> {
                                                 ),
                                                 Text(
                                                   'from_who'.tr(),
-                                                  style: Theme.of(context).textTheme.labelLarge,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .labelLarge,
                                                 ),
                                               ],
                                             ),
                                             Expanded(
                                               child: Center(
                                                 child: AnimatedCrossFade(
-                                                  duration: Duration(milliseconds: 300),
-                                                  reverseDuration: Duration(seconds: 0),
-                                                  crossFadeState: purchaserCrossFadeState,
+                                                  duration: Duration(
+                                                      milliseconds: 300),
+                                                  reverseDuration:
+                                                      Duration(seconds: 0),
+                                                  crossFadeState:
+                                                      purchaserCrossFadeState,
                                                   firstChild: Visibility(
-                                                    visible: purchaserCrossFadeState == CrossFadeState.showFirst,
+                                                    visible:
+                                                        purchaserCrossFadeState ==
+                                                            CrossFadeState
+                                                                .showFirst,
                                                     child: CustomChoiceChip(
                                                       enabled: false,
                                                       selected: true,
                                                       showCheck: false,
                                                       showAnimation: true,
-                                                      selectedColor: Theme.of(context).colorScheme.secondaryContainer,
-                                                      selectedFontColor: Theme.of(context).colorScheme.onSecondaryContainer,
-                                                      notSelectedColor: Theme.of(context).colorScheme.surface,
-                                                      notSelectedFontColor: Theme.of(context).colorScheme.onSurface,
+                                                      selectedColor: Theme.of(
+                                                              context)
+                                                          .colorScheme
+                                                          .secondaryContainer,
+                                                      selectedFontColor: Theme
+                                                              .of(context)
+                                                          .colorScheme
+                                                          .onSecondaryContainer,
+                                                      notSelectedColor:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .surface,
+                                                      notSelectedFontColor:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .onSurface,
                                                       fillRatio: 1,
-                                                      member: snapshot.data!.firstWhere((element) => element.id == purchaserId),
+                                                      member: snapshot.data!
+                                                          .firstWhere(
+                                                              (element) =>
+                                                                  element.id ==
+                                                                  purchaserId),
                                                       onSelected: (chosen) {},
                                                     ),
                                                   ),
@@ -384,16 +424,25 @@ class _PurchasePageState extends State<PurchasePage> {
                                                     allMembers: snapshot.data!,
                                                     multiple: false,
                                                     showAnimation: false,
-                                                    chosenMemberIds: snapshot.data!
-                                                        .where(
-                                                          (element) => element.id == purchaserId,
-                                                        )
-                                                        .map((e) => e.id)
-                                                        .toList(),
-                                                    setChosenMemberIds: (newMemberIds) => setState(() {
-                                                      purchaserCrossFadeState = CrossFadeState.showFirst;
-                                                      if (newMemberIds.isNotEmpty) {
-                                                        purchaserId = newMemberIds.first;
+                                                    chosenMemberIds:
+                                                        snapshot.data!
+                                                            .where(
+                                                              (element) =>
+                                                                  element.id ==
+                                                                  purchaserId,
+                                                            )
+                                                            .map((e) => e.id)
+                                                            .toList(),
+                                                    setChosenMemberIds:
+                                                        (newMemberIds) =>
+                                                            setState(() {
+                                                      purchaserCrossFadeState =
+                                                          CrossFadeState
+                                                              .showFirst;
+                                                      if (newMemberIds
+                                                          .isNotEmpty) {
+                                                        purchaserId =
+                                                            newMemberIds.first;
                                                       }
                                                     }),
                                                   ),
@@ -402,15 +451,31 @@ class _PurchasePageState extends State<PurchasePage> {
                                             ),
                                             IconButton(
                                               onPressed: () => setState(() {
-                                                if (purchaserCrossFadeState == CrossFadeState.showFirst) {
-                                                  purchaserCrossFadeState = CrossFadeState.showSecond;
+                                                if (purchaserCrossFadeState ==
+                                                    CrossFadeState.showFirst) {
+                                                  purchaserCrossFadeState =
+                                                      CrossFadeState.showSecond;
                                                 } else {
-                                                  purchaserCrossFadeState = CrossFadeState.showFirst;
+                                                  purchaserCrossFadeState =
+                                                      CrossFadeState.showFirst;
                                                 }
                                               }),
                                               icon: Icon(
-                                                purchaserCrossFadeState == CrossFadeState.showSecond ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                                                color: purchaserCrossFadeState == CrossFadeState.showSecond ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
+                                                purchaserCrossFadeState ==
+                                                        CrossFadeState
+                                                            .showSecond
+                                                    ? Icons.arrow_drop_up
+                                                    : Icons.arrow_drop_down,
+                                                color:
+                                                    purchaserCrossFadeState ==
+                                                            CrossFadeState
+                                                                .showSecond
+                                                        ? Theme.of(context)
+                                                            .colorScheme
+                                                            .primary
+                                                        : Theme.of(context)
+                                                            .colorScheme
+                                                            .onSurfaceVariant,
                                               ),
                                             ),
                                           ],
@@ -419,7 +484,8 @@ class _PurchasePageState extends State<PurchasePage> {
                                       return ErrorMessage(
                                         error: snapshot.error.toString(),
                                         errorLocation: 'add_purchase',
-                                        onTap: () => setState(() => members = getMembers()),
+                                        onTap: () => setState(
+                                            () => members = getMembers()),
                                       );
                                     }
                                     return CircularProgressIndicator();
@@ -428,19 +494,28 @@ class _PurchasePageState extends State<PurchasePage> {
                               ),
                               SizedBox(height: 20),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'to_who'.plural(2),
-                                    style: Theme.of(context).textTheme.labelLarge,
+                                    style:
+                                        Theme.of(context).textTheme.labelLarge,
                                   ),
                                   IconButton(
                                     onPressed: () => setState(() {
-                                      _expandableController.expanded = !_expandableController.expanded;
+                                      _expandableController.expanded =
+                                          !_expandableController.expanded;
                                     }),
                                     icon: Icon(
                                       Icons.info_outline,
-                                      color: _expandableController.expanded ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
+                                      color: _expandableController.expanded
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .primary
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .onSurfaceVariant,
                                     ),
                                   ),
                                 ],
@@ -455,8 +530,13 @@ class _PurchasePageState extends State<PurchasePage> {
                                       Text(
                                         'add_purchase_explanation'.tr(),
                                         textAlign: TextAlign.center,
-                                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                              color: Theme.of(context).colorScheme.onSurface,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall!
+                                            .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
                                             ),
                                       ),
                                     ],
@@ -467,25 +547,34 @@ class _PurchasePageState extends State<PurchasePage> {
                               FutureBuilder(
                                   future: members,
                                   builder: (context, snapshot) {
-                                    if (snapshot.connectionState != ConnectionState.done) {
-                                      return Center(child: CircularProgressIndicator());
+                                    if (snapshot.connectionState !=
+                                        ConnectionState.done) {
+                                      return Center(
+                                          child: CircularProgressIndicator());
                                     }
                                     if (snapshot.hasError) {
-                                      return Center(child: Text('Error: ${snapshot.error}'));
+                                      return Center(
+                                          child:
+                                              Text('Error: ${snapshot.error}'));
                                     }
                                     return MemberChips(
                                       multiple: true,
                                       allMembers: snapshot.data!,
                                       chosenMemberIds: amountDivision.memberIds,
-                                      setChosenMemberIds: (memberIds) => setState(
+                                      setChosenMemberIds: (memberIds) =>
+                                          setState(
                                         () => amountDivision.setMembers(
-                                          snapshot.data!.where((element) => memberIds.contains(element.id)).toList(),
+                                          snapshot.data!
+                                              .where((element) => memberIds
+                                                  .contains(element.id))
+                                              .toList(),
                                         ),
                                       ),
                                       allowCustomAmounts: true,
                                       fullAmount: amountDivision.totalAmount,
                                       customAmounts: useCustomAmounts
-                                          ? Map.fromEntries(amountDivision.amounts.map(
+                                          ? Map.fromEntries(
+                                              amountDivision.amounts.map(
                                               (e) => MapEntry(
                                                 e.memberId,
                                                 e.parsedAmount ?? 0,
@@ -495,12 +584,15 @@ class _PurchasePageState extends State<PurchasePage> {
                                     );
                                   }),
                               SizedBox(height: 10),
-                              if (!useCustomAmounts && amountDivision.amounts.isNotEmpty)
+                              if (!useCustomAmounts &&
+                                  amountDivision.amounts.isNotEmpty)
                                 Center(
                                   child: Text(
                                     'per_person'.tr(
                                       args: [
-                                        (amountDivision.totalAmount / amountDivision.amounts.length).toMoneyString(
+                                        (amountDivision.totalAmount /
+                                                amountDivision.amounts.length)
+                                            .toMoneyString(
                                           selectedCurrency,
                                           withSymbol: true,
                                         )
@@ -510,19 +602,27 @@ class _PurchasePageState extends State<PurchasePage> {
                                 ),
                               SizedBox(height: 10),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'purchase.page.custom-amount.switch'.tr(),
-                                    style: Theme.of(context).textTheme.labelLarge,
+                                    style:
+                                        Theme.of(context).textTheme.labelLarge,
                                   ),
                                   Switch(
                                     value: useCustomAmounts,
                                     onChanged: (value) {
-                                      double? totalAmount = double.tryParse(amountController.text.replaceAll(',', '.'));
-                                      if (totalAmount == null || totalAmount <= 0) {
-                                        showToast('purchase.page.custom-amount.toast.no-amount-given'.tr());
-                                        setState(() => useCustomAmounts = false);
+                                      double? totalAmount = double.tryParse(
+                                          amountController.text
+                                              .replaceAll(',', '.'));
+                                      if (totalAmount == null ||
+                                          totalAmount <= 0) {
+                                        showToast(
+                                            'purchase.page.custom-amount.toast.no-amount-given'
+                                                .tr());
+                                        setState(
+                                            () => useCustomAmounts = false);
                                         return;
                                       }
                                       setState(() => useCustomAmounts = value);
@@ -533,22 +633,31 @@ class _PurchasePageState extends State<PurchasePage> {
                               if (useCustomAmounts)
                                 Center(
                                   child: Padding(
-                                    padding: EdgeInsets.only(top: 10, bottom: 20),
+                                    padding:
+                                        EdgeInsets.only(top: 10, bottom: 20),
                                     child: Text(
                                       'purchase.page.custom-amount.hint'.tr(),
-                                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant,
                                           ),
                                     ),
                                   ),
                                 ),
                               AnimatedCrossFade(
-                                crossFadeState: !useCustomAmounts ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                                crossFadeState: !useCustomAmounts
+                                    ? CrossFadeState.showFirst
+                                    : CrossFadeState.showSecond,
                                 duration: Duration(milliseconds: 300),
                                 firstChild: Container(),
                                 secondChild: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: amountDivision.amounts.map((PurchaseReceiver amount) {
+                                  children: amountDivision.amounts
+                                      .map((PurchaseReceiver amount) {
                                     return CustomAmountField(
                                       amount: amount,
                                       currency: selectedCurrency,
@@ -572,7 +681,8 @@ class _PurchasePageState extends State<PurchasePage> {
             ),
             floatingActionButton: FloatingActionButton(
               backgroundColor: Theme.of(context).colorScheme.tertiary,
-              child: Icon(Icons.send, color: Theme.of(context).colorScheme.onTertiary),
+              child: Icon(Icons.send,
+                  color: Theme.of(context).colorScheme.onTertiary),
               onPressed: () => submit(context),
             ),
           ),
@@ -583,7 +693,8 @@ class _PurchasePageState extends State<PurchasePage> {
 
   void submit(BuildContext context) {
     FocusScope.of(context).unfocus();
-    if (_formKey.currentState!.validate() && (!useCustomAmounts || amountDivision.isValid(true))) {
+    if (_formKey.currentState!.validate() &&
+        (!useCustomAmounts || amountDivision.isValid(true))) {
       if (amountDivision.amounts.isEmpty) {
         FToast ft = FToast();
         ft.init(context);

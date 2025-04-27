@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:csocsort_szamla/common.dart';
+import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
+import 'package:csocsort_szamla/components/helpers/measure_size.dart';
 import 'package:csocsort_szamla/components/shopping/im_shopping_dialog.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
@@ -14,7 +17,6 @@ import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
 import '../../helpers/validation_rules.dart';
-import '../helpers/error_message.dart';
 import 'shopping_list_entry.dart';
 
 class ShoppingList extends StatefulWidget {
@@ -23,7 +25,8 @@ class ShoppingList extends StatefulWidget {
   State<ShoppingList> createState() => _ShoppingListState();
 }
 
-class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClientMixin {
+class _ShoppingListState extends State<ShoppingList>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -35,13 +38,16 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
 
   final _formKey = GlobalKey<FormState>();
 
-  Future<List<ShoppingRequest>> _getShoppingList({bool overwriteCache = false}) async {
+  Future<List<ShoppingRequest>> _getShoppingList(
+      {bool overwriteCache = false}) async {
     try {
       Response response = await Http.get(
         uri: generateUri(
           GetUriKeys.requests,
           context,
-          queryParams: {'group': context.read<UserNotifier>().user!.group!.id.toString()},
+          queryParams: {
+            'group': context.read<UserNotifier>().user!.group!.id.toString()
+          },
         ),
         overwriteCache: overwriteCache,
       );
@@ -60,7 +66,10 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
 
   Future<BoolFutureOutput> _postShoppingRequest(String name) async {
     try {
-      Map<String, dynamic> body = {'group': context.read<UserNotifier>().currentGroup!.id, 'name': name};
+      Map<String, dynamic> body = {
+        'group': context.read<UserNotifier>().currentGroup!.id,
+        'name': name
+      };
       Response response = await Http.post(uri: '/requests', body: body);
       await (_shoppingList!.then<List<ShoppingRequest>>((value) {
         value.add(ShoppingRequest.fromJson(jsonDecode(response.body)['data']));
@@ -109,7 +118,8 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
     if (mounted) {
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15))),
         duration: Duration(seconds: 3),
         backgroundColor: Theme.of(context).colorScheme.secondary,
         content: Row(
@@ -117,17 +127,23 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
           children: [
             Text(
               'request_deleted'.tr(),
-              style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Theme.of(context).colorScheme.onSecondary),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge!
+                  .copyWith(color: Theme.of(context).colorScheme.onSecondary),
             ),
             InkWell(
               onTap: () {
-                showFutureOutputDialog(context: context, future: _undoDeleteRequest(requestId), outputCallbacks: {
-                  BoolFutureOutput.True: () async {
-                    setState(() {});
-                    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                    Navigator.pop(context);
-                  }
-                }).then((value) {
+                showFutureOutputDialog(
+                    context: context,
+                    future: _undoDeleteRequest(requestId),
+                    outputCallbacks: {
+                      BoolFutureOutput.True: () async {
+                        setState(() {});
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        Navigator.pop(context);
+                      }
+                    }).then((value) {
                   if (value ?? false) handleDeleteEditShoppingRequest();
                 });
               },
@@ -142,7 +158,8 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
                     SizedBox(width: 3),
                     Text(
                       'undo'.tr(),
-                      style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Theme.of(context).colorScheme.onSecondary),
+                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                          color: Theme.of(context).colorScheme.onSecondary),
                     ),
                   ],
                 ),
@@ -165,14 +182,17 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
     FocusScope.of(context).unfocus();
     if (_formKey.currentState!.validate()) {
       String name = _addRequestController.text;
-      showFutureOutputDialog(context: context, future: _postShoppingRequest(name), outputCallbacks: {
-        BoolFutureOutput.True: () {
-          Navigator.pop(context);
-          setState(() {
-            _addRequestController.text = '';
+      showFutureOutputDialog(
+          context: context,
+          future: _postShoppingRequest(name),
+          outputCallbacks: {
+            BoolFutureOutput.True: () {
+              Navigator.pop(context);
+              setState(() {
+                _addRequestController.text = '';
+              });
+            }
           });
-        }
-      });
     }
   }
 
@@ -189,14 +209,18 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
 
     _shoppingList = null;
     _shoppingList = _getShoppingList();
-    EventBus.instance.register(EventBus.refreshShopping, onRefreshShoppingEvent);
+    EventBus.instance
+        .register(EventBus.refreshShopping, onRefreshShoppingEvent);
   }
 
   @override
   void dispose() {
-    EventBus.instance.unregister(EventBus.refreshShopping, onRefreshShoppingEvent);
+    EventBus.instance
+        .unregister(EventBus.refreshShopping, onRefreshShoppingEvent);
     super.dispose();
   }
+
+  double? cardHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -205,89 +229,85 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
       onRefresh: () async {
         setState(() {
           _shoppingList = null;
-          _shoppingList = _getShoppingList(overwriteCache: context.read<IsOnlineProvider>().isOnline);
+          _shoppingList = _getShoppingList(
+            overwriteCache: context.read<IsOnlineProvider>().isOnline,
+          );
         });
       },
       child: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
-          FocusScope.of(context).requestFocus(FocusNode());
+          FocusScope.of(context).unfocus();
         },
         child: Form(
           key: _formKey,
           child: Stack(
             children: <Widget>[
-              Column(
-                children: [
-                  SizedBox(
-                    height: 195,
-                  ),
-                  Expanded(
-                    child: FutureBuilder(
-                      future: _shoppingList,
-                      builder: (context, AsyncSnapshot<List<ShoppingRequest>> snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          if (snapshot.hasData) {
-                            if (snapshot.data!.isEmpty) {
-                              return ListView(
-                                controller: _scrollController,
-                                padding: EdgeInsets.all(15),
-                                children: [
-                                  SizedBox(
-                                    height: 15,
-                                  ),
-                                  Text(
-                                    'nothing_to_show'.tr(),
-                                    style: Theme.of(context).textTheme.bodyLarge,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              );
-                            }
-                            return ListView(children: [
-                              Container(
-                                transform: Matrix4.translationValues(0.0, 0.0, 0.0),
-                                child: Padding(
-                                  padding: EdgeInsets.all(15),
-                                  child: Column(
-                                    children: _generateShoppingList(snapshot.data!),
-                                  ),
+              if (cardHeight != null)
+                Positioned.fill(
+                  top: cardHeight! - 20,
+                  child: FutureBuilder(
+                    future: _shoppingList,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data!.isEmpty) {
+                            return ListView(
+                              controller: _scrollController,
+                              padding: EdgeInsets.all(15),
+                              children: [
+                                SizedBox(
+                                  height: 15,
                                 ),
-                              )
-                            ]);
-                          } else {
-                            return ErrorMessage(
-                              error: snapshot.error.toString(),
-                              errorLocation: 'shopping_list',
-                              onTap: () {
-                                setState(() {
-                                  _shoppingList = null;
-                                  _shoppingList = _getShoppingList();
-                                });
-                              },
+                                Text(
+                                  'nothing_to_show'.tr(),
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
                             );
                           }
+                          return ListView(
+                            padding: EdgeInsets.fromLTRB(10, 25, 10, 15),
+                            children: _generateShoppingList(
+                              snapshot.data!,
+                            ),
+                          );
+                        } else {
+                          return ErrorMessage(
+                            error: snapshot.error.toString(),
+                            errorLocation: 'shopping_list',
+                            onTap: () {
+                              setState(() {
+                                _shoppingList = null;
+                                _shoppingList = _getShoppingList();
+                              });
+                            },
+                          );
                         }
-                        return Center(child: CircularProgressIndicator());
-                      },
-                    ),
+                      }
+                      return Center(child: CircularProgressIndicator());
+                    },
                   ),
-                ],
-              ),
-              Container(
-                height: 220,
-                color: Colors.transparent,
+                ),
+              MeasureSize(
+                onChange: (size) => setState(() {
+                  cardHeight = size.height;
+                }),
                 child: Card(
+                  margin: EdgeInsets.fromLTRB(15, 15, 15, 0),
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+                    padding: EdgeInsets.all(15),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Center(
-                            child: Text(
-                          'shopping_list'.tr(),
-                          style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface),
-                        )),
+                          child: Text(
+                            'shopping_list'.tr(),
+                            style: context.textTheme.titleLarge!
+                                .copyWith(color: context.colorScheme.onSurface),
+                          ),
+                        ),
                         SizedBox(
                           height: 20,
                         ),
@@ -303,11 +323,15 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
                                   labelText: 'wish'.tr(),
                                   prefixIcon: Icon(
                                     Icons.shopping_cart,
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
                                   ),
                                 ),
                                 controller: _addRequestController,
-                                inputFormatters: [LengthLimitingTextInputFormatter(255)],
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(255)
+                                ],
                                 onFieldSubmitted: (value) => _buttonPush(),
                               ),
                             ),
@@ -323,7 +347,11 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
                         SizedBox(
                           height: 10,
                         ),
-                        Text('shopping-list.hint'.tr(), style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center),
+                        Text(
+                          'shopping-list.hint'.tr(),
+                          style: context.textTheme.bodySmall,
+                          textAlign: TextAlign.center,
+                        ),
                       ],
                     ),
                   ),
@@ -336,7 +364,9 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
                   child: IconButton(
                       icon: Icon(Icons.notifications_active),
                       onPressed: () {
-                        showDialog(context: context, builder: (context) => ImShoppingDialog());
+                        showDialog(
+                            context: context,
+                            builder: (context) => ImShoppingDialog());
                       }),
                 ),
               )
@@ -349,8 +379,12 @@ class _ShoppingListState extends State<ShoppingList> with AutomaticKeepAliveClie
 
   List<Widget> _generateShoppingList(List<ShoppingRequest> data) {
     data.sort((requestData1, requestData2) {
-      int e2Length = requestData2.reactions!.where((reaction) => reaction.reaction == '❗').length;
-      int e1Length = requestData1.reactions!.where((reaction) => reaction.reaction == '❗').length;
+      int e2Length = requestData2.reactions!
+          .where((reaction) => reaction.reaction == '❗')
+          .length;
+      int e1Length = requestData1.reactions!
+          .where((reaction) => reaction.reaction == '❗')
+          .length;
       if (e2Length > e1Length) return 1;
       if (e2Length < e1Length) return -1;
       if (requestData1.updatedAt.isAfter(requestData2.updatedAt)) return -1;

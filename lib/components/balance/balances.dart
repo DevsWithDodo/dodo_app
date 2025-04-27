@@ -32,7 +32,6 @@ class _BalancesState extends State<Balances>
 
   Future<List<Member>>? _members;
   late Currency _selectedCurrency;
-  bool showAll = false;
 
   Future<List<Member>> _getMembers() async {
     Response response = await Http.get(
@@ -128,15 +127,14 @@ class _BalancesState extends State<Balances>
                             SizedBox(height: 4),
                             Wrap(
                               alignment: WrapAlignment.center,
-                              runSpacing: 8,
-                              spacing: 8,
+                              runSpacing: 6,
+                              spacing: 6,
                               children: _generateBalances(snapshot.data!),
                             ),
                             if (isCurrentUserAdmin)
                               Padding(
                                 padding: const EdgeInsets.only(top: 12),
                                 child: TextButton.icon(
-                                    // usePrimaryContaine r: true,
                                     icon: Icon(Icons.add),
                                     label: Text('balances.add-member'.tr()),
                                     onPressed: () async {
@@ -146,65 +144,8 @@ class _BalancesState extends State<Balances>
                                           builder: (context) => AddMemberPage(),
                                         ),
                                       );
-                                      setState(() {
-                                        showAll = true;
-                                      });
                                     }),
                               ),
-                            // Padding(
-                            //   padding: const EdgeInsets.only(top: 8.0),
-                            //   child: InkWell(
-                            //     borderRadius: BorderRadius.circular(12),
-                            //     onTap: () async {
-                            //       await Navigator.push(
-                            //         context,
-                            //         MaterialPageRoute(
-                            //           builder: (context) => AddMemberPage(),
-                            //         ),
-                            //       );
-                            //       setState(() {
-                            //         showAll = true;
-                            //       });
-                            //     },
-                            //     child: Ink(
-                            //       height: 48,
-                            //       decoration: BoxDecoration(
-                            //         color: Theme.of(context)
-                            //             .colorScheme
-                            //             .surfaceContainerHigh,
-                            //         borderRadius: BorderRadius.circular(12),
-                            //       ),
-                            //       child: Padding(
-                            //         padding: const EdgeInsets.symmetric(
-                            //             horizontal: 12),
-                            //         child: Row(
-                            //           mainAxisAlignment:
-                            //               MainAxisAlignment.center,
-                            //           crossAxisAlignment:
-                            //               CrossAxisAlignment.center,
-                            //           mainAxisSize: MainAxisSize.min,
-                            //           children: [
-                            //             Icon(Icons.add,
-                            //                 color: Theme.of(context)
-                            //                     .colorScheme
-                            //                     .onSurface),
-                            //             SizedBox(width: 5),
-                            //             Text(
-                            //               'balances.add-member'.tr(),
-                            //               style: Theme.of(context)
-                            //                   .textTheme
-                            //                   .bodyLarge!
-                            //                   .copyWith(
-                            //                       color: Theme.of(context)
-                            //                           .colorScheme
-                            //                           .onSurface),
-                            //             ),
-                            //           ],
-                            //         ),
-                            //       ),
-                            //     ),
-                            //   ),
-                            // ),
                           ],
                         );
                       } else {
@@ -252,6 +193,7 @@ class _BalancesState extends State<Balances>
               member: member,
               selectedCurrency: _selectedCurrency,
               isCurrentUserAdmin: isCurrentUserAdmin,
+              contracted: members.length > 6,
             ))
         .toList();
   }
@@ -263,12 +205,13 @@ class BalanceMemberEntry extends StatelessWidget {
     required this.member,
     required this.selectedCurrency,
     this.isCurrentUserAdmin = false,
+    this.contracted = false,
   });
 
   final Member member;
   final Currency selectedCurrency;
   final bool isCurrentUserAdmin;
-
+  final bool contracted;
   @override
   Widget build(BuildContext context) {
     final themeName = context.watch<AppThemeState>().themeName;
@@ -289,18 +232,16 @@ class BalanceMemberEntry extends StatelessWidget {
                     member: member,
                     isCurrentUserAdmin: isCurrentUserAdmin,
                   ),
-                )).then((val) {
-          // if (val == 'madeAdmin') onChangedMember();
-        });
+                ));
       },
       child: Ink(
         padding: EdgeInsets.symmetric(horizontal: 12),
-        height: 48,
+        height: 44,
         decoration: member.id == context.read<UserNotifier>().user!.id
             ? BoxDecoration(
                 gradient:
                     AppTheme.gradientFromTheme(themeName, useSecondary: true),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: Theme.of(context).colorScheme.outlineVariant,
                   width: 1,
@@ -308,15 +249,15 @@ class BalanceMemberEntry extends StatelessWidget {
               )
             : BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: Theme.of(context).colorScheme.outlineVariant,
                   width: 1,
                 ),
               ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: contracted ? MainAxisSize.min : MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,

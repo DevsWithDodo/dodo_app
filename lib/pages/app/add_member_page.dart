@@ -38,7 +38,8 @@ class AddMemberPage extends StatefulWidget {
   State<AddMemberPage> createState() => _AddMemberPageState();
 }
 
-class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProviderStateMixin {
+class _AddMemberPageState extends State<AddMemberPage>
+    with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   List<String> nicknames = [''];
   Future<String>? _invitation;
@@ -65,9 +66,13 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
 
   Future<BoolFutureOutput> _addGuest(String username) async {
     try {
-      Map<String, dynamic> body = {"language": context.locale.languageCode, "username": username};
+      Map<String, dynamic> body = {
+        "language": context.locale.languageCode,
+        "username": username
+      };
       await Http.post(
-        uri: '/groups/${context.read<UserNotifier>().currentGroup!.id}/add_guest',
+        uri:
+            '/groups/${context.read<UserNotifier>().currentGroup!.id}/add_guest',
         body: body,
       );
       return BoolFutureOutput.True;
@@ -100,22 +105,29 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
                   children: [
                     SegmentedButton<AddMemberPageTabs>(
                       selectedIcon: Icon(
-                        _tabController.index == 0 ? Icons.qr_code : Icons.person_add,
-                        color: Theme.of(context).colorScheme.onSecondaryContainer,
+                        _tabController.index == 0
+                            ? Icons.qr_code
+                            : Icons.person_add,
+                        color:
+                            Theme.of(context).colorScheme.onSecondaryContainer,
                       ),
                       segments: [
                         ButtonSegment(
                           value: AddMemberPageTabs.invite,
                           label: Text('add-member.invite'.tr()),
-                          icon: Icon(Icons.qr_code, color: Theme.of(context).colorScheme.onSurface),
+                          icon: Icon(Icons.qr_code,
+                              color: Theme.of(context).colorScheme.onSurface),
                         ),
                         ButtonSegment(
                           value: AddMemberPageTabs.create,
                           label: Text('add-member.create'.tr()),
-                          icon: Icon(Icons.person_add, color: Theme.of(context).colorScheme.onSurface),
+                          icon: Icon(Icons.person_add,
+                              color: Theme.of(context).colorScheme.onSurface),
                         ),
                       ],
-                      selected: {AddMemberPageTabs.values[_tabController.index]},
+                      selected: {
+                        AddMemberPageTabs.values[_tabController.index]
+                      },
                       onSelectionChanged: (selected) => setState(() {
                         _tabController.animateTo(selected.first.index);
                       }),
@@ -152,7 +164,8 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
                           margin: const EdgeInsets.all(10),
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surfaceContainer,
+                            color:
+                                Theme.of(context).colorScheme.surfaceContainer,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: child,
@@ -188,7 +201,9 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
                   Center(
                     child: Text(
                       'add-member.invite.with_qr'.tr(),
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                   ),
                   SizedBox(
@@ -196,12 +211,16 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
                   ),
                   Center(
                     child: Container(
-                      constraints: BoxConstraints(maxWidth: 250, maxHeight: 250),
+                      constraints:
+                          BoxConstraints(maxWidth: 250, maxHeight: 250),
                       padding: EdgeInsets.all(10),
                       child: PrettyQrView.data(
                         data: 'http://dodoapp.net/join/${snapshot.data}',
                         decoration: PrettyQrDecoration(
-                          shape: PrettyQrSmoothSymbol(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                          shape: PrettyQrSmoothSymbol(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant),
                         ),
                       ),
                     ),
@@ -209,7 +228,8 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
                   SizedBox(height: 10),
                   Text(
                     'add-member.invite.with_link'.tr(),
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 5),
@@ -259,21 +279,38 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
             Center(
               child: GradientButton.icon(
                   onPressed: () {
-                    List<String> usableNicknames = nicknames.where((nickname) => nickname.trim().isNotEmpty).toList();
+                    List<String> usableNicknames = nicknames
+                        .where((nickname) => nickname.trim().isNotEmpty)
+                        .toList();
                     if (usableNicknames.isEmpty) return;
-                    usableNicknames = usableNicknames.toSet().toList(); // remove duplicates
-                    Future<BoolFutureOutput> future = Future.wait(usableNicknames.map((nickname) => _addGuest(nickname))).then((value) => value.contains(BoolFutureOutput.False) ? BoolFutureOutput.False : BoolFutureOutput.True);
-                    showFutureOutputDialog(context: context, future: future, outputCallbacks: {
-                      BoolFutureOutput.True: () {
-                        EventBus.instance.fire(EventBus.refreshBalances);
-                        EventBus.instance.fire(EventBus.refreshGroupMembers);
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      }
-                    });
+                    usableNicknames =
+                        usableNicknames.toSet().toList(); // remove duplicates
+                    Future<BoolFutureOutput> future = Future.wait(
+                        usableNicknames
+                            .map((nickname) => _addGuest(nickname))).then(
+                        (value) => value.contains(BoolFutureOutput.False)
+                            ? BoolFutureOutput.False
+                            : BoolFutureOutput.True);
+                    showFutureOutputDialog(
+                        context: context,
+                        future: future,
+                        outputCallbacks: {
+                          BoolFutureOutput.True: () {
+                            EventBus.instance.fire(EventBus.refreshBalances);
+                            EventBus.instance
+                                .fire(EventBus.refreshGroupMembers);
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          }
+                        });
                   },
                   label: Text('add-member.create.submit'.tr()),
-                  icon: Icon(nicknames.where((nickname) => nickname.trim().isNotEmpty).length > 1 ? Icons.group_add : Icons.person_add)),
+                  icon: Icon(nicknames
+                              .where((nickname) => nickname.trim().isNotEmpty)
+                              .length >
+                          1
+                      ? Icons.group_add
+                      : Icons.person_add)),
             ),
             SizedBox(height: 15),
             Row(
@@ -289,7 +326,8 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
                   child: Text(
                     textAlign: TextAlign.center,
                     'add-member.create.note'.tr(),
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 ),
               ],
@@ -326,6 +364,8 @@ class _NicknameFieldState extends State<NicknameField> {
   void didUpdateWidget(covariant NicknameField oldWidget) {
     super.didUpdateWidget(oldWidget);
     _controller.text = widget.nickname;
+    _controller.selection =
+        TextSelection.collapsed(offset: _controller.text.length);
   }
 
   @override

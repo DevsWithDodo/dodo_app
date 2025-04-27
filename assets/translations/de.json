@@ -409,7 +409,7 @@
     "registration.set-pin": "Pin festlegen",
 
     "shopping-list.entry.wish": "Anfrage von {name}",
-    "shopping-list.hint": "Tippe auf eine Anfrage um mehr Details zu sehen, halte sie gedrückt um zu reagieren.",
+    "shopping-list.hint": "Tippe auf eine Anfrage um mehr Details zu sehen.",
 
     "personalised-ads.dialog.title": "Persönliche Anzeigen",
     "personalised-ads.dialog.subtitle": "Lege fest, ob du personalisierte Anzeigen in der App sehen möchtest? Diese Einstellung kann später in den Einstellungen geändert werden.",

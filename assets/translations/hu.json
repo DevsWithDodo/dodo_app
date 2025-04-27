@@ -401,7 +401,7 @@
     "registration.set-pin": "Pin beállítása",
     
     "shopping-list.entry.wish": "{name} kérése",
-    "shopping-list.hint": "Nyomj egy kérésre több információért, tartsd nyomva a reagáláshoz.",
+    "shopping-list.hint": "Nyomj egy kérésre több információért.",
 
     "personalised-ads.dialog.title": "Személyre szabott hirdetések",
     "personalised-ads.dialog.subtitle": "Add meg, hogy szeretnél-e az alkalmazásban személyre szabott reklámokat látni. Ezt később a beállításokban megváltoztathatod",

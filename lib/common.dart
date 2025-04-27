@@ -16,7 +16,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-double adHeight(BuildContext context) => (context.read<AppConfig>().isAdPlatformEnabled && (context.read<UserNotifier>().user?.showAds ?? false)) ? 50 : 0;
+double adHeight(BuildContext context) =>
+    (context.read<AppConfig>().isAdPlatformEnabled &&
+            (context.read<UserNotifier>().user?.showAds ?? false))
+        ? 50
+        : 0;
 
 /// The delay time in ms for the success dialog to pop.
 int delayTime = 700;
@@ -52,11 +56,16 @@ void showToast(
   bool useWidgetToast = false,
   Duration? toastDuration,
 }) {
-  BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
+  BuildContext context =
+      getIt.get<NavigationService>().navigatorKey.currentContext!;
   if (useWidgetToast || Platform.isLinux || Platform.isWindows) {
     FToast fluttertoast = FToast();
-    Color background = error ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.primaryContainer;
-    Color textColor = error ? Theme.of(context).colorScheme.onError : Theme.of(context).colorScheme.onPrimaryContainer;
+    Color background = error
+        ? Theme.of(context).colorScheme.error
+        : Theme.of(context).colorScheme.primaryContainer;
+    Color textColor = error
+        ? Theme.of(context).colorScheme.onError
+        : Theme.of(context).colorScheme.onPrimaryContainer;
     fluttertoast.init(context);
     fluttertoast.showToast(
       toastDuration: toastDuration ?? Duration(seconds: 2),
@@ -77,7 +86,10 @@ void showToast(
             Flexible(
               child: Text(
                 message,
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: textColor),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .copyWith(color: textColor),
               ),
             ),
           ],
@@ -123,7 +135,8 @@ Future<String> getAssetPath(String asset) async {
   final file = File(path);
   if (!await file.exists()) {
     final byteData = await rootBundle.load(asset);
-    await file.writeAsBytes(byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+    await file.writeAsBytes(byteData.buffer
+        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
   }
   return file.path;
 }
@@ -143,7 +156,8 @@ Future<GoogleSignInAuthentication?> getGoogleAuth(
   return await googleUser?.authentication;
 }
 
-Future<AuthorizationCredentialAppleID> getAppleAuth(String clientId, String appUrl) async {
+Future<AuthorizationCredentialAppleID> getAppleAuth(
+    String clientId, String appUrl) async {
   return await SignInWithApple.getAppleIDCredential(
     scopes: [],
     webAuthenticationOptions: WebAuthenticationOptions(
@@ -151,4 +165,9 @@ Future<AuthorizationCredentialAppleID> getAppleAuth(String clientId, String appU
       redirectUri: Uri.parse('$appUrl/callbacks/sign-in-with-apple'),
     ),
   );
+}
+
+extension ContextExtension on BuildContext {
+  TextTheme get textTheme => Theme.of(this).textTheme;
+  ColorScheme get colorScheme => Theme.of(this).colorScheme;
 }

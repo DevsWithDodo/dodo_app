@@ -13,7 +13,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:showcaseview/showcaseview.dart';
 
 class Bootstrap extends StatefulWidget {
   const Bootstrap({super.key});
@@ -39,7 +38,8 @@ class _BootstrapState extends State<Bootstrap> {
         if (!snapshot.hasData) {
           return Center(child: CircularProgressIndicator());
         }
-        final appOpenCount = snapshot.data!.getInt('user-usage.app-open-count') ?? 0;
+        final appOpenCount =
+            snapshot.data!.getInt('user-usage.app-open-count') ?? 0;
         snapshot.data!.setInt('user-usage.app-open-count', appOpenCount + 1);
         return Provider(
           create: (context) => snapshot.data!,
@@ -50,7 +50,8 @@ class _BootstrapState extends State<Bootstrap> {
                       builder: (context) => ExchangeRateInitializer(
                         context: context,
                         builder: (context) => ChangeNotifierProvider(
-                            create: (context) => UserUsageNotifier(snapshot.data!),
+                            create: (context) =>
+                                UserUsageNotifier(snapshot.data!),
                             builder: (context, child) => UserProvider(
                                   context: context,
                                   builder: (context) => NotificationInitializer(
@@ -59,16 +60,18 @@ class _BootstrapState extends State<Bootstrap> {
                                       context: context,
                                       builder: (context) => ScreenSizeProvider(
                                         builder: (context) => EasyLocalization(
-                                          supportedLocales: [Locale('en'), Locale('de'), Locale('hu')],
+                                          supportedLocales: [
+                                            Locale('en'),
+                                            Locale('de'),
+                                            Locale('hu')
+                                          ],
                                           path: 'assets/translations',
                                           fallbackLocale: Locale('en'),
                                           useOnlyLangCode: true,
                                           saveLocale: true,
                                           useFallbackTranslations: true,
-                                          child: ShowCaseWidget(
-                                            builder: (context) => SupportedVersionInitializer(
-                                              builder: (context) => App(),
-                                            ),
+                                          child: SupportedVersionInitializer(
+                                            builder: (context) => App(),
                                           ),
                                         ),
                                       ),

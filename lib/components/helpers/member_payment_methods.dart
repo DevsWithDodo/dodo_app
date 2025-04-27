@@ -1,9 +1,9 @@
+import 'package:collection/collection.dart';
 import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:collection/collection.dart';
 
 class MemberPaymentMethods extends StatelessWidget {
   final Member member;
@@ -38,14 +38,16 @@ class MemberPaymentMethods extends StatelessWidget {
                                 SizedBox(width: 5),
                                 Flexible(
                                   child: DefaultTextStyle(
-                                    style: Theme.of(context).textTheme.bodyLarge!,
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge!,
                                     child: Row(
                                       children: [
                                         Text("${paymentMethod.name}: "),
                                         Flexible(
                                           child: Text(
                                             paymentMethod.value,
-                                            style: TextStyle(fontWeight: FontWeight.w600),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w600),
                                           ),
                                         )
                                       ],
@@ -61,7 +63,8 @@ class MemberPaymentMethods extends StatelessWidget {
                               SizedBox(width: 5),
                               paymentMethod.priority
                                   ? Padding(
-                                      padding: const EdgeInsets.only(right: 8.0),
+                                      padding:
+                                          const EdgeInsets.only(right: 8.0),
                                       child: Icon(
                                         Icons.star,
                                         color: Colors.amber,
@@ -71,7 +74,8 @@ class MemberPaymentMethods extends StatelessWidget {
                                   : SizedBox(),
                               IconButton.filledTonal(
                                 onPressed: () {
-                                  Clipboard.setData(ClipboardData(text: paymentMethod.value));
+                                  Clipboard.setData(
+                                      ClipboardData(text: paymentMethod.value));
                                   showToast('clipboard.copy-successful'.tr());
                                   Navigator.pop(context);
                                 },

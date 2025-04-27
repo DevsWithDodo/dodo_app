@@ -400,7 +400,7 @@
     "registration.set-pin": "Set pin",
 
     "shopping-list.entry.wish": "{name}'s wish",
-    "shopping-list.hint": "Tap on a wish to see more details, hold it to react.",
+    "shopping-list.hint": "Tap on a wish to see more details.",
 
     "personalised-ads.dialog.title": "Personalised ads",
     "personalised-ads.dialog.subtitle": "Set if you want to see personalised ads in the app. This setting can be changed later in the settings menu.",
@@ -559,6 +559,6 @@
     "rate-app-dialog.later": "Remind me later",
     "rate-app-dialog.rate-now": "⭐ Rate now",
 
-    "balances.tap-info": "Tap on any member for more details."
+    "balances.tap-info": "Tap on any member for their details."
 
 }
