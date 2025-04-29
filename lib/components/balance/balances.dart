@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/components/balance/necessary_payments_button.dart';
 import 'package:csocsort_szamla/components/balance/select_balance_currency.dart';
 import 'package:csocsort_szamla/components/groups/member_all_info.dart';
@@ -236,12 +237,12 @@ class BalanceMemberEntry extends StatelessWidget {
       },
       child: Ink(
         padding: EdgeInsets.symmetric(horizontal: 12),
-        height: 44,
+        height: 40,
         decoration: member.id == context.read<UserNotifier>().user!.id
             ? BoxDecoration(
                 gradient:
                     AppTheme.gradientFromTheme(themeName, useSecondary: true),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: Theme.of(context).colorScheme.outlineVariant,
                   width: 1,
@@ -249,7 +250,7 @@ class BalanceMemberEntry extends StatelessWidget {
               )
             : BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: Theme.of(context).colorScheme.outlineVariant,
                   width: 1,
@@ -259,15 +260,10 @@ class BalanceMemberEntry extends StatelessWidget {
           mainAxisSize: contracted ? MainAxisSize.min : MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  member.nickname,
-                  style: textStyle,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+            Text(
+              member.nickname,
+              style: textStyle,
+              overflow: TextOverflow.ellipsis,
             ),
             SizedBox(width: 10),
             AnimatedCrossFade(
@@ -279,7 +275,7 @@ class BalanceMemberEntry extends StatelessWidget {
                         context.watch<UserNotifier>().currentGroup!.currency,
                         selectedCurrency)
                     .toMoneyString(selectedCurrency),
-                style: textStyle,
+                style: textStyle.copyWith(fontWeight: FontWeight.w500),
               ),
               crossFadeState: CrossFadeState.showSecond,
             ),
