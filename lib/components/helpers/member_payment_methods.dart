@@ -25,9 +25,9 @@ class MemberPaymentMethods extends StatelessWidget {
           Column(
               children: member.paymentMethods!
                   .sorted((a, b) => a.priority ? -1 : 1)
-                  .map(
-                    (paymentMethod) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
+                  .mapIndexed(
+                    (index, paymentMethod) => Padding(
+                      padding: EdgeInsets.only(bottom: index != (member.paymentMethods!.length - 1) ? 8.0 : 0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -77,7 +77,6 @@ class MemberPaymentMethods extends StatelessWidget {
                                   Clipboard.setData(
                                       ClipboardData(text: paymentMethod.value));
                                   showToast('clipboard.copy-successful'.tr());
-                                  Navigator.pop(context);
                                 },
                                 icon: Icon(Icons.copy),
                               ),

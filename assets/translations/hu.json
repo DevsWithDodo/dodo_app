@@ -323,7 +323,7 @@
     "choose_custom_amount": "Nyomj hosszan egy tagra, hogy kiválaszd a hozzá tartozó összeget",
 
     "payments-needed.page.subtitle": "Ezek a fizetések szükségesek az összes egyenleg kiegyenlítéséhez.",
-    "payments-needed.page.payment-method-hint": "Nyomj a sor végén lévő gombra, hogy lásd az elérhető fizetési módokat.",
+    "payments-needed.page.payment-method-hint": "Nyomj a pénztárca ikonra a fizetés rögzítéséhez.",
     "payments-needed.page.payment-page-hint": "Már fizettél? Válts a fizetési oldalra, és írd fel:",
     "payments-needed.page.copy-hint": "Másold ki az összes szükséges fizetést:",
 
@@ -343,10 +343,12 @@
     "payment-method.value.hint": "pl. 1234567-891011",
     "payment-method.name.hint": "pl. Számlaszám",
     "payment-methods.dialog.title": "Fizetési módok",
-    "payment-methods.dialog.subtitle": "A kiválasztott tagnak így lehet fizetni",
+    "payment-methods.dialog.subtitle": "{name} így fogad fizetéseket",
     "payment-methods.no-payment-method": "{name} még nem adott meg fizetési módot",
     "payment-methods.dialog.modify.title": "Add meg a fizetési módokat",
     "payment-methods.dialog.modify.subtitle": "Minden tag láthatja a fizetési módokat, amiket megadsz.",
+    "payment-methods.dialog.already-paid": "Már fizettél?",
+    "payment-methods.dialog.record-payment": "Rögzítsd a fizetést",
 
     "clipboard.copy-successful": "A vágólapra másolva",
 
