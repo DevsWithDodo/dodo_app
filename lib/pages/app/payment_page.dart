@@ -23,9 +23,10 @@ import 'package:provider/provider.dart';
 
 class PaymentPage extends StatefulWidget {
   final Payment? payment;
-  final bool fromNecessaryPayments;
+  final int? takerId;
+  final int? payerId;
 
-  const PaymentPage({super.key, this.payment, this.fromNecessaryPayments = false});
+  const PaymentPage({super.key, this.payment, this.takerId, this.payerId});
   @override
   State<PaymentPage> createState() => _PaymentPageState();
 }
@@ -89,7 +90,7 @@ class _PaymentPageState extends State<PaymentPage> {
 
     members = getMembers();
     selectedCurrency = context.read<UserNotifier>().currentGroup!.currency;
-    payerId = context.read<UserNotifier>().user!.id;
+    payerId = widget.payerId ?? context.read<UserNotifier>().user!.id;
     if (widget.payment != null) {
       amountController.text = widget.payment!.amount.toMoneyString(selectedCurrency);
       noteController.text = widget.payment!.note;
@@ -133,7 +134,7 @@ class _PaymentPageState extends State<PaymentPage> {
                           return RecommendedPayments(
                             payerId: payerId,
                             members: snapshot.data!,
-                            autoSelectFirst: widget.fromNecessaryPayments,
+                            autoSelectId: widget.takerId,
                             onChange: (payment, selected) => setState(() {
                               usesAutomaticSettleUp = selected;
                               if (selected) {
@@ -163,32 +164,8 @@ class _PaymentPageState extends State<PaymentPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: 'note'.tr(),
-                                  prefixIcon: Icon(
-                                    Icons.note,
-                                    color: Theme.of(context).colorScheme.onSurface,
-                                  ),
-                                ),
-                                inputFormatters: [LengthLimitingTextInputFormatter(50)],
-                                controller: noteController,
-                                onFieldSubmitted: (value) => submit(context),
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
                               Row(
                                 children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(right: 5),
-                                    child: CurrencyPickerIconButton(
-                                      selectedCurrency: selectedCurrency,
-                                      onCurrencyChanged: (newCurrency) => setState(() {
-                                        selectedCurrency = newCurrency ?? selectedCurrency;
-                                      }),
-                                    ),
-                                  ),
                                   Expanded(
                                     child: TextFormField(
                                       validator: (value) => validateTextField([
@@ -204,7 +181,31 @@ class _PaymentPageState extends State<PaymentPage> {
                                       onFieldSubmitted: (value) => submit(context),
                                     ),
                                   ),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 5),
+                                    child: CurrencyPickerIconButton(
+                                      selectedCurrency: selectedCurrency,
+                                      onCurrencyChanged: (newCurrency) => setState(() {
+                                        selectedCurrency = newCurrency ?? selectedCurrency;
+                                      }),
+                                    ),
+                                  ),
                                 ],
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              TextFormField(
+                                decoration: InputDecoration(
+                                  labelText: 'note'.tr(),
+                                  prefixIcon: Icon(
+                                    Icons.note,
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                  ),
+                                ),
+                                inputFormatters: [LengthLimitingTextInputFormatter(50)],
+                                controller: noteController,
+                                onFieldSubmitted: (value) => submit(context),
                               ),
                               SizedBox(
                                 height: 20,

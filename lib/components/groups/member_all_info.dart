@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/components/groups/dialogs/select_member_to_merge_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
@@ -94,30 +95,34 @@ class _MemberAllInfoState extends State<MemberAllInfo> {
                     ],
                   ),
                   SizedBox(height: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Center(
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 400),
-                          child: MemberPaymentMethods(member: widget.member),
-                        ),
-                      ),
-                      if (widget.member.id == user.id)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: TextButton(
-                            onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => UserSettingsPage()),
-                            ),
-                            child: Text(
-                              'member-info.add-payment-methods'.tr(),
-                            ),
+                  Container(
+                    decoration: BoxDecoration(color: context.colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
+                    padding: EdgeInsets.all(5),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(maxWidth: 400),
+                            child: MemberPaymentMethods(member: widget.member),
                           ),
                         ),
-                    ],
+                        if (widget.member.id == user.id)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: TextButton(
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => UserSettingsPage()),
+                              ),
+                              child: Text(
+                                'member-info.add-payment-methods'.tr(),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                   Visibility(
                     visible:

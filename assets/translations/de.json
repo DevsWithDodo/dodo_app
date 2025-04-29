@@ -331,9 +331,8 @@
     "choose_custom_amount": "Drücke lange auf einen der Nutzer um einen individuellen Betrag zu wählen",
 
     "payments-needed.page.subtitle": "Dies sind die Zahlungen damit die Gruppe auf 0 kommt.",
-    "payments-needed.page.payment-method-hint": "Tippe auf das Icon am Ende jeder Zeile um die möglichen Zahlungsmethoden zu sehen.",
+    "payments-needed.page.payment-method-hint": "Tippe auf die Walleticons um zu zahlen.",
     "payments-needed.page.payment-page-hint": "Schon bezahlt? Gehe zur Zahlungsseite um es zu bestätigen.",
-    "payments-needed.page.copy-hint": "Kopiere alle nötigen Zahlungen in die Zwischenablage:",
 
     "pin-verification.title": "Pin bestätigen",
     "pin-verification.description": "Gib deinen Pin an und gehe sicher dass du es noch weißt",
@@ -351,10 +350,12 @@
     "payment-method.value.hint": "zB. 1234567-891011",
     "payment-method.name.hint": "zB. IBAN",    
     "payment-methods.dialog.title": "Zahlungsmethoden",
-    "payment-methods.dialog.subtitle": "Das ausgewählte Mitglied kann über diese Methoden bezahlt werden",
+    "payment-methods.dialog.subtitle": "{name} kann über diese Methoden bezahlt werden",
     "payment-methods.no-payment-method": "{name} hat noch keine Zahlungsmethoden hinzugefügt",
     "payment-methods.dialog.modify.title": "Setze deine Zahlungsmethoden",
     "payment-methods.dialog.modify.subtitle": "Alle Mitglieder können sehen, wie du bezahlt werden möchtest",
+    "payment-methods.dialog.already-paid": "Schon gezahlt?",
+    "payment-methods.dialog.record-payment": "Zahlung erfassen",
 
     "clipboard.copy-successful": "Kopiert",
 

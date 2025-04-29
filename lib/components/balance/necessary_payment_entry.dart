@@ -88,7 +88,8 @@ class NecessaryPaymentEntry extends StatelessWidget {
                                         context: context,
                                         builder: (context) {
                                           return PaymentMethodsDialog(
-                                            member: takers.firstWhere((element) => element.id == payment.takerId),
+                                            taker: takers.firstWhere((element) => element.id == payment.takerId),
+                                            payerId: payments.first.payerId
                                           );
                                         },
                                       );

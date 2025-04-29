@@ -319,7 +319,7 @@
     "choose_custom_amount": "Long press on user to choose custom amount",
 
     "payments-needed.page.subtitle": "These are the payments everyone needs to make to settle the group's balance.",
-    "payments-needed.page.payment-method-hint": "Tap on the icon at the end of each row to see the possible payment methods.",
+    "payments-needed.page.payment-method-hint": "Tap on the wallet icons to record the payments.",
     "payments-needed.page.payment-page-hint": "Already paid? Go to the payment page to book it.",
     "payments-needed.page.copy-hint": "Copy all necessary payments to the clipboard:",
 
@@ -339,10 +339,12 @@
     "payment-method.value.hint": "eg. 1234567-891011",
     "payment-method.name.hint": "eg. IBAN",
     "payment-methods.dialog.title": "Payment methods",
-    "payment-methods.dialog.subtitle": "The chosen member can be paid via the following methods",
+    "payment-methods.dialog.subtitle": "{name} can be paid via the following methods",
     "payment-methods.no-payment-method": "{name} hasn't added any payment methods yet",
     "payment-methods.dialog.modify.title": "Set payment methods",
     "payment-methods.dialog.modify.subtitle": "Every member will be able to see these methods",
+    "payment-methods.dialog.already-paid": "Already paid?",
+    "payment-methods.dialog.record-payment": "Record payment",
 
     "create-group.currency": "The group's main currency",
     "create-group.currency.hint": "The currency can be selected for each expense separately",

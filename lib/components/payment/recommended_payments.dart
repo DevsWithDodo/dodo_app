@@ -12,14 +12,14 @@ class RecommendedPayments extends StatefulWidget {
   final void Function(Payment selectedPayment, bool selected) onChange;
   final bool onlyShowOwn;
   final int? payerId;
-  final bool autoSelectFirst;
+  final int? autoSelectId;
 
   const RecommendedPayments({
     super.key,
     required this.members,
     required this.onChange,
     this.onlyShowOwn = true,
-    this.autoSelectFirst = false,
+    this.autoSelectId,
     this.payerId,
   });
 
@@ -52,9 +52,10 @@ class _RecommendedPaymentsState extends State<RecommendedPayments> {
         .toList();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.autoSelectFirst && _necessaryPaymentsToShow.isNotEmpty) {
-        _selectedPayment = 0;
-        widget.onChange(_necessaryPaymentsToShow[0], true);
+      if (widget.autoSelectId != null && _necessaryPaymentsToShow.where((p) => p.takerId == widget.autoSelectId).isNotEmpty) {
+        final payment = _necessaryPaymentsToShow.firstWhere((p) => p.takerId == widget.autoSelectId);
+        _selectedPayment = _necessaryPaymentsToShow.indexOf(payment);
+        widget.onChange(payment, true);
       } else {
         _selectedPayment = null;
       }
@@ -80,60 +81,62 @@ class _RecommendedPaymentsState extends State<RecommendedPayments> {
     necessaryPayments(widget.members, context);
     return Visibility(
       visible: _necessaryPaymentsToShow.isNotEmpty,
-      child: SizedBox(
-        height: 50,
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'payments.recommended-payments'.tr(),
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
-              ..._necessaryPaymentsToShow.mapIndexed(
-                (index, payment) {
-                  bool selected = _selectedPayment == index;
-                  ThemeData themeData = Theme.of(context);
-                  TextStyle textStyle = themeData.textTheme.bodyLarge!.copyWith(color: selected ? themeData.colorScheme.onPrimaryContainer : themeData.colorScheme.onSecondaryContainer);
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Theme(
-                      data: Theme.of(context).copyWith(
-                        chipTheme: Theme.of(context).chipTheme.copyWith(
-                              checkmarkColor: textStyle.color,
-                              labelStyle: textStyle,
-                              backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                              selectedColor: Theme.of(context).colorScheme.primaryContainer,
-                            ),
-                      ),
-                      child: ChoiceChip(
-                        side: BorderSide.none,
-                        selected: selected,
-                        onSelected: (value) {
-                          widget.onChange(payment, value);
-                          setState(() {
-                            _selectedPayment = value ? index : null;
-                          });
-                        },
-                        label: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(payment.takerNickname),
-                            SizedBox(width: 5),
-                            Text(
-                              payment.amount.toMoneyString(payment.originalCurrency, withSymbol: true),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              )
-            ],
+      child: Column(
+        children: [
+          Text(
+            'payments.recommended-payments'.tr(),
+            style: Theme.of(context).textTheme.labelLarge,
           ),
-        ),
+          SizedBox(
+            height: 50,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: _necessaryPaymentsToShow.mapIndexed(
+                    (index, payment) {
+                      bool selected = _selectedPayment == index;
+                      ThemeData themeData = Theme.of(context);
+                      TextStyle textStyle = themeData.textTheme.bodyLarge!.copyWith(color: selected ? themeData.colorScheme.onPrimaryContainer : themeData.colorScheme.onSecondaryContainer);
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Theme(
+                          data: Theme.of(context).copyWith(
+                            chipTheme: Theme.of(context).chipTheme.copyWith(
+                                  checkmarkColor: textStyle.color,
+                                  labelStyle: textStyle,
+                                  backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                                  selectedColor: Theme.of(context).colorScheme.primaryContainer,
+                                ),
+                          ),
+                          child: ChoiceChip(
+                            side: BorderSide.none,
+                            selected: selected,
+                            onSelected: (value) {
+                              widget.onChange(payment, value);
+                              setState(() {
+                                _selectedPayment = value ? index : null;
+                              });
+                            },
+                            label: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(payment.takerNickname),
+                                SizedBox(width: 5),
+                                Text(
+                                  payment.amount.toMoneyString(payment.originalCurrency, withSymbol: true),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ).toList()
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
