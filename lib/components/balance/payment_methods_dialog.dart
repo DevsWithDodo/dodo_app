@@ -1,7 +1,7 @@
 import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
-import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/components/helpers/member_payment_methods.dart';
+import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/pages/app/payment_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +10,8 @@ class PaymentMethodsDialog extends StatelessWidget {
   final Member taker;
   final int payerId;
 
-  const PaymentMethodsDialog({super.key, required this.taker, required this.payerId});
+  const PaymentMethodsDialog(
+      {super.key, required this.taker, required this.payerId});
 
   @override
   Widget build(BuildContext context) {
@@ -28,9 +29,8 @@ class PaymentMethodsDialog extends StatelessWidget {
               ),
               SizedBox(height: 5),
               Text(
-                'payment-methods.dialog.subtitle'.tr(namedArgs: {
-                  'name': taker.nickname
-                }),
+                'payment-methods.dialog.subtitle'
+                    .tr(namedArgs: {'name': taker.nickname}),
                 style: Theme.of(context).textTheme.bodySmall,
                 textAlign: TextAlign.center,
               ),
@@ -39,22 +39,24 @@ class PaymentMethodsDialog extends StatelessWidget {
                 constraints: BoxConstraints(maxWidth: 350),
                 decoration: BoxDecoration(
                   color: context.colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(10)
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 padding: EdgeInsets.all(5),
                 child: MemberPaymentMethods(member: taker),
               ),
               SizedBox(height: 25),
-              Text("Already paid?", style: context.textTheme.titleSmall),
+              Text("payment-methods.dialog.already-paid".tr(),
+                  style: context.textTheme.titleSmall),
               SizedBox(height: 5),
               GradientButton.icon(
                 icon: Icon(Icons.payment),
-                label: Text('Record payment'.tr()),
+                label: Text('payment-methods.dialog.record-payment'.tr()),
                 onPressed: () {
                   Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => PaymentPage(payerId: payerId, takerId: taker.id))
-                  );
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PaymentPage(
+                              payerId: payerId, takerId: taker.id)));
                 },
               )
             ],
