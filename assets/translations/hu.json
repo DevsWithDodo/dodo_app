@@ -566,6 +566,8 @@
     "rate-app-dialog.later": "Emlékeztess később",
     "rate-app-dialog.rate-now": "⭐ Értékelem",
 
-    "balances.tap-info": "Kattints egy tagra az adatai megtekintéséhez."
+    "balances.tap-info": "Kattints egy tagra az adatai megtekintéséhez.",
+    
+    "sure_boost": "Biztosan szeretnéd boostolni a csoportot?"
 
 }

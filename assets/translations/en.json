@@ -561,6 +561,8 @@
     "rate-app-dialog.later": "Remind me later",
     "rate-app-dialog.rate-now": "⭐ Rate now",
 
-    "balances.tap-info": "Tap on any member for their details."
+    "balances.tap-info": "Tap on any member for their details.",
+
+    "sure_boost": "Are you sure you want to boost the group? This will allow you to see statistics inside the app."
 
 }

@@ -139,7 +139,8 @@ class _PaymentPageState extends State<PaymentPage> {
                               usesAutomaticSettleUp = selected;
                               if (selected) {
                                 amountController.text = payment.amount.toString();
-                                selectedMemberId = snapshot.data!.firstWhere((member) => member.id == payment.takerId).id;
+                                selectedMemberId =
+                                    snapshot.data!.firstWhere((member) => member.id == payment.takerId).id;
                               } else {
                                 amountController.text = "";
                                 selectedMemberId = null;
@@ -245,11 +246,13 @@ class _PaymentPageState extends State<PaymentPage> {
                                                       showCheck: false,
                                                       showAnimation: true,
                                                       selectedColor: Theme.of(context).colorScheme.secondaryContainer,
-                                                      selectedFontColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                                                      selectedFontColor:
+                                                          Theme.of(context).colorScheme.onSecondaryContainer,
                                                       notSelectedColor: Theme.of(context).colorScheme.surface,
                                                       notSelectedFontColor: Theme.of(context).colorScheme.onSurface,
                                                       fillRatio: 1,
-                                                      member: snapshot.data!.firstWhere((element) => element.id == payerId),
+                                                      member:
+                                                          snapshot.data!.firstWhere((element) => element.id == payerId),
                                                       onSelected: (chosen) {},
                                                     ),
                                                   ),
@@ -257,7 +260,10 @@ class _PaymentPageState extends State<PaymentPage> {
                                                     allMembers: snapshot.data!,
                                                     multiple: false,
                                                     showAnimation: false,
-                                                    chosenMemberIds: snapshot.data!.where((element) => element.id == payerId).map((e) => e.id).toList(),
+                                                    chosenMemberIds: snapshot.data!
+                                                        .where((element) => element.id == payerId)
+                                                        .map((e) => e.id)
+                                                        .toList(),
                                                     setChosenMemberIds: (newMemberIds) => setState(() {
                                                       purchaserSelector = CrossFadeState.showFirst;
                                                       if (newMemberIds.isNotEmpty) {
@@ -280,8 +286,12 @@ class _PaymentPageState extends State<PaymentPage> {
                                                       }
                                                     }),
                                                 icon: Icon(
-                                                  purchaserSelector == CrossFadeState.showSecond ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                                                  color: purchaserSelector == CrossFadeState.showSecond ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
+                                                  purchaserSelector == CrossFadeState.showSecond
+                                                      ? Icons.arrow_drop_up
+                                                      : Icons.arrow_drop_down,
+                                                  color: purchaserSelector == CrossFadeState.showSecond
+                                                      ? Theme.of(context).colorScheme.primary
+                                                      : Theme.of(context).colorScheme.onSurfaceVariant,
                                                 )),
                                           ],
                                         );
@@ -371,7 +381,10 @@ class _PaymentPageState extends State<PaymentPage> {
       if (selectedMemberId == null) {
         FToast ft = FToast();
         ft.init(context);
-        ft.showToast(child: errorToast('person_not_chosen', context), toastDuration: Duration(seconds: 2), gravity: ToastGravity.BOTTOM);
+        ft.showToast(
+            child: errorToast('person_not_chosen', context),
+            toastDuration: Duration(seconds: 2),
+            gravity: ToastGravity.BOTTOM);
         return;
       }
       double amount = double.parse(amountController.text.replaceAll(',', '.'));
@@ -379,7 +392,8 @@ class _PaymentPageState extends State<PaymentPage> {
       showFutureOutputDialog(future: _postPayment(amount, note), context: context, outputCallbacks: {
         BoolFutureOutput.True: () {
           Navigator.pop(context);
-          Navigator.pop(context, true); // True: Created/updated payment
+          Navigator.pop(context);
+          Navigator.pop(context);
           final bus = EventBus.instance;
           bus.fire(EventBus.refreshBalances);
           bus.fire(EventBus.refreshPayments);
