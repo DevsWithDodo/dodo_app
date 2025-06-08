@@ -16,7 +16,8 @@ class MemberChips extends StatelessWidget {
   final Currency? selectedCurrency;
   final bool showAnimation;
 
-  MemberChips({super.key, 
+  MemberChips({
+    super.key,
     required this.multiple,
     required this.allMembers,
     required this.chosenMemberIds,
@@ -29,8 +30,6 @@ class MemberChips extends StatelessWidget {
   }) {
     assert(!allowCustomAmounts || (fullAmount != null && customAmounts != null));
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +55,7 @@ class MemberChips extends StatelessWidget {
                   memberAmount = customAmounts![member.id]!;
                 } else {
                   double sumCustom = customAmounts!.values.fold(0, (previousValue, element) => previousValue + element);
-                  memberAmount =(maxAmount - sumCustom) / (chosenMemberIds.length - customAmounts!.length);
+                  memberAmount = (maxAmount - sumCustom) / (chosenMemberIds.length - customAmounts!.length);
                 }
                 chipFillRatio = memberAmount / maxAmount;
               }
@@ -73,7 +72,7 @@ class MemberChips extends StatelessWidget {
             selectedColor: selectedColor,
             selectedFontColor: selectedFontColor,
             notSelectedColor: Theme.of(context).colorScheme.surface,
-            notSelectedFontColor: Theme.of(context).colorScheme.onSurface,
+            notSelectedFontColor: Theme.of(context).colorScheme.onSurfaceVariant,
             fillRatio: chipFillRatio * 1.0,
             showAnimation: showAnimation,
             onSelected: (selected) {
@@ -96,5 +95,4 @@ class MemberChips extends StatelessWidget {
       ).toList(),
     );
   }
-
 }

@@ -81,7 +81,8 @@ class _CustomChoiceChipState extends State<CustomChoiceChip> with SingleTickerPr
     return Ink(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(width: 0.7, color: widget.selected ? Colors.transparent : Theme.of(context).colorScheme.outline),
+        border:
+            Border.all(width: 0.3, color: widget.selected ? Colors.transparent : Theme.of(context).colorScheme.outline),
         gradient: LinearGradient(
           colors: [widget.selectedColor, widget.notSelectedColor],
           stops: [ratioAnimation.value, ratioAnimation.value],
@@ -100,7 +101,9 @@ class _CustomChoiceChipState extends State<CustomChoiceChip> with SingleTickerPr
         onLongPress: widget.onLongPress,
         child: AnimatedPadding(
           duration: checkAnimationDuration,
-          padding: widget.selected ? EdgeInsets.fromLTRB(8, 7.5, 16, 7.5) : EdgeInsets.symmetric(horizontal: 16, vertical: 7.5),
+          padding: widget.selected
+              ? EdgeInsets.fromLTRB(8, 7.5, 16, 7.5)
+              : EdgeInsets.symmetric(horizontal: 16, vertical: 7.5),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -119,7 +122,11 @@ class _CustomChoiceChipState extends State<CustomChoiceChip> with SingleTickerPr
                 duration: checkAnimationDuration,
                 crossFadeState: widget.selected ? CrossFadeState.showSecond : CrossFadeState.showFirst,
               ),
-              Text(widget.member.nickname, style: Theme.of(context).textTheme.labelLarge!.copyWith(color: widget.selected ? widget.selectedFontColor : widget.notSelectedFontColor)),
+              Text(widget.member.nickname,
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge!
+                      .copyWith(color: widget.selected ? widget.selectedFontColor : widget.notSelectedFontColor)),
             ],
           ),
         ),

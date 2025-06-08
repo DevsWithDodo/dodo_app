@@ -1,13 +1,16 @@
 import 'dart:convert';
 
+import 'package:csocsort_szamla/components/helpers/connected_button_group.dart';
 import 'package:csocsort_szamla/components/payment/payment_entry.dart';
 import 'package:csocsort_szamla/components/purchase/purchase_entry.dart';
+import 'package:csocsort_szamla/helpers/curves.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/pages/app/history_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +18,7 @@ import '../../helpers/models.dart';
 import '../helpers/error_message.dart';
 import '../helpers/gradient_button.dart';
 
-class History extends StatefulWidget {
+class History extends StatefulHookWidget {
   final int? selectedIndex;
   const History({super.key, this.selectedIndex});
 
@@ -115,6 +118,8 @@ class _HistoryState extends State<History> {
 
   @override
   Widget build(BuildContext context) {
+    final purchasesSnapshot = useFuture(_purchases);
+    final paymentsSnapshot = useFuture(_payments);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(15),
@@ -135,156 +140,202 @@ class _HistoryState extends State<History> {
             SizedBox(
               height: 20,
             ),
-            SegmentedButton<int>(
-              emptySelectionAllowed: false,
-              multiSelectionEnabled: false,
-              selectedIcon: _selectedIndex == 0
-                  ? Icon(
-                      Icons.shopping_cart,
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    )
-                  : Icon(
-                      Icons.payment,
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    ),
-              segments: [
-                ButtonSegment(
-                  value: 0,
-                  label: Text('purchases'.tr()),
-                  enabled: true,
+            ConnectedButtonGroup(
+              size: ButtonGroupSize.m,
+              shape: ButtonGroupShape.rounded,
+              selectedIndex: _selectedIndex,
+              onSelected: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+              children: [
+                GroupedButton(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.shopping_cart),
+                      SizedBox(width: 8),
+                      Text('purchases'.tr()),
+                    ],
+                  ),
                 ),
-                ButtonSegment(
-                  value: 1,
-                  label: Text('payments'.tr()),
-                  // enabled: true,
+                GroupedButton(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.payment),
+                      SizedBox(width: 8),
+                      Text('payments'.tr()),
+                    ],
+                  ),
                 ),
               ],
-              selected: <int>{}..add(_selectedIndex),
-              onSelectionChanged: (Set<dynamic> selected) {
-                _selectedIndex = selected.first;
-                setState(() {});
-              },
             ),
-            AnimatedCrossFade(
-              crossFadeState: _selectedIndex == 0 ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-              duration: Duration(milliseconds: 100),
-              firstChild: FutureBuilder(
-                future: _purchases,
-                builder: (context, AsyncSnapshot<List<Purchase>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasData) {
-                      return Column(
-                        children: <Widget>[
-                          SizedBox(height: 10),
-                          if (snapshot.data!.isEmpty)
-                            Padding(
-                              padding: EdgeInsets.all(25),
-                              child: Text(
-                                'nothing_to_show'.tr(),
-                                style: Theme.of(context).textTheme.bodyLarge,
-                                textAlign: TextAlign.center,
-                              ),
-                            )
-                          else
-                            ..._generatePurchases(snapshot.data!),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10),
-                            child: GradientButton.icon(
-                              useSecondary: true,
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HistoryPage(startingIndex: _selectedIndex),
-                                  ),
-                                );
-                              },
-                              icon: Icon(Icons.list),
-                              label: Text('history.show-all'.tr()),
-                            ),
-                          )
-                        ],
-                      );
-                    } else {
-                      return ErrorMessage(
-                        error: snapshot.error.toString(),
-                        errorLocation: 'purchase_history',
-                        onTap: () {
-                          setState(() {
-                            _purchases = null;
-                            _purchases = _getPurchases();
-                          });
-                        },
-                      );
-                    }
+            AnimatedSize(
+              duration: M3Curves.expressiveDefaultSpatial.duration,
+              curve: M3Curves.expressiveDefaultSpatial.curve,
+              child: AnimatedSwitcher(
+                duration: M3Curves.expressiveDefaultSpatial.duration,
+                switchOutCurve: M3Curves.expressiveDefaultSpatial.curve,
+                switchInCurve: M3Curves.expressiveDefaultSpatial.curve.flipped,
+                transitionBuilder: (child, animation) {
+                  final leftToRight = _selectedIndex == 1;
+                  // Slide old out to left, new in from right
+                  final inOffset = Tween<Offset>(
+                    begin: leftToRight ? Offset(1, 0) : Offset(-1, 0),
+                    end: Offset.zero,
+                  ).animate(animation);
+                  final outOffset = Tween<Offset>(
+                    begin: leftToRight ? Offset(-1, 0) : Offset(1, 0),
+                    end: Offset.zero,
+                  ).animate(animation);
+
+                  if (child.key == ValueKey(_selectedIndex)) {
+                    return ClipRect(
+                      child: SlideTransition(
+                        position: inOffset,
+                        child: child,
+                      ),
+                    );
+                  } else {
+                    return ClipRect(
+                      child: SlideTransition(
+                        position: outOffset,
+                        child: child,
+                      ),
+                    );
                   }
-                  return Padding(
-                    padding: const EdgeInsets.all(80),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
                 },
-              ),
-              secondChild: FutureBuilder(
-                future: _payments,
-                builder: (context, AsyncSnapshot<List<Payment>> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasData) {
-                      return Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: 10,
-                          ),
-                          if (snapshot.data!.isEmpty)
-                            Padding(
-                              padding: EdgeInsets.all(25),
-                              child: Text(
-                                'nothing_to_show'.tr(),
-                                style: Theme.of(context).textTheme.bodyLarge,
-                                textAlign: TextAlign.center,
-                              ),
-                            )
-                          else
-                            ..._generatePayments(snapshot.data!),
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: GradientButton.icon(
-                              useSecondary: true,
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => HistoryPage(
-                                      startingIndex: _selectedIndex,
-                                    ),
-                                  ),
-                                );
-                              },
-                              icon: Icon(Icons.list),
-                              label: Text('history.show-all'.tr()),
+                child: _selectedIndex == 0
+                    ? Container(
+                        key: ValueKey(_selectedIndex),
+                        child: switch (purchasesSnapshot.connectionState) {
+                          ConnectionState.done => switch (purchasesSnapshot.hasData) {
+                              true => Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: <Widget>[
+                                    SizedBox(height: 10),
+                                    if (purchasesSnapshot.data!.isEmpty)
+                                      Padding(
+                                        padding: EdgeInsets.all(25),
+                                        child: Text(
+                                          'nothing_to_show'.tr(),
+                                          style: Theme.of(context).textTheme.bodyLarge,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      )
+                                    else
+                                      ..._generatePurchases(purchasesSnapshot.data!),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: Center(
+                                        child: GradientButton.icon(
+                                          useSecondary: true,
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => HistoryPage(
+                                                  startingIndex: _selectedIndex,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          icon: Icon(Icons.list),
+                                          label: Text('history.show-all'.tr()),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              false => ErrorMessage(
+                                  error: purchasesSnapshot.error.toString(),
+                                  errorLocation: 'purchase_history',
+                                  onTap: () {
+                                    setState(() {
+                                      _purchases = null;
+                                      _purchases = _getPurchases();
+                                    });
+                                  },
+                                ),
+                            },
+                          _ => Padding(
+                              padding: const EdgeInsets.all(80),
+                              child: Center(child: CircularProgressIndicator()),
                             ),
-                          )
-                        ],
-                      );
-                    } else {
-                      return ErrorMessage(
-                        error: snapshot.error.toString(),
-                        errorLocation: 'payment_history',
-                        onTap: () {
-                          setState(() {
-                            _payments = null;
-                            _payments = _getPayments();
-                          });
                         },
-                      );
-                    }
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.all(80),
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                },
+                      )
+                    : Container(
+                        key: ValueKey(_selectedIndex),
+                        child: switch (paymentsSnapshot.connectionState) {
+                          ConnectionState.done => switch (paymentsSnapshot.hasData) {
+                              true => Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: <Widget>[
+                                    SizedBox(height: 10),
+                                    if (paymentsSnapshot.data!.isEmpty)
+                                      Padding(
+                                        padding: EdgeInsets.all(25),
+                                        child: Text(
+                                          'nothing_to_show'.tr(),
+                                          style: Theme.of(context).textTheme.bodyLarge,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      )
+                                    else
+                                      ..._generatePayments(paymentsSnapshot.data!),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: Center(
+                                        child: GradientButton.icon(
+                                          useSecondary: true,
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => HistoryPage(
+                                                  startingIndex: _selectedIndex,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          icon: Icon(Icons.list),
+                                          label: Text('history.show-all'.tr()),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              false => ErrorMessage(
+                                  error: paymentsSnapshot.error.toString(),
+                                  errorLocation: 'payment_history',
+                                  onTap: () {
+                                    setState(() {
+                                      _payments = null;
+                                      _payments = _getPayments();
+                                    });
+                                  },
+                                ),
+                            },
+                          _ => Padding(
+                              padding: const EdgeInsets.all(80),
+                              child: Center(child: CircularProgressIndicator()),
+                            ),
+                        },
+                      ),
               ),
             ),
+            // AnimatedCrossFade(
+            //   crossFadeState: _selectedIndex == 0
+            //       ? CrossFadeState.showFirst
+            //       : CrossFadeState.showSecond,
+            //   duration: Duration(milliseconds: 100),
+            //   firstChild:
+            //   secondChild:
+            // ),
           ],
         ),
       ),
