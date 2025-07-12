@@ -41,7 +41,9 @@ class AddReactionDialog extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         margin: EdgeInsets.fromLTRB(4, 0, 4, 4),
         decoration: BoxDecoration(
-          gradient: e.userId == user.id ? AppTheme.gradientFromTheme(themeName, useSecondaryContainer: true) : LinearGradient(colors: [Colors.transparent, Colors.transparent]),
+          gradient: e.userId == user.id
+              ? AppTheme.gradientFromTheme(themeName, useSecondaryContainer: true)
+              : LinearGradient(colors: [Colors.transparent, Colors.transparent]),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -50,7 +52,15 @@ class AddReactionDialog extends StatelessWidget {
             Flexible(
               child: Text(
                 e.nickname,
-                style: e.userId == user.id ? Theme.of(context).textTheme.bodyLarge!.copyWith(color: themeName.type == ThemeType.gradient ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSecondaryContainer) : Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: e.userId == user.id
+                    ? Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        color: themeName.type == ThemeType.gradient || themeName.type == ThemeType.rainbow
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : Theme.of(context).colorScheme.onSecondaryContainer)
+                    : Theme.of(context)
+                        .textTheme
+                        .bodyLarge!
+                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -76,7 +86,10 @@ class AddReactionDialog extends StatelessWidget {
                 children: [
                   Text(
                     'reactions'.tr(),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(

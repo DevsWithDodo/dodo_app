@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/components/balance/necessary_payments_button.dart';
 import 'package:csocsort_szamla/components/balance/select_balance_currency.dart';
 import 'package:csocsort_szamla/components/groups/member_all_info.dart';
@@ -26,8 +25,7 @@ class Balances extends StatefulWidget {
   State<Balances> createState() => _BalancesState();
 }
 
-class _BalancesState extends State<Balances>
-    with AutomaticKeepAliveClientMixin {
+class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin {
   @override
   get wantKeepAlive => true;
 
@@ -49,8 +47,7 @@ class _BalancesState extends State<Balances>
     for (var member in decoded['data']['members']) {
       members.add(Member.fromJson(member));
     }
-    members
-        .sort((member1, member2) => member2.balance.compareTo(member1.balance));
+    members.sort((member1, member2) => member2.balance.compareTo(member1.balance));
     return members;
   }
 
@@ -97,8 +94,10 @@ class _BalancesState extends State<Balances>
                 Center(
                   child: Text(
                     'balances'.tr(),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
                 SizedBox(height: 15),
@@ -108,9 +107,7 @@ class _BalancesState extends State<Balances>
                     if (snapshot.connectionState == ConnectionState.done) {
                       if (snapshot.hasData) {
                         final isCurrentUserAdmin = snapshot.data!
-                                .firstWhere((member) =>
-                                    member.id ==
-                                    context.read<UserNotifier>().user!.id)
+                                .firstWhere((member) => member.id == context.read<UserNotifier>().user!.id)
                                 .isAdmin ??
                             false;
                         return Column(
@@ -121,10 +118,7 @@ class _BalancesState extends State<Balances>
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodySmall!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurfaceVariant)),
+                                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                             SizedBox(height: 4),
                             Wrap(
                               alignment: WrapAlignment.center,
@@ -175,8 +169,7 @@ class _BalancesState extends State<Balances>
               width: 70,
               child: SelectBalanceCurrency(
                 selectedCurrency: _selectedCurrency,
-                onCurrencyChanged: (currency) =>
-                    setState(() => _selectedCurrency = currency),
+                onCurrencyChanged: (currency) => setState(() => _selectedCurrency = currency),
               ),
             ),
           )
@@ -186,8 +179,7 @@ class _BalancesState extends State<Balances>
   }
 
   List<Widget> _generateBalances(List<Member> members) {
-    int currentMemberIndex = members.indexWhere(
-        (member) => member.id == context.read<UserNotifier>().user!.id);
+    int currentMemberIndex = members.indexWhere((member) => member.id == context.read<UserNotifier>().user!.id);
     final isCurrentUserAdmin = members[currentMemberIndex].isAdmin ?? false;
     return members
         .map<Widget>((Member member) => BalanceMemberEntry(
@@ -218,9 +210,7 @@ class BalanceMemberEntry extends StatelessWidget {
     final themeName = context.watch<AppThemeState>().themeName;
     TextStyle textStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(
         color: member.id == context.read<UserNotifier>().user!.id
-            ? themeName.type == ThemeType.gradient
-                ? Theme.of(context).colorScheme.onPrimary
-                : Theme.of(context).colorScheme.onSecondary
+            ? AppTheme.textColorOnGradient(themeName, useSecondary: true)
             : Theme.of(context).colorScheme.onSurface);
     return InkWell(
       borderRadius: BorderRadius.circular(12),
@@ -240,8 +230,7 @@ class BalanceMemberEntry extends StatelessWidget {
         height: 40,
         decoration: member.id == context.read<UserNotifier>().user!.id
             ? BoxDecoration(
-                gradient:
-                    AppTheme.gradientFromTheme(themeName, useSecondary: true),
+                gradient: AppTheme.gradientFromTheme(themeName, useSecondary: true),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: Theme.of(context).colorScheme.outlineVariant,
@@ -271,9 +260,7 @@ class BalanceMemberEntry extends StatelessWidget {
               firstChild: Container(),
               secondChild: Text(
                 member.balance
-                    .exchange(
-                        context.watch<UserNotifier>().currentGroup!.currency,
-                        selectedCurrency)
+                    .exchange(context.watch<UserNotifier>().currentGroup!.currency, selectedCurrency)
                     .toMoneyString(selectedCurrency),
                 style: textStyle.copyWith(fontWeight: FontWeight.w500),
               ),

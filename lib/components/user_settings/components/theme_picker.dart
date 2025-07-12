@@ -27,12 +27,17 @@ class _ThemePickerState extends State<ThemePicker> {
     if (AppTheme.themes.keys.where((element) => element.type == themeType).isEmpty) {
       return SizedBox();
     }
+    var themeNames = ThemeName.getThemeNamesByTypeAndBrightness(themeType, brightness);
+    if (themeType == ThemeType.simpleColor) {
+      themeNames.addAll(ThemeName.getThemeNamesByTypeAndBrightness(ThemeType.rainbow, brightness));
+    }
+
     return Wrap(
         alignment: WrapAlignment.center,
         crossAxisAlignment: WrapCrossAlignment.center,
         runSpacing: 15,
         spacing: 15,
-        children: ThemeName.getThemeNamesByTypeAndBrightness(themeType, brightness).map((entry) {
+        children: themeNames.map((entry) {
           return ColorElement(
             theme: AppTheme.themes[entry]!,
             themeName: entry,
@@ -76,7 +81,10 @@ class _ThemePickerState extends State<ThemePicker> {
                   Center(
                     child: Text(
                       'change_theme'.tr(),
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge!
+                          .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                   ),
                   SizedBox(height: 10),
@@ -109,7 +117,8 @@ class _ThemePickerState extends State<ThemePicker> {
                     ],
                   ),
                   SizedBox(height: 20),
-                  Text('change-theme.preview-hint'.tr(), style: Theme.of(context).textTheme.titleSmall, textAlign: TextAlign.center),
+                  Text('change-theme.preview-hint'.tr(),
+                      style: Theme.of(context).textTheme.titleSmall, textAlign: TextAlign.center),
                   SizedBox(height: 15),
                   _colorWrap(ThemeType.simpleColor, enabled: true),
                   SizedBox(height: 10),
@@ -117,14 +126,20 @@ class _ThemePickerState extends State<ThemePicker> {
                   SizedBox(height: 10),
                   Text(
                     'dual_tone_themes'.tr(),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
                     textAlign: TextAlign.center,
                   ),
                   Visibility(
                     visible: !useGradients,
                     child: Text(
                       'gradient_available_in_paid_version'.tr(),
-                      style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall!
+                          .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -135,7 +150,10 @@ class _ThemePickerState extends State<ThemePicker> {
                   SizedBox(height: 15),
                   Text(
                     'gradient_themes'.tr(),
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge!
+                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 15),
@@ -149,13 +167,19 @@ class _ThemePickerState extends State<ThemePicker> {
                         SizedBox(height: 10),
                         Text(
                           'change-theme.adaptive-theme'.tr(),
-                          style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge!
+                              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 3),
                         Text(
                           'change-theme.adaptive-theme.subtitle'.tr(),
-                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(

@@ -63,12 +63,14 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
   Widget build(BuildContext context) {
     ThemeName themeName = context.watch<AppThemeState>().themeName;
     int? selectedMemberId = widget.selectedMemberId;
-    String note = (widget.purchase.name == '') ? 'no_note'.tr() : widget.purchase.name[0].toUpperCase() + widget.purchase.name.substring(1);
+    String note = (widget.purchase.name == '')
+        ? 'no_note'.tr()
+        : widget.purchase.name[0].toUpperCase() + widget.purchase.name.substring(1);
     bool bought = widget.purchase.buyerId == selectedMemberId;
     bool received = widget.purchase.receivers.where((element) => element.id == selectedMemberId).isNotEmpty;
 
     Color textColor = bought
-        ? themeName.type == ThemeType.gradient
+        ? themeName.type == ThemeType.gradient || themeName.type == ThemeType.rainbow
             ? Theme.of(context).colorScheme.onPrimary
             : received
                 ? Theme.of(context).colorScheme.onSecondaryContainer
@@ -100,16 +102,24 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
     TextStyle subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(color: textColor);
     String names = bought ? widget.purchase.receivers.join(', ') : widget.purchase.buyerNickname;
 
-    String amount = (bought ? widget.purchase.totalAmountOriginalCurrency : (-widget.purchase.receivers.firstWhere((element) => element.id == selectedMemberId).balanceOriginalCurrency)).toMoneyString(widget.purchase.originalCurrency, withSymbol: true);
+    String amount = (bought
+            ? widget.purchase.totalAmountOriginalCurrency
+            : (-widget.purchase.receivers
+                .firstWhere((element) => element.id == selectedMemberId)
+                .balanceOriginalCurrency))
+        .toMoneyString(widget.purchase.originalCurrency, withSymbol: true);
     String amountToSelf = bought && received
-        ? (-widget.purchase.receivers.firstWhere((element) => element.id == selectedMemberId).balanceOriginalCurrency).toMoneyString(
+        ? (-widget.purchase.receivers.firstWhere((element) => element.id == selectedMemberId).balanceOriginalCurrency)
+            .toMoneyString(
             widget.purchase.originalCurrency,
             withSymbol: true,
           )
         : '';
     BoxDecoration decoration = bought
         ? BoxDecoration(
-            gradient: received ? AppTheme.gradientFromTheme(themeName, useSecondaryContainer: true) : AppTheme.gradientFromTheme(themeName, usePrimaryContainer: true),
+            gradient: received
+                ? AppTheme.gradientFromTheme(themeName, useSecondaryContainer: true)
+                : AppTheme.gradientFromTheme(themeName, usePrimaryContainer: true),
             borderRadius: BorderRadius.circular(15),
           )
         : BoxDecoration(

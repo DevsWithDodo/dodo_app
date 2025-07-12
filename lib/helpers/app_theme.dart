@@ -1,3 +1,4 @@
+import 'package:csocsort_szamla/helpers/color_generation.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,8 @@ enum ThemeType {
   simpleColor(false),
   dualColor(true),
   gradient(true),
-  dynamic(true);
+  dynamic(true),
+  rainbow(false);
 
   const ThemeType(this.premium);
   final bool premium;
@@ -46,10 +48,12 @@ enum ThemeName {
   yellowGradientDark(Brightness.dark, ThemeType.gradient, 'yellowGradientDarkTheme'),
   orangeGradientLight(Brightness.light, ThemeType.gradient, 'orangeGradientLightTheme'),
   orangeGradientDark(Brightness.dark, ThemeType.gradient, 'orangeGradientDarkTheme'),
-  blackGradientLight(Brightness.light, ThemeType.gradient, 'blackGradientLightTheme', counterPart: 'whiteGradientDarkTheme'),
-  whiteGradientDark(Brightness.dark, ThemeType.gradient, 'whiteGradientDarkTheme', counterPart: 'blackGradientLightTheme'),
-  rainbowGradientLight(Brightness.light, ThemeType.gradient, 'rainbowGradientLightTheme'),
-  rainbowGradientDark(Brightness.dark, ThemeType.gradient, 'rainbowGradientDarkTheme'),
+  blackGradientLight(Brightness.light, ThemeType.gradient, 'blackGradientLightTheme',
+      counterPart: 'whiteGradientDarkTheme'),
+  whiteGradientDark(Brightness.dark, ThemeType.gradient, 'whiteGradientDarkTheme',
+      counterPart: 'blackGradientLightTheme'),
+  rainbowGradientLight(Brightness.light, ThemeType.rainbow, 'rainbowGradientLightTheme'),
+  rainbowGradientDark(Brightness.dark, ThemeType.rainbow, 'rainbowGradientDarkTheme'),
   lightDynamic(Brightness.light, ThemeType.dynamic, 'lightDynamic', counterPart: 'darkDynamic'),
   darkDynamic(Brightness.dark, ThemeType.dynamic, 'darkDynamic', counterPart: 'lightDynamic'),
   greenRedLight(Brightness.light, ThemeType.dualColor, 'greenRedLight'),
@@ -229,18 +233,32 @@ class AppTheme {
       Color(0xff8FE097),
     ],
     ThemeName.rainbowGradientLight: [
-      Colors.purple,
-      Colors.blue,
-      Colors.green,
-      Colors.yellow,
-      Colors.orange,
+      hsvToColor(0, 0.9, 0.9), // Red
+      hsvToColor(0, 0.9, 0.9), // Red
+      hsvToColor(36, 0.9, 0.9), // Orange
+      hsvToColor(36, 0.9, 0.9), // Orange
+      hsvToColor(60, 0.9, 0.95), // Yellow
+      hsvToColor(60, 0.9, 0.95), // Yellow
+      hsvToColor(120, 0.9, 0.8), // Green
+      hsvToColor(120, 0.9, 0.8), // Green
+      hsvToColor(212, 0.9, 0.9), // Blue
+      hsvToColor(212, 0.9, 0.9), // Blue
+      hsvToColor(260, 0.9, 0.9), // Violet
+      hsvToColor(260, 0.9, 0.9), // Violet
     ],
     ThemeName.rainbowGradientDark: [
-      Colors.purple,
-      Colors.blue,
-      Colors.green,
-      Colors.yellow,
-      Colors.orange,
+      hsvToColor(0, 0.8, 0.9), // Red
+      hsvToColor(0, 0.8, 0.9), // Red
+      hsvToColor(36, 0.8, 0.9), // Orange
+      hsvToColor(36, 0.8, 0.9), // Orange
+      hsvToColor(60, 0.8, 0.95), // Yellow
+      hsvToColor(60, 0.8, 0.95), // Yellow
+      hsvToColor(120, 0.8, 0.8), // Green
+      hsvToColor(120, 0.8, 0.8), // Green
+      hsvToColor(212, 0.8, 0.9), // Blue
+      hsvToColor(212, 0.8, 0.9), // Blue
+      hsvToColor(260, 0.8, 0.9), // Violet
+      hsvToColor(260, 0.8, 0.9), // Violet
     ],
   };
 
@@ -251,7 +269,7 @@ class AppTheme {
     bool usePrimaryContainer = false,
     bool useSecondaryContainer = false,
   }) {
-    return themeName.type == ThemeType.gradient
+    return themeName.type == ThemeType.gradient || themeName.type == ThemeType.rainbow
         ? AppTheme.themes[themeName]!.colorScheme.onPrimary
         : useSecondary
             ? AppTheme.themes[themeName]!.colorScheme.onSecondary
@@ -271,25 +289,42 @@ class AppTheme {
     bool usePrimaryContainer = false,
     bool useSecondaryContainer = false,
   }) {
-    return themeName.type == ThemeType.gradient
+    return themeName.type == ThemeType.gradient || themeName.type == ThemeType.rainbow
         ? themeName.isRainbow()
-            ? LinearGradient(colors: [
-                AppTheme.gradientColors[themeName]![0],
-                AppTheme.gradientColors[themeName]![1],
-                AppTheme.gradientColors[themeName]![2],
-                AppTheme.gradientColors[themeName]![3],
-                AppTheme.gradientColors[themeName]![4],
-              ])
+            ? LinearGradient(
+                colors: AppTheme.gradientColors[themeName]!,
+                // Discrete colors
+                stops: List.generate(
+                  AppTheme.gradientColors[themeName]!.length,
+                  (index) =>
+                      (index % 2 + (index / 2).toInt()) / (AppTheme.gradientColors[themeName]!.length / 2).toInt(),
+                ),
+              )
             : LinearGradient(colors: [AppTheme.gradientColors[themeName]![0], AppTheme.gradientColors[themeName]![1]])
         : useSecondary
-            ? LinearGradient(colors: [AppTheme.themes[themeName]!.colorScheme.secondary, AppTheme.themes[themeName]!.colorScheme.secondary])
+            ? LinearGradient(colors: [
+                AppTheme.themes[themeName]!.colorScheme.secondary,
+                AppTheme.themes[themeName]!.colorScheme.secondary
+              ])
             : usePrimaryContainer
-                ? LinearGradient(colors: [AppTheme.themes[themeName]!.colorScheme.primaryContainer, AppTheme.themes[themeName]!.colorScheme.primaryContainer])
+                ? LinearGradient(colors: [
+                    AppTheme.themes[themeName]!.colorScheme.primaryContainer,
+                    AppTheme.themes[themeName]!.colorScheme.primaryContainer
+                  ])
                 : useSecondaryContainer
-                    ? LinearGradient(colors: [AppTheme.themes[themeName]!.colorScheme.secondaryContainer, AppTheme.themes[themeName]!.colorScheme.secondaryContainer])
+                    ? LinearGradient(colors: [
+                        AppTheme.themes[themeName]!.colorScheme.secondaryContainer,
+                        AppTheme.themes[themeName]!.colorScheme.secondaryContainer
+                      ])
                     : useTertiaryContainer
-                        ? LinearGradient(colors: [AppTheme.themes[themeName]!.colorScheme.tertiaryContainer, AppTheme.themes[themeName]!.colorScheme.tertiaryContainer])
-                        : LinearGradient(colors: [AppTheme.themes[themeName]!.colorScheme.primary, AppTheme.themes[themeName]!.colorScheme.primary]);
+                        ? LinearGradient(colors: [
+                            AppTheme.themes[themeName]!.colorScheme.tertiaryContainer,
+                            AppTheme.themes[themeName]!.colorScheme.tertiaryContainer
+                          ])
+                        : LinearGradient(colors: [
+                            AppTheme.themes[themeName]!.colorScheme.primary,
+                            AppTheme.themes[themeName]!.colorScheme.primary
+                          ]);
   }
 
   static MapEntry<ThemeName, ThemeData> generateThemeData(ThemeName themeName, Color seedColor) {
@@ -470,11 +505,18 @@ class AppTheme {
           surfaceTint: Color(0xffffb4a7),
         );
         break;
+      case ThemeName.rainbowGradientLight:
+        newColorScheme = colorScheme.copyWith(
+          brightness: Brightness.light,
+          tertiary: Color(0xff2f7f2f),
+          tertiaryContainer: Color(0xffd4f0d4),
+        );
+        break;
       default:
         break;
     }
     if (themeName.isRainbow()) {
-      newColorScheme = colorScheme.copyWith(onPrimary: Colors.white);
+      newColorScheme = (newColorScheme ?? colorScheme).copyWith(onPrimary: Colors.white);
     }
 
     ThemeData data = ThemeData.from(colorScheme: colorScheme, useMaterial3: true).copyWith(
@@ -496,7 +538,8 @@ class AppTheme {
         filled: true,
         border: UnderlineInputBorder(),
       ),
-      pageTransitionsTheme: const PageTransitionsTheme(builders: {TargetPlatform.android: PredictiveBackPageTransitionsBuilder()}),
+      pageTransitionsTheme:
+          const PageTransitionsTheme(builders: {TargetPlatform.android: PredictiveBackPageTransitionsBuilder()}),
     );
     if (newColorScheme != null) {
       data = data.copyWith(
@@ -517,7 +560,8 @@ class AppTheme {
   static void addDynamicThemes(CorePalette palette) async {
     ColorScheme lightScheme = palette.toColorScheme();
     ColorScheme darkScheme = palette.toColorScheme(brightness: Brightness.dark);
-    if (AppTheme.themes.containsKey(ThemeName.lightDynamic) && AppTheme.themes[ThemeName.lightDynamic]!.colorScheme.primary == lightScheme.primary) {
+    if (AppTheme.themes.containsKey(ThemeName.lightDynamic) &&
+        AppTheme.themes[ThemeName.lightDynamic]!.colorScheme.primary == lightScheme.primary) {
       print('Dynamic themes already added');
       return;
     }

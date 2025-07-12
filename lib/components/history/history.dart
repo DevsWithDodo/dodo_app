@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:csocsort_szamla/components/helpers/connected_button_group.dart';
+import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/components/payment/payment_entry.dart';
 import 'package:csocsort_szamla/components/purchase/purchase_entry.dart';
 import 'package:csocsort_szamla/helpers/curves.dart';
@@ -140,41 +140,57 @@ class _HistoryState extends State<History> {
             SizedBox(
               height: 20,
             ),
-            ConnectedButtonGroup(
-              size: ButtonGroupSize.m,
-              shape: ButtonGroupShape.rounded,
-              selectedIndex: _selectedIndex,
-              onSelected: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                GroupedButton(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.shopping_cart),
-                      SizedBox(width: 8),
-                      Text('purchases'.tr()),
-                    ],
-                  ),
-                ),
-                GroupedButton(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.payment),
-                      SizedBox(width: 8),
-                      Text('payments'.tr()),
-                    ],
-                  ),
-                ),
+                ChoiceChip(
+                    label: Text('purchases'.tr()),
+                    showCheckmark: false,
+                    avatar: Icon(Icons.shopping_cart_outlined),
+                    selected: _selectedIndex == 0,
+                    selectedColor: context.colorScheme.tertiaryContainer,
+                    iconTheme: IconThemeData(
+                      color:
+                          _selectedIndex == 0 ? context.colorScheme.onTertiaryContainer : context.colorScheme.onSurface,
+                    ),
+                    labelStyle: TextStyle(
+                      color:
+                          _selectedIndex == 0 ? context.colorScheme.onTertiaryContainer : context.colorScheme.onSurface,
+                    ),
+                    onSelected: (value) {
+                      if (value) {
+                        setState(() {
+                          _selectedIndex = 0;
+                        });
+                      }
+                    }),
+                SizedBox(width: 8),
+                ChoiceChip(
+                    label: Text('payments'.tr()),
+                    showCheckmark: false,
+                    avatar: Icon(Icons.payment_outlined),
+                    selected: _selectedIndex == 1,
+                    selectedColor: context.colorScheme.tertiaryContainer,
+                    iconTheme: IconThemeData(
+                      color:
+                          _selectedIndex == 1 ? context.colorScheme.onTertiaryContainer : context.colorScheme.onSurface,
+                    ),
+                    labelStyle: TextStyle(
+                      color:
+                          _selectedIndex == 1 ? context.colorScheme.onTertiaryContainer : context.colorScheme.onSurface,
+                    ),
+                    onSelected: (value) {
+                      if (value) {
+                        setState(() {
+                          _selectedIndex = 1;
+                        });
+                      }
+                    }),
               ],
             ),
+            SizedBox(height: 10),
             AnimatedSize(
+              alignment: Alignment.topCenter,
               duration: M3Curves.expressiveDefaultSpatial.duration,
               curve: M3Curves.expressiveDefaultSpatial.curve,
               child: AnimatedSwitcher(
@@ -193,21 +209,21 @@ class _HistoryState extends State<History> {
                     end: Offset.zero,
                   ).animate(animation);
 
-                  if (child.key == ValueKey(_selectedIndex)) {
-                    return ClipRect(
-                      child: SlideTransition(
-                        position: inOffset,
-                        child: child,
-                      ),
-                    );
-                  } else {
-                    return ClipRect(
-                      child: SlideTransition(
-                        position: outOffset,
-                        child: child,
-                      ),
-                    );
-                  }
+                  return ClipRect(
+                    child: SlideTransition(
+                      position: child.key == ValueKey(_selectedIndex) ? inOffset : outOffset,
+                      child: child,
+                    ),
+                  );
+                },
+                layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
+                  return Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      ...previousChildren,
+                      if (currentChild != null) currentChild,
+                    ],
+                  );
                 },
                 child: _selectedIndex == 0
                     ? Container(
@@ -215,6 +231,7 @@ class _HistoryState extends State<History> {
                         child: switch (purchasesSnapshot.connectionState) {
                           ConnectionState.done => switch (purchasesSnapshot.hasData) {
                               true => Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: <Widget>[
                                     SizedBox(height: 10),
@@ -328,14 +345,6 @@ class _HistoryState extends State<History> {
                       ),
               ),
             ),
-            // AnimatedCrossFade(
-            //   crossFadeState: _selectedIndex == 0
-            //       ? CrossFadeState.showFirst
-            //       : CrossFadeState.showSecond,
-            //   duration: Duration(milliseconds: 100),
-            //   firstChild:
-            //   secondChild:
-            // ),
           ],
         ),
       ),
