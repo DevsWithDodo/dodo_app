@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
+import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/components/helpers/calculator.dart';
 import 'package:csocsort_szamla/components/helpers/category_picker_icon_button.dart';
 import 'package:csocsort_szamla/components/helpers/currency_picker_icon_button.dart';
@@ -212,281 +213,284 @@ class _PurchasePageState extends State<PurchasePage> {
               style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             ).tr(),
           ),
-          body: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-            child: Column(
-              children: [
-                Expanded(
-                  child: Center(
-                    child: SingleChildScrollView(
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        constraints: BoxConstraints(maxWidth: 500),
-                        child: Column(
-                          children: <Widget>[
-                            switch (membersSnapshot.hasData) {
-                              false => Container(),
-                              true => Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    GradientButton.icon(
-                                      icon: Icon(Icons.receipt),
-                                      label: Text(
-                                        'purchase.scan-receipt.${receiptInformation == null ? 'new' : 'modify'}'.tr(),
-                                      ),
-                                      onPressed: () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ReceiptScannerPage(
-                                            initialInformation: receiptInformation,
-                                            members: membersSnapshot.data!,
-                                            onReceiptInformationReady: receiptInformationReady(
-                                              membersSnapshot,
+          body: BackgroundPaint(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          constraints: BoxConstraints(maxWidth: 500),
+                          child: Column(
+                            children: <Widget>[
+                              switch (membersSnapshot.hasData) {
+                                false => Container(),
+                                true => Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      GradientButton.icon(
+                                        icon: Icon(Icons.receipt),
+                                        label: Text(
+                                          'purchase.scan-receipt.${receiptInformation == null ? 'new' : 'modify'}'.tr(),
+                                        ),
+                                        onPressed: () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ReceiptScannerPage(
+                                              initialInformation: receiptInformation,
+                                              members: membersSnapshot.data!,
+                                              onReceiptInformationReady: receiptInformationReady(
+                                                membersSnapshot,
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    if (receiptInformation != null)
-                                      Padding(
-                                        padding: EdgeInsets.only(left: 10),
-                                        child: IconButton.outlined(
-                                          onPressed: onDeleteReceipt,
-                                          icon: Icon(Icons.delete),
+                                      if (receiptInformation != null)
+                                        Padding(
+                                          padding: EdgeInsets.only(left: 10),
+                                          child: IconButton.outlined(
+                                            onPressed: onDeleteReceipt,
+                                            icon: Icon(Icons.delete),
+                                          ),
+                                        )
+                                    ],
+                                  ),
+                              },
+                              SizedBox(height: 20),
+                              Form(
+                                key: _formKey,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                        validator: (value) => validateTextField([
+                                          isEmpty(value),
+                                        ]),
+                                        decoration: InputDecoration(
+                                          labelText: 'note'.tr(),
+                                          prefixIcon: Icon(
+                                            Icons.note,
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                          ),
                                         ),
-                                      )
+                                        inputFormatters: [LengthLimitingTextInputFormatter(50)],
+                                        controller: noteController,
+                                        onFieldSubmitted: (value) => submit(context),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 5),
+                                      child: CategoryPickerIconButton(
+                                        selectedCategory: selectedCategory,
+                                        onCategoryChanged: (newCategory) {
+                                          setState(() {
+                                            if (selectedCategory?.type == newCategory?.type) {
+                                              selectedCategory = null;
+                                            } else {
+                                              selectedCategory = newCategory;
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    ),
                                   ],
                                 ),
-                            },
-                            SizedBox(height: 20),
-                            Form(
-                              key: _formKey,
-                              child: Row(
+                              ),
+                              SizedBox(height: 20),
+                              Row(
                                 children: [
                                   Expanded(
-                                    child: TextFormField(
-                                      validator: (value) => validateTextField([
-                                        isEmpty(value),
-                                      ]),
-                                      decoration: InputDecoration(
-                                        labelText: 'note'.tr(),
-                                        prefixIcon: Icon(
-                                          Icons.note,
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                        ),
+                                    child: CalculatorTextField(
+                                      focusNode: calculatorFocusNode,
+                                      controller: amountController,
+                                      selectedCurrency: selectedCurrency,
+                                      onChanged: (value) => setState(
+                                        () => amountDivision.setTotal(value),
                                       ),
-                                      inputFormatters: [LengthLimitingTextInputFormatter(50)],
-                                      controller: noteController,
-                                      onFieldSubmitted: (value) => submit(context),
                                     ),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.only(left: 5),
-                                    child: CategoryPickerIconButton(
-                                      selectedCategory: selectedCategory,
-                                      onCategoryChanged: (newCategory) {
-                                        setState(() {
-                                          if (selectedCategory?.type == newCategory?.type) {
-                                            selectedCategory = null;
-                                          } else {
-                                            selectedCategory = newCategory;
-                                          }
-                                        });
-                                      },
+                                    child: CurrencyPickerIconButton(
+                                      selectedCurrency: selectedCurrency,
+                                      onCurrencyChanged: (newCurrency) => setState(() {
+                                        selectedCurrency = newCurrency ?? selectedCurrency;
+                                        amountDivision.setCurrency(selectedCurrency);
+                                      }),
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                            SizedBox(height: 20),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: CalculatorTextField(
-                                    focusNode: calculatorFocusNode,
-                                    controller: amountController,
-                                    selectedCurrency: selectedCurrency,
-                                    onChanged: (value) => setState(
-                                      () => amountDivision.setTotal(value),
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(left: 5),
-                                  child: CurrencyPickerIconButton(
-                                    selectedCurrency: selectedCurrency,
-                                    onCurrencyChanged: (newCurrency) => setState(() {
-                                      selectedCurrency = newCurrency ?? selectedCurrency;
-                                      amountDivision.setCurrency(selectedCurrency);
-                                    }),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 20),
-                            Center(
-                                child: switch (membersSnapshot.connectionState) {
-                              ConnectionState.done => switch (membersSnapshot.hasData) {
-                                  false => ErrorMessage(
-                                      error: membersSnapshot.error.toString(),
-                                      errorLocation: 'add_purchase',
-                                      onTap: () => setState(() => members = getMembers()),
-                                    ),
-                                  true => PurchaserSelection(
-                                      members: membersSnapshot.data!,
-                                      purchaserId: purchaserId,
-                                      onPurchaserChanged: (newPurchaserId) => setState(() {
-                                        purchaserId = newPurchaserId;
-                                      }),
-                                    ),
-                                },
-                              _ => CircularProgressIndicator(),
-                            }),
-                            SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'to_who'.plural(2),
-                                  style: Theme.of(context).textTheme.labelLarge,
-                                ),
-                                IconButton(
-                                  onPressed: () => setState(() {
-                                    _expandableController.expanded = !_expandableController.expanded;
-                                  }),
-                                  icon: Icon(
-                                    Icons.info_outline,
-                                    color: _expandableController.expanded
-                                        ? Theme.of(context).colorScheme.primary
-                                        : Theme.of(context).colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 5),
-                            Expandable(
-                              controller: _expandableController,
-                              collapsed: Container(),
-                              expanded: Center(
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      'add_purchase_explanation'.tr(),
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                            color: Theme.of(context).colorScheme.onSurface,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            FutureBuilder(
-                                future: members,
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState != ConnectionState.done) {
-                                    return Center(child: CircularProgressIndicator());
-                                  }
-                                  if (snapshot.hasError) {
-                                    return Center(child: Text('Error: ${snapshot.error}'));
-                                  }
-                                  return MemberChips(
-                                    multiple: true,
-                                    allMembers: snapshot.data!,
-                                    chosenMemberIds: amountDivision.memberIds,
-                                    setChosenMemberIds: (memberIds) => setState(
-                                      () => amountDivision.setMembers(
-                                        snapshot.data!.where((element) => memberIds.contains(element.id)).toList(),
-                                      ),
-                                    ),
-                                    allowCustomAmounts: true,
-                                    fullAmount: amountDivision.totalAmount,
-                                    customAmounts: useCustomAmounts
-                                        ? Map.fromEntries(amountDivision.amounts.map(
-                                            (e) => MapEntry(
-                                              e.memberId,
-                                              e.parsedAmount ?? 0,
-                                            ),
-                                          ))
-                                        : {},
-                                  );
-                                }),
-                            SizedBox(height: 10),
-                            if (!useCustomAmounts && amountDivision.amounts.isNotEmpty)
+                              SizedBox(height: 20),
                               Center(
-                                child: Text(
-                                  'per_person'.tr(
-                                    args: [
-                                      (amountDivision.totalAmount / amountDivision.amounts.length).toMoneyString(
-                                        selectedCurrency,
-                                        withSymbol: true,
-                                      )
+                                  child: switch (membersSnapshot.connectionState) {
+                                ConnectionState.done => switch (membersSnapshot.hasData) {
+                                    false => ErrorMessage(
+                                        error: membersSnapshot.error.toString(),
+                                        errorLocation: 'add_purchase',
+                                        onTap: () => setState(() => members = getMembers()),
+                                      ),
+                                    true => PurchaserSelection(
+                                        members: membersSnapshot.data!,
+                                        purchaserId: purchaserId,
+                                        onPurchaserChanged: (newPurchaserId) => setState(() {
+                                          purchaserId = newPurchaserId;
+                                        }),
+                                      ),
+                                  },
+                                _ => CircularProgressIndicator(),
+                              }),
+                              SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'to_who'.plural(2),
+                                    style: Theme.of(context).textTheme.labelLarge,
+                                  ),
+                                  IconButton(
+                                    onPressed: () => setState(() {
+                                      _expandableController.expanded = !_expandableController.expanded;
+                                    }),
+                                    icon: Icon(
+                                      Icons.info_outline,
+                                      color: _expandableController.expanded
+                                          ? Theme.of(context).colorScheme.primary
+                                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 5),
+                              Expandable(
+                                controller: _expandableController,
+                                collapsed: Container(),
+                                expanded: Center(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'add_purchase_explanation'.tr(),
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                              color: Theme.of(context).colorScheme.onSurface,
+                                            ),
+                                      ),
                                     ],
                                   ),
                                 ),
                               ),
-                            SizedBox(height: 10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'purchase.page.custom-amount.switch'.tr(),
-                                  style: Theme.of(context).textTheme.labelLarge,
-                                ),
-                                Switch(
-                                  value: useCustomAmounts,
-                                  onChanged: (value) {
-                                    double? totalAmount = double.tryParse(amountController.text.replaceAll(',', '.'));
-                                    if (totalAmount == null || totalAmount <= 0) {
-                                      showToast('purchase.page.custom-amount.toast.no-amount-given'.tr());
-                                      setState(() => useCustomAmounts = false);
-                                      return;
+                              SizedBox(height: 10),
+                              FutureBuilder(
+                                  future: members,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState != ConnectionState.done) {
+                                      return Center(child: CircularProgressIndicator());
                                     }
-                                    setState(() => useCustomAmounts = value);
-                                  },
-                                ),
-                              ],
-                            ),
-                            if (useCustomAmounts)
-                              Center(
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 10, bottom: 20),
-                                  child: Text(
-                                    'purchase.page.custom-amount.hint'.tr(),
-                                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    if (snapshot.hasError) {
+                                      return Center(child: Text('Error: ${snapshot.error}'));
+                                    }
+                                    return MemberChips(
+                                      multiple: true,
+                                      allMembers: snapshot.data!,
+                                      chosenMemberIds: amountDivision.memberIds,
+                                      setChosenMemberIds: (memberIds) => setState(
+                                        () => amountDivision.setMembers(
+                                          snapshot.data!.where((element) => memberIds.contains(element.id)).toList(),
                                         ),
+                                      ),
+                                      allowCustomAmounts: true,
+                                      fullAmount: amountDivision.totalAmount,
+                                      customAmounts: useCustomAmounts
+                                          ? Map.fromEntries(amountDivision.amounts.map(
+                                              (e) => MapEntry(
+                                                e.memberId,
+                                                e.parsedAmount ?? 0,
+                                              ),
+                                            ))
+                                          : {},
+                                    );
+                                  }),
+                              SizedBox(height: 10),
+                              if (!useCustomAmounts && amountDivision.amounts.isNotEmpty)
+                                Center(
+                                  child: Text(
+                                    'per_person'.tr(
+                                      args: [
+                                        (amountDivision.totalAmount / amountDivision.amounts.length).toMoneyString(
+                                          selectedCurrency,
+                                          withSymbol: true,
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
+                              SizedBox(height: 10),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'purchase.page.custom-amount.switch'.tr(),
+                                    style: Theme.of(context).textTheme.labelLarge,
+                                  ),
+                                  Switch(
+                                    value: useCustomAmounts,
+                                    onChanged: (value) {
+                                      double? totalAmount = double.tryParse(amountController.text.replaceAll(',', '.'));
+                                      if (totalAmount == null || totalAmount <= 0) {
+                                        showToast('purchase.page.custom-amount.toast.no-amount-given'.tr());
+                                        setState(() => useCustomAmounts = false);
+                                        return;
+                                      }
+                                      setState(() => useCustomAmounts = value);
+                                    },
+                                  ),
+                                ],
                               ),
-                            AnimatedCrossFade(
-                              crossFadeState: !useCustomAmounts ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-                              duration: Duration(milliseconds: 300),
-                              firstChild: Container(),
-                              secondChild: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: amountDivision.amounts.map((PurchaseReceiver amount) {
-                                  return CustomAmountField(
-                                    amount: amount,
-                                    currency: selectedCurrency,
-                                  );
-                                }).toList(),
+                              if (useCustomAmounts)
+                                Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(top: 10, bottom: 20),
+                                    child: Text(
+                                      'purchase.page.custom-amount.hint'.tr(),
+                                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                              AnimatedCrossFade(
+                                crossFadeState:
+                                    !useCustomAmounts ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                                duration: Duration(milliseconds: 300),
+                                firstChild: Container(),
+                                secondChild: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: amountDivision.amounts.map((PurchaseReceiver amount) {
+                                    return CustomAmountField(
+                                      amount: amount,
+                                      currency: selectedCurrency,
+                                    );
+                                  }).toList(),
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 50),
-                          ],
+                              SizedBox(height: 50),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                Visibility(
-                  visible: MediaQuery.of(context).viewInsets.bottom == 0,
-                  child: AdUnit(site: 'purchase'),
-                ),
-              ],
+                  Visibility(
+                    visible: MediaQuery.of(context).viewInsets.bottom == 0,
+                    child: AdUnit(site: 'purchase'),
+                  ),
+                ],
+              ),
             ),
           ),
           floatingActionButton: FloatingActionButton(

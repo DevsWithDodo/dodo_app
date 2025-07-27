@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:csocsort_szamla/components/balance/balances.dart';
+import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/components/purchase/purchase_entry.dart';
 import 'package:csocsort_szamla/components/shopping/shopping_list_entry.dart';
 import 'package:csocsort_szamla/helpers/app_theme.dart';
@@ -30,7 +31,8 @@ class ThemePreview extends StatefulWidget {
   static final List<Purchase> _purchases = [
     Purchase.example('theme-preview.purchase.1'.tr(), 15, Currency.fromCode('EUR'), _members[0], _members),
     Purchase.example('theme-preview.purchase.2'.tr(), 10, Currency.fromCode('USD'), _members[1], _members),
-    Purchase.example('theme-preview.purchase.3'.tr(), 25, Currency.fromCode('EUR'), _members[0], [_members[1], _members[2]]),
+    Purchase.example(
+        'theme-preview.purchase.3'.tr(), 25, Currency.fromCode('EUR'), _members[0], [_members[1], _members[2]]),
   ];
 
   static final List<ShoppingRequest> _requests = [
@@ -83,7 +85,9 @@ class _ThemePreviewState extends State<ThemePreview> with SingleTickerProviderSt
   void initState() {
     super.initState();
     final screenSize = context.read<ScreenSize>();
-    _controller = AnimationController(duration: Duration(milliseconds: 400), reverseDuration: Duration(milliseconds: 200), vsync: this)..addListener(() => setState(() {}));
+    _controller = AnimationController(
+        duration: Duration(milliseconds: 400), reverseDuration: Duration(milliseconds: 200), vsync: this)
+      ..addListener(() => setState(() {}));
 
     _maxHeight = screenSize.height - 2 * _paddingVertical;
     _maxWidth = min(screenSize.width - 2 * _paddingHorizontal, 500);
@@ -130,10 +134,13 @@ class _ThemePreviewState extends State<ThemePreview> with SingleTickerProviderSt
               borderRadius: BorderRadius.circular(_borderRadius.value),
             ),
             clipBehavior: Clip.antiAlias,
-            child: _maxWidth * _animationValue.value < 250 ? SizedBox() : ThemePreviewContent(themeName: widget.themeName),
+            child:
+                _maxWidth * _animationValue.value < 250 ? SizedBox() : ThemePreviewContent(themeName: widget.themeName),
           ),
           GestureDetector(
-            onTap: () => context.read<ScreenSize>().isMobile ? context.read<StackWidgetState>().hideWidget() : context.read<StackWidgetState>().setWidget(null),
+            onTap: () => context.read<ScreenSize>().isMobile
+                ? context.read<StackWidgetState>().hideWidget()
+                : context.read<StackWidgetState>().setWidget(null),
             child: Container(
               // Container to block tapping on examples
               width: _maxWidth,
@@ -166,9 +173,9 @@ class ThemePreviewContent extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Card(
+                CardWithBackground(
                   child: Padding(
-                    padding: EdgeInsets.all(8),
+                    padding: EdgeInsets.all(16),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -176,20 +183,23 @@ class ThemePreviewContent extends StatelessWidget {
                           'balances'.tr(),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
-                        SizedBox(height: 15),
+                        SizedBox(height: 25),
                         ...ThemePreview._members.map(
-                          (member) => BalanceMemberEntry(
-                            member: member,
-                            selectedCurrency: context.watch<UserNotifier>().currentGroup!.currency,
+                          (member) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: BalanceMemberEntry(
+                              member: member,
+                              selectedCurrency: context.watch<UserNotifier>().currentGroup!.currency,
+                            ),
                           ),
                         )
                       ],
                     ),
                   ),
                 ),
-                Card(
+                CardWithBackground(
                   child: Padding(
-                    padding: EdgeInsets.all(8),
+                    padding: EdgeInsets.all(16),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -197,15 +207,16 @@ class ThemePreviewContent extends StatelessWidget {
                           'purchases'.tr(),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
-                        SizedBox(height: 15),
-                        ...ThemePreview._purchases.map((purchase) => PurchaseEntry(purchase: purchase, selectedMemberId: ThemePreview._members[0].id))
+                        SizedBox(height: 25),
+                        ...ThemePreview._purchases.map((purchase) =>
+                            PurchaseEntry(purchase: purchase, selectedMemberId: ThemePreview._members[0].id))
                       ],
                     ),
                   ),
                 ),
-                Card(
+                CardWithBackground(
                   child: Padding(
-                    padding: EdgeInsets.all(8),
+                    padding: EdgeInsets.all(16),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -213,7 +224,7 @@ class ThemePreviewContent extends StatelessWidget {
                           'shopping_list'.tr(),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
-                        SizedBox(height: 15),
+                        SizedBox(height: 25),
                         ...ThemePreview._requests.map(
                           (request) => ShoppingListEntry(
                             shoppingRequest: request,

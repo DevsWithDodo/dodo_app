@@ -1,4 +1,5 @@
 import 'package:csocsort_szamla/common.dart';
+import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/user_settings/cards/change_password_dialog.dart';
 import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
@@ -18,7 +19,7 @@ class _LoginOptionsState extends State<LoginOptions> {
   @override
   Widget build(BuildContext context) {
     final user = context.watch<UserNotifier>().user!;
-    return Card(
+    return CardWithBackground(
       child: Padding(
         padding: EdgeInsets.all(15),
         child: Column(
@@ -27,7 +28,10 @@ class _LoginOptionsState extends State<LoginOptions> {
             Center(
               child: Text(
                 'user-settings.login-options'.tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -37,7 +41,10 @@ class _LoginOptionsState extends State<LoginOptions> {
             Center(
                 child: Text(
               'user-settings.login-options.description'.tr(),
-              style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleSmall!
+                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             )),
             SizedBox(

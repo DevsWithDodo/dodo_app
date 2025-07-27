@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:csocsort_szamla/components/balance/necessary_payments_button.dart';
 import 'package:csocsort_szamla/components/balance/select_balance_currency.dart';
 import 'package:csocsort_szamla/components/groups/member_all_info.dart';
+import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
@@ -83,7 +84,7 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Card(
+    return CardWithBackground(
       child: Stack(
         children: [
           Padding(
@@ -212,61 +213,64 @@ class BalanceMemberEntry extends StatelessWidget {
         color: member.id == context.read<UserNotifier>().user!.id
             ? AppTheme.textColorOnGradient(themeName, useSecondary: true)
             : Theme.of(context).colorScheme.onSurface);
-    return InkWell(
-      borderRadius: BorderRadius.circular(12),
-      onTap: () {
-        showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            builder: (context) => SingleChildScrollView(
-                  child: MemberAllInfo(
-                    member: member,
-                    isCurrentUserAdmin: isCurrentUserAdmin,
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (context) => SingleChildScrollView(
+                    child: MemberAllInfo(
+                      member: member,
+                      isCurrentUserAdmin: isCurrentUserAdmin,
+                    ),
+                  ));
+        },
+        child: Ink(
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          height: 40,
+          decoration: member.id == context.read<UserNotifier>().user!.id
+              ? BoxDecoration(
+                  gradient: AppTheme.gradientFromTheme(themeName, useSecondary: true),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                    width: 1,
                   ),
-                ));
-      },
-      child: Ink(
-        padding: EdgeInsets.symmetric(horizontal: 12),
-        height: 40,
-        decoration: member.id == context.read<UserNotifier>().user!.id
-            ? BoxDecoration(
-                gradient: AppTheme.gradientFromTheme(themeName, useSecondary: true),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                  width: 1,
+                )
+              : BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                    width: 1,
+                  ),
                 ),
-              )
-            : BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.outlineVariant,
-                  width: 1,
+          child: Row(
+            mainAxisSize: contracted ? MainAxisSize.min : MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                member.nickname,
+                style: textStyle,
+                overflow: TextOverflow.ellipsis,
+              ),
+              SizedBox(width: 10),
+              AnimatedCrossFade(
+                duration: Duration(milliseconds: 300),
+                firstChild: Container(),
+                secondChild: Text(
+                  member.balance
+                      .exchange(context.watch<UserNotifier>().currentGroup!.currency, selectedCurrency)
+                      .toMoneyString(selectedCurrency),
+                  style: textStyle.copyWith(fontWeight: FontWeight.w500),
                 ),
+                crossFadeState: CrossFadeState.showSecond,
               ),
-        child: Row(
-          mainAxisSize: contracted ? MainAxisSize.min : MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(
-              member.nickname,
-              style: textStyle,
-              overflow: TextOverflow.ellipsis,
-            ),
-            SizedBox(width: 10),
-            AnimatedCrossFade(
-              duration: Duration(milliseconds: 300),
-              firstChild: Container(),
-              secondChild: Text(
-                member.balance
-                    .exchange(context.watch<UserNotifier>().currentGroup!.currency, selectedCurrency)
-                    .toMoneyString(selectedCurrency),
-                style: textStyle.copyWith(fontWeight: FontWeight.w500),
-              ),
-              crossFadeState: CrossFadeState.showSecond,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

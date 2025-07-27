@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
+import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/components/helpers/currency_picker_icon_button.dart';
 import 'package:csocsort_szamla/components/helpers/custom_choice_chip.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
@@ -122,247 +123,250 @@ class _PaymentPageState extends State<PaymentPage> {
             onTap: () {
               FocusScope.of(context).unfocus();
             },
-            child: Column(
-              children: [
-                if (widget.payment == null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: FutureBuilder(
-                      future: members,
-                      builder: (context, AsyncSnapshot<List<Member>> snapshot) {
-                        if (snapshot.hasData) {
-                          return RecommendedPayments(
-                            payerId: payerId,
-                            members: snapshot.data!,
-                            autoSelectId: widget.takerId,
-                            onChange: (payment, selected) => setState(() {
-                              usesAutomaticSettleUp = selected;
-                              if (selected) {
-                                amountController.text = payment.amount.toString();
-                                selectedMemberId =
-                                    snapshot.data!.firstWhere((member) => member.id == payment.takerId).id;
-                              } else {
-                                amountController.text = "";
-                                selectedMemberId = null;
-                              }
-                            }),
-                          );
-                        }
-                        return LinearProgressIndicator();
-                      },
+            child: BackgroundPaint(
+              child: Column(
+                children: [
+                  if (widget.payment == null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: FutureBuilder(
+                        future: members,
+                        builder: (context, AsyncSnapshot<List<Member>> snapshot) {
+                          if (snapshot.hasData) {
+                            return RecommendedPayments(
+                              payerId: payerId,
+                              members: snapshot.data!,
+                              autoSelectId: widget.takerId,
+                              onChange: (payment, selected) => setState(() {
+                                usesAutomaticSettleUp = selected;
+                                if (selected) {
+                                  amountController.text = payment.amount.toString();
+                                  selectedMemberId =
+                                      snapshot.data!.firstWhere((member) => member.id == payment.takerId).id;
+                                } else {
+                                  amountController.text = "";
+                                  selectedMemberId = null;
+                                }
+                              }),
+                            );
+                          }
+                          return LinearProgressIndicator();
+                        },
+                      ),
                     ),
-                  ),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxWidth: 500,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      validator: (value) => validateTextField([
-                                        isEmpty(value!.trim()),
-                                        notValidNumber(value.replaceAll(',', '.')),
-                                      ]),
-                                      controller: amountController,
-                                      decoration: InputDecoration(
-                                        labelText: 'amount'.tr(),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxWidth: 500,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                        validator: (value) => validateTextField([
+                                          isEmpty(value!.trim()),
+                                          notValidNumber(value.replaceAll(',', '.')),
+                                        ]),
+                                        controller: amountController,
+                                        decoration: InputDecoration(
+                                          labelText: 'amount'.tr(),
+                                        ),
+                                        keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))],
+                                        onFieldSubmitted: (value) => submit(context),
                                       ),
-                                      keyboardType: TextInputType.numberWithOptions(decimal: true),
-                                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp('[0-9\\.\\,]'))],
-                                      onFieldSubmitted: (value) => submit(context),
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 5),
-                                    child: CurrencyPickerIconButton(
-                                      selectedCurrency: selectedCurrency,
-                                      onCurrencyChanged: (newCurrency) => setState(() {
-                                        selectedCurrency = newCurrency ?? selectedCurrency;
-                                      }),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 5),
+                                      child: CurrencyPickerIconButton(
+                                        selectedCurrency: selectedCurrency,
+                                        onCurrencyChanged: (newCurrency) => setState(() {
+                                          selectedCurrency = newCurrency ?? selectedCurrency;
+                                        }),
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: 'note'.tr(),
-                                  prefixIcon: Icon(
-                                    Icons.note,
-                                    color: Theme.of(context).colorScheme.onSurface,
-                                  ),
+                                  ],
                                 ),
-                                inputFormatters: [LengthLimitingTextInputFormatter(50)],
-                                controller: noteController,
-                                onFieldSubmitted: (value) => submit(context),
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Center(
-                                child: FutureBuilder(
-                                  future: members,
-                                  builder: (context, AsyncSnapshot<List<Member>> snapshot) {
-                                    if (snapshot.connectionState == ConnectionState.done) {
-                                      if (snapshot.hasData) {
-                                        return Row(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Column(
-                                              children: [
-                                                SizedBox(
-                                                  height: 5,
-                                                ),
-                                                Text(
-                                                  'from_who'.tr(),
-                                                  style: Theme.of(context).textTheme.labelLarge,
-                                                ),
-                                              ],
-                                            ),
-                                            Expanded(
-                                              child: Center(
-                                                child: AnimatedCrossFade(
-                                                  duration: Duration(milliseconds: 300),
-                                                  reverseDuration: Duration(seconds: 0),
-                                                  crossFadeState: purchaserSelector,
-                                                  firstChild: Visibility(
-                                                    visible: purchaserSelector == CrossFadeState.showFirst,
-                                                    child: CustomChoiceChip(
-                                                      enabled: false,
-                                                      selected: true,
-                                                      showCheck: false,
-                                                      showAnimation: true,
-                                                      selectedColor: Theme.of(context).colorScheme.secondaryContainer,
-                                                      selectedFontColor:
-                                                          Theme.of(context).colorScheme.onSecondaryContainer,
-                                                      notSelectedColor: Theme.of(context).colorScheme.surface,
-                                                      notSelectedFontColor: Theme.of(context).colorScheme.onSurface,
-                                                      fillRatio: 1,
-                                                      member:
-                                                          snapshot.data!.firstWhere((element) => element.id == payerId),
-                                                      onSelected: (chosen) {},
-                                                    ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                TextFormField(
+                                  decoration: InputDecoration(
+                                    labelText: 'note'.tr(),
+                                    prefixIcon: Icon(
+                                      Icons.note,
+                                      color: Theme.of(context).colorScheme.onSurface,
+                                    ),
+                                  ),
+                                  inputFormatters: [LengthLimitingTextInputFormatter(50)],
+                                  controller: noteController,
+                                  onFieldSubmitted: (value) => submit(context),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Center(
+                                  child: FutureBuilder(
+                                    future: members,
+                                    builder: (context, AsyncSnapshot<List<Member>> snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.done) {
+                                        if (snapshot.hasData) {
+                                          return Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Column(
+                                                children: [
+                                                  SizedBox(
+                                                    height: 5,
                                                   ),
-                                                  secondChild: MemberChips(
-                                                    allMembers: snapshot.data!,
-                                                    multiple: false,
-                                                    showAnimation: false,
-                                                    chosenMemberIds: snapshot.data!
-                                                        .where((element) => element.id == payerId)
-                                                        .map((e) => e.id)
-                                                        .toList(),
-                                                    setChosenMemberIds: (newMemberIds) => setState(() {
-                                                      purchaserSelector = CrossFadeState.showFirst;
-                                                      if (newMemberIds.isNotEmpty) {
-                                                        payerId = newMemberIds.first;
-                                                        if (selectedMemberId == payerId) {
-                                                          selectedMemberId = null;
+                                                  Text(
+                                                    'from_who'.tr(),
+                                                    style: Theme.of(context).textTheme.labelLarge,
+                                                  ),
+                                                ],
+                                              ),
+                                              Expanded(
+                                                child: Center(
+                                                  child: AnimatedCrossFade(
+                                                    duration: Duration(milliseconds: 300),
+                                                    reverseDuration: Duration(seconds: 0),
+                                                    crossFadeState: purchaserSelector,
+                                                    firstChild: Visibility(
+                                                      visible: purchaserSelector == CrossFadeState.showFirst,
+                                                      child: CustomChoiceChip(
+                                                        enabled: false,
+                                                        selected: true,
+                                                        showCheck: false,
+                                                        showAnimation: true,
+                                                        selectedColor: Theme.of(context).colorScheme.secondaryContainer,
+                                                        selectedFontColor:
+                                                            Theme.of(context).colorScheme.onSecondaryContainer,
+                                                        notSelectedColor: Theme.of(context).colorScheme.surface,
+                                                        notSelectedFontColor: Theme.of(context).colorScheme.onSurface,
+                                                        fillRatio: 1,
+                                                        member: snapshot.data!
+                                                            .firstWhere((element) => element.id == payerId),
+                                                        onSelected: (chosen) {},
+                                                      ),
+                                                    ),
+                                                    secondChild: MemberChips(
+                                                      allMembers: snapshot.data!,
+                                                      multiple: false,
+                                                      showAnimation: false,
+                                                      chosenMemberIds: snapshot.data!
+                                                          .where((element) => element.id == payerId)
+                                                          .map((e) => e.id)
+                                                          .toList(),
+                                                      setChosenMemberIds: (newMemberIds) => setState(() {
+                                                        purchaserSelector = CrossFadeState.showFirst;
+                                                        if (newMemberIds.isNotEmpty) {
+                                                          payerId = newMemberIds.first;
+                                                          if (selectedMemberId == payerId) {
+                                                            selectedMemberId = null;
+                                                          }
                                                         }
-                                                      }
-                                                    }),
+                                                      }),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            IconButton(
-                                                onPressed: () => setState(() {
-                                                      if (purchaserSelector == CrossFadeState.showFirst) {
-                                                        purchaserSelector = CrossFadeState.showSecond;
-                                                      } else {
-                                                        purchaserSelector = CrossFadeState.showFirst;
-                                                      }
-                                                    }),
-                                                icon: Icon(
-                                                  purchaserSelector == CrossFadeState.showSecond
-                                                      ? Icons.arrow_drop_up
-                                                      : Icons.arrow_drop_down,
-                                                  color: purchaserSelector == CrossFadeState.showSecond
-                                                      ? Theme.of(context).colorScheme.primary
-                                                      : Theme.of(context).colorScheme.onSurfaceVariant,
-                                                )),
-                                          ],
-                                        );
-                                      }
-                                      return ErrorMessage(
-                                        error: snapshot.error.toString(),
-                                        errorLocation: 'add_payment',
-                                        onTap: () => setState(() {
-                                          members = getMembers();
-                                        }),
-                                      );
-                                    }
-                                    return CircularProgressIndicator();
-                                  },
-                                ),
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              Text(
-                                'to_who'.plural(1),
-                                style: Theme.of(context).textTheme.labelLarge,
-                              ),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              Center(
-                                child: FutureBuilder(
-                                  future: members,
-                                  builder: (context, AsyncSnapshot<List<Member>> snapshot) {
-                                    if (snapshot.connectionState == ConnectionState.done) {
-                                      if (snapshot.hasData) {
-                                        return MemberChips(
-                                          multiple: false,
-                                          allMembers: snapshot.data!.where((element) => element.id != payerId).toList(),
-                                          setChosenMemberIds: (newMemberIds) {
-                                            setState(() {
-                                              selectedMemberId = newMemberIds.first;
-                                            });
-                                          },
-                                          chosenMemberIds: selectedMemberId == null ? [] : [selectedMemberId!],
-                                        );
-                                      } else {
+                                              IconButton(
+                                                  onPressed: () => setState(() {
+                                                        if (purchaserSelector == CrossFadeState.showFirst) {
+                                                          purchaserSelector = CrossFadeState.showSecond;
+                                                        } else {
+                                                          purchaserSelector = CrossFadeState.showFirst;
+                                                        }
+                                                      }),
+                                                  icon: Icon(
+                                                    purchaserSelector == CrossFadeState.showSecond
+                                                        ? Icons.arrow_drop_up
+                                                        : Icons.arrow_drop_down,
+                                                    color: purchaserSelector == CrossFadeState.showSecond
+                                                        ? Theme.of(context).colorScheme.primary
+                                                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                                                  )),
+                                            ],
+                                          );
+                                        }
                                         return ErrorMessage(
                                           error: snapshot.error.toString(),
                                           errorLocation: 'add_payment',
-                                          onTap: () {
-                                            setState(() {
-                                              members = getMembers();
-                                            });
-                                          },
+                                          onTap: () => setState(() {
+                                            members = getMembers();
+                                          }),
                                         );
                                       }
-                                    }
-
-                                    return Center(child: CircularProgressIndicator());
-                                  },
+                                      return CircularProgressIndicator();
+                                    },
+                                  ),
                                 ),
-                              ),
-                            ],
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Text(
+                                  'to_who'.plural(1),
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Center(
+                                  child: FutureBuilder(
+                                    future: members,
+                                    builder: (context, AsyncSnapshot<List<Member>> snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.done) {
+                                        if (snapshot.hasData) {
+                                          return MemberChips(
+                                            multiple: false,
+                                            allMembers:
+                                                snapshot.data!.where((element) => element.id != payerId).toList(),
+                                            setChosenMemberIds: (newMemberIds) {
+                                              setState(() {
+                                                selectedMemberId = newMemberIds.first;
+                                              });
+                                            },
+                                            chosenMemberIds: selectedMemberId == null ? [] : [selectedMemberId!],
+                                          );
+                                        } else {
+                                          return ErrorMessage(
+                                            error: snapshot.error.toString(),
+                                            errorLocation: 'add_payment',
+                                            onTap: () {
+                                              setState(() {
+                                                members = getMembers();
+                                              });
+                                            },
+                                          );
+                                        }
+                                      }
+
+                                      return Center(child: CircularProgressIndicator());
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                Visibility(
-                  visible: MediaQuery.of(context).viewInsets.bottom == 0,
-                  child: AdUnit(site: 'payment'),
-                ),
-              ],
+                  Visibility(
+                    visible: MediaQuery.of(context).viewInsets.bottom == 0,
+                    child: AdUnit(site: 'payment'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

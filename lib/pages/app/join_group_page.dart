@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
+import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/components/helpers/drawer_tile.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
@@ -107,7 +108,8 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
         initeTokenError = null;
         loading = true;
       });
-      final response = await Http.get(uri: generateUri(GetUriKeys.groupFromToken, context, params: [token]), useCache: false);
+      final response =
+          await Http.get(uri: generateUri(GetUriKeys.groupFromToken, context, params: [token]), useCache: false);
       final decoded = jsonDecode(response.body);
       group = Group(
         currency: Currency.fromCode(decoded['currency']),
@@ -163,7 +165,8 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
             leading: (user.group != null)
                 ? IconButton(
                     icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
-                    onPressed: () => Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false),
+                    onPressed: () => Navigator.pushAndRemoveUntil(
+                        context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false),
                   )
                 : null,
           ),
@@ -185,7 +188,10 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                 children: <Widget>[
                                   Text(
                                     'DODO',
-                                    style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall!
+                                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                                   ),
                                   SizedBox(
                                     height: 5,
@@ -193,7 +199,10 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                   if (user.username != null && user.username != '')
                                     Text(
                                       'hi'.tr(args: [user.username!]),
-                                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.primary),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .copyWith(color: Theme.of(context).colorScheme.primary),
                                     ),
                                 ],
                               ),
@@ -218,7 +227,8 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                         label: 'logout'.tr(),
                         onTap: () {
                           context.read<UserNotifier>().logout();
-                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
+                          Navigator.pushAndRemoveUntil(
+                              context, MaterialPageRoute(builder: (context) => LoginOrRegisterPage()), (r) => false);
                         },
                       ),
                     ],
@@ -227,264 +237,274 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
           body: GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () => FocusScope.of(context).unfocus(),
-            child: Column(
-              children: [
-                Column(
-                  children: [
-                    if (groups.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-                        child: Text(
-                          'join-group.first-hint'.tr(),
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
-                        ),
-                      ),
-                    if (context.watch<InviteUrlState>().inviteUrl == null)
-                      Wrap(
-                        alignment: WrapAlignment.center,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          Text(
-                            'no_group_yet'.tr(),
-                            style: Theme.of(context).textTheme.labelLarge!.copyWith(
+            child: BackgroundPaint(
+              child: Column(
+                children: [
+                  Column(
+                    children: [
+                      if (groups.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                          child: Text(
+                            'join-group.first-hint'.tr(),
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.titleSmall!.copyWith(
                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
-                            textAlign: TextAlign.center,
                           ),
-                          SizedBox(width: 10),
-                          FilledButton.tonal(
-                            child: Text('create_group'.tr()),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => CreateGroupPage()),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                  ],
-                ),
-                Expanded(
-                  child: Center(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.all(20),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: 500),
-                        child: Column(
+                        ),
+                      if (context.watch<InviteUrlState>().inviteUrl == null)
+                        Wrap(
+                          alignment: WrapAlignment.center,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            Column(
-                              children: [
-                                if (group == null)
-                                  Column(
-                                    children: [
-                                      Visibility(
-                                        visible: widget.inviteURL == null && !kIsWeb && (Platform.isAndroid || Platform.isIOS),
-                                        child: Column(
-                                          children: [
-                                            GradientButton.icon(
-                                              label: Text('join-group.qr-scan'.tr()),
-                                              icon: Icon(Icons.qr_code_scanner),
-                                              onPressed: () async {
-                                                if (await Permission.camera.request().isGranted) {
-                                                  String? scanResult;
-                                                  await Navigator.of(context)
-                                                      .push(
-                                                        MaterialPageRoute(builder: (context) => QRScannerPage()),
-                                                      )
-                                                      .then((value) => scanResult = value);
-                                                  if (scanResult != null) {
-                                                    setState(() => token = scanResult!);
-                                                    checkInvitation();
+                            Text(
+                              'no_group_yet'.tr(),
+                              style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(width: 10),
+                            FilledButton.tonal(
+                              child: Text('create_group'.tr()),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => CreateGroupPage()),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.all(20),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: 500),
+                          child: Column(
+                            children: [
+                              Column(
+                                children: [
+                                  if (group == null)
+                                    Column(
+                                      children: [
+                                        Visibility(
+                                          visible: widget.inviteURL == null &&
+                                              !kIsWeb &&
+                                              (Platform.isAndroid || Platform.isIOS),
+                                          child: Column(
+                                            children: [
+                                              GradientButton.icon(
+                                                label: Text('join-group.qr-scan'.tr()),
+                                                icon: Icon(Icons.qr_code_scanner),
+                                                onPressed: () async {
+                                                  if (await Permission.camera.request().isGranted) {
+                                                    String? scanResult;
+                                                    await Navigator.of(context)
+                                                        .push(
+                                                          MaterialPageRoute(builder: (context) => QRScannerPage()),
+                                                        )
+                                                        .then((value) => scanResult = value);
+                                                    if (scanResult != null) {
+                                                      setState(() => token = scanResult!);
+                                                      checkInvitation();
+                                                    }
+                                                  } else {
+                                                    Fluttertoast.showToast(
+                                                        msg: 'no_camera_access'.tr(), toastLength: Toast.LENGTH_LONG);
                                                   }
-                                                } else {
-                                                  Fluttertoast.showToast(msg: 'no_camera_access'.tr(), toastLength: Toast.LENGTH_LONG);
-                                                }
-                                              },
-                                            ),
-                                            SizedBox(height: 10),
-                                            Text(
-                                              'paste_code'.tr(),
-                                              style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                            ),
-                                            SizedBox(
-                                              height: 10,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      TextFormField(
-                                        validator: (value) => validateTextField([
-                                          isEmpty(value),
-                                        ]),
-                                        decoration: InputDecoration(
-                                          labelText: 'invitation'.tr(),
-                                          prefixIcon: Icon(
-                                            Icons.mail,
+                                                },
+                                              ),
+                                              SizedBox(height: 10),
+                                              Text(
+                                                'paste_code'.tr(),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyLarge!
+                                                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              )
+                                            ],
                                           ),
-                                          errorText: initeTokenError,
                                         ),
-                                        onChanged: (value) {
-                                          timer?.cancel();
-                                          if (value != '') {
-                                            timer = Timer(
-                                              Duration(milliseconds: 200),
-                                              checkInvitation,
-                                            );
-                                          }
-                                          setState(() => token = value);
-                                        },
-                                        controller: _tokenController,
-                                      ),
-                                    ],
-                                  )
-                                else
-                                  Stack(
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(12),
-                                          color: Theme.of(context).colorScheme.surfaceContainer,
+                                        TextFormField(
+                                          validator: (value) => validateTextField([
+                                            isEmpty(value),
+                                          ]),
+                                          decoration: InputDecoration(
+                                            labelText: 'invitation'.tr(),
+                                            prefixIcon: Icon(
+                                              Icons.mail,
+                                            ),
+                                            errorText: initeTokenError,
+                                          ),
+                                          onChanged: (value) {
+                                            timer?.cancel();
+                                            if (value != '') {
+                                              timer = Timer(
+                                                Duration(milliseconds: 200),
+                                                checkInvitation,
+                                              );
+                                            }
+                                            setState(() => token = value);
+                                          },
+                                          controller: _tokenController,
                                         ),
-                                        padding: EdgeInsets.all(16),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'invitation-field.selected-group'.tr(),
-                                              style: Theme.of(context).textTheme.titleSmall,
-                                            ),
-                                            SizedBox(height: 5),
-                                            Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 5),
-                                              child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                                children: [
-                                                  Text(
-                                                    group!.name,
-                                                    style: Theme.of(context).textTheme.bodyMedium,
-                                                  ),
-                                                  Text(
-                                                    "${group!.currency.code} (${group!.currency.symbol})",
-                                                    style: Theme.of(context).textTheme.bodyMedium,
-                                                  ),
-                                                ],
+                                      ],
+                                    )
+                                  else
+                                    Stack(
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(12),
+                                            color: Theme.of(context).colorScheme.surfaceContainer,
+                                          ),
+                                          padding: EdgeInsets.all(16),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'invitation-field.selected-group'.tr(),
+                                                style: Theme.of(context).textTheme.titleSmall,
                                               ),
-                                            ),
-                                            if (guests?.isNotEmpty ?? false)
-                                              Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  SizedBox(height: 10),
-                                                  Text(
-                                                    'invitation-field.who-are-you'.tr(),
-                                                    style: Theme.of(context).textTheme.titleSmall,
-                                                  ),
-                                                  SizedBox(height: 5),
-                                                  Padding(
-                                                    padding: const EdgeInsets.only(left: 5),
-                                                    child: Column(
-                                                      children: [
-                                                        SingleChildScrollView(
-                                                          scrollDirection: Axis.horizontal,
-                                                          child: Row(
-                                                            children: [
-                                                              for (Guest guest in guests!)
-                                                                Padding(
-                                                                  padding: const EdgeInsets.only(right: 5),
-                                                                  child: ChoiceChip(
-                                                                    label: Text(guest.nickname),
-                                                                    selected: selectedGuestId == guest.id,
-                                                                    onSelected: (value) => setState(() {
-                                                                      selectedGuestId = selectedGuestId == guest.id ? null : guest.id;
-                                                                      selectGuestError = null;
-                                                                    }),
-                                                                  ),
-                                                                ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        Divider(),
-                                                        ChoiceChip(
-                                                          label: Text('invitation-field.none'.tr()),
-                                                          selected: selectedGuestId == -1,
-                                                          onSelected: (value) => setState(() {
-                                                            selectedGuestId = -1;
-                                                            selectGuestError = null;
-                                                          }),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            if (selectedGuestId == -1 || (guests?.isEmpty ?? false))
+                                              SizedBox(height: 5),
                                               Padding(
-                                                padding: EdgeInsets.only(top: (guests?.isEmpty ?? false) ? 16 : 8),
-                                                child: TextFormField(
-                                                  controller: _nicknameController,
-                                                  decoration: InputDecoration(
-                                                    labelText: 'nickname-in-group'.tr(),
-                                                  ),
-                                                  validator: (value) => validateTextField([
-                                                    isEmpty(value),
-                                                  ]),
-                                                  inputFormatters: [
-                                                    LengthLimitingTextInputFormatter(15),
+                                                padding: const EdgeInsets.symmetric(horizontal: 5),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                  children: [
+                                                    Text(
+                                                      group!.name,
+                                                      style: Theme.of(context).textTheme.bodyMedium,
+                                                    ),
+                                                    Text(
+                                                      "${group!.currency.code} (${group!.currency.symbol})",
+                                                      style: Theme.of(context).textTheme.bodyMedium,
+                                                    ),
                                                   ],
                                                 ),
                                               ),
-                                            if (selectGuestError != null)
-                                              Padding(
-                                                padding: const EdgeInsets.only(top: 8),
-                                                child: Text(
-                                                  selectGuestError!,
-                                                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                                        color: Theme.of(context).colorScheme.error,
+                                              if (guests?.isNotEmpty ?? false)
+                                                Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    SizedBox(height: 10),
+                                                    Text(
+                                                      'invitation-field.who-are-you'.tr(),
+                                                      style: Theme.of(context).textTheme.titleSmall,
+                                                    ),
+                                                    SizedBox(height: 5),
+                                                    Padding(
+                                                      padding: const EdgeInsets.only(left: 5),
+                                                      child: Column(
+                                                        children: [
+                                                          SingleChildScrollView(
+                                                            scrollDirection: Axis.horizontal,
+                                                            child: Row(
+                                                              children: [
+                                                                for (Guest guest in guests!)
+                                                                  Padding(
+                                                                    padding: const EdgeInsets.only(right: 5),
+                                                                    child: ChoiceChip(
+                                                                      label: Text(guest.nickname),
+                                                                      selected: selectedGuestId == guest.id,
+                                                                      onSelected: (value) => setState(() {
+                                                                        selectedGuestId = selectedGuestId == guest.id
+                                                                            ? null
+                                                                            : guest.id;
+                                                                        selectGuestError = null;
+                                                                      }),
+                                                                    ),
+                                                                  ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          Divider(),
+                                                          ChoiceChip(
+                                                            label: Text('invitation-field.none'.tr()),
+                                                            selected: selectedGuestId == -1,
+                                                            onSelected: (value) => setState(() {
+                                                              selectedGuestId = -1;
+                                                              selectGuestError = null;
+                                                            }),
+                                                          ),
+                                                        ],
                                                       ),
+                                                    ),
+                                                  ],
                                                 ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                      if (context.watch<InviteUrlState>().inviteUrl == null)
-                                        Positioned(
-                                          right: 4,
-                                          top: 4,
-                                          child: IconButton.outlined(
-                                            iconSize: 16,
-                                            visualDensity: VisualDensity.compact,
-                                            icon: Icon(Icons.close),
-                                            onPressed: () {
-                                              setState(() {
-                                                _tokenController.clear();
-                                                token = '';
-                                                group = null;
-                                                selectedGuestId = null;
-                                                _nicknameController.text = ''; // TODO: initial value from cache
-                                                selectGuestError = null;
-                                                guests = null;
-                                                initeTokenError = null;
-                                              });
-                                            },
+                                              if (selectedGuestId == -1 || (guests?.isEmpty ?? false))
+                                                Padding(
+                                                  padding: EdgeInsets.only(top: (guests?.isEmpty ?? false) ? 16 : 8),
+                                                  child: TextFormField(
+                                                    controller: _nicknameController,
+                                                    decoration: InputDecoration(
+                                                      labelText: 'nickname-in-group'.tr(),
+                                                    ),
+                                                    validator: (value) => validateTextField([
+                                                      isEmpty(value),
+                                                    ]),
+                                                    inputFormatters: [
+                                                      LengthLimitingTextInputFormatter(15),
+                                                    ],
+                                                  ),
+                                                ),
+                                              if (selectGuestError != null)
+                                                Padding(
+                                                  padding: const EdgeInsets.only(top: 8),
+                                                  child: Text(
+                                                    selectGuestError!,
+                                                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                                          color: Theme.of(context).colorScheme.error,
+                                                        ),
+                                                  ),
+                                                ),
+                                            ],
                                           ),
                                         ),
-                                    ],
-                                  ),
-                                if (loading) LinearProgressIndicator(),
-                              ],
-                            ),
-                          ],
+                                        if (context.watch<InviteUrlState>().inviteUrl == null)
+                                          Positioned(
+                                            right: 4,
+                                            top: 4,
+                                            child: IconButton.outlined(
+                                              iconSize: 16,
+                                              visualDensity: VisualDensity.compact,
+                                              icon: Icon(Icons.close),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _tokenController.clear();
+                                                  token = '';
+                                                  group = null;
+                                                  selectedGuestId = null;
+                                                  _nicknameController.text = ''; // TODO: initial value from cache
+                                                  selectGuestError = null;
+                                                  guests = null;
+                                                  initeTokenError = null;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  if (loading) LinearProgressIndicator(),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                AdUnit(site: 'join_group'),
-              ],
+                  AdUnit(site: 'join_group'),
+                ],
+              ),
             ),
           ),
           floatingActionButton: FloatingActionButton(
@@ -512,7 +532,9 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
               }
               // Form handles text field validation
               if (_formKey.currentState!.validate()) {
-                String nickname = (selectedGuestId == null || selectedGuestId == -1) ? _nicknameController.text[0].toUpperCase() + _nicknameController.text.substring(1) : guests!.firstWhere((element) => element.id == selectedGuestId).nickname;
+                String nickname = (selectedGuestId == null || selectedGuestId == -1)
+                    ? _nicknameController.text[0].toUpperCase() + _nicknameController.text.substring(1)
+                    : guests!.firstWhere((element) => element.id == selectedGuestId).nickname;
                 showFutureOutputDialog(
                   context: context,
                   future: _joinGroup(token, nickname, selectedGuestId == -1 ? null : selectedGuestId),

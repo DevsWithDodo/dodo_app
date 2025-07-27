@@ -33,14 +33,18 @@ class AppThemeProvider extends StatelessWidget {
     return ChangeNotifierProvider.value(
       value: _appTheme,
       builder: (context, _) => FutureBuilder(
-        future: DynamicColorPlugin.getCorePalette(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            AppTheme.addDynamicThemes(snapshot.data!);
-          }
-          return builder(context);
-        },
-      ),
+          future: AppTheme.backgroundImages.isEmpty ? AppTheme.loadBackgroundImages() : Future.value(),
+          builder: (context, snapshot) {
+            return FutureBuilder(
+              future: DynamicColorPlugin.getCorePalette(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  AppTheme.addDynamicThemes(snapshot.data!);
+                }
+                return builder(context);
+              },
+            );
+          }),
     );
   }
 }

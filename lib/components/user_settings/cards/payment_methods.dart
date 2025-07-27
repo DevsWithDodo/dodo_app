@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/components/user_settings/components/payment_method_field_list.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
@@ -52,7 +53,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return CardWithBackground(
       child: Padding(
         padding: EdgeInsets.all(15),
         child: Column(
@@ -61,7 +62,10 @@ class _PaymentMethodsState extends State<PaymentMethods> {
             Center(
               child: Text(
                 'payment-methods.title'.tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -69,7 +73,10 @@ class _PaymentMethodsState extends State<PaymentMethods> {
             Center(
               child: Text(
                 'payment-methods.subtitle'.tr(),
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall!
+                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),

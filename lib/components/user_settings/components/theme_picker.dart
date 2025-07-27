@@ -1,3 +1,4 @@
+import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/components/main/dialogs/iapp_not_supported_dialog.dart';
 import 'package:csocsort_szamla/components/user_settings/components/theme_preview.dart';
 import 'package:csocsort_szamla/helpers/app_theme.dart';
@@ -35,14 +36,15 @@ class _ThemePickerState extends State<ThemePicker> {
     return Wrap(
         alignment: WrapAlignment.center,
         crossAxisAlignment: WrapCrossAlignment.center,
-        runSpacing: 15,
-        spacing: 15,
+        runSpacing: 9,
+        spacing: 9,
         children: themeNames.map((entry) {
           return ColorElement(
             theme: AppTheme.themes[entry]!,
             themeName: entry,
             enabled: enabled,
-            dualColor: themeType == ThemeType.dualColor || themeType == ThemeType.dynamic,
+            dualColor:
+                themeType == ThemeType.dualColor || themeType == ThemeType.dynamic || themeType == ThemeType.background,
           );
         }).toList());
   }
@@ -72,7 +74,7 @@ class _ThemePickerState extends State<ThemePicker> {
     return Selector<UserNotifier, bool>(
         selector: (context, provider) => provider.user!.useGradients,
         builder: (context, useGradients, _) {
-          return Card(
+          return CardWithBackground(
             child: Padding(
               padding: const EdgeInsets.all(15),
               child: Column(
@@ -186,7 +188,19 @@ class _ThemePickerState extends State<ThemePicker> {
                           height: 15,
                         ),
                         _colorWrap(ThemeType.dynamic, enabled: useGradients),
-                        SizedBox(height: 10)
+                        SizedBox(height: 10),
+                        Text(
+                          'change-theme.background-theme'.tr(),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        _colorWrap(ThemeType.background, enabled: useGradients),
                       ],
                     ),
                   )
@@ -223,77 +237,99 @@ class ColorElement extends StatelessWidget {
       selector: (context, provider) => provider.themeName,
       builder: (context, currentThemeName, _) {
         Color splitColor = theme.colorScheme.onPrimary;
-        return Ink(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            border: Border.all(
-              strokeAlign: BorderSide.strokeAlignOutside,
-              color: currentThemeName == themeName ? Theme.of(context).colorScheme.onSurface : Colors.transparent,
-              width: 3,
-            ),
-            gradient: dualColor
-                ? LinearGradient(
-                    colors: [
-                      theme.colorScheme.primaryContainer,
-                      splitColor,
-                      splitColor,
-                      theme.colorScheme.secondaryContainer,
-                    ],
-                    stops: [0.48, 0.48, 0.52, 0.52],
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomLeft,
-                  )
-                : AppTheme.gradientFromTheme(themeName),
-          ),
+        return Material(
+          type: MaterialType.transparency,
           child: Padding(
-            padding: EdgeInsets.all(8),
-            child: Ink(
-              decoration: BoxDecoration(
-                gradient: dualColor
-                    ? LinearGradient(
-                        colors: [theme.colorScheme.primary, splitColor, splitColor, theme.colorScheme.secondary],
-                        stops: [0.48, 0.48, 0.52, 0.52],
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
+            padding: const EdgeInsets.all(3),
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                if (enabled) {
+                  context.read<AppThemeState>().themeName = themeName;
+                  context.read<UserUsageNotifier>().setThemeChangedFlag(true);
+                  _updateColor(themeName.storageName);
+                } else if (context.read<AppConfig>().isIAPPlatformEnabled) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => StorePage()));
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return IAPNotSupportedDialog();
+                    },
+                  );
+                }
+              },
+              onLongPressStart: (details) => stackWidgetState.setWidget(
+                context.read<ScreenSize>().isMobile
+                    ? ThemePreview(
+                        themeName: themeName,
+                        offset: details.globalPosition,
                       )
-                    : null,
-                borderRadius: BorderRadius.circular(100),
+                    : ThemePreviewContent(themeName: themeName),
               ),
-              child: GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: () {
-                  if (enabled) {
-                    context.read<AppThemeState>().themeName = themeName;
-                    context.read<UserUsageNotifier>().setThemeChangedFlag(true);
-                    _updateColor(themeName.storageName);
-                  } else if (context.read<AppConfig>().isIAPPlatformEnabled) {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => StorePage()));
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return IAPNotSupportedDialog();
-                      },
-                    );
-                  }
-                },
-                onLongPressStart: (details) => stackWidgetState.setWidget(
-                  context.read<ScreenSize>().isMobile
-                      ? ThemePreview(
-                          themeName: themeName,
-                          offset: details.globalPosition,
-                        )
-                      : ThemePreviewContent(themeName: themeName),
-                ),
-                onLongPressEnd: (_) => context.read<ScreenSize>().isMobile
-                    ? stackWidgetState.hideWidget() //
-                    : stackWidgetState.setWidget(null),
-                onLongPressCancel: () => context.read<ScreenSize>().isMobile
-                    ? stackWidgetState.hideWidget() //
-                    : stackWidgetState.setWidget(null),
-                child: SizedBox.square(
-                  dimension: dualColor ? 40 : 30,
-                ),
+              onLongPressEnd: (_) => context.read<ScreenSize>().isMobile
+                  ? stackWidgetState.hideWidget() //
+                  : stackWidgetState.setWidget(null),
+              onLongPressCancel: () => context.read<ScreenSize>().isMobile
+                  ? stackWidgetState.hideWidget() //
+                  : stackWidgetState.setWidget(null),
+              child: Stack(
+                children: [
+                  Ink(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      border: Border.all(
+                        strokeAlign: BorderSide.strokeAlignOutside,
+                        color: currentThemeName == themeName
+                            ? Theme.of(context).colorScheme.onSurface
+                            : Colors.transparent,
+                        width: 3,
+                      ),
+                      gradient: dualColor
+                          ? LinearGradient(
+                              colors: [
+                                theme.colorScheme.primaryContainer,
+                                splitColor,
+                                splitColor,
+                                theme.colorScheme.secondaryContainer,
+                              ],
+                              stops: [0.48, 0.48, 0.52, 0.52],
+                              begin: Alignment.topRight,
+                              end: Alignment.bottomLeft,
+                            )
+                          : AppTheme.gradientFromTheme(themeName),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Ink(
+                        decoration: BoxDecoration(
+                          gradient: dualColor
+                              ? LinearGradient(
+                                  colors: [
+                                    theme.colorScheme.primary,
+                                    splitColor,
+                                    splitColor,
+                                    theme.colorScheme.secondary
+                                  ],
+                                  stops: [0.48, 0.48, 0.52, 0.52],
+                                  begin: Alignment.topRight,
+                                  end: Alignment.bottomLeft,
+                                )
+                              : null,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: SizedBox.square(
+                          dimension: dualColor ? 40 : 30,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned.fill(
+                    child: Center(
+                      child: Text(themeName.emoji ?? '', style: TextStyle(fontSize: 35)),
+                    ),
+                  )
+                ],
               ),
             ),
           ),

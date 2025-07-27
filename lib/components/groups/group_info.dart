@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:csocsort_szamla/components/groups/dialogs/rename_group_dialog.dart';
 import 'package:csocsort_szamla/components/groups/member_all_info.dart';
+import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/components/helpers/confirm_choice_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
@@ -130,7 +131,7 @@ class _GroupInfoState extends State<GroupInfo> {
   @override
   Widget build(BuildContext context) {
     final group = context.watch<UserNotifier>().user!.group!;
-    return Card(
+    return CardWithBackground(
       child: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
@@ -146,7 +147,8 @@ class _GroupInfoState extends State<GroupInfo> {
                 return FutureBuilder(
                   future: _boostNumber,
                   builder: (context, boostSnapshot) {
-                    if (adminSnapshot.connectionState != ConnectionState.done || boostSnapshot.connectionState != ConnectionState.done) {
+                    if (adminSnapshot.connectionState != ConnectionState.done ||
+                        boostSnapshot.connectionState != ConnectionState.done) {
                       return Center(child: CircularProgressIndicator());
                     }
                     if (adminSnapshot.hasError || boostSnapshot.hasError) {
@@ -179,7 +181,8 @@ class _GroupInfoState extends State<GroupInfo> {
                                     TextSpan(text: '${'group-info.name'.tr()}: '),
                                     TextSpan(
                                       text: group.name,
-                                      style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.bold),
+                                      style:
+                                          Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.bold),
                                     ),
                                   ],
                                 ),
@@ -208,7 +211,8 @@ class _GroupInfoState extends State<GroupInfo> {
                                     TextSpan(text: '${'group-info.currency'.tr()}: '),
                                     TextSpan(
                                       text: "${group.currency.code}(${group.currency.symbol})",
-                                      style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.bold),
+                                      style:
+                                          Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.bold),
                                     ),
                                   ],
                                 ),
@@ -230,7 +234,10 @@ class _GroupInfoState extends State<GroupInfo> {
                                         TextSpan(text: '${'group-info.boosted'.tr()}: '),
                                         TextSpan(
                                           text: isBoosted ? 'yes'.tr() : 'no'.tr(),
-                                          style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.bold),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelLarge!
+                                              .copyWith(fontWeight: FontWeight.bold),
                                         ),
                                       ],
                                     ),
@@ -259,14 +266,17 @@ class _GroupInfoState extends State<GroupInfo> {
                                                     context: context)
                                                 .then((value) {
                                               if ((value ?? false)) {
-                                                showFutureOutputDialog(future: _postBoost(), context: context, outputCallbacks: {
-                                                  BoolFutureOutput.True: () async {
-                                                    await clearGroupCache(context);
-                                                    EventBus.instance.fire(EventBus.refreshStatistics);
-                                                    EventBus.instance.fire(EventBus.refreshGroupInfo);
-                                                    Navigator.pop(context);
-                                                  }
-                                                });
+                                                showFutureOutputDialog(
+                                                    future: _postBoost(),
+                                                    context: context,
+                                                    outputCallbacks: {
+                                                      BoolFutureOutput.True: () async {
+                                                        await clearGroupCache(context);
+                                                        EventBus.instance.fire(EventBus.refreshStatistics);
+                                                        EventBus.instance.fire(EventBus.refreshGroupInfo);
+                                                        Navigator.pop(context);
+                                                      }
+                                                    });
                                               }
                                             });
                                           },
@@ -298,7 +308,9 @@ class _GroupInfoState extends State<GroupInfo> {
                                               ),
                                               TextSpan(
                                                 text: 'group-info.boosted.no-boosts.store'.tr(),
-                                                style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),
+                                                style: TextStyle(
+                                                    color: Theme.of(context).colorScheme.primary,
+                                                    fontWeight: FontWeight.bold),
                                                 recognizer: recognizer,
                                               )
                                             ],
@@ -313,7 +325,9 @@ class _GroupInfoState extends State<GroupInfo> {
                         if (isAdmin) ...[
                           const SizedBox(height: 10),
                           FilledButton.icon(
-                            style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error, foregroundColor: Theme.of(context).colorScheme.onError),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context).colorScheme.error,
+                                foregroundColor: Theme.of(context).colorScheme.onError),
                             icon: Icon(Icons.delete_forever),
                             label: Text('group-info.delete-group'.tr()),
                             onPressed: () async {

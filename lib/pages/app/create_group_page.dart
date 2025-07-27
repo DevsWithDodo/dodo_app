@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
+import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/components/helpers/currency_picker_dropdown.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
@@ -69,93 +70,99 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
           onTap: () {
             FocusScope.of(context).unfocus();
           },
-          child: Column(
-            children: [
-              Expanded(
-                child: Align(
-                  alignment: Alignment.center,
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: 500,
-                        ),
-                        child: Column(
-                          children: [
-                            TextFormField(
-                              validator: (value) => validateTextField([
-                                isEmpty(value),
-                                minimalLength(value!.trim(), 1),
-                              ]),
-                              decoration: InputDecoration(
-                                labelText: 'group_name'.tr(),
-                                prefixIcon: Icon(
-                                  Icons.group,
-                                ),
-                              ),
-                              controller: _groupName,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(20),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            TextFormField(
-                              validator: (value) => validateTextField([
-                                isEmpty(value),
-                                minimalLength(value, 1),
-                              ]),
-                              decoration: InputDecoration(
-                                labelText: 'nickname-in-group'.tr(),
-                                filled: true,
-                                prefixIcon: Icon(
-                                  Icons.account_circle,
-                                ),
-                              ),
-                              controller: _nicknameController,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(15),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              children: <Widget>[
-                                Text(
-                                  'create-group.currency'.tr(),
-                                  style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                                ),
-                                SizedBox(
-                                  width: 20,
-                                ),
-                                Flexible(
-                                  child: CurrencyPickerDropdown(
-                                    currencyChanged: (code) => setState(() => _selectedCurrency = code),
-                                    currency: _selectedCurrency,
+          child: BackgroundPaint(
+            child: Column(
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: 500,
+                          ),
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                validator: (value) => validateTextField([
+                                  isEmpty(value),
+                                  minimalLength(value!.trim(), 1),
+                                ]),
+                                decoration: InputDecoration(
+                                  labelText: 'group_name'.tr(),
+                                  prefixIcon: Icon(
+                                    Icons.group,
                                   ),
                                 ),
-                              ],
-                            ),
-                            SizedBox(height: 5),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text('create-group.currency.hint'.tr(), style: Theme.of(context).textTheme.labelSmall),
-                            ),
-                          ],
+                                controller: _groupName,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(20),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              TextFormField(
+                                validator: (value) => validateTextField([
+                                  isEmpty(value),
+                                  minimalLength(value, 1),
+                                ]),
+                                decoration: InputDecoration(
+                                  labelText: 'nickname-in-group'.tr(),
+                                  filled: true,
+                                  prefixIcon: Icon(
+                                    Icons.account_circle,
+                                  ),
+                                ),
+                                controller: _nicknameController,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(15),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  Text(
+                                    'create-group.currency'.tr(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelLarge!
+                                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                  ),
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  Flexible(
+                                    child: CurrencyPickerDropdown(
+                                      currencyChanged: (code) => setState(() => _selectedCurrency = code),
+                                      currency: _selectedCurrency,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 5),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text('create-group.currency.hint'.tr(),
+                                    style: Theme.of(context).textTheme.labelSmall),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              Visibility(
-                visible: MediaQuery.of(context).viewInsets.bottom == 0,
-                child: AdUnit(site: 'create_group'),
-              ),
-            ],
+                Visibility(
+                  visible: MediaQuery.of(context).viewInsets.bottom == 0,
+                  child: AdUnit(site: 'create_group'),
+                ),
+              ],
+            ),
           ),
         ),
         floatingActionButton: FloatingActionButton(

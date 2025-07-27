@@ -1,3 +1,4 @@
+import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
@@ -36,7 +37,7 @@ class _PersonalisedAdsState extends State<PersonalisedAds> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return CardWithBackground(
       child: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
@@ -45,7 +46,10 @@ class _PersonalisedAdsState extends State<PersonalisedAds> {
             Center(
                 child: Text(
               'use_personalised_ads'.tr(),
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             )),
             SizedBox(
               height: 10,
@@ -53,7 +57,10 @@ class _PersonalisedAdsState extends State<PersonalisedAds> {
             Center(
               child: Text(
                 'use_personalised_ads_explanation'.tr(),
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall!
+                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -81,7 +88,10 @@ class _PersonalisedAdsState extends State<PersonalisedAds> {
               },
               title: Text(
                 'use_personalised_ads'.tr(),
-                style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleSmall!
+                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               dense: true,
             ),

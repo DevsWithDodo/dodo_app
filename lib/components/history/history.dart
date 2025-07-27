@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:csocsort_szamla/common.dart';
+import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/components/payment/payment_entry.dart';
 import 'package:csocsort_szamla/components/purchase/purchase_entry.dart';
 import 'package:csocsort_szamla/helpers/curves.dart';
@@ -120,7 +121,7 @@ class _HistoryState extends State<History> {
   Widget build(BuildContext context) {
     final purchasesSnapshot = useFuture(_purchases);
     final paymentsSnapshot = useFuture(_payments);
-    return Card(
+    return CardWithBackground(
       child: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(

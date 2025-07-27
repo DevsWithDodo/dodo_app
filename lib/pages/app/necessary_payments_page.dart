@@ -1,5 +1,6 @@
 import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/components/balance/necessary_payment_entry.dart';
+import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/models.dart';
@@ -80,8 +81,7 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
                 ),
                 SizedBox(height: 10),
                 Text("payments-needed.page.payment-method-hint".tr(),
-                    style: context.textTheme.bodySmall,
-                    textAlign: TextAlign.center)
+                    style: context.textTheme.bodySmall, textAlign: TextAlign.center)
               ],
             ),
           ),
@@ -101,10 +101,12 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
                     color: Theme.of(context).colorScheme.surfaceContainer,
                   ),
                   clipBehavior: Clip.antiAlias,
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-                    child: Column(
-                      children: _generatePaymentEntries(),
+                  child: BackgroundPaint(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
+                      child: Column(
+                        children: _generatePaymentEntries(),
+                      ),
                     ),
                   ),
                 ),
@@ -118,20 +120,16 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
 
   void _copyToClipboard(BuildContext context) {
     Currency currency = context.read<UserNotifier>().currentGroup!.currency;
-    int longestPayerNick =
-        widget.necessaryPayments.map((e) => e.payerNickname.length).reduce(
-              (value, element) => value > element ? value : element,
-            );
-    int longestTakerNick =
-        widget.necessaryPayments.map((e) => e.takerNickname.length).reduce(
-              (value, element) => value > element ? value : element,
-            );
+    int longestPayerNick = widget.necessaryPayments.map((e) => e.payerNickname.length).reduce(
+          (value, element) => value > element ? value : element,
+        );
+    int longestTakerNick = widget.necessaryPayments.map((e) => e.takerNickname.length).reduce(
+          (value, element) => value > element ? value : element,
+        );
     String paymentsPart = widget.necessaryPayments.map(
       (payment) {
-        String firstSpaces =
-            ' ' * (longestPayerNick - payment.payerNickname.length);
-        String secondSpaces =
-            ' ' * (longestTakerNick - payment.takerNickname.length);
+        String firstSpaces = ' ' * (longestPayerNick - payment.payerNickname.length);
+        String secondSpaces = ' ' * (longestTakerNick - payment.takerNickname.length);
         return "${payment.payerNickname}$firstSpaces\t➡️\t${payment.takerNickname}:$secondSpaces\t${payment.amount.toMoneyString(
           currency,
           withSymbol: true,
@@ -144,27 +142,23 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
           (element) =>
               element.paymentMethods != null &&
               element.paymentMethods!.isNotEmpty &&
-              widget.necessaryPayments
-                  .any((payment) => payment.takerId == element.id),
+              widget.necessaryPayments.any((payment) => payment.takerId == element.id),
         )
         .toList();
-    if (membersToCopy.any((element) =>
-        element.paymentMethods != null && element.paymentMethods!.isNotEmpty)) {
-      paymentMethodsPart =
-          "\n\n${'payment-methods.title'.tr()}\n${membersToCopy.map(
-                (member) {
-                  return member.paymentMethods!.isEmpty
-                      ? null
-                      // ignore: prefer_interpolation_to_compose_strings
-                      : "${member.nickname}: \n" +
-                          member.paymentMethods!
-                              .map(
-                                (method) =>
-                                    "  ${method.name}: ${method.value} ${method.priority ? "(⭐)" : ""}",
-                              )
-                              .join('\n');
-                },
-              ).where((e) => e != null).join('\n')}";
+    if (membersToCopy.any((element) => element.paymentMethods != null && element.paymentMethods!.isNotEmpty)) {
+      paymentMethodsPart = "\n\n${'payment-methods.title'.tr()}\n${membersToCopy.map(
+            (member) {
+              return member.paymentMethods!.isEmpty
+                  ? null
+                  // ignore: prefer_interpolation_to_compose_strings
+                  : "${member.nickname}: \n" +
+                      member.paymentMethods!
+                          .map(
+                            (method) => "  ${method.name}: ${method.value} ${method.priority ? "(⭐)" : ""}",
+                          )
+                          .join('\n');
+            },
+          ).where((e) => e != null).join('\n')}";
     }
     Clipboard.setData(
       ClipboardData(
@@ -177,8 +171,8 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
 
   List<Widget> _generatePaymentEntries() {
     Map<int, List<Payment>> paymentsByPayer = {};
-    for (Payment payment in widget.necessaryPayments.where(
-        (payment) => payment.amount > payment.originalCurrency.threshold())) {
+    for (Payment payment
+        in widget.necessaryPayments.where((payment) => payment.amount > payment.originalCurrency.threshold())) {
       if (paymentsByPayer.containsKey(payment.payerId)) {
         paymentsByPayer[payment.payerId]!.add(payment);
       } else {
@@ -191,8 +185,7 @@ class _NecessaryPaymentsPageState extends State<NecessaryPaymentsPage> {
         NecessaryPaymentEntry(
           payments: paymentsByPayer[payerId]!,
           takers: widget.members
-              .where((element) => paymentsByPayer[payerId]!
-                  .any((payment) => payment.takerId == element.id))
+              .where((element) => paymentsByPayer[payerId]!.any((payment) => payment.takerId == element.id))
               .toList(),
         ),
       );

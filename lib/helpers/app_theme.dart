@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'dart:ui' as ui;
+
 import 'package:csocsort_szamla/helpers/color_generation.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:material_color_utilities/material_color_utilities.dart';
 
 enum ThemeType {
@@ -9,7 +13,8 @@ enum ThemeType {
   dualColor(true),
   gradient(true),
   dynamic(true),
-  rainbow(false);
+  rainbow(false),
+  background(true);
 
   const ThemeType(this.premium);
   final bool premium;
@@ -57,13 +62,17 @@ enum ThemeName {
   lightDynamic(Brightness.light, ThemeType.dynamic, 'lightDynamic', counterPart: 'darkDynamic'),
   darkDynamic(Brightness.dark, ThemeType.dynamic, 'darkDynamic', counterPart: 'lightDynamic'),
   greenRedLight(Brightness.light, ThemeType.dualColor, 'greenRedLight'),
-  greenRedDark(Brightness.dark, ThemeType.dualColor, 'greenRedDark');
+  greenRedDark(Brightness.dark, ThemeType.dualColor, 'greenRedDark'),
+  dogDark(Brightness.dark, ThemeType.background, 'dogDarkTheme', emoji: '🐶'),
+  dogLight(Brightness.light, ThemeType.background, 'dogLightTheme', emoji: '🐶');
 
-  const ThemeName(this.brightness, this.type, this.storageName, {String? counterPart}) : _counterPart = counterPart;
+  const ThemeName(this.brightness, this.type, this.storageName, {String? counterPart, this.emoji})
+      : _counterPart = counterPart;
   final Brightness brightness;
   final ThemeType type;
   final String storageName;
   final String? _counterPart;
+  final String? emoji;
 
   static List<ThemeName> getThemeNamesByType(ThemeType type) {
     return ThemeName.values.where((element) => element.type == type).toList();
@@ -97,6 +106,10 @@ enum ThemeName {
 
   bool isDodo() {
     return this == ThemeName.dodoLight || this == ThemeName.dodoDark;
+  }
+
+  bool isDog() {
+    return this == ThemeName.dogLight || this == ThemeName.dogDark;
   }
 
   bool isRainbow() {
@@ -157,6 +170,8 @@ class AppTheme {
     generateThemeData(ThemeName.rainbowGradientDark, Colors.purple),
     generateThemeData(ThemeName.greenRedLight, Color(0xff94483c)),
     generateThemeData(ThemeName.greenRedDark, Color(0xffffb4a7)),
+    generateThemeData(ThemeName.dogLight, Colors.amber[700]!),
+    generateThemeData(ThemeName.dogDark, Colors.amber[600]!),
   ]);
 
   static Map<ThemeName, List<Color>> gradientColors = {
@@ -325,6 +340,29 @@ class AppTheme {
                             AppTheme.themes[themeName]!.colorScheme.primary,
                             AppTheme.themes[themeName]!.colorScheme.primary
                           ]);
+  }
+
+  static Map<ThemeName, List<ui.Image>> backgroundImages = {};
+
+  static Future<void> loadBackgroundImages() async {
+    if (backgroundImages.isNotEmpty) return;
+    final manifestContent = await rootBundle.loadString('AssetManifest.json');
+    final Map<String, dynamic> manifestMap = json.decode(manifestContent);
+    for (var themeName in ThemeName.values) {
+      backgroundImages[themeName] = [];
+      if (themeName.type == ThemeType.background) {
+        final assets =
+            manifestMap.keys.where((path) => path.startsWith('assets/images/${themeName.storageName}')).toList();
+        if (assets.isEmpty) continue; // Skip if no assets found for this theme
+        for (var assetPath in assets) {
+          if (!assetPath.endsWith('.png')) continue; // Only load PNG images
+          final ByteData data = await rootBundle.load(assetPath);
+          final ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+          final ui.FrameInfo fi = await codec.getNextFrame();
+          backgroundImages[themeName]!.add(fi.image);
+        }
+      }
+    }
   }
 
   static MapEntry<ThemeName, ThemeData> generateThemeData(ThemeName themeName, Color seedColor) {

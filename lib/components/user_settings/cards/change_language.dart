@@ -1,3 +1,4 @@
+import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class _LanguagePickerState extends State<LanguagePicker> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return CardWithBackground(
       child: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
@@ -29,7 +30,10 @@ class _LanguagePickerState extends State<LanguagePicker> {
             Center(
                 child: Text(
               'change_language'.tr(),
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge!
+                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
             )),
             SizedBox(height: 10),
             Center(
@@ -76,12 +80,16 @@ class _LanguageElementState extends State<LanguageElement> {
             // gradient: (widget.localeName == context.locale.languageCode)
             //     ? AppTheme.gradientFromTheme(Theme.of(context))
             //     : LinearGradient(colors: [Colors.white, Colors.white]),
-            color: (widget.localeName == context.locale.languageCode) ? Theme.of(context).colorScheme.secondary : ElevationOverlay.applyOverlay(context, Theme.of(context).colorScheme.surface, 10),
+            color: (widget.localeName == context.locale.languageCode)
+                ? Theme.of(context).colorScheme.secondary
+                : ElevationOverlay.applyOverlay(context, Theme.of(context).colorScheme.surface, 10),
             borderRadius: BorderRadius.circular(15)),
         child: Center(
             child: Text(widget.localeName!.toUpperCase(),
                 style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                      color: (widget.localeName == context.locale.languageCode) ? Theme.of(context).colorScheme.onSecondary : Theme.of(context).colorScheme.onSurfaceVariant,
+                      color: (widget.localeName == context.locale.languageCode)
+                          ? Theme.of(context).colorScheme.onSecondary
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
                     ))),
       ),
     );
