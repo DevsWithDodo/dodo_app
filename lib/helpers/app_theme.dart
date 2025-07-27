@@ -64,7 +64,9 @@ enum ThemeName {
   greenRedLight(Brightness.light, ThemeType.dualColor, 'greenRedLight'),
   greenRedDark(Brightness.dark, ThemeType.dualColor, 'greenRedDark'),
   dogDark(Brightness.dark, ThemeType.background, 'dogDarkTheme', emoji: '🐶'),
-  dogLight(Brightness.light, ThemeType.background, 'dogLightTheme', emoji: '🐶');
+  dogLight(Brightness.light, ThemeType.background, 'dogLightTheme', emoji: '🐶'),
+  dodoBackgroundLight(Brightness.light, ThemeType.background, 'dodoBackgroundLightTheme', emoji: '🦤'),
+  dodoBackgroundDark(Brightness.dark, ThemeType.background, 'dodoBackgroundDarkTheme', emoji: '🦤');
 
   const ThemeName(this.brightness, this.type, this.storageName, {String? counterPart, this.emoji})
       : _counterPart = counterPart;
@@ -105,7 +107,10 @@ enum ThemeName {
   }
 
   bool isDodo() {
-    return this == ThemeName.dodoLight || this == ThemeName.dodoDark;
+    return this == ThemeName.dodoLight ||
+        this == ThemeName.dodoDark ||
+        this == ThemeName.dodoBackgroundLight ||
+        this == ThemeName.dodoBackgroundDark;
   }
 
   bool isDog() {
@@ -172,6 +177,8 @@ class AppTheme {
     generateThemeData(ThemeName.greenRedDark, Color(0xffffb4a7)),
     generateThemeData(ThemeName.dogLight, Colors.amber[700]!),
     generateThemeData(ThemeName.dogDark, Colors.amber[600]!),
+    generateThemeData(ThemeName.dodoBackgroundLight, Color.fromARGB(255, 19, 152, 181)),
+    generateThemeData(ThemeName.dodoBackgroundDark, Color.fromARGB(255, 19, 152, 181)),
   ]);
 
   static Map<ThemeName, List<Color>> gradientColors = {
@@ -446,7 +453,7 @@ class AppTheme {
           onSecondaryContainer: Color(0xffffdad8),
         );
         break;
-      case ThemeName.dodoLight:
+      case ThemeName.dodoLight || ThemeName.dodoBackgroundLight:
         newColorScheme = colorScheme.copyWith(
           primary: Color.fromARGB(255, 19, 152, 181),
           secondary: Color.fromARGB(255, 247, 192, 0),
@@ -454,7 +461,7 @@ class AppTheme {
           onSecondaryContainer: Color.fromARGB(255, 37, 26, 0),
         );
         break;
-      case ThemeName.dodoDark:
+      case ThemeName.dodoDark || ThemeName.dodoBackgroundDark:
         newColorScheme = colorScheme.copyWith(
           primary: Color.fromARGB(255, 88, 214, 247),
           onPrimary: Color.fromARGB(255, 0, 54, 66),

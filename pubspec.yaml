@@ -12,7 +12,7 @@ description: Csocsort
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 
-version: 4.4.7+5133 # 5 is the number of an appbundle, the digits after is the version number
+version: 4.5.0+5134 # 5 is the number of an appbundle, the digits after is the version number
 
 environment:
   sdk: '>=3.0.0'
@@ -85,6 +85,8 @@ flutter:
     - assets/translations/
     - assets/images/dogLightTheme/
     - assets/images/dogDarkTheme/
+    - assets/images/dodoBackgroundLightTheme/
+    - assets/images/dodoBackgroundDarkTheme/
 
 msix_config:
   display_name: Dodo - secure bill splitting	

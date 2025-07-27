@@ -15,7 +15,7 @@ class BackgroundPaint extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final appThemeState = context.watch<AppThemeState>();
-    final backgroundImages = AppTheme.backgroundImages[appThemeState.themeName]!;
+    final backgroundImages = AppTheme.backgroundImages[appThemeState.themeName] ?? [];
     final paintIndex = useState(Random().nextInt(5));
     return backgroundImages.isEmpty
         ? child
