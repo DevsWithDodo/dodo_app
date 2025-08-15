@@ -577,5 +577,7 @@
 
     "in_app_purchase.error": "Beim Kauf des Artikels ist ein Fehler aufgetreten. Der Kauf wird in ein paar Tagen automatisch zurückerstattet.",
 
-    "store-page.loading-failed": "Beim Laden der Store-Seite ist ein Fehler aufgetreten. Dies kann auf ein Netzwerkproblem oder die Nichtverfügbarkeit des Stores zurückzuführen sein. Bitte öffne den {storeName}, starte die App neu und versuche es erneut."
+    "store-page.loading-failed": "Beim Laden der Store-Seite ist ein Fehler aufgetreten. Dies kann auf ein Netzwerkproblem oder die Nichtverfügbarkeit des Stores zurückzuführen sein. Bitte öffne den {storeName}, starte die App neu und versuche es erneut.",
+
+    "bug-report.details": "Das Problem im Detail"
 }

@@ -52,54 +52,41 @@ class _BugReportPageState extends State<BugReportPage> {
                             Padding(
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Text(
-                                DateFormat('yyyy/MM/dd - HH:mm').format(widget.date == null ? now : widget.date!),
-                                style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                '${DateFormat.MMMMEEEEd(context.locale.languageCode).format((widget.date ?? DateTime.now()))} - ${DateFormat.Hm(context.locale.languageCode).format((widget.date ?? DateTime.now()))}',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                               ),
                             ),
                             SizedBox(
                               height: 15,
                             ),
                             widget.error == null
-                                ? TextFormField(
-                                    validator: (value) => validateTextField([
-                                      isEmpty(value),
-                                    ]),
-                                    keyboardType: TextInputType.multiline,
-                                    minLines: 1,
-                                    maxLines: 10,
-                                    controller: _bugController,
-                                    decoration: InputDecoration(
-                                      labelText: 'bug'.tr(),
-                                    ),
-                                  )
+                                ? Container()
                                 : Padding(
                                     padding: const EdgeInsets.only(left: 8.0),
                                     child: Text(
                                       widget.error!.tr(),
-                                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                                     ),
                                   ),
                             SizedBox(
                               height: 15,
                             ),
                             widget.location == null
-                                ? TextFormField(
-                                    validator: (value) => validateTextField([
-                                      isEmpty(value),
-                                    ]),
-                                    keyboardType: TextInputType.multiline,
-                                    minLines: 1,
-                                    maxLines: 10,
-                                    controller: _locationController,
-                                    decoration: InputDecoration(
-                                      labelText: 'location'.tr(),
-                                    ),
-                                  )
+                                ? Container()
                                 : Padding(
                                     padding: const EdgeInsets.only(left: 8.0),
                                     child: Text(
                                       widget.location!,
-                                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                                     ),
                                   ),
                             SizedBox(
@@ -108,11 +95,11 @@ class _BugReportPageState extends State<BugReportPage> {
                             TextFormField(
                               validator: (value) => validateTextField([]),
                               keyboardType: TextInputType.multiline,
-                              minLines: 1,
+                              minLines: 2,
                               maxLines: 10,
                               controller: _detailsController,
                               decoration: InputDecoration(
-                                labelText: 'details'.tr(),
+                                labelText: 'bug-report.details'.tr(),
                               ),
                             ),
                             SizedBox(
@@ -141,12 +128,15 @@ class _BugReportPageState extends State<BugReportPage> {
               DateTime date = widget.date ?? now;
               String location = widget.location ?? _locationController.text;
               String details = _detailsController.text;
-              showFutureOutputDialog(context: context, future: _postBug(error, date, location, details), outputCallbacks: {
-                BoolFutureOutput.True: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                }
-              });
+              showFutureOutputDialog(
+                  context: context,
+                  future: _postBug(error, date, location, details),
+                  outputCallbacks: {
+                    BoolFutureOutput.True: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    }
+                  });
             }
           },
           child: Icon(Icons.send),
@@ -158,7 +148,8 @@ class _BugReportPageState extends State<BugReportPage> {
   Future<BoolFutureOutput> _postBug(String bugText, DateTime date, String location, String details) async {
     try {
       Map<String, dynamic> body = {
-        "description": "$bugText\nTime: ${DateFormat('yyyy/MM/dd - HH:mm').format(date)}\nLocation: $location\nDetails: $details",
+        "description":
+            "$bugText\nTime: ${DateFormat('yyyy/MM/dd - HH:mm').format(date)}\nLocation: $location\nDetails: $details",
       };
 
       await Http.post(uri: '/bug', body: body);
