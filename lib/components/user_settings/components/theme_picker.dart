@@ -1,18 +1,16 @@
+import 'package:csocsort_szamla/common.dart';
 import 'package:csocsort_szamla/components/helpers/background_paint.dart';
-import 'package:csocsort_szamla/components/main/dialogs/iapp_not_supported_dialog.dart';
-import 'package:csocsort_szamla/components/user_settings/components/theme_preview.dart';
+import 'package:csocsort_szamla/components/user_settings/components/premium_theme_dialog.dart';
+import 'package:csocsort_szamla/components/user_settings/components/theme_preview_dialog.dart';
 import 'package:csocsort_szamla/helpers/app_theme.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
-import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
-import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_usage_provider.dart';
-import 'package:csocsort_szamla/pages/app/customize_page.dart';
-import 'package:csocsort_szamla/pages/app/store_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class ThemePicker extends StatefulWidget {
   const ThemePicker({super.key});
@@ -40,6 +38,7 @@ class _ThemePickerState extends State<ThemePicker> {
         spacing: 9,
         children: themeNames.map((entry) {
           return ColorElement(
+            updateColor: _updateColor,
             theme: AppTheme.themes[entry]!,
             themeName: entry,
             enabled: enabled,
@@ -64,6 +63,12 @@ class _ThemePickerState extends State<ThemePicker> {
     setState(
       () => this.brightness = brightness,
     );
+    _updateColor(provider.themeName.storageName);
+  }
+
+  Future _updateColor(String name) async {
+    Map<String, String?> body = {'theme': name};
+    await Http.put(uri: '/user', body: body);
   }
 
   @override
@@ -119,91 +124,91 @@ class _ThemePickerState extends State<ThemePicker> {
                     ],
                   ),
                   SizedBox(height: 20),
-                  Text('change-theme.preview-hint'.tr(),
-                      style: Theme.of(context).textTheme.titleSmall, textAlign: TextAlign.center),
-                  SizedBox(height: 15),
                   _colorWrap(ThemeType.simpleColor, enabled: true),
                   SizedBox(height: 10),
-                  Divider(),
-                  SizedBox(height: 10),
-                  Text(
-                    'dual_tone_themes'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge!
-                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
-                    textAlign: TextAlign.center,
-                  ),
-                  Visibility(
-                    visible: !useGradients,
-                    child: Text(
-                      'gradient_available_in_paid_version'.tr(),
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleSmall!
-                          .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                      textAlign: TextAlign.center,
+                  Container(
+                    decoration: BoxDecoration(
+                      color: context.colorScheme.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(13),
+                      border: Border.all(
+                        color: context.colorScheme.outlineVariant,
+                        width: 1.5,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  _colorWrap(ThemeType.dualColor, enabled: useGradients),
-                  SizedBox(height: 15),
-                  Text(
-                    'gradient_themes'.tr(),
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge!
-                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 15),
-                  _colorWrap(ThemeType.gradient, enabled: useGradients),
-                  Visibility(
-                    visible: AppTheme.themes.keys.where((element) => element.type == ThemeType.dynamic).isNotEmpty,
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
                     child: Column(
                       children: [
-                        SizedBox(height: 10),
-                        Divider(),
-                        SizedBox(height: 10),
                         Text(
-                          'change-theme.adaptive-theme'.tr(),
+                          'dual_tone_themes'.tr(),
                           style: Theme.of(context)
                               .textTheme
                               .titleLarge!
                               .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
                           textAlign: TextAlign.center,
                         ),
-                        SizedBox(height: 3),
+                        SizedBox(height: 15),
+                        _colorWrap(ThemeType.dualColor, enabled: useGradients),
+                        SizedBox(height: 15),
                         Text(
-                          'change-theme.adaptive-theme.subtitle'.tr(),
+                          'gradient_themes'.tr(),
                           style: Theme.of(context)
                               .textTheme
-                              .bodyMedium!
-                              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                              .titleLarge!
+                              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
                           textAlign: TextAlign.center,
                         ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        _colorWrap(ThemeType.dynamic, enabled: useGradients),
-                        SizedBox(height: 10),
+                        SizedBox(height: 15),
+                        _colorWrap(ThemeType.gradient, enabled: useGradients),
+                        SizedBox(height: 15),
                         Text(
                           'change-theme.background-theme'.tr(),
                           style: Theme.of(context)
                               .textTheme
-                              .bodyMedium!
-                              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                              .titleLarge!
+                              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 18),
                           textAlign: TextAlign.center,
                         ),
-                        SizedBox(
-                          height: 15,
-                        ),
+                        SizedBox(height: 15),
                         _colorWrap(ThemeType.background, enabled: useGradients),
+                        Visibility(
+                          visible:
+                              AppTheme.themes.keys.where((element) => element.type == ThemeType.dynamic).isNotEmpty,
+                          child: Column(
+                            children: [
+                              SizedBox(height: 10),
+                              Divider(),
+                              SizedBox(height: 10),
+                              GestureDetector(
+                                onTap: () => launchUrlString('https://m3.material.io/blog/announcing-material-you'),
+                                child: Text(
+                                  'change-theme.adaptive-theme'.tr(),
+                                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                        fontSize: 18,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              SizedBox(height: 3),
+                              Text(
+                                'change-theme.adaptive-theme.subtitle'.tr(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              _colorWrap(ThemeType.dynamic, enabled: useGradients),
+                            ],
+                          ),
+                        )
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -213,26 +218,22 @@ class _ThemePickerState extends State<ThemePicker> {
 }
 
 class ColorElement extends StatelessWidget {
+  final Future Function(String name) updateColor;
   final ThemeData theme;
   final ThemeName themeName;
   final bool enabled;
   final bool dualColor;
   const ColorElement({
     super.key,
+    required this.updateColor,
     required this.theme,
     required this.themeName,
     this.enabled = true,
     this.dualColor = false,
   });
 
-  Future _updateColor(String? name) async {
-    Map<String, String?> body = {'theme': name};
-    await Http.put(uri: '/user', body: body);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final stackWidgetState = context.watch<StackWidgetState>();
     return Selector<AppThemeState, ThemeName>(
       selector: (context, provider) => provider.themeName,
       builder: (context, currentThemeName, _) {
@@ -244,35 +245,29 @@ class ColorElement extends StatelessWidget {
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: () {
-                if (enabled) {
-                  context.read<AppThemeState>().themeName = themeName;
-                  context.read<UserUsageNotifier>().setThemeChangedFlag(true);
-                  _updateColor(themeName.storageName);
-                } else if (context.read<AppConfig>().isIAPPlatformEnabled) {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => StorePage()));
-                } else {
-                  showDialog(
+                showDialog(
                     context: context,
                     builder: (context) {
-                      return IAPNotSupportedDialog();
-                    },
-                  );
-                }
-              },
-              onLongPressStart: (details) => stackWidgetState.setWidget(
-                context.read<ScreenSize>().isMobile
-                    ? ThemePreview(
+                      return ThemePreviewDialog(
                         themeName: themeName,
-                        offset: details.globalPosition,
-                      )
-                    : ThemePreviewContent(themeName: themeName),
-              ),
-              onLongPressEnd: (_) => context.read<ScreenSize>().isMobile
-                  ? stackWidgetState.hideWidget() //
-                  : stackWidgetState.setWidget(null),
-              onLongPressCancel: () => context.read<ScreenSize>().isMobile
-                  ? stackWidgetState.hideWidget() //
-                  : stackWidgetState.setWidget(null),
+                        onThemeSelected: () {
+                          bool themesEnabled = context.read<UserNotifier>().user!.useGradients;
+                          if (themesEnabled) {
+                            context.read<AppThemeState>().themeName = themeName;
+                            context.read<UserUsageNotifier>().setThemeChangedFlag(true);
+                            updateColor(themeName.storageName);
+                          } else {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return PremiumThemeDialog();
+                              },
+                            );
+                          }
+                        },
+                      );
+                    });
+              },
               child: Stack(
                 children: [
                   Ink(

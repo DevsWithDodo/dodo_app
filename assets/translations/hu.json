@@ -240,7 +240,7 @@
     "paste_code": "vagy másold ide a meghívót:",
 
     "gradient_themes" : "Színátmenetes témák",
-    "change-theme.adaptive-theme" : "Adaptív téma",
+    "change-theme.adaptive-theme" : "Material You téma",
     "change-theme.adaptive-theme.subtitle" : "Ez a téma az általad választott rendszerszínekhez alkalmazkodik.",
 
     "in_app_purchase_description": "Reklámok és témák",
@@ -575,6 +575,14 @@
 
     "store-page.loading-failed": "Hiba történt a bolt oldalának betöltésekor. Ez hálózati probléma vagy a bolt elérhetetlensége miatt fordulhat elő. Kérlek, nyisd meg a {storeName}-t, indítsd újra az alkalmazást, és próbáld újra.",
 
-    "bug-report.details": "A probléma részletesen"
+    "bug-report.details": "A probléma részletesen",
+
+    "theme-preview.dialog.title": "Téma előnézet",
+    "theme-preview.dialog.close": "Bezárás",
+    "theme-preview.dialog.apply": "Alkalmazás",
+
+    "premium-theme-dialog.title": "Ez egy prémium téma",
+    "premium-theme-dialog.content": "Kérlek támogass minket a prémium témák feloldásával.",
+    "premium-theme-dialog.unlock": "Prémium témák feloldása"
 
 }

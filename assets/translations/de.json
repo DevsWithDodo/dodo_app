@@ -242,7 +242,7 @@
     "paste_code": "oder füge den Einladungscode ein:",
 
     "gradient_themes" : "Farbübergängige Themen",
-    "change-theme.adaptive-theme" : "Adaptive Thema",
+    "change-theme.adaptive-theme" : "Material You Thema",
     "change-theme.adaptive-theme.subtitle" : "Dieses Thema richtet sich an die Farben die du für dein System eingestellt hast.",
 
     "in_app_purchase_description": "Themen und Werbefrei",
@@ -579,5 +579,15 @@
 
     "store-page.loading-failed": "Beim Laden der Store-Seite ist ein Fehler aufgetreten. Dies kann auf ein Netzwerkproblem oder die Nichtverfügbarkeit des Stores zurückzuführen sein. Bitte öffne den {storeName}, starte die App neu und versuche es erneut.",
 
-    "bug-report.details": "Das Problem im Detail"
+    "bug-report.details": "Das Problem im Detail",
+
+    "theme-preview.dialog.title": "Themenvorschau",
+    "theme-preview.dialog.close": "Schließen",
+    "theme-preview.dialog.apply": "Anwenden",
+
+    "premium-theme-dialog.title": "Dies ist ein Premium-Thema",
+    "premium-theme-dialog.content": "Bitte unterstütze uns, indem du Zugang zu allen Premium-Themen kaufst.",
+    "premium-theme-dialog.unlock": "Premium-Themen freischalten"
+
+
 }

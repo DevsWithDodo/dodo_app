@@ -232,7 +232,7 @@
     "paste_code": "or paste the invitation code:",
 
     "gradient_themes" : "Gradient themes",
-    "change-theme.adaptive-theme" : "Adaptive theme",
+    "change-theme.adaptive-theme" : "Material You theme",
     "change-theme.adaptive-theme.subtitle" : "This theme will adapt to the colors you selected for your system.",
 
     "in_app_purchase_description": "Ads and color themes",
@@ -567,6 +567,14 @@
 
     "store-page.loading-failed": "An error occurred while loading the store page. This could be due to a network issue or the store being unavailable. Please open the {storeName}, restart the app, and try again.",
 
-    "bug-report.details": "The issue in detail"
+    "bug-report.details": "The issue in detail",
+
+    "theme-preview.dialog.title": "Theme Preview",
+    "theme-preview.dialog.close": "Close",
+    "theme-preview.dialog.apply": "Apply",
+
+    "premium-theme-dialog.title": "This is a premium theme",
+    "premium-theme-dialog.content": "Consider supporting us by purchasing access to all premium themes.",
+    "premium-theme-dialog.unlock": "Unlock Premium Theme"
 
 }
