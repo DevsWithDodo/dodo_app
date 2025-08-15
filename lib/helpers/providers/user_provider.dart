@@ -91,12 +91,15 @@ class UserNotifier extends ChangeNotifier {
     }
     var themeState = context.read<AppThemeState>();
     if (!user!.useGradients && themeState.themeName.type != ThemeType.simpleColor) {
-      themeState.themeName = themeState.themeName.brightness == Brightness.dark ? ThemeName.greenDark : ThemeName.greenLight;
+      themeState.themeName =
+          themeState.themeName.brightness == Brightness.dark ? ThemeName.greenDark : ThemeName.greenLight;
     }
   }
 
-  Future<LoginFutureOutputs> loginOrRegisterWithToken(String? idToken, String? authCode, IdTokenType tokenType, BuildContext context) async {
-    assert((idToken != null && tokenType == IdTokenType.google) || (authCode != null && tokenType == IdTokenType.apple));
+  Future<LoginFutureOutputs> loginOrRegisterWithToken(
+      String? idToken, String? authCode, IdTokenType tokenType, BuildContext context) async {
+    assert(
+        (idToken != null && tokenType == IdTokenType.google) || (authCode != null && tokenType == IdTokenType.apple));
     try {
       String? fcmToken;
       if (context.read<AppConfig>().isFirebasePlatformEnabled) {
@@ -180,7 +183,8 @@ class UserNotifier extends ChangeNotifier {
       };
       Map<String, String> header = {"Content-Type": "application/json"};
       String bodyEncoded = jsonEncode(body);
-      http.Response response = await http.post(Uri.parse('${context.read<AppConfig>().appUrl}/login'), headers: header, body: bodyEncoded);
+      http.Response response =
+          await http.post(Uri.parse('${context.read<AppConfig>().appUrl}/login'), headers: header, body: bodyEncoded);
       if (response.statusCode.httpStatusCodeRange == HttpStatusCodeRange.success) {
         final preferences = context.read<SharedPreferences>();
 

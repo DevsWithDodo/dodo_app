@@ -565,6 +565,10 @@
 
     "sure_boost": "Are you sure you want to boost the group? This will allow you to see statistics inside the app.",
 
-    "change-theme.background-theme": "Thematic color themes"
+    "change-theme.background-theme": "Thematic color themes",
+
+    "in_app_purchase.error": "An error occurred while trying to purchase the item. The purchase will be be refunded automatically in a few days.",
+
+    "store-page.loading-failed": "An error occurred while loading the store page. This could be due to a network issue or the store being unavailable. Please open the {storeName}, restart the app, and try again."
 
 }

@@ -569,6 +569,10 @@
     "balances.tap-info": "Kattints egy tagra az adatai megtekintéséhez.",
     
     "sure_boost": "Biztosan szeretnéd boostolni a csoportot?",
-    "change-theme.background-theme": "Tematikus színtémák"
+    "change-theme.background-theme": "Tematikus színtémák",
+
+    "in_app_purchase.error": "Hiba történt a termék megvásárlása során. A vásárlás automatikusan visszatérítésre kerül néhány napon belül.",
+
+    "store-page.loading-failed": "Hiba történt a bolt oldalának betöltésekor. Ez hálózati probléma vagy a bolt elérhetetlensége miatt fordulhat elő. Kérlek, nyisd meg a {storeName}-t, indítsd újra az alkalmazást, és próbáld újra."
 
 }

@@ -67,16 +67,11 @@ class _StorePageState extends State<StorePage> {
                   backgroundColor: Theme.of(context).colorScheme.primary,
                 );
               }
-              if (!isAvailableSnapshot.hasData) {
+              if (!isAvailableSnapshot.hasData || !isAvailableSnapshot.data!) {
                 return ErrorMessage(
-                  error: isAvailableSnapshot.error as String?,
-                  onTap: () => setState(() => isAvailable = _isAvailable()),
-                  errorLocation: 'in_app_purchase',
-                );
-              }
-              if (!isAvailableSnapshot.data!) {
-                return ErrorMessage(
-                  error: 'error',
+                  error: 'store-page.loading-failed'.tr(namedArgs: {
+                    'storeName': Platform.isAndroid ? 'Play Store' : 'App Store',
+                  }),
                   onTap: () => setState(() => isAvailable = _isAvailable()),
                   errorLocation: 'in_app_purchase',
                 );
@@ -113,7 +108,10 @@ class _StorePageState extends State<StorePage> {
                                 children: [
                                   Text(
                                     "store-page.${productDetail.name}".tr(),
-                                    style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge!
+                                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                                     textAlign: TextAlign.center,
                                   ),
                                   SizedBox(
@@ -125,7 +123,10 @@ class _StorePageState extends State<StorePage> {
                                         children: [
                                           TextSpan(
                                             text: 'store-page.${productDetail.name}.details.1'.tr(),
-                                            style: Theme.of(context).textTheme.titleSmall!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleSmall!
+                                                .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                                           ),
                                           TextSpan(
                                             text: 'store-page.${productDetail.name}.details.2'.tr(),
@@ -185,7 +186,8 @@ class _StorePageState extends State<StorePage> {
                                               );
                                               return;
                                             }
-                                            final purchaseParam = PurchaseParam(productDetails: productDetail.productDetails);
+                                            final purchaseParam =
+                                                PurchaseParam(productDetails: productDetail.productDetails);
                                             if (productDetail.isConsumable) {
                                               InAppPurchase.instance.buyConsumable(purchaseParam: purchaseParam);
                                             } else {
