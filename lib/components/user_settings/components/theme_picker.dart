@@ -4,6 +4,7 @@ import 'package:csocsort_szamla/components/user_settings/components/premium_them
 import 'package:csocsort_szamla/components/user_settings/components/theme_preview_dialog.dart';
 import 'package:csocsort_szamla/helpers/app_theme.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
+import 'package:csocsort_szamla/helpers/models.dart';
 import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_usage_provider.dart';
@@ -251,7 +252,8 @@ class ColorElement extends StatelessWidget {
                       return ThemePreviewDialog(
                         themeName: themeName,
                         onThemeSelected: () {
-                          bool themesEnabled = context.read<UserNotifier>().user!.useGradients;
+                          User user = context.read<UserNotifier>().user!;
+                          bool themesEnabled = user.useGradients || user.trialVersion || !themeName.type.premium;
                           if (themesEnabled) {
                             context.read<AppThemeState>().themeName = themeName;
                             context.read<UserUsageNotifier>().setThemeChangedFlag(true);
