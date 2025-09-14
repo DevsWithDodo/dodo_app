@@ -106,6 +106,11 @@ enum ThemeName {
     }
   }
 
+  ThemeName getBrightnessCounterPart(Brightness brightness) {
+    if (this.brightness == brightness) return this;
+    return getCounterPart();
+  }
+
   bool isDodo() {
     return this == ThemeName.dodoLight ||
         this == ThemeName.dodoDark ||
@@ -565,14 +570,11 @@ class AppTheme {
     }
 
     ThemeData data = ThemeData.from(colorScheme: colorScheme, useMaterial3: true).copyWith(
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
         margin: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-      ),
-      dialogTheme: DialogTheme(
-        backgroundColor: colorScheme.surfaceContainerHigh, // Temporary fix
       ),
       bottomSheetTheme: BottomSheetThemeData(
         shape: RoundedRectangleBorder(
@@ -588,11 +590,9 @@ class AppTheme {
     );
     if (newColorScheme != null) {
       data = data.copyWith(
-          colorScheme: newColorScheme,
-          scaffoldBackgroundColor: newColorScheme.surface,
-          dialogTheme: DialogTheme(
-            backgroundColor: newColorScheme.surfaceContainerHigh, // Temporary fix
-          ));
+        colorScheme: newColorScheme,
+        scaffoldBackgroundColor: newColorScheme.surface,
+      );
     }
     return MapEntry(themeName, data);
   }
@@ -637,7 +637,7 @@ class AppTheme {
         colorScheme: lightScheme,
         useMaterial3: true,
       ).copyWith(
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -658,7 +658,7 @@ class AppTheme {
         colorScheme: darkScheme.copyWith(brightness: Brightness.dark),
         useMaterial3: true,
       ).copyWith(
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),

@@ -5,6 +5,7 @@ import 'package:csocsort_szamla/components/helpers/background_paint.dart';
 import 'package:csocsort_szamla/components/helpers/error_message.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
+import 'package:csocsort_szamla/components/helpers/qr_code.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/providers/screen_width_provider.dart';
@@ -12,7 +13,6 @@ import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -193,18 +193,19 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
                   ),
                   Center(
                     child: Container(
-                      constraints: BoxConstraints(maxWidth: 250, maxHeight: 250),
+                      constraints: BoxConstraints(maxWidth: 300, maxHeight: 300),
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceContainer,
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: PrettyQrView.data(
-                        data: 'http://dodoapp.net/join/${snapshot.data}',
-                        decoration: PrettyQrDecoration(
-                          shape: PrettyQrSmoothSymbol(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                        ),
-                      ),
+                      child: QrCode(data: 'https://dodoapp.net/join/${snapshot.data}'),
+                      // PrettyQrView.data(
+                      //   data: 'http://dodoapp.net/join/${snapshot.data}',
+                      //   decoration: PrettyQrDecoration(
+                      //     shape: PrettyQrSmoothSymbol(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      //   ),
+                      // ),
                     ),
                   ),
                   SizedBox(height: 10),

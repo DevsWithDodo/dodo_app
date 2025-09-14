@@ -1,6 +1,6 @@
+import 'package:csocsort_szamla/components/helpers/qr_code.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../helpers/gradient_button.dart';
@@ -25,7 +25,10 @@ class _ShareGroupDialogState extends State<ShareGroupDialog> {
             Center(
               child: Text(
                 'share'.tr(),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge!
+                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
             SizedBox(
@@ -34,12 +37,17 @@ class _ShareGroupDialogState extends State<ShareGroupDialog> {
             Container(
               constraints: BoxConstraints(maxWidth: 400),
               padding: EdgeInsets.all(10),
-              child: PrettyQrView.data(
-                data: 'https://dodoapp.net/join/${widget.inviteCode}',
-                decoration: PrettyQrDecoration(
-                  shape: PrettyQrSmoothSymbol(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                ),
+              decoration: BoxDecoration(
+                // color: Theme.of(context).colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(20),
               ),
+              child: QrCode(data: 'https://dodoapp.net/join/${widget.inviteCode}'),
+              // child: PrettyQrView.data(
+              //   data: 'https://dodoapp.net/join/${widget.inviteCode}',
+              //   decoration: PrettyQrDecoration(
+              //     shape: PrettyQrSmoothSymbol(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              //   ),
+              // ),
             ),
             SizedBox(
               height: 10,
@@ -47,7 +55,10 @@ class _ShareGroupDialogState extends State<ShareGroupDialog> {
             Divider(),
             Text(
               'share_url'.tr(),
-              style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge!
+                  .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 5),
