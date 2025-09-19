@@ -14,13 +14,13 @@ class InviteUrlProvider extends StatelessWidget {
   InviteUrlProvider({super.key, required this.builder}) {
     _inviteUrl = InviteUrlState(null);
 
-    _appLinks.getInitialAppLinkString().then((link) {
+    _appLinks.getInitialLinkString().then((link) {
       if (link != null) {
         _inviteUrl.inviteUrl = link;
       }
     });
 
-    _appLinks.allStringLinkStream.listen((link) {
+    _appLinks.stringLinkStream.listen((link) {
       if (kIsWeb) return;
       _inviteUrl.inviteUrl = link;
 

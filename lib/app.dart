@@ -32,7 +32,6 @@ class App extends StatelessWidget {
           ? LoginOrRegisterPage()
           : (link != null && !kIsWeb)
               ? JoinGroupPage(
-                  inviteURL: link,
                   fromAuth: (userState.user?.group == null) ? true : false,
                 )
               : (userState.user?.group == null)

@@ -1,5 +1,4 @@
 import 'package:csocsort_szamla/components/auth/pin_pad.dart';
-import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/pages/app/join_group_page.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
@@ -111,23 +110,23 @@ class _LoginPinPageState extends State<LoginPinPage> {
   void _pushedButton() {
     String? username = widget.username;
     String pin = _pin;
-    showFutureOutputDialog(context: context, future: context.read<UserNotifier>().login(username!, pin, context), outputCallbacks: {
-      LoginFutureOutputs.main: () => Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainPage()), (r) => false),
-      LoginFutureOutputs.joinGroup: () => Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (context) => JoinGroupPage(
-                      inviteURL: context.read<InviteUrlState>().inviteUrl,
-                    )),
-            (route) => false,
-          ),
-      LoginFutureOutputs.joinGroupFromAuth: () => Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (context) => JoinGroupPage(
-                      inviteURL: context.read<InviteUrlState>().inviteUrl,
-                      fromAuth: true,
-                    )),
-            (route) => false,
-          ),
-    });
+    showFutureOutputDialog(
+        context: context,
+        future: context.read<UserNotifier>().login(username!, pin, context),
+        outputCallbacks: {
+          LoginFutureOutputs.main: () => Navigator.of(context)
+              .pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainPage()), (r) => false),
+          LoginFutureOutputs.joinGroup: () => Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => JoinGroupPage()),
+                (route) => false,
+              ),
+          LoginFutureOutputs.joinGroupFromAuth: () => Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                    builder: (context) => JoinGroupPage(
+                          fromAuth: true,
+                        )),
+                (route) => false,
+              ),
+        });
   }
 }

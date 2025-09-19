@@ -24,120 +24,18 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
-class JoinGroupPage extends StatefulWidget {
+class JoinGroupPage extends HookWidget {
   final bool fromAuth;
-  final String? inviteURL;
 
-  const JoinGroupPage({super.key, this.fromAuth = false, this.inviteURL});
-
-  @override
-  State<JoinGroupPage> createState() => _JoinGroupPageState();
-}
-
-class _JoinGroupPageState extends State<JoinGroupPage> {
-  late String token;
-  late User user;
-  Timer? timer;
-  String? initeTokenError;
-  bool loading = false;
-  Group? group;
-  List<Guest>? guests;
-  final TextEditingController _tokenController = TextEditingController();
-  int? selectedGuestId;
-  late TextEditingController _nicknameController;
-  String? selectGuestError;
-
-  @override
-  void initState() {
-    super.initState();
-    user = context.read<UserNotifier>().user!;
-    final inviteUrl = context.read<InviteUrlState>().inviteUrl;
-    _nicknameController = TextEditingController(); // TODO: initial value from cache
-    token = inviteUrl?.split('/').lastOrNull ?? "";
-    checkInvitation();
-  }
+  JoinGroupPage({super.key, this.fromAuth = false});
 
   final _formKey = GlobalKey<FormState>();
-
-  Future<BoolFutureOutput> _joinGroup(String token, String nickname, int? selectedGuestId) async {
-    try {
-      Map<String, dynamic> body = {
-        'invitation_token': token,
-        'nickname': nickname,
-        'merge_with_member_id': selectedGuestId,
-      };
-      Response response = await Http.post(uri: '/join', body: body);
-
-      if (response.body == "") {
-        return BoolFutureOutput.False;
-      }
-      Map<String, dynamic> decoded = jsonDecode(response.body);
-      UserNotifier userProvider = context.read<UserNotifier>();
-      userProvider.setGroups(
-          userProvider.user!.groups +
-              [
-                Group(
-                  id: decoded['data']['group_id'],
-                  name: decoded['data']['group_name'],
-                  currency: Currency.fromCode(decoded['data']['currency']),
-                )
-              ],
-          notify: false);
-      userProvider.setGroup(userProvider.user!.groups.last);
-      return BoolFutureOutput.True;
-    } catch (_) {
-      rethrow;
-    }
-  }
-
-  void checkInvitation() async {
-    if (token == '') {
-      setState(() {
-        initeTokenError = null;
-        loading = false;
-      });
-      return;
-    }
-    try {
-      setState(() {
-        initeTokenError = null;
-        loading = true;
-      });
-      final response =
-          await Http.get(uri: generateUri(GetUriKeys.groupFromToken, context, params: [token]), useCache: false);
-      final decoded = jsonDecode(response.body);
-      group = Group(
-        currency: Currency.fromCode(decoded['currency']),
-        name: decoded['name'],
-        id: decoded['id'],
-        adminApproval: decoded['admin_approval'] == 1,
-      );
-      guests = (decoded['guests'] as List)
-          .map((e) => Guest(
-                id: e['id'],
-                groupId: e['member_data']['group_id'],
-                nickname: e['member_data']['nickname'],
-              ))
-          .toList();
-    } catch (e) {
-      if (e is String) {
-        setState(() {
-          initeTokenError = e;
-        });
-      } else {
-        setState(() {
-          initeTokenError = e.toString();
-        });
-      }
-    } finally {
-      setState(() => loading = false);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,11 +46,112 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
       (provider) => provider.user!.groups,
     );
 
+    final contextToken = context.select<InviteUrlState, String?>(
+      (invite) => invite.inviteUrl?.split('/').lastOrNull,
+    );
+    final editingToken = useState(contextToken ?? "");
+    final token = useState(contextToken ?? "");
+    final TextEditingController nicknameController = useTextEditingController();
+    final selectedGuestId = useState<int?>(null);
+    final inviteTokenError = useState<String?>(null);
+    final selectGuestError = useState<String?>(null);
+    final loading = useState<bool>(false);
+    final group = useState<Group?>(null);
+    final timer = useRef<Timer?>(null);
+    final guests = useState<List<Guest>?>(null);
+
+    final joinGroup = useCallback(() async {
+      try {
+        String nickname = (selectedGuestId.value == null || selectedGuestId.value == -1)
+            ? nicknameController.text[0].toUpperCase() + nicknameController.text.substring(1)
+            : guests.value!.firstWhere((element) => element.id == selectedGuestId.value).nickname;
+        Map<String, dynamic> body = {
+          'invitation_token': token.value,
+          'nickname': nickname,
+          'merge_with_member_id': selectedGuestId.value,
+        };
+        Response response = await Http.post(uri: '/join', body: body);
+
+        if (response.body == "") {
+          return BoolFutureOutput.False;
+        }
+        Map<String, dynamic> decoded = jsonDecode(response.body);
+        UserNotifier userProvider = context.read<UserNotifier>();
+        userProvider.setGroups(
+            userProvider.user!.groups +
+                [
+                  Group(
+                    id: decoded['data']['group_id'],
+                    name: decoded['data']['group_name'],
+                    currency: Currency.fromCode(decoded['data']['currency']),
+                  )
+                ],
+            notify: false);
+        userProvider.setGroup(userProvider.user!.groups.last);
+        return BoolFutureOutput.True;
+      } catch (_) {
+        rethrow;
+      }
+    }, [nicknameController.text, selectedGuestId.value, token.value]);
+
+    void setEditingToken(String value) {
+      editingToken.value = value;
+      timer.value?.cancel();
+      if (value != '') {
+        timer.value = Timer(
+          Duration(milliseconds: 500),
+          () {
+            token.value = value;
+          },
+        );
+      }
+    }
+
+    useEffect(() {
+      if (token.value == '') {
+        inviteTokenError.value = null;
+        loading.value = false;
+        return;
+      }
+      inviteTokenError.value = null;
+      loading.value = true;
+      Http.get(uri: generateUri(GetUriKeys.groupFromToken, context, params: [token.value]), useCache: false)
+          .then((response) {
+        final decoded = jsonDecode(response.body);
+        group.value = Group(
+          currency: Currency.fromCode(decoded['currency']),
+          name: decoded['name'],
+          id: decoded['id'],
+          adminApproval: decoded['admin_approval'] == 1,
+        );
+        guests.value = (decoded['guests'] as List)
+            .map((e) => Guest(
+                  id: e['id'],
+                  groupId: e['member_data']['group_id'],
+                  nickname: e['member_data']['nickname'],
+                ))
+            .toList();
+
+        loading.value = false;
+      }).catchError((error) {
+        if (error is String) {
+          inviteTokenError.value = error;
+        } else {
+          inviteTokenError.value = error.toString();
+        }
+        loading.value = false;
+        group.value = null;
+        guests.value = null;
+      });
+      return null;
+    }, [token.value]);
+
     return PopScope(
       canPop: false, // onPopInvoked handles the navigation, TODO: refactor
       onPopInvoked: (didPop) {
         if (user.group != null) {
           Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => MainPage()), (r) => false);
+          context.read<InviteUrlState>().inviteUrl = null;
         }
       },
       child: Form(
@@ -170,7 +169,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                   )
                 : null,
           ),
-          drawer: !(widget.fromAuth || user.group != null)
+          drawer: !(fromAuth || user.group != null)
               ? null
               : Drawer(
                   shape: RoundedRectangleBorder(
@@ -289,13 +288,12 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                             children: [
                               Column(
                                 children: [
-                                  if (group == null)
+                                  if (group.value == null)
                                     Column(
                                       children: [
                                         Visibility(
-                                          visible: widget.inviteURL == null &&
-                                              !kIsWeb &&
-                                              (Platform.isAndroid || Platform.isIOS),
+                                          visible:
+                                              contextToken == null && !kIsWeb && (Platform.isAndroid || Platform.isIOS),
                                           child: Column(
                                             children: [
                                               GradientButton.icon(
@@ -310,8 +308,7 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                                         )
                                                         .then((value) => scanResult = value);
                                                     if (scanResult != null) {
-                                                      setState(() => token = scanResult!);
-                                                      checkInvitation();
+                                                      token.value = scanResult!;
                                                     }
                                                   } else {
                                                     Fluttertoast.showToast(
@@ -342,19 +339,9 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                             prefixIcon: Icon(
                                               Icons.mail,
                                             ),
-                                            errorText: initeTokenError,
+                                            errorText: inviteTokenError.value,
                                           ),
-                                          onChanged: (value) {
-                                            timer?.cancel();
-                                            if (value != '') {
-                                              timer = Timer(
-                                                Duration(milliseconds: 200),
-                                                checkInvitation,
-                                              );
-                                            }
-                                            setState(() => token = value);
-                                          },
-                                          controller: _tokenController,
+                                          onChanged: setEditingToken,
                                         ),
                                       ],
                                     )
@@ -381,17 +368,17 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                                   children: [
                                                     Text(
-                                                      group!.name,
+                                                      group.value!.name,
                                                       style: Theme.of(context).textTheme.bodyMedium,
                                                     ),
                                                     Text(
-                                                      "${group!.currency.code} (${group!.currency.symbol})",
+                                                      "${group.value!.currency.code} (${group.value!.currency.symbol})",
                                                       style: Theme.of(context).textTheme.bodyMedium,
                                                     ),
                                                   ],
                                                 ),
                                               ),
-                                              if (guests?.isNotEmpty ?? false)
+                                              if (guests.value?.isNotEmpty ?? false)
                                                 Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
@@ -409,18 +396,19 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                                             scrollDirection: Axis.horizontal,
                                                             child: Row(
                                                               children: [
-                                                                for (Guest guest in guests!)
+                                                                for (Guest guest in guests.value!)
                                                                   Padding(
                                                                     padding: const EdgeInsets.only(right: 5),
                                                                     child: ChoiceChip(
                                                                       label: Text(guest.nickname),
-                                                                      selected: selectedGuestId == guest.id,
-                                                                      onSelected: (value) => setState(() {
-                                                                        selectedGuestId = selectedGuestId == guest.id
-                                                                            ? null
-                                                                            : guest.id;
-                                                                        selectGuestError = null;
-                                                                      }),
+                                                                      selected: selectedGuestId.value == guest.id,
+                                                                      onSelected: (value) {
+                                                                        selectedGuestId.value =
+                                                                            selectedGuestId.value == guest.id
+                                                                                ? null
+                                                                                : guest.id;
+                                                                        selectGuestError.value = null;
+                                                                      },
                                                                     ),
                                                                   ),
                                                               ],
@@ -429,22 +417,23 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                                           Divider(),
                                                           ChoiceChip(
                                                             label: Text('invitation-field.none'.tr()),
-                                                            selected: selectedGuestId == -1,
-                                                            onSelected: (value) => setState(() {
-                                                              selectedGuestId = -1;
-                                                              selectGuestError = null;
-                                                            }),
+                                                            selected: selectedGuestId.value == -1,
+                                                            onSelected: (value) {
+                                                              selectedGuestId.value = -1;
+                                                              selectGuestError.value = null;
+                                                            },
                                                           ),
                                                         ],
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                              if (selectedGuestId == -1 || (guests?.isEmpty ?? false))
+                                              if (selectedGuestId.value == -1 || (guests.value?.isEmpty ?? false))
                                                 Padding(
-                                                  padding: EdgeInsets.only(top: (guests?.isEmpty ?? false) ? 16 : 8),
+                                                  padding:
+                                                      EdgeInsets.only(top: (guests.value?.isEmpty ?? false) ? 16 : 8),
                                                   child: TextFormField(
-                                                    controller: _nicknameController,
+                                                    controller: nicknameController,
                                                     decoration: InputDecoration(
                                                       labelText: 'nickname-in-group'.tr(),
                                                     ),
@@ -456,11 +445,11 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                                     ],
                                                   ),
                                                 ),
-                                              if (selectGuestError != null)
+                                              if (selectGuestError.value != null)
                                                 Padding(
                                                   padding: const EdgeInsets.only(top: 8),
                                                   child: Text(
-                                                    selectGuestError!,
+                                                    selectGuestError.value!,
                                                     style: Theme.of(context).textTheme.bodySmall!.copyWith(
                                                           color: Theme.of(context).colorScheme.error,
                                                         ),
@@ -478,22 +467,20 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
                                               visualDensity: VisualDensity.compact,
                                               icon: Icon(Icons.close),
                                               onPressed: () {
-                                                setState(() {
-                                                  _tokenController.clear();
-                                                  token = '';
-                                                  group = null;
-                                                  selectedGuestId = null;
-                                                  _nicknameController.text = ''; // TODO: initial value from cache
-                                                  selectGuestError = null;
-                                                  guests = null;
-                                                  initeTokenError = null;
-                                                });
+                                                token.value = '';
+                                                editingToken.value = '';
+                                                group.value = null;
+                                                selectedGuestId.value = null;
+                                                nicknameController.text = ''; // TODO: initial value from cache
+                                                selectGuestError.value = null;
+                                                guests.value = null;
+                                                inviteTokenError.value = null;
                                               },
                                             ),
                                           ),
                                       ],
                                     ),
-                                  if (loading) LinearProgressIndicator(),
+                                  if (loading.value) LinearProgressIndicator(),
                                 ],
                               ),
                             ],
@@ -515,29 +502,22 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
             ),
             onPressed: () {
               // Has not pasted invitation token yet/it hasn't loaded yet
-              if (guests == null) {
+              if (guests.value == null) {
                 _formKey.currentState!.validate();
                 return;
               }
               // Guest has not been selected and there are guests available
-              if (guests!.isNotEmpty && selectedGuestId == null) {
-                setState(() {
-                  selectGuestError = 'invitation-field.select-guest.error'.tr();
-                });
+              if (guests.value!.isNotEmpty && selectedGuestId.value == null) {
+                selectGuestError.value = 'invitation-field.select-guest.error'.tr();
                 return;
               } else {
-                setState(() {
-                  selectGuestError = null;
-                });
+                selectGuestError.value = null;
               }
               // Form handles text field validation
               if (_formKey.currentState!.validate()) {
-                String nickname = (selectedGuestId == null || selectedGuestId == -1)
-                    ? _nicknameController.text[0].toUpperCase() + _nicknameController.text.substring(1)
-                    : guests!.firstWhere((element) => element.id == selectedGuestId).nickname;
                 showFutureOutputDialog(
                   context: context,
-                  future: _joinGroup(token, nickname, selectedGuestId == -1 ? null : selectedGuestId),
+                  future: joinGroup(),
                   outputCallbacks: {
                     BoolFutureOutput.True: () async {
                       EventBus.instance.fire(EventBus.refreshGroups);
@@ -565,3 +545,31 @@ class _JoinGroupPageState extends State<JoinGroupPage> {
     );
   }
 }
+
+// class _JoinGroupPageState extends State<JoinGroupPage> {
+//   late String token;
+//   late User user;
+//   Timer? timer;
+//   String? initeTokenError;
+//   bool loading = false;
+//   Group? group;
+//   List<Guest>? guests;
+//   final TextEditingController _tokenController = TextEditingController();
+//   int? selectedGuestId;
+//   late TextEditingController _nicknameController;
+//   String? selectGuestError;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     user = context.read<UserNotifier>().user!;
+//     final inviteUrl = context.read<InviteUrlState>().inviteUrl;
+//     _nicknameController = TextEditingController(); // TODO: initial value from cache
+//     token = inviteUrl?.split('/').lastOrNull ?? "";
+//     _tokenController.text = token;
+//     checkInvitation();
+//   }
+
+//   final _formKey = GlobalKey<FormState>();
+
+// }

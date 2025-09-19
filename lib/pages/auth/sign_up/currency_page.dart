@@ -1,7 +1,6 @@
 import 'package:csocsort_szamla/components/helpers/currency_picker_dropdown.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
-import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/pages/app/join_group_page.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -84,7 +83,6 @@ class _CurrencyPageState extends State<CurrencyPage> {
                                     MaterialPageRoute(
                                       builder: (context) => JoinGroupPage(
                                         fromAuth: true,
-                                        inviteURL: context.read<InviteUrlState>().inviteUrl,
                                       ),
                                     ),
                                     (r) => false,

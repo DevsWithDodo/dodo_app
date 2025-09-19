@@ -4,7 +4,6 @@ import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/helpers/http.dart';
 import 'package:csocsort_szamla/helpers/providers/app_config_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/app_theme_provider.dart';
-import 'package:csocsort_szamla/helpers/providers/invite_url_provider.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/pages/app/join_group_page.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
@@ -112,7 +111,10 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                             duration: Duration(hours: 10),
                             content: Text(
                               'Test Mode',
-                              style: Theme.of(context).textTheme.labelLarge!.copyWith(color: Theme.of(context).colorScheme.onSecondary),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge!
+                                  .copyWith(color: Theme.of(context).colorScheme.onSecondary),
                             ),
                             action: SnackBarAction(
                               label: 'Back to Normal Mode',
@@ -137,7 +139,8 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                     }
                   },
                   child: ColorFiltered(
-                    colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.primary, context.watch<AppThemeState>().themeName.isDodo() && !kIsWeb ? BlendMode.dst : BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.primary,
+                        context.watch<AppThemeState>().themeName.isDodo() && !kIsWeb ? BlendMode.dst : BlendMode.srcIn),
                     child: Image(
                       image: AssetImage('assets/dodo.png'),
                       height: MediaQuery.of(context).size.width / 3,
@@ -148,7 +151,8 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
               Center(
                 child: Text(
                   'title'.tr().toUpperCase(),
-                  style: TextStyle(fontSize: 50, fontWeight: FontWeight.w300, color: Theme.of(context).colorScheme.onSurface),
+                  style: TextStyle(
+                      fontSize: 50, fontWeight: FontWeight.w300, color: Theme.of(context).colorScheme.onSurface),
                 ),
               ),
               Flexible(
@@ -289,16 +293,12 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
             ),
             (r) => false),
         LoginFutureOutputs.joinGroup: () => Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                  builder: (context) => JoinGroupPage(
-                        inviteURL: context.read<InviteUrlState>().inviteUrl,
-                      )),
+              MaterialPageRoute(builder: (context) => JoinGroupPage()),
               (route) => false,
             ),
         LoginFutureOutputs.joinGroupFromAuth: () => Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(
                   builder: (context) => JoinGroupPage(
-                        inviteURL: context.read<InviteUrlState>().inviteUrl,
                         fromAuth: true,
                       )),
               (route) => false,
