@@ -17,20 +17,32 @@ enum RasterizedShapeType {
 
   final int width;
   final int height;
+  int get numVariations => switch (this) {
+        RasterizedShapeType.square => 2,
+        RasterizedShapeType.lineVerticalLong => 1,
+        RasterizedShapeType.lineHorizontalLong => 1,
+        RasterizedShapeType.lineVerticalShort => 1,
+        RasterizedShapeType.lineHorizontalShort => 1,
+        RasterizedShapeType.dot => 3,
+      };
   const RasterizedShapeType(this.width, this.height);
 }
 
 class RasterizedShape {
   final RasterizedShapeType type;
   final Offset position;
+  final int variation;
+  final bool usePrimary;
 
-  RasterizedShape({required this.type, required this.position});
+  RasterizedShape({required this.type, required this.position, required this.variation, required this.usePrimary});
 }
 
 class EmptyShape {
   final Offset position;
+  final int variation;
+  final double colorOffset = Random().nextDouble() * 0.1;
 
-  EmptyShape({required this.position});
+  EmptyShape({required this.position, required this.variation});
 }
 
 class GreedyRasterizer {
@@ -53,7 +65,12 @@ class GreedyRasterizer {
       for (int r = 0; r <= rows - type.height; r++) {
         for (int c = 0; c <= cols - type.width; c++) {
           if (_canPlaceShape(r, c, type)) {
-            shapes.add(RasterizedShape(type: type, position: Offset(c.toDouble(), r.toDouble())));
+            shapes.add(RasterizedShape(
+              type: type,
+              position: Offset(c.toDouble(), r.toDouble()),
+              variation: Random().nextInt(type.numVariations),
+              usePrimary: Random().nextDouble() < 0.2,
+            ));
             _markVisited(r, c, type);
           }
         }
@@ -69,7 +86,12 @@ class GreedyRasterizer {
           if (Random().nextDouble() < 0.4) {
             continue;
           }
-          emptyShapes.add(EmptyShape(position: Offset(c.toDouble(), r.toDouble())));
+          emptyShapes.add(
+            EmptyShape(
+              position: Offset(c.toDouble(), r.toDouble()),
+              variation: Random().nextInt(RasterizedShapeType.dot.numVariations),
+            ),
+          );
         }
       }
     }
@@ -192,9 +214,25 @@ class QrPainter extends CustomPainter {
 
       // Outer circle
       canvas.drawCircle(center, outerRadius, paint);
-      final verySunnyPath = _buildVerySunnyPath(Size(innerRadius, innerRadius)).shift(
-        Offset(center.dx - innerRadius + 4, center.dy - innerRadius + 4),
+      var verySunnyPath = _buildVerySunnyPath(Size(innerRadius, innerRadius));
+      verySunnyPath = verySunnyPath.shift(
+        Offset(center.dx - innerRadius / 2 - verySunnyPath.getBounds().left,
+            center.dy - innerRadius / 2 - verySunnyPath.getBounds().top),
       );
+
+      print(Size(innerRadius, innerRadius));
+      print(center.dx - innerRadius / 2);
+      print(verySunnyPath.getBounds());
+
+      final rect = Rect.fromLTWH(
+        center.dx - innerRadius / 2,
+        center.dy - innerRadius / 2,
+        innerRadius,
+        innerRadius,
+      );
+      print(rect);
+      // canvas.drawRect(rect, paint);
+
       canvas.drawPath(verySunnyPath, paint..style = PaintingStyle.fill);
     }
 
@@ -202,7 +240,6 @@ class QrPainter extends CustomPainter {
     drawPositionMarker(0, moduleCount - 7); // Top-right
     drawPositionMarker(moduleCount - 7, 0); // Bottom-left
 
-    final randomGenerator = Random();
     for (var emptyShape in emptyShapes) {
       final rect = Rect.fromLTWH(
         emptyShape.position.dx * cellSize + cellPadding / 2,
@@ -210,9 +247,8 @@ class QrPainter extends CustomPainter {
         cellSize - cellPadding,
         cellSize - cellPadding,
       );
-      paint.color = colorScheme.onSurfaceVariant.withValues(alpha: 0.05 + randomGenerator.nextDouble() * 0.1);
-      final random = randomGenerator.nextInt(3);
-      switch (random) {
+      paint.color = colorScheme.onSurfaceVariant.withValues(alpha: 0.05 + emptyShape.colorOffset);
+      switch (emptyShape.variation) {
         case 0:
           canvas.drawCircle(rect.center, rect.width * 0.5, paint);
           break;
@@ -225,8 +261,8 @@ class QrPainter extends CustomPainter {
       }
     }
 
-    for (var (i, shape) in shapes.indexed) {
-      if (Random().nextDouble() < 0.2) {
+    for (var shape in shapes) {
+      if (shape.usePrimary) {
         paint.color = colorScheme.tertiary;
       } else {
         paint.color = colorScheme.primary;
@@ -241,8 +277,8 @@ class QrPainter extends CustomPainter {
 
       if (shape.type == RasterizedShapeType.dot) {
         final radius = ((cellSize - cellPadding) * 0.5).clamp(1.0, double.infinity);
-        final random = Random().nextInt(3);
-        switch (random) {
+
+        switch (shape.variation) {
           case 0:
             canvas.drawCircle(rect.center, radius, paint);
             break;
@@ -268,12 +304,15 @@ class QrPainter extends CustomPainter {
         );
         canvas.drawRRect(rrect, paint);
       } else if (shape.type == RasterizedShapeType.square) {
-        if (Random().nextBool()) {
-          canvas.drawCircle(rect.center, rect.width * 0.5, paint);
-          continue;
+        switch (shape.variation) {
+          case 0:
+            canvas.drawCircle(rect.center, rect.width * 0.5, paint);
+            break;
+          case 1:
+            final path = _buildFourSidedCookiePath(rect.size).shift(rect.topLeft);
+            canvas.drawPath(path, paint);
+            break;
         }
-        final path = _buildFourSidedCookiePath(rect.size).shift(rect.topLeft);
-        canvas.drawPath(path, paint);
       }
     }
   }

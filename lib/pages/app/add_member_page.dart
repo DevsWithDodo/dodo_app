@@ -200,12 +200,6 @@ class _AddMemberPageState extends State<AddMemberPage> with SingleTickerProvider
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: QrCode(data: 'https://dodoapp.net/join/${snapshot.data}'),
-                      // PrettyQrView.data(
-                      //   data: 'http://dodoapp.net/join/${snapshot.data}',
-                      //   decoration: PrettyQrDecoration(
-                      //     shape: PrettyQrSmoothSymbol(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                      //   ),
-                      // ),
                     ),
                   ),
                   SizedBox(height: 10),
