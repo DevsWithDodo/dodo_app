@@ -12,7 +12,7 @@ description: Csocsort
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 
-version: 4.7.1+5138 # 5 is the number of an appbundle, the digits after is the version number
+version: 4.7.2+5139 # 5 is the number of an appbundle, the digits after is the version number
 
 environment:
   sdk: '>=3.0.0'
