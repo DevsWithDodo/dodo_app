@@ -26,6 +26,7 @@ import 'package:csocsort_szamla/pages/app/receipt_scanner_page.dart';
 import 'package:customized_keyboard/customized_keyboard.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:expandable/expandable.dart';
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -228,7 +229,7 @@ class _PurchasePageState extends State<PurchasePage> {
                           child: Column(
                             children: <Widget>[
                               switch (membersSnapshot.hasData) {
-                                false => Container(),
+                                (false || kIsWeb) => Container(),
                                 true => Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [

@@ -270,6 +270,11 @@ class PurchaserSelection extends HookWidget {
                                   label: Text(member.nickname),
                                   selected: member.id == newSelctedId.value,
                                   selectedColor: context.colorScheme.primaryContainer,
+                                  labelStyle: context.textTheme.labelLarge!.copyWith(
+                                    color: member.id == newSelctedId.value
+                                        ? context.colorScheme.onPrimaryContainer
+                                        : context.colorScheme.onSurface,
+                                  ),
                                   showCheckmark: false,
                                   onSelected: (animationValue == 1.0 || (animationValue == 0.0 && isTheSelectedChip))
                                       ? (_) => onChipTapped(orderedIndex)

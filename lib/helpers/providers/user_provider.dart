@@ -204,7 +204,7 @@ class UserNotifier extends ChangeNotifier {
         setGroup(currentGroup, notify: false);
 
         String? inviteUrl = context.read<InviteUrlState>().inviteUrl;
-        return inviteUrl == null ? LoginFutureOutputs.main : LoginFutureOutputs.joinGroup;
+        return (inviteUrl == null || kIsWeb) ? LoginFutureOutputs.main : LoginFutureOutputs.joinGroup;
       } else {
         Map<String, dynamic> error = jsonDecode(response.body);
         throw error['error'];

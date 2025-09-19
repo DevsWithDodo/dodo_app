@@ -6,6 +6,7 @@ import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
 import 'package:csocsort_szamla/main.dart';
 import 'package:csocsort_szamla/pages/app/join_group_page.dart';
 import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -20,13 +21,15 @@ class InviteUrlProvider extends StatelessWidget {
     });
 
     _appLinks.allStringLinkStream.listen((link) {
+      if (kIsWeb) return;
       _inviteUrl.inviteUrl = link;
 
       BuildContext context = getIt.get<NavigationService>().navigatorKey.currentContext!;
       if (context.read<UserNotifier>().user != null) {
         getIt.get<NavigationService>().push(
               MaterialPageRoute(
-                builder: (context) => JoinGroupPage(fromAuth: (context.read<UserNotifier>().user?.group == null) ? true : false),
+                builder: (context) =>
+                    JoinGroupPage(fromAuth: (context.read<UserNotifier>().user?.group == null) ? true : false),
               ),
             );
       } else {

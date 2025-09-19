@@ -7,6 +7,7 @@ import 'package:csocsort_szamla/pages/app/join_group_page.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
 import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +30,7 @@ class App extends StatelessWidget {
       navigatorKey: getIt.get<NavigationService>().navigatorKey,
       home: userState.user == null
           ? LoginOrRegisterPage()
-          : (link != null)
+          : (link != null && !kIsWeb)
               ? JoinGroupPage(
                   inviteURL: link,
                   fromAuth: (userState.user?.group == null) ? true : false,
