@@ -220,19 +220,6 @@ class QrPainter extends CustomPainter {
             center.dy - innerRadius / 2 - verySunnyPath.getBounds().top),
       );
 
-      print(Size(innerRadius, innerRadius));
-      print(center.dx - innerRadius / 2);
-      print(verySunnyPath.getBounds());
-
-      final rect = Rect.fromLTWH(
-        center.dx - innerRadius / 2,
-        center.dy - innerRadius / 2,
-        innerRadius,
-        innerRadius,
-      );
-      print(rect);
-      // canvas.drawRect(rect, paint);
-
       canvas.drawPath(verySunnyPath, paint..style = PaintingStyle.fill);
     }
 
