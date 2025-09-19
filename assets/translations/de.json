@@ -590,7 +590,9 @@
     "premium-theme-dialog.unlock": "Premium-Themen freischalten",
 
     "social-login.unsupported.title": "Social login nicht unterstützt",
-    "social-login.unsupported.content": "Social login wird auf dieser Plattform nicht unterstützt. Bitte verwende eine andere Anmeldemethode."
+    "social-login.unsupported.content": "Social login wird auf dieser Plattform nicht unterstützt. Bitte verwende eine andere Anmeldemethode.",
+
+    "join-community": "Unsere Community"
 
 
 }

@@ -578,6 +578,8 @@
     "premium-theme-dialog.unlock": "Unlock Premium Theme",
 
     "social-login.unsupported.title": "Social login not supported",
-    "social-login.unsupported.content": "Social login is not supported on this platform. Please use another login method."
+    "social-login.unsupported.content": "Social login is not supported on this platform. Please use another login method.",
+
+    "join-community": "Join our community"
 
 }

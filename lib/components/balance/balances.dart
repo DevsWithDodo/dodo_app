@@ -219,12 +219,15 @@ class BalanceMemberEntry extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         onTap: () {
           showModalBottomSheet(
+              useSafeArea: true,
               context: context,
               isScrollControlled: true,
-              builder: (context) => SingleChildScrollView(
-                    child: MemberAllInfo(
-                      member: member,
-                      isCurrentUserAdmin: isCurrentUserAdmin,
+              builder: (context) => SafeArea(
+                    child: SingleChildScrollView(
+                      child: MemberAllInfo(
+                        member: member,
+                        isCurrentUserAdmin: isCurrentUserAdmin,
+                      ),
                     ),
                   ));
         },

@@ -29,6 +29,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../components/balance/balances.dart';
 import '../../components/helpers/ad_unit.dart';
@@ -137,6 +138,7 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
         .map<Widget>((group) => Padding(
               padding: EdgeInsets.symmetric(horizontal: 12),
               child: ListTile(
+                dense: true,
                 tileColor: group.id == currentGroupId ? theme.colorScheme.secondaryContainer : Colors.transparent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(28)),
@@ -395,202 +397,214 @@ class _MainPageState extends State<MainPage> with TickerProviderStateMixin {
 
   Widget _drawer() {
     ThemeName themeName = context.watch<AppThemeState>().themeName;
-    return Consumer<UserNotifier>(builder: (context, appStateProvider, _) {
-      return Ink(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                controller: ScrollController(),
-                children: <Widget>[
-                  DrawerHeader(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Expanded(
-                          child: ColorFiltered(
-                            colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.primary,
-                                (themeName.isDodo() || themeName.isDog()) && !kIsWeb ? BlendMode.dst : BlendMode.srcIn),
-                            child: Image(
-                              image: themeName.isDog()
-                                  ? AssetImage('assets/images/dogLightTheme/dog3.png')
-                                  : AssetImage('assets/dodo.png'),
+    return SafeArea(
+      child: Consumer<UserNotifier>(builder: (context, appStateProvider, _) {
+        return Ink(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  controller: ScrollController(),
+                  children: <Widget>[
+                    DrawerHeader(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Expanded(
+                            child: ColorFiltered(
+                              colorFilter: ColorFilter.mode(
+                                  Theme.of(context).colorScheme.primary,
+                                  (themeName.isDodo() || themeName.isDog()) && !kIsWeb
+                                      ? BlendMode.dst
+                                      : BlendMode.srcIn),
+                              child: Image(
+                                image: themeName.isDog()
+                                    ? AssetImage('assets/images/dogLightTheme/dog3.png')
+                                    : AssetImage('assets/dodo.png'),
+                              ),
                             ),
                           ),
-                        ),
-                        Text(
-                          themeName.isDog() ? 'DOGGO' : 'title'.tr().toUpperCase(),
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall!
-                              .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                        ),
-                        if (appStateProvider.user!.username != null && appStateProvider.user!.username != '')
                           Text(
-                            'hi'.tr(args: [appStateProvider.user!.username!]),
+                            themeName.isDog() ? 'DOGGO' : 'title'.tr().toUpperCase(),
                             style: Theme.of(context)
                                 .textTheme
-                                .bodyLarge!
-                                .copyWith(color: Theme.of(context).colorScheme.primary),
+                                .headlineSmall!
+                                .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
-                      ],
+                          if (appStateProvider.user!.username != null && appStateProvider.user!.username != '')
+                            Text(
+                              'hi'.tr(args: [appStateProvider.user!.username!]),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge!
+                                  .copyWith(color: Theme.of(context).colorScheme.primary),
+                            ),
+                        ],
+                      ),
+                    ),
+                    FutureBuilder(
+                      future: _groups,
+                      builder: (context, AsyncSnapshot<List<Group>> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          if (snapshot.hasData) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              child: ExpansionTile(
+                                dense: true,
+                                tilePadding: EdgeInsets.symmetric(horizontal: 15),
+                                collapsedShape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(28),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(28),
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                title: Text(
+                                  'groups'.tr(),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge!
+                                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                ),
+                                leading: Icon(Icons.group, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                children: _generateListTiles(snapshot.data!),
+                              ),
+                            );
+                          } else {
+                            return ErrorMessage(
+                              error: snapshot.error.toString(),
+                              errorLocation: 'home_groups',
+                              onTap: () {
+                                setState(() {
+                                  _groups = null;
+                                  _groups = _getGroups();
+                                });
+                              },
+                            );
+                          }
+                        }
+                        return LinearProgressIndicator(
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                        );
+                      },
+                    ),
+                    DrawerTile(
+                      dense: true,
+                      icon: Icons.group_add,
+                      label: 'join_group'.tr(),
+                      builder: (context) => JoinGroupPage(),
+                      onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
+                    ),
+                    DrawerTile(
+                      dense: true,
+                      icon: Icons.library_add,
+                      label: 'create_group'.tr(),
+                      builder: (context) => CreateGroupPage(),
+                      onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
+                    ),
+                  ],
+                ),
+              ),
+              FutureBuilder(
+                future: _sumBalance,
+                builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      Currency currency = Currency.fromCode(snapshot.data!['currency']);
+                      double balance = snapshot.data!['balance'] * 1.0;
+                      return Text('Σ: ${balance.toMoneyString(currency, withSymbol: true)}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(color: Theme.of(context).colorScheme.secondary));
+                    }
+                  }
+                  return Text(
+                    'Σ: ...',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(color: Theme.of(context).colorScheme.secondary),
+                  );
+                },
+              ),
+              Divider(),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.0),
+                child: ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(28)),
+                  ),
+                  dense: true,
+                  onTap: () async {
+                    if (!context.read<AppConfig>().isIAPPlatformEnabled) {
+                      showDialog(builder: (context) => IAPNotSupportedDialog(), context: context);
+                    } else {
+                      await Navigator.push(context, MaterialPageRoute(builder: (context) => StorePage()));
+                      EventBus.instance.fire(EventBus.refreshMainDialog);
+                    }
+                  },
+                  leading: ColorFiltered(
+                    colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSurfaceVariant, BlendMode.srcIn),
+                    child: Image.asset(
+                      'assets/dodo.png',
+                      width: 25,
                     ),
                   ),
-                  FutureBuilder(
-                    future: _groups,
-                    builder: (context, AsyncSnapshot<List<Group>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        if (snapshot.hasData) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: ExpansionTile(
-                              tilePadding: EdgeInsets.symmetric(horizontal: 15),
-                              collapsedShape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(28),
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(28),
-                              ),
-                              clipBehavior: Clip.antiAlias,
-                              title: Text(
-                                'groups'.tr(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelLarge!
-                                    .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                              ),
-                              leading: Icon(Icons.group, color: Theme.of(context).colorScheme.onSurfaceVariant),
-                              children: _generateListTiles(snapshot.data!),
-                            ),
-                          );
-                        } else {
-                          return ErrorMessage(
-                            error: snapshot.error.toString(),
-                            errorLocation: 'home_groups',
-                            onTap: () {
-                              setState(() {
-                                _groups = null;
-                                _groups = _getGroups();
-                              });
-                            },
-                          );
-                        }
-                      }
-                      return LinearProgressIndicator(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                      );
-                    },
+                  title: Text(
+                    'in_app_purchase'.tr(),
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelLarge!
+                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
-                  DrawerTile(
-                    icon: Icons.group_add,
-                    label: 'join_group'.tr(),
-                    builder: (context) => JoinGroupPage(),
-                    onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
-                  ),
-                  DrawerTile(
-                    icon: Icons.library_add,
-                    label: 'create_group'.tr(),
-                    builder: (context) => CreateGroupPage(),
-                    onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
-                  ),
-                ],
-              ),
-            ),
-            FutureBuilder(
-              future: _sumBalance,
-              builder: (context, AsyncSnapshot<dynamic> snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.hasData) {
-                    Currency currency = Currency.fromCode(snapshot.data!['currency']);
-                    double balance = snapshot.data!['balance'] * 1.0;
-                    return Text('Σ: ${balance.toMoneyString(currency, withSymbol: true)}',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(color: Theme.of(context).colorScheme.secondary));
-                  }
-                }
-                return Text(
-                  'Σ: ...',
-                  style:
-                      Theme.of(context).textTheme.bodyMedium!.copyWith(color: Theme.of(context).colorScheme.secondary),
-                );
-              },
-            ),
-            Divider(),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
-              child: ListTile(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(28)),
                 ),
+              ),
+              DrawerTile(
+                icon: Icons.groups,
+                label: 'join-community'.tr(),
+                onTap: () => launchUrlString(
+                  "https://www.patreon.com/cw/dodo_bill_splitting",
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+              DrawerTile(
+                icon: Icons.palette,
+                label: 'customization'.tr(),
+                builder: (context) => CustomizePage(),
+                onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
                 dense: true,
-                onTap: () async {
-                  if (!context.read<AppConfig>().isIAPPlatformEnabled) {
-                    showDialog(builder: (context) => IAPNotSupportedDialog(), context: context);
-                  } else {
-                    await Navigator.push(context, MaterialPageRoute(builder: (context) => StorePage()));
-                    EventBus.instance.fire(EventBus.refreshMainDialog);
-                  }
-                },
-                leading: ColorFiltered(
-                  colorFilter: ColorFilter.mode(Theme.of(context).colorScheme.onSurfaceVariant, BlendMode.srcIn),
-                  child: Image.asset(
-                    'assets/dodo.png',
-                    width: 25,
-                  ),
-                ),
-                subtitle: Text(
-                  'in_app_purchase_description'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                ),
-                title: Text(
-                  'in_app_purchase'.tr(),
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                ),
               ),
-            ),
-            DrawerTile(
-              icon: Icons.palette,
-              label: 'customization'.tr(),
-              builder: (context) => CustomizePage(),
-              onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
-            ),
-            DrawerTile(
-              dense: true,
-              icon: Icons.account_circle,
-              label: 'profile'.tr(),
-              builder: (context) => UserSettingsPage(),
-              onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
-            ),
-            Divider(),
-            DrawerTile(
-              dense: true,
-              label: 'logout'.tr(),
-              icon: Icons.exit_to_app,
-              onTap: () async {
-                context.read<UserNotifier>().logout();
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
-                  (r) => false,
-                );
-              },
-            ),
-          ],
-        ),
-      );
-    });
+              DrawerTile(
+                dense: true,
+                icon: Icons.account_circle,
+                label: 'profile'.tr(),
+                builder: (context) => UserSettingsPage(),
+                onReturn: () => EventBus.instance.fire(EventBus.refreshMainDialog),
+              ),
+              Divider(),
+              DrawerTile(
+                dense: true,
+                label: 'logout'.tr(),
+                icon: Icons.exit_to_app,
+                onTap: () async {
+                  context.read<UserNotifier>().logout();
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
+                    (r) => false,
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      }),
+    );
   }
 
   List<Widget> _bottomNavbarItems() {

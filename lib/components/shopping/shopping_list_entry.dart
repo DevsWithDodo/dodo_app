@@ -67,15 +67,19 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
   Widget build(BuildContext context) {
     String name = widget.shoppingRequest.name;
     User user = context.watch<UserNotifier>().user!;
-    TextStyle mainTextStyle = Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface);
-    TextStyle subTextStyle = Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurface);
+    TextStyle mainTextStyle =
+        Theme.of(context).textTheme.bodyLarge!.copyWith(color: Theme.of(context).colorScheme.onSurface);
+    TextStyle subTextStyle =
+        Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.onSurface);
     BoxDecoration boxDecoration = BoxDecoration(
       borderRadius: BorderRadius.circular(12),
       color: Theme.of(context).colorScheme.surfaceContainer,
     );
     Icon icon = Icon(
       Icons.check_box_outlined,
-      color: widget.shoppingRequest.requesterId == user.id ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary,
+      color: widget.shoppingRequest.requesterId == user.id
+          ? Theme.of(context).colorScheme.primary
+          : Theme.of(context).colorScheme.secondary,
     );
     return Dismissible(
       key: UniqueKey(),
@@ -147,7 +151,8 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
         children: [
           Container(
             decoration: boxDecoration,
-            margin: EdgeInsets.only(top: widget.shoppingRequest.reactions!.isEmpty ? 2 : 8, bottom: 5, left: 12, right: 12),
+            margin:
+                EdgeInsets.only(top: widget.shoppingRequest.reactions!.isEmpty ? 2 : 8, bottom: 5, left: 12, right: 12),
             child: Material(
               type: MaterialType.transparency,
               child: InkWell(
@@ -155,10 +160,12 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                   final value = await showModalBottomSheet<Map<String, dynamic>?>(
                     context: context,
                     isScrollControlled: true,
-                    builder: (context) => SingleChildScrollView(
-                      child: ShoppingAllInfo(
-                        widget.shoppingRequest,
-                        handleSendReaction,
+                    builder: (context) => SafeArea(
+                      child: SingleChildScrollView(
+                        child: ShoppingAllInfo(
+                          widget.shoppingRequest,
+                          handleSendReaction,
+                        ),
                       ),
                     ),
                   );
@@ -195,7 +202,8 @@ class _ShoppingListEntryState extends State<ShoppingListEntry> {
                             ),
                             Flexible(
                               child: Text(
-                                'shopping-list.entry.wish'.tr(namedArgs: {'name': widget.shoppingRequest.requesterNickname}),
+                                'shopping-list.entry.wish'
+                                    .tr(namedArgs: {'name': widget.shoppingRequest.requesterNickname}),
                                 style: subTextStyle,
                                 overflow: TextOverflow.ellipsis,
                               ),

@@ -586,6 +586,8 @@
     "premium-theme-dialog.unlock": "Prémium témák feloldása",
 
     "social-login.unsupported.title": "A social login nem támogatott",
-    "social-login.unsupported.content": "A social login funkció csak az Android és iOS alkalmazásban érhető el. Kérlek, használj másik bejelentkezési módot, vagy töltsd le az alkalmazást az eszközödre."
+    "social-login.unsupported.content": "A social login funkció csak az Android és iOS alkalmazásban érhető el. Kérlek, használj másik bejelentkezési módot, vagy töltsd le az alkalmazást az eszközödre.",
+
+    "join-community": "Csatlakozz a Dodo közösséghez"
 
 }

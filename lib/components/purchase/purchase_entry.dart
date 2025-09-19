@@ -146,11 +146,13 @@ class _PurchaseEntryState extends State<PurchaseEntry> {
                       final deleted = await showModalBottomSheet<bool>(
                         isScrollControlled: true,
                         context: context,
-                        builder: (context) => SingleChildScrollView(
-                          child: PurchaseAllInfo(
-                            widget.purchase,
-                            widget.selectedMemberId,
-                            handleSendReaction,
+                        builder: (context) => SafeArea(
+                          child: SingleChildScrollView(
+                            child: PurchaseAllInfo(
+                              widget.purchase,
+                              widget.selectedMemberId,
+                              handleSendReaction,
+                            ),
                           ),
                         ),
                       );

@@ -139,10 +139,12 @@ class _PaymentEntryState extends State<PaymentEntry> {
                       final value = await showModalBottomSheet<String>(
                         context: context,
                         isScrollControlled: true,
-                        builder: (context) => SingleChildScrollView(
-                          child: PaymentAllInfo(
-                            widget.payment,
-                            handleSendReaction,
+                        builder: (context) => SafeArea(
+                          child: SingleChildScrollView(
+                            child: PaymentAllInfo(
+                              widget.payment,
+                              handleSendReaction,
+                            ),
                           ),
                         ),
                       );
