@@ -587,7 +587,10 @@
 
     "premium-theme-dialog.title": "Dies ist ein Premium-Thema",
     "premium-theme-dialog.content": "Bitte unterstütze uns, indem du Zugang zu allen Premium-Themen kaufst.",
-    "premium-theme-dialog.unlock": "Premium-Themen freischalten"
+    "premium-theme-dialog.unlock": "Premium-Themen freischalten",
+
+    "social-login.unsupported.title": "Social login nicht unterstützt",
+    "social-login.unsupported.content": "Social login wird auf dieser Plattform nicht unterstützt. Bitte verwende eine andere Anmeldemethode."
 
 
 }

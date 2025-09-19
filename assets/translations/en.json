@@ -575,6 +575,9 @@
 
     "premium-theme-dialog.title": "This is a premium theme",
     "premium-theme-dialog.content": "Consider supporting us by purchasing access to all premium themes.",
-    "premium-theme-dialog.unlock": "Unlock Premium Theme"
+    "premium-theme-dialog.unlock": "Unlock Premium Theme",
+
+    "social-login.unsupported.title": "Social login not supported",
+    "social-login.unsupported.content": "Social login is not supported on this platform. Please use another login method."
 
 }

@@ -224,6 +224,21 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                       ),
                     ),
                     onTap: () async {
+                      if (kIsWeb) {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  title: Text('social-login.unsupported.title').tr(),
+                                  content: Text('social-login.unsupported.content').tr(),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: Text('back').tr(),
+                                    ),
+                                  ],
+                                ));
+                        return;
+                      }
                       final googleAuth = await getGoogleAuth(
                         context.read<AppConfig>().googleOAuthServerClientId,
                       );
@@ -252,6 +267,22 @@ class _LoginOrRegisterPageState extends State<LoginOrRegisterPage> {
                   InkWell(
                     borderRadius: BorderRadius.circular(50),
                     onTap: () async {
+                      if (kIsWeb) {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  title: Text('social-login.unsupported.title').tr(),
+                                  content: Text('social-login.unsupported.content').tr(),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(),
+                                      child: Text('back').tr(),
+                                    ),
+                                  ],
+                                ));
+                        return;
+                      }
+
                       final appConfig = context.read<AppConfig>();
                       final credential = await getAppleAuth(
                         appConfig.appleOAuthClientId,
