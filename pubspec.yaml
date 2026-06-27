@@ -12,7 +12,7 @@ description: Csocsort
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 
-version: 4.7.2+5139 # 5 is the number of an appbundle, the digits after is the version number
+version: 4.7.3+5140 # 5 is the number of an appbundle, the digits after is the version number
 
 environment:
   sdk: '>=3.0.0'
@@ -40,7 +40,7 @@ dependencies:
   google_mobile_ads: ^5.2.0
   dynamic_color: ^1.7.0
   mobile_scanner: ^6.0.2
-  material_color_utilities: ^0.11.1
+  material_color_utilities: 0.13.0
   image_picker: ^1.1.2
   firebase_vertexai: ^1.0.4
   google_sign_in: ^6.2.2
@@ -49,6 +49,7 @@ dependencies:
   customized_keyboard: ^1.0.7  
   flutter_hooks: ^0.21.2
   qr: ^3.0.2
+  google_fonts: 8.1.0
 
   
   flutter:

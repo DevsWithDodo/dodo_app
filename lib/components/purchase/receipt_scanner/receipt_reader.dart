@@ -124,7 +124,10 @@ class _ReceiptReaderState extends State<ReceiptReader> with SingleTickerProvider
                         else if (_processingState == ProcessingState.error)
                           Text(
                             'receipt-scanner.error'.tr(),
-                            style: Theme.of(context).textTheme.labelSmall!.copyWith(color: Theme.of(context).colorScheme.error),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall!
+                                .copyWith(color: Theme.of(context).colorScheme.error),
                             textAlign: TextAlign.center,
                           ),
                         IconButton.filled(
@@ -163,7 +166,8 @@ class _ReceiptReaderState extends State<ReceiptReader> with SingleTickerProvider
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton.filled(onPressed: () => _getImage(ImageSource.gallery), icon: Icon(Icons.photo_library)),
+                        IconButton.filled(
+                            onPressed: () => _getImage(ImageSource.gallery), icon: Icon(Icons.photo_library)),
                         SizedBox(width: 16),
                         IconButton.filled(onPressed: () => _getImage(ImageSource.camera), icon: Icon(Icons.camera_alt)),
                       ],
@@ -202,8 +206,9 @@ class _ReceiptReaderState extends State<ReceiptReader> with SingleTickerProvider
         _processingState = ProcessingState.processing;
       });
       final model = FirebaseVertexAI.instance.generativeModel(
-        model: 'gemini-2.0-flash-lite',
-        systemInstruction: Content.system("""Your task is to extract structured information from photos of receipts and return it in JSON format. Ensure that the extracted data is accurate and complete. Receipts may be in any language. Accurately extract information regardless of the language used. Ensure that all extracted text (store names, item names) remains in its original language, but standardize the currency code using ISO 4217. Follow these rules strictly:
+        model: 'gemini-2.5-flash-lite',
+        systemInstruction: Content.system(
+            """Your task is to extract structured information from photos of receipts and return it in JSON format. Ensure that the extracted data is accurate and complete. Receipts may be in any language. Accurately extract information regardless of the language used. Ensure that all extracted text (store names, item names) remains in its original language, but standardize the currency code using ISO 4217. Follow these rules strictly:
         Identify the store name exactly as printed on the receipt.
         Extract the total cost and ensure it is in the correct currency (ISO 4217 format).
         List all items with their exact names, prices, and any applicable discounts.
@@ -249,6 +254,7 @@ class _ReceiptReaderState extends State<ReceiptReader> with SingleTickerProvider
         _processingState = ProcessingState.done;
       });
     } catch (e) {
+      print('Error processing receipt: $e');
       setState(() {
         _processingState = ProcessingState.error;
       });

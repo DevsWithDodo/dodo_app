@@ -37,7 +37,7 @@ class CurrencyNotFoundException implements Exception {
 }
 
 class Currency {
-  const Currency._(this.code, this.hasSubunit, this.symbol, this.symbolBeforeAmount, [this.rate = 1]);
+  const Currency._(this.code, this.hasSubunit, this.symbol, this.symbolBeforeAmount);
 
   factory Currency.fromCode(String code, {bool safe = false}) {
     if (!_unorderedCurrencies.containsKey(code)) {
@@ -55,7 +55,6 @@ class Currency {
       entry['subunit'] == 1,
       entry['symbol'],
       entry['before'] == 1,
-      (entry['rate'] ?? 1) * 1.0,
     );
   }
 
@@ -63,7 +62,6 @@ class Currency {
   final String symbol;
   final bool symbolBeforeAmount;
   final bool hasSubunit;
-  final double rate;
 
   static List<String> allCodes() {
     return _currencies.keys.toList();
@@ -74,10 +72,11 @@ class Currency {
   }
 
   void setRate(dynamic rate) {
-    _currencies[code]!['rate'] = rate;
+    _unorderedCurrencies[code]!['rate'] = rate;
   }
 
   double get smallestUnit => hasSubunit ? 0.01 : 1;
+  double get rate => (_unorderedCurrencies[code]?['rate'] ?? 1) * 1.0;
 
   double threshold() => smallestUnit / 2;
 
@@ -93,6 +92,8 @@ class Currency {
 
   @override
   int get hashCode => code.hashCode;
+
+  static bool get isInitialized => _unorderedCurrencies.values.any((entry) => entry.containsKey('rate'));
 }
 
 Map<String, Map<String, dynamic>> _currencies = SplayTreeMap.from(_unorderedCurrencies, (a, b) => a.compareTo(b));
