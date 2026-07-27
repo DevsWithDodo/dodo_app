@@ -132,5 +132,6 @@ Map<String, Map<String, dynamic>> _unorderedCurrencies = {
   "KRW": {"subunit": 0, "symbol": "₩", "before": 1},
   "MYR": {"subunit": 1, "symbol": "RM", "before": 1},
   "EUR": {"subunit": 1, "symbol": "€", "before": 1},
-  "CML": {"subunit": 0, "symbol": "🐪", "before": 0}
+  "CML": {"subunit": 0, "symbol": "🐪", "before": 0},
+  "MAD": {"subunit": 1, "symbol": "DH", "before": 0},
 };
