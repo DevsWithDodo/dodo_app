@@ -1,3 +1,5 @@
+import 'package:csocsort_szamla/components/helpers/currency_picker_button.dart';
+import 'package:csocsort_szamla/components/helpers/currency_picker_sheet.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
@@ -9,7 +11,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../helpers/currency_picker_dropdown.dart';
 
 class ChangeUserCurrencyDialog extends StatefulWidget {
   const ChangeUserCurrencyDialog({super.key});
@@ -55,12 +56,10 @@ class _ChangeUserCurrencyDialogState extends State<ChangeUserCurrencyDialog> {
             SizedBox(
               height: 10,
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8, right: 8),
-              child: CurrencyPickerDropdown(
-                currency: _currency,
-                currencyChanged: (code) => setState(() => _currency = code),
-              ),
+            CurrencyPickerButton(
+              selectedCurrency: _currency,
+              onCurrencyChanged: (currency) => setState(() => _currency = currency),
+              defaultCurrencyFrom: DefaultCurrencyFrom.user,
             ),
             SizedBox(
               height: 5,

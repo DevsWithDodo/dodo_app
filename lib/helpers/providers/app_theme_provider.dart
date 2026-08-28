@@ -35,6 +35,7 @@ class AppThemeProvider extends StatelessWidget {
       builder: (context, _) => FutureBuilder(
           future: AppTheme.backgroundImages.isEmpty ? AppTheme.loadBackgroundImages() : Future.value(),
           builder: (context, snapshot) {
+            print("backgroundImages:${AppTheme.backgroundImages.isEmpty}");
             return FutureBuilder(
               future: DynamicColorPlugin.getCorePalette(),
               builder: (context, snapshot) {

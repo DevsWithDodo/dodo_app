@@ -26,7 +26,7 @@ class ExchangeRateInitializer extends StatelessWidget {
       List<String> notFound = [];
       for (String currency in (decoded["rates"] as LinkedHashMap<String, dynamic>).keys) {
         try {
-          Currency.fromCode(currency).rate = decoded['rates'][currency];
+          Currency.fromCode(currency).rate = decoded['rates'][currency] * 1.0;
         } catch (e) {
           if (e is CurrencyNotFoundException) {
             notFound.add(currency);
@@ -36,7 +36,7 @@ class ExchangeRateInitializer extends StatelessWidget {
         }
       }
       if (notFound.isNotEmpty) {
-        log("Couldn't find the following currencies: ${notFound.join(', ')}");
+        log("The following currencies are supported by the provider but not found in the app: ${notFound.join(', ')}");
       }
     } catch (_) {
       log("Couldn't fetch exchange rates.");

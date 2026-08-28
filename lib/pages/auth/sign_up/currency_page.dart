@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/components/helpers/currency_picker_dropdown.dart';
+import 'package:csocsort_szamla/components/helpers/currency_picker_sheet.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/providers/user_provider.dart';
@@ -48,10 +48,31 @@ class _CurrencyPageState extends State<CurrencyPage> {
                         SizedBox(
                           height: 10,
                         ),
-                        CurrencyPickerDropdown(
-                          currency: _defaultCurrency,
-                          currencyChanged: (newCurrency) => setState(() => _defaultCurrency = newCurrency),
-                        ),
+                        Material(
+                          type: MaterialType.transparency,
+                          child: InkWell(
+                              onTap: () => showCurrencyPickerSheet(
+                                    context,
+                                    currency: _defaultCurrency,
+                                    onCurrencySelected: (currency) => setState(
+                                        () => _defaultCurrency = currency),
+                                    defaultCurrencyFrom:
+                                        DefaultCurrencyFrom.none,
+                                  ),
+                              child: Ink(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerHighest,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Center(
+                                    child: Text(
+                                        "${_defaultCurrency.flag ?? ""} ${_defaultCurrency.code} (${_defaultCurrency.symbol})")),
+                              )),
+                        )
                       ],
                     ),
                   ),
@@ -79,7 +100,8 @@ class _CurrencyPageState extends State<CurrencyPage> {
                                   context,
                                 ),
                             outputCallbacks: {
-                              BoolFutureOutput.True: () => Navigator.of(context).pushAndRemoveUntil(
+                              BoolFutureOutput.True: () =>
+                                  Navigator.of(context).pushAndRemoveUntil(
                                     MaterialPageRoute(
                                       builder: (context) => JoinGroupPage(
                                         fromAuth: true,

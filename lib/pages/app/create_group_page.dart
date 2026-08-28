@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:csocsort_szamla/components/helpers/ad_unit.dart';
 import 'package:csocsort_szamla/components/helpers/background_paint.dart';
-import 'package:csocsort_szamla/components/helpers/currency_picker_dropdown.dart';
+import 'package:csocsort_szamla/components/helpers/currency_picker_sheet.dart';
 import 'package:csocsort_szamla/components/helpers/future_output_dialog.dart';
 import 'package:csocsort_szamla/helpers/currencies.dart';
 import 'package:csocsort_szamla/helpers/event_bus.dart';
@@ -36,17 +36,25 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
   void initState() {
     super.initState();
     User user = context.read<UserNotifier>().user!;
-    _nicknameController = TextEditingController(); // TODO: initial value from cache
+    _nicknameController =
+        TextEditingController(); // TODO: initial value from cache
     _selectedCurrency = user.currency;
   }
 
-  Future<BoolFutureOutput> _createGroup(String groupName, String nickname, String? currency) async {
+  Future<BoolFutureOutput> _createGroup(
+      String groupName, String nickname, String? currency) async {
     try {
-      Map<String, dynamic> body = {'group_name': groupName, 'currency': currency, 'member_nickname': nickname};
+      Map<String, dynamic> body = {
+        'group_name': groupName,
+        'currency': currency,
+        'member_nickname': nickname
+      };
       http.Response response = await Http.post(uri: '/groups', body: body);
       Map<String, dynamic> decoded = jsonDecode(response.body);
       UserNotifier userProvider = context.read<UserNotifier>();
-      userProvider.setGroups(userProvider.user!.groups + [Group.fromJson(decoded)], notify: false);
+      userProvider.setGroups(
+          userProvider.user!.groups + [Group.fromJson(decoded)],
+          notify: false);
       userProvider.setGroup(userProvider.user!.groups.last);
       context.read<UserUsageNotifier>().incrementGroupsUsedCount();
       return BoolFutureOutput.True;
@@ -131,15 +139,42 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .labelLarge!
-                                        .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant),
                                   ),
                                   SizedBox(
                                     width: 20,
                                   ),
-                                  Flexible(
-                                    child: CurrencyPickerDropdown(
-                                      currencyChanged: (code) => setState(() => _selectedCurrency = code),
-                                      currency: _selectedCurrency,
+                                  Expanded(
+                                    child: Material(
+                                      type: MaterialType.transparency,
+                                      child: InkWell(
+                                          onTap: () => showCurrencyPickerSheet(
+                                                context,
+                                                currency: _selectedCurrency,
+                                                onCurrencySelected:
+                                                    (currency) => setState(() =>
+                                                        _selectedCurrency =
+                                                            currency),
+                                                defaultCurrencyFrom:
+                                                    DefaultCurrencyFrom.user,
+                                              ),
+                                          child: Ink(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 16, vertical: 8),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .surfaceContainerHighest,
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Center(
+                                                child: Text(
+                                                    "${_selectedCurrency.flag ?? ""} ${_selectedCurrency.code} (${_selectedCurrency.symbol})")),
+                                          )),
                                     ),
                                   ),
                                 ],
@@ -148,7 +183,8 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text('create-group.currency.hint'.tr(),
-                                    style: Theme.of(context).textTheme.labelSmall),
+                                    style:
+                                        Theme.of(context).textTheme.labelSmall),
                               ),
                             ],
                           ),

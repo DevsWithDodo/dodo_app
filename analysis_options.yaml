@@ -28,7 +28,7 @@ linter:
 analyzer:
   errors:
     use_build_context_synchronously: ignore
-  exclude: [build/**, .dart_tool/**, .idea/**, .vscode/**]
+  exclude: [build/**, .dart_tool/**, .idea/**, .vscode/**, android/**, ios/**, web/**, windows/**, macos/**, linux/**]
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

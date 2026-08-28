@@ -1,4 +1,4 @@
-import 'package:csocsort_szamla/components/helpers/currency_picker_dropdown.dart';
+import 'package:csocsort_szamla/components/helpers/currency_picker_icon_button.dart';
 import 'package:csocsort_szamla/components/helpers/gradient_button.dart';
 import 'package:csocsort_szamla/components/purchase/receipt_scanner/receipt_item_assigner.dart';
 import 'package:csocsort_szamla/helpers/color_generation.dart';
@@ -124,16 +124,9 @@ class ReceiptInformationViewer extends StatelessWidget {
                                 style: Theme.of(context).textTheme.titleSmall,
                                 textAlign: TextAlign.center,
                               ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                ),
-                                width: 100,
-                                child: CurrencyPickerDropdown(
-                                  currency: receiptInformation!.currency,
-                                  currencyChanged: (currency) => onInformationChanged(() => receiptInformation!.currency = currency),
-                                ),
+                              CurrencyPickerIconButton(
+                                selectedCurrency: receiptInformation!.currency,
+                                onCurrencyChanged: (currency) => onInformationChanged(() => receiptInformation!.currency = currency!),
                               )
                             ],
                           ),

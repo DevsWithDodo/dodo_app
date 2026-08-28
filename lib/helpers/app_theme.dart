@@ -358,21 +358,23 @@ class AppTheme {
 
   static Future<void> loadBackgroundImages() async {
     if (backgroundImages.isNotEmpty) return;
-    final manifestContent = await rootBundle.loadString('AssetManifest.json');
-    final Map<String, dynamic> manifestMap = json.decode(manifestContent);
-    for (var themeName in ThemeName.values) {
+    final assetManifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    final assets = assetManifest.listAssets();
+
+    for (final themeName in ThemeName.values) {
       backgroundImages[themeName] = [];
-      if (themeName.type == ThemeType.background) {
-        final assets =
-            manifestMap.keys.where((path) => path.startsWith('assets/images/${themeName.storageName}')).toList();
-        if (assets.isEmpty) continue; // Skip if no assets found for this theme
-        for (var assetPath in assets) {
-          if (!assetPath.endsWith('.png')) continue; // Only load PNG images
-          final ByteData data = await rootBundle.load(assetPath);
-          final ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
-          final ui.FrameInfo fi = await codec.getNextFrame();
-          backgroundImages[themeName]!.add(fi.image);
-        }
+      if (themeName.type != ThemeType.background) continue;
+
+      final themeAssets = assets.where(
+        (path) => path.startsWith('assets/images/${themeName.storageName}'),
+      );
+
+      for (final assetPath in themeAssets) {
+        if (!assetPath.endsWith('.png')) continue;
+        final ByteData data = await rootBundle.load(assetPath);
+        final ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
+        final ui.FrameInfo fi = await codec.getNextFrame();
+        backgroundImages[themeName]!.add(fi.image);
       }
     }
   }

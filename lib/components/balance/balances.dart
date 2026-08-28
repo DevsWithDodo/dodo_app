@@ -166,12 +166,9 @@ class _BalancesState extends State<Balances> with AutomaticKeepAliveClientMixin 
           Positioned(
             right: 10,
             top: 10,
-            child: SizedBox(
-              width: 70,
-              child: SelectBalanceCurrency(
-                selectedCurrency: _selectedCurrency,
-                onCurrencyChanged: (currency) => setState(() => _selectedCurrency = currency),
-              ),
+            child: SelectBalanceCurrency(
+              selectedCurrency: _selectedCurrency,
+              onCurrencyChanged: (currency) => setState(() => _selectedCurrency = currency),
             ),
           )
         ],
