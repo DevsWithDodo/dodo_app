@@ -17,6 +17,7 @@ import 'package:csocsort_szamla/main.dart';
 import 'package:csocsort_szamla/pages/app/main_page.dart';
 import 'package:csocsort_szamla/pages/auth/login_or_register_page.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -60,17 +61,22 @@ class UserNotifier extends ChangeNotifier {
   }
 
   Future _fetchUser(BuildContext context) async {
-    http.Response response = await http.get(Uri.parse('${context.read<AppConfig>().appUrl}/user'), headers: {
+    http.Response response = await http
+        .get(Uri.parse('${context.read<AppConfig>().appUrl}/user'), headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer ${user!.apiToken}",
     });
     var decoded = jsonDecode(response.body);
-    if (response.statusCode.httpStatusCodeRange != HttpStatusCodeRange.success) {
+    if (response.statusCode.httpStatusCodeRange !=
+        HttpStatusCodeRange.success) {
       if (response.statusCode == 401) {
         await logout(withoutRequest: true);
-        BuildContext? context = getIt.get<NavigationService>().navigatorKey.currentContext;
+        BuildContext? context =
+            getIt.get<NavigationService>().navigatorKey.currentContext;
         if (context == null) return;
-        Navigator.of(getIt.get<NavigationService>().navigatorKey.currentContext!).pushAndRemoveUntil(
+        Navigator.of(
+                getIt.get<NavigationService>().navigatorKey.currentContext!)
+            .pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => LoginOrRegisterPage()),
           (route) => false,
         );
@@ -81,33 +87,37 @@ class UserNotifier extends ChangeNotifier {
     setUser(user!.mergeWith(fetchedUser), notify: false);
     int? lastActiveGroup = decoded['data']['last_active_group'];
 
-    http.Response groupResponse = await Http.get(uri: generateUri(GetUriKeys.groups, context));
+    http.Response groupResponse =
+        await Http.get(uri: generateUri(GetUriKeys.groups, context));
     setGroups(Group.fromJsonList(jsonDecode(groupResponse.body)['data'], true));
 
     if (currentGroup == null && user!.groups.isNotEmpty) {
-      Group group = user!.groups.firstWhere((element) => element.id == lastActiveGroup, orElse: () => user!.groups[0]);
+      Group group = user!.groups.firstWhere(
+          (element) => element.id == lastActiveGroup,
+          orElse: () => user!.groups[0]);
       setGroup(group);
-      getIt.get<NavigationService>().pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MainPage()));
+      getIt.get<NavigationService>().pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => MainPage()));
     }
     var themeState = context.read<AppThemeState>();
-    if (!user!.useGradients && themeState.themeName.type != ThemeType.simpleColor) {
-      themeState.themeName =
-          themeState.themeName.brightness == Brightness.dark ? ThemeName.greenDark : ThemeName.greenLight;
+    if (!user!.useGradients &&
+        themeState.themeName.type != ThemeType.simpleColor) {
+      themeState.themeName = themeState.themeName.brightness == Brightness.dark
+          ? ThemeName.greenDark
+          : ThemeName.greenLight;
     }
   }
 
-  Future<LoginFutureOutputs> loginOrRegisterWithToken(
-      String? idToken, String? authCode, IdTokenType tokenType, BuildContext context) async {
-    assert(
-        (idToken != null && tokenType == IdTokenType.google) || (authCode != null && tokenType == IdTokenType.apple));
+  Future<LoginFutureOutputs> loginOrRegisterWithToken(String? idToken,
+      String? authCode, IdTokenType tokenType, BuildContext context) async {
+    assert((idToken != null && tokenType == IdTokenType.google) ||
+        (authCode != null && tokenType == IdTokenType.apple));
     try {
-      String? fcmToken;
-      if (context.read<AppConfig>().isFirebasePlatformEnabled) {
-        FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-        fcmToken = await firebaseMessaging.getToken();
-      }
+      final fcmToken = await _getFcmToken(context);
       Map<String, String?> body = {
-        ...(tokenType == IdTokenType.google ? {"id_token": idToken!} : {"auth_code": authCode!}),
+        ...(tokenType == IdTokenType.google
+            ? {"id_token": idToken!}
+            : {"auth_code": authCode!}),
         'device_type': kIsWeb ? 'web' : Platform.operatingSystem,
         "fcm_token": kIsWeb ? null : fcmToken,
         "token_type": tokenType.name,
@@ -120,24 +130,31 @@ class UserNotifier extends ChangeNotifier {
         headers: header,
         body: bodyEncoded,
       );
-      if (response.statusCode.httpStatusCodeRange == HttpStatusCodeRange.success) {
+      if (response.statusCode.httpStatusCodeRange ==
+          HttpStatusCodeRange.success) {
         Map<String, dynamic> decoded = jsonDecode(response.body);
         int? lastActiveGroup = decoded['data']['last_active_group'];
         user = User.fromJson(decoded['data'], false);
         setUser(user, notify: false);
 
-        http.Response groupResponse = await Http.get(uri: generateUri(GetUriKeys.groups, context));
-        List<Group> groups = Group.fromJsonList(jsonDecode(groupResponse.body)['data'], true);
+        http.Response groupResponse =
+            await Http.get(uri: generateUri(GetUriKeys.groups, context));
+        List<Group> groups =
+            Group.fromJsonList(jsonDecode(groupResponse.body)['data'], true);
         setGroups(groups);
         if (groups.isEmpty) {
           return LoginFutureOutputs.joinGroupFromAuth;
         }
 
-        Group currentGroup = groups.firstWhere((group) => group.id == lastActiveGroup, orElse: () => groups[0]);
+        Group currentGroup = groups.firstWhere(
+            (group) => group.id == lastActiveGroup,
+            orElse: () => groups[0]);
         setGroup(currentGroup, notify: false);
 
         String? inviteUrl = context.read<InviteUrlState>().inviteUrl;
-        return inviteUrl == null ? LoginFutureOutputs.main : LoginFutureOutputs.joinGroup;
+        return inviteUrl == null
+            ? LoginFutureOutputs.main
+            : LoginFutureOutputs.joinGroup;
       } else {
         Map<String, dynamic> error = jsonDecode(response.body);
         throw error['error'];
@@ -151,14 +168,18 @@ class UserNotifier extends ChangeNotifier {
     }
   }
 
-  Future<BoolFutureOutput> linkSocialLogin(IdTokenType idTokenType, String code) async {
+  Future<BoolFutureOutput> linkSocialLogin(
+      IdTokenType idTokenType, String code) async {
     final response = await Http.post(uri: "/user/link_social_login", body: {
       "token_type": idTokenType.name,
-      ...(idTokenType == IdTokenType.google ? {"id_token": code} : {"auth_code": code}),
+      ...(idTokenType == IdTokenType.google
+          ? {"id_token": code}
+          : {"auth_code": code}),
       'device_type': kIsWeb ? 'web' : Platform.operatingSystem,
     });
 
-    if (response.statusCode.httpStatusCodeRange != HttpStatusCodeRange.success) {
+    if (response.statusCode.httpStatusCodeRange !=
+        HttpStatusCodeRange.success) {
       Map<String, dynamic> error = jsonDecode(response.body);
       throw error['error'];
     }
@@ -169,13 +190,10 @@ class UserNotifier extends ChangeNotifier {
     return BoolFutureOutput.True;
   }
 
-  Future<LoginFutureOutputs> login(String username, String password, BuildContext context) async {
+  Future<LoginFutureOutputs> login(
+      String username, String password, BuildContext context) async {
     try {
-      String? token;
-      if (context.read<AppConfig>().isFirebasePlatformEnabled) {
-        FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-        token = await firebaseMessaging.getToken();
-      }
+      final token = await _getFcmToken(context);
       Map<String, String?> body = {
         "username": username,
         "password": password,
@@ -183,9 +201,12 @@ class UserNotifier extends ChangeNotifier {
       };
       Map<String, String> header = {"Content-Type": "application/json"};
       String bodyEncoded = jsonEncode(body);
-      http.Response response =
-          await http.post(Uri.parse('${context.read<AppConfig>().appUrl}/login'), headers: header, body: bodyEncoded);
-      if (response.statusCode.httpStatusCodeRange == HttpStatusCodeRange.success) {
+      http.Response response = await http.post(
+          Uri.parse('${context.read<AppConfig>().appUrl}/login'),
+          headers: header,
+          body: bodyEncoded);
+      if (response.statusCode.httpStatusCodeRange ==
+          HttpStatusCodeRange.success) {
         final preferences = context.read<SharedPreferences>();
 
         Map<String, dynamic> decoded = jsonDecode(response.body);
@@ -193,18 +214,24 @@ class UserNotifier extends ChangeNotifier {
         user = User.fromJson(decoded['data'], preferences.getBool('rated_app'));
         setUser(user, notify: false);
 
-        http.Response groupResponse = await Http.get(uri: generateUri(GetUriKeys.groups, context));
-        List<Group> groups = Group.fromJsonList(jsonDecode(groupResponse.body)['data'], true);
+        http.Response groupResponse =
+            await Http.get(uri: generateUri(GetUriKeys.groups, context));
+        List<Group> groups =
+            Group.fromJsonList(jsonDecode(groupResponse.body)['data'], true);
         setGroups(groups);
         if (groups.isEmpty) {
           return LoginFutureOutputs.joinGroupFromAuth;
         }
 
-        Group currentGroup = groups.firstWhere((group) => group.id == lastActiveGroup, orElse: () => groups[0]);
+        Group currentGroup = groups.firstWhere(
+            (group) => group.id == lastActiveGroup,
+            orElse: () => groups[0]);
         setGroup(currentGroup, notify: false);
 
         String? inviteUrl = context.read<InviteUrlState>().inviteUrl;
-        return (inviteUrl == null || kIsWeb) ? LoginFutureOutputs.main : LoginFutureOutputs.joinGroup;
+        return (inviteUrl == null || kIsWeb)
+            ? LoginFutureOutputs.main
+            : LoginFutureOutputs.joinGroup;
       } else {
         Map<String, dynamic> error = jsonDecode(response.body);
         throw error['error'];
@@ -218,13 +245,10 @@ class UserNotifier extends ChangeNotifier {
     }
   }
 
-  Future<BoolFutureOutput> register(String username, String password, Currency currency, BuildContext context) async {
+  Future<BoolFutureOutput> register(String username, String password,
+      Currency currency, BuildContext context) async {
     try {
-      String? token;
-      if (context.read<AppConfig>().isFirebasePlatformEnabled) {
-        FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-        token = await firebaseMessaging.getToken();
-      }
+      final token = await _getFcmToken(context);
       Map<String, dynamic> body = {
         "username": username,
         "default_currency": currency,
@@ -243,7 +267,8 @@ class UserNotifier extends ChangeNotifier {
         headers: header,
         body: bodyEncoded,
       );
-      if (response.statusCode.httpStatusCodeRange == HttpStatusCodeRange.success) {
+      if (response.statusCode.httpStatusCodeRange ==
+          HttpStatusCodeRange.success) {
         setUser(User.fromJson(jsonDecode(response.body)));
         await clearAllCache();
         return BoolFutureOutput.True;
@@ -255,7 +280,7 @@ class UserNotifier extends ChangeNotifier {
       throw '${'format_exception'.tr()} F01';
     } on SocketException {
       throw '${'cannot_connect'.tr()} F02';
-    } catch (_, __) {
+    } catch (_) {
       rethrow;
     }
   }
@@ -276,9 +301,12 @@ class UserNotifier extends ChangeNotifier {
   void setGroups(List<Group> groups, {bool notify = true}) {
     user!.groups = groups;
     SharedPreferences.getInstance().then((preferences) {
-      preferences.setStringList('users_groups', groups.map((e) => e.name).toList());
-      preferences.setStringList('users_group_ids', groups.map((e) => e.id.toString()).toList());
-      preferences.setStringList('users_group_currencies', groups.map((e) => e.currency.code).toList());
+      preferences.setStringList(
+          'users_groups', groups.map((e) => e.name).toList());
+      preferences.setStringList(
+          'users_group_ids', groups.map((e) => e.id.toString()).toList());
+      preferences.setStringList('users_group_currencies',
+          groups.map((e) => e.currency.code).toList());
     });
     if (notify) {
       notifyListeners();
@@ -407,7 +435,8 @@ class UserNotifier extends ChangeNotifier {
     }
   }
 
-  void setPaymentMethods(List<PaymentMethod> paymentMethods, {bool notify = true}) {
+  void setPaymentMethods(List<PaymentMethod> paymentMethods,
+      {bool notify = true}) {
     user!.paymentMethods = paymentMethods;
     if (notify) {
       notifyListeners();
@@ -420,12 +449,57 @@ class UserNotifier extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<String?> _getFcmToken(BuildContext context) async {
+    if (kIsWeb || !context.read<AppConfig>().isFirebasePlatformEnabled) {
+      return null;
+    }
+
+    final firebaseMessaging = FirebaseMessaging.instance;
+    try {
+      if (Platform.isIOS) {
+        final settings = await firebaseMessaging.requestPermission(
+            alert: true, badge: true, sound: true);
+        if (settings.authorizationStatus == AuthorizationStatus.denied) {
+          debugPrint(
+              'Skipping FCM token: notification permission denied on iOS.');
+          return null;
+        }
+
+        for (var attempt = 0; attempt < 10; attempt++) {
+          final apnsToken = await firebaseMessaging.getAPNSToken();
+          if (apnsToken != null && apnsToken.isNotEmpty) {
+            break;
+          }
+          await Future.delayed(const Duration(milliseconds: 300));
+        }
+
+        final apnsToken = await firebaseMessaging.getAPNSToken();
+        if (apnsToken == null || apnsToken.isEmpty) {
+          debugPrint('Skipping FCM token: APNS token is not available yet.');
+          return null;
+        }
+      }
+
+      return await firebaseMessaging.getToken();
+    } on FirebaseException catch (error) {
+      if (error.code == 'apns-token-not-set') {
+        debugPrint('Skipping FCM token: APNS token is not set yet.');
+        return null;
+      }
+
+      debugPrint(
+          'Skipping FCM token due to Firebase error (${error.code}): ${error.message}');
+      return null;
+    }
+  }
 }
 
 class LoginFutureOutputs extends FutureOutput {
   static const main = LoginFutureOutputs(true, 'main');
   static const joinGroup = LoginFutureOutputs(true, 'joinGroup');
-  static const joinGroupFromAuth = LoginFutureOutputs(true, 'joinGroupFromAuth');
+  static const joinGroupFromAuth =
+      LoginFutureOutputs(true, 'joinGroupFromAuth');
 
   const LoginFutureOutputs(super.value, super.name);
 }

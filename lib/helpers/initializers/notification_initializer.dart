@@ -89,6 +89,7 @@ class NotificationInitializer extends StatelessWidget {
       return;
     }
     await Firebase.initializeApp();
+//    final firebaseMessaging = FirebaseMessaging.instance;
     var notifications = FlutterLocalNotificationsPlugin();
     notifications.initialize(
       InitializationSettings(
@@ -101,6 +102,14 @@ class NotificationInitializer extends StatelessWidget {
     if (Platform.isAndroid) {
       notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()!.requestNotificationsPermission();
     }
+//    if (Platform.isIOS) {
+//      await firebaseMessaging.requestPermission(alert: true, badge: true, sound: true);
+//      await firebaseMessaging.setForegroundNotificationPresentationOptions(
+//        alert: true,
+ //       badge: true,
+ //       sound: true,
+ //     );
+ //   }
     Future.delayed(Duration(seconds: 1)).then((value) {
       if (Platform.isAndroid) {
         Future.delayed(Duration(seconds: 2)).then((value) {
@@ -110,17 +119,17 @@ class NotificationInitializer extends StatelessWidget {
           _createNotificationChannels('shopping', ['shopping_created', 'shopping_fulfilled', 'shopping_shop'], notifications);
         });
       }
-      FirebaseMessaging.instance.getInitialMessage().then((message) {
-        if (message != null) {
-          onSelectNotification(
-            NotificationResponse(
-              notificationResponseType: NotificationResponseType.selectedNotification,
-              payload: message.data['payload'],
-            ),
-            context,
-          );
-        }
-      });
+//      firebaseMessaging.getInitialMessage().then((message) {
+//        if (message != null) {
+//          onSelectNotification(
+//            NotificationResponse(
+//              notificationResponseType: NotificationResponseType.selectedNotification,
+//              payload: message.data['payload'],
+//            ),
+//            context,
+//          );
+//        }
+//      });
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         Map<String, dynamic> decoded = jsonDecode(message.data['payload']);
         var androidPlatformChannelSpecifics = AndroidNotificationDetails(
